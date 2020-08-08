@@ -1,0 +1,32 @@
+<?php
+/**
+ * This file is part of Mini.
+ * @auth lupeng
+ */
+
+use Mini\Database\Mysql\Migrations\Migration;
+use Mini\Database\Mysql\Schema\Blueprint;
+use Mini\Database\Mysql\Capsule\Manager;
+
+class {{ class }} extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up(): void
+    {
+        //
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down(): void
+    {
+        //
+    }
+}
