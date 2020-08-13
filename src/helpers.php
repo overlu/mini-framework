@@ -791,3 +791,26 @@ if (!function_exists('is_json')) {
         return (json_last_error() === JSON_ERROR_NONE);
     }
 }
+
+if (!function_exists('debug')) {
+    /**
+     * @param $var
+     */
+    function debug($var, ...$moreVars)
+    {
+        $cloner = new \Symfony\Component\VarDumper\Cloner\VarCloner();
+        $dumper = new \Symfony\Component\VarDumper\Dumper\HtmlDumper();
+        $output = fopen('php://memory', 'r+b');
+        $dumper->dump($cloner->cloneVar($var), $output);
+        foreach ($moreVars as $moreVar) {
+            $dumper->dump($cloner->cloneVar($moreVar), $output);
+        }
+        $output = stream_get_contents($output, -1, 0);
+        $swResponse = response()->getSwooleResponse();
+        if ($swResponse) {
+            $swResponse->header('content-type', 'text/html;charset=UTF-8', true);
+            $swResponse->header('Server', 'Mini', true);
+            $swResponse->write(new \Mini\Service\HttpMessage\Stream\SwooleStream($output));
+        }
+    }
+}

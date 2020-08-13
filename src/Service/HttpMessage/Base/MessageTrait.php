@@ -35,7 +35,7 @@ trait MessageTrait
     /**
      * @var StreamInterface
      */
-    protected StreamInterface $stream;
+    protected ?StreamInterface $stream = null;
 
     /**
      * Retrieves the HTTP protocol version as a string.

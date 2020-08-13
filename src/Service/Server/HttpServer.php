@@ -126,7 +126,7 @@ class HttpServer extends AbstractServer
 
     /**
      * @param $response
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return \Mini\Service\HttpServer\Response | \Mini\Service\HttpMessage\Server\Response
      * @throws Throwable
      */
     protected function transferToResponse($response): \Psr\Http\Message\ResponseInterface
@@ -142,10 +142,11 @@ class HttpServer extends AbstractServer
                 ->withBody(new SwooleStream($response));
         }
 
-        if (is_array($response) || $response instanceof Arrayable) {
-            if ($response instanceof Arrayable) {
-                $response = $response->toArray();
-            }
+        if ($response instanceof Arrayable) {
+            $response = $response->toArray();
+        }
+
+        if (is_array($response)) {
             return $this->response()
                 ->withAddedHeader('content-type', 'application/json;charset=UTF-8')
                 ->withBody(new SwooleStream(json_encode($response, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)));
