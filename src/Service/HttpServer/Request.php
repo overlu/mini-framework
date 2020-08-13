@@ -445,6 +445,16 @@ class Request implements RequestInterface
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    public function getClientIp()
+    {
+        return $this->server('remote_addr');
+    }
+
+    public function ip()
+    {
+        return $this->getClientIp();
+    }
+
     public function getCookieParams()
     {
         return $this->call(__FUNCTION__, func_get_args());
@@ -614,6 +624,15 @@ class Request implements RequestInterface
         $request = $this->getRequest();
         if (!method_exists($request, $name)) {
             throw new RuntimeException('Method not exist.');
+        }
+        return $request->{$name}(...$arguments);
+    }
+
+    public function __call($name, $arguments)
+    {
+        $request = $this->getRequest();
+        if (!method_exists($request, $name)) {
+            throw new \RuntimeException('Method not exist.');
         }
         return $request->{$name}(...$arguments);
     }

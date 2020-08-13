@@ -30,6 +30,7 @@ class RedisCacheCacheDriver extends AbstractCacheDriver
     public function set($key, $value, $ttl = null): bool
     {
         $key = $this->prefix . $key;
+        $value = (is_array($value) || is_object($value)) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value;
         return $ttl
             ? $this->connection->setex($this->prefix . $key, (int)$ttl, $value)
             : $this->connection->set($this->prefix . $key, $value);
@@ -43,7 +44,7 @@ class RedisCacheCacheDriver extends AbstractCacheDriver
     public function get($key, $default = null)
     {
         $value = $this->connection->get($this->prefix . $key);
-        return $value === false ? $default : $value;
+        return $value === false ? $default : (is_json($value) ? json_decode($value, true) : $value);
     }
 
     /**

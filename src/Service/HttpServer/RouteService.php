@@ -100,7 +100,7 @@ class RouteService
         $routeInfo = self::$dispatcher->dispatch($method, $uri);
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
-                return $this->defaultRouter($request, $response, $uri);
+                return $this->defaultRouter($uri);
                 break;
             case Dispatcher::METHOD_NOT_ALLOWED:
                 return to405();
@@ -129,9 +129,9 @@ class RouteService
                     $data = $this->initialParams(new ReflectionFunction($handler), $routeInfo[2]);
                     return call_user_func_array($handler, $data);
                 }
-                return $this->defaultRouter($request, $response, $uri);
+                return $this->defaultRouter($uri);
         }
-        return $this->defaultRouter($request, $response, $uri);
+        return $this->defaultRouter($uri);
     }
 
     /**
@@ -173,21 +173,17 @@ class RouteService
     }
 
     /**
-     * @param $request
-     * @param $response
      * @param $uri
      * @return mixed
      * @throws Exception
      */
-    public function defaultRouter(Request $request, Response $response, $uri)
+    public function defaultRouter(string $uri = '')
     {
         $uri = trim($uri, '/');
-        $uri = explode('/', $uri);
-
-        if ($uri[0] === '') {
+        if ($uri === '') {
             $className = IndexController::class;
             if (class_exists($className) && method_exists($className, 'index')) {
-                return (new $className())->index($request, $response);
+                return (new $className())->index(\request(), \response());
             }
         }
         return to404();

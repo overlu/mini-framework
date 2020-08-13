@@ -63,4 +63,14 @@ class Json
         }
         throw new InvalidArgumentException($message, $lastError);
     }
+
+    /**
+     * @param string $string
+     * @return bool
+     */
+    public static function isJson(string $string): bool
+    {
+        json_decode($string);
+        return (json_last_error() === JSON_ERROR_NONE);
+    }
 }

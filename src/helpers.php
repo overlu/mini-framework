@@ -481,11 +481,30 @@ if (!function_exists('redis')) {
     /**
      * 获取redis实例
      * @param array $config
+     * @param string $connection
      * @return mixed
      */
-    function redis(array $config = [])
+    function redis(array $config = [], $connection = 'default')
     {
-        return Pool::getInstance($config ?: [])->getConnection(config('cache.drivers.redis.collection', 'default'));
+        return Pool::getInstance($config ?: [])->getConnection($connection);
+    }
+}
+
+if (!function_exists('array_plus')) {
+    /**
+     * 数组合并，键相同值相加
+     * @param array $arr1
+     * @param array $arr2
+     * @return array
+     */
+    function array_plus(array $arr1, array $arr2): array
+    {
+        foreach ($arr1 as $key => $val) {
+            if (isset($arr2[$key])) {
+                $arr1[$key] += $arr2[$key];
+            }
+        }
+        return $arr1 + $arr2;
     }
 }
 
@@ -508,6 +527,51 @@ if (!function_exists('response')) {
     function response()
     {
         return Di::getInstance()->make(Mini\Contracts\HttpMessage\ResponseInterface::class);
+    }
+}
+
+if (!function_exists('url')) {
+    /**
+     * 动态生成url
+     * @param string $path
+     * @param array $params
+     * @param string $fragment
+     * @return string
+     */
+    function url(string $path = '', array $params = [], string $fragment = ''): string
+    {
+        if ($request = request()) {
+            $server = $request->getServerParams();
+            $scheme = !empty($server['https']) && $server['https'] !== 'off' ? 'https' : 'http';
+            $host = $request->header('host');
+            $appUrl = rtrim($scheme . '://' . $host, '/');
+        } else {
+            $appUrl = rtrim(env('APP_URL'), '/');
+        }
+        $arr = parse_url($appUrl);
+        $arr['query'] = !empty($params) ? http_build_query($params) : '';
+        $arr['scheme'] = $arr['scheme'] ?? 'http';
+        $arr['path'] = $path;
+        $arr['fragment'] = $fragment;
+        $arr['port'] = $arr['port'] ?? 80;
+        return http_build_url($arr);
+    }
+}
+
+if (!function_exists('http_build_url')) {
+    /**
+     * build url
+     * @param array $urlArr
+     * @return string
+     */
+    function http_build_url(array $urlArr): string
+    {
+        $url = $urlArr['scheme'] . '://' . $urlArr['host'];
+        $url .= (!$urlArr['port'] || $urlArr['port'] === 80) ? '' : ':' . $urlArr['port'];
+        $url .= $urlArr['path'] ? '/' . trim($urlArr['path'], '/') : '';
+        $url .= $urlArr['query'] ? '?' . $urlArr['query'] : '';
+        $url .= $urlArr['fragment'] ? '#' . $urlArr['fragment'] : '';
+        return $url;
     }
 }
 
@@ -618,6 +682,24 @@ if (!function_exists('runtime_path')) {
     }
 }
 
+if (!function_exists('array_plus')) {
+    /**
+     * 数组合并，键相同值相加
+     * @param array $arr1
+     * @param array $arr2
+     * @return array
+     */
+    function array_plus(array $arr1, array $arr2): array
+    {
+        foreach ($arr1 as $key => $val) {
+            if (isset($arr2[$key])) {
+                $arr1[$key] += $arr2[$key];
+            }
+        }
+        return $arr1 + $arr2;
+    }
+}
+
 if (!function_exists('to404')) {
     /**
      * @return string|null
@@ -685,6 +767,7 @@ if (!function_exists('view')) {
      * @param array $data
      * @param array $mergeData
      * @return \Mini\View\View|\Mini\Contracts\View\Factory
+     * @throws \Mini\Contracts\Container\BindingResolutionException
      */
     function view($view = null, $data = [], $mergeData = [])
     {
@@ -694,5 +777,17 @@ if (!function_exists('view')) {
         }
 
         return $factory->make($view, $data, $mergeData);
+    }
+}
+
+if (!function_exists('is_json')) {
+    /**
+     * @param $string
+     * @return bool
+     */
+    function is_json(string $string): bool
+    {
+        json_decode($string);
+        return (json_last_error() === JSON_ERROR_NONE);
     }
 }
