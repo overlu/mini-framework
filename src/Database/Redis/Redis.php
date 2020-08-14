@@ -9,6 +9,11 @@ namespace Mini\Database\Redis;
 
 use Mini\Singleton;
 
+/**
+ * Class Redis
+ * @package Mini\Database\Redis
+ * @mixin \Swoole\Coroutine\Redis | \Redis
+ */
 class Redis
 {
     use Singleton;

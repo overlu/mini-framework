@@ -482,7 +482,7 @@ if (!function_exists('redis')) {
      * 获取redis实例
      * @param array $config
      * @param string $connection
-     * @return mixed
+     * @return \Swoole\Coroutine\Redis | \Redis
      */
     function redis(array $config = [], $connection = 'default')
     {
