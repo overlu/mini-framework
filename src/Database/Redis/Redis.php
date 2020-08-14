@@ -16,8 +16,6 @@ use Mini\Singleton;
  */
 class Redis
 {
-    use Singleton;
-
     protected \Redis $connection;
 
     public function __construct(string $connection = '', array $config = [])
@@ -32,6 +30,6 @@ class Redis
 
     public static function __callStatic($name, $arguments)
     {
-        return self::getInstance()->connection->{$name}(...$arguments);
+        return (new self())->connection->{$name}(...$arguments);
     }
 }
