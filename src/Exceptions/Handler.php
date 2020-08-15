@@ -17,13 +17,13 @@ class Handler implements HandlerInterface
 {
     protected bool $debug = false;
 
-    protected string $environment = 'local';
+    protected string $environment = 'production';
 
     protected Throwable $throwable;
 
     public function __construct(Throwable $throwable)
     {
-        $this->environment = env('APP_ENV');
+        $this->environment = env('APP_ENV', 'production');
         $this->debug = env('APP_DEBUG', false);
         $this->throwable = $throwable;
     }

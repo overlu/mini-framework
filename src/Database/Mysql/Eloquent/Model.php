@@ -23,6 +23,11 @@ use Mini\Support\Str;
 use Mini\Support\Traits\ForwardsCalls;
 use JsonSerializable;
 
+/**
+ * Class Model
+ * @package Mini\Database\Mysql\Eloquent
+ * @mixin \IdeHelper\Eloquent
+ */
 abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializable, QueueableEntity, UrlRoutable
 {
     use Concerns\HasAttributes,

@@ -42,5 +42,10 @@
         "files": [
             "src/helpers.php"
         ]
+    },
+    "autoload-dev": {
+        "files": [
+            "src/_ide_helper.php"
+        ]
     }
 }
