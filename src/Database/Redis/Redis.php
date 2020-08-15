@@ -9,10 +9,13 @@ namespace Mini\Database\Redis;
 
 use Mini\Singleton;
 
+/**
+ * Class Redis
+ * @package Mini\Database\Redis
+ * @mixin \Swoole\Coroutine\Redis | \Redis
+ */
 class Redis
 {
-    use Singleton;
-
     protected \Redis $connection;
 
     public function __construct(string $connection = '', array $config = [])
@@ -27,6 +30,6 @@ class Redis
 
     public static function __callStatic($name, $arguments)
     {
-        return self::getInstance()->connection->{$name}(...$arguments);
+        return (new self())->connection->{$name}(...$arguments);
     }
 }

@@ -482,7 +482,7 @@ if (!function_exists('redis')) {
      * 获取redis实例
      * @param array $config
      * @param string $connection
-     * @return mixed
+     * @return \Swoole\Coroutine\Redis | \Redis
      */
     function redis(array $config = [], $connection = 'default')
     {
@@ -795,6 +795,7 @@ if (!function_exists('is_json')) {
 if (!function_exists('debug')) {
     /**
      * @param $var
+     * @param array $moreVars
      */
     function debug($var, ...$moreVars)
     {
