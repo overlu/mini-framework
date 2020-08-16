@@ -3,10 +3,13 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Query\Grammars;
 
 use Mini\Database\Mysql\Grammar as BaseGrammar;
 use Mini\Database\Mysql\Query\Builder;
+use Mini\Database\Mysql\Query\Expression;
 use Mini\Database\Mysql\Query\JoinClause;
 use Mini\Support\Arr;
 use Mini\Support\Str;
@@ -19,14 +22,14 @@ class Grammar extends BaseGrammar
      *
      * @var array
      */
-    protected $operators = [];
+    protected array $operators = [];
 
     /**
      * The components that make up a select clause.
      *
      * @var array
      */
-    protected $selectComponents = [
+    protected array $selectComponents = [
         'aggregate',
         'columns',
         'from',
@@ -43,10 +46,10 @@ class Grammar extends BaseGrammar
     /**
      * Compile a select query into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
+     * @param Builder $query
      * @return string
      */
-    public function compileSelect(Builder $query)
+    public function compileSelect(Builder $query): string
     {
         if ($query->unions && $query->aggregate) {
             return $this->compileUnionAggregate($query);
@@ -69,7 +72,7 @@ class Grammar extends BaseGrammar
         );
 
         if ($query->unions) {
-            $sql = $this->wrapUnion($sql).' '.$this->compileUnions($query);
+            $sql = $this->wrapUnion($sql) . ' ' . $this->compileUnions($query);
         }
 
         $query->columns = $original;
@@ -80,16 +83,16 @@ class Grammar extends BaseGrammar
     /**
      * Compile the components necessary for a select clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
+     * @param Builder $query
      * @return array
      */
-    protected function compileComponents(Builder $query)
+    protected function compileComponents(Builder $query): array
     {
         $sql = [];
 
         foreach ($this->selectComponents as $component) {
             if (isset($query->$component)) {
-                $method = 'compile'.ucfirst($component);
+                $method = 'compile' . ucfirst($component);
 
                 $sql[$component] = $this->$method($query, $query->$component);
             }
@@ -101,11 +104,11 @@ class Grammar extends BaseGrammar
     /**
      * Compile an aggregated select clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $aggregate
+     * @param Builder $query
+     * @param array $aggregate
      * @return string
      */
-    protected function compileAggregate(Builder $query, $aggregate)
+    protected function compileAggregate(Builder $query, array $aggregate): string
     {
         $column = $this->columnize($aggregate['columns']);
 
@@ -113,28 +116,28 @@ class Grammar extends BaseGrammar
         // we need to prepend "distinct" onto the column name so that the query takes
         // it into account when it performs the aggregating operations on the data.
         if (is_array($query->distinct)) {
-            $column = 'distinct '.$this->columnize($query->distinct);
+            $column = 'distinct ' . $this->columnize($query->distinct);
         } elseif ($query->distinct && $column !== '*') {
-            $column = 'distinct '.$column;
+            $column = 'distinct ' . $column;
         }
 
-        return 'select '.$aggregate['function'].'('.$column.') as aggregate';
+        return 'select ' . $aggregate['function'] . '(' . $column . ') as aggregate';
     }
 
     /**
      * Compile the "select *" portion of the query.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $columns
+     * @param Builder $query
+     * @param array $columns
      * @return string|null
      */
-    protected function compileColumns(Builder $query, $columns)
+    protected function compileColumns(Builder $query, array $columns): ?string
     {
         // If the query is actually performing an aggregating select, we will let that
         // compiler handle the building of the select clauses, as it will need some
         // more syntax that is best handled by that function to keep things neat.
-        if (! is_null($query->aggregate)) {
-            return;
+        if (!is_null($query->aggregate)) {
+            return null;
         }
 
         if ($query->distinct) {
@@ -143,36 +146,36 @@ class Grammar extends BaseGrammar
             $select = 'select ';
         }
 
-        return $select.$this->columnize($columns);
+        return $select . $this->columnize($columns);
     }
 
     /**
      * Compile the "from" portion of the query.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  string  $table
+     * @param Builder $query
+     * @param string $table
      * @return string
      */
-    protected function compileFrom(Builder $query, $table)
+    protected function compileFrom(Builder $query, string $table): string
     {
-        return 'from '.$this->wrapTable($table);
+        return 'from ' . $this->wrapTable($table);
     }
 
     /**
      * Compile the "join" portions of the query.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $joins
+     * @param Builder $query
+     * @param array $joins
      * @return string
      */
-    protected function compileJoins(Builder $query, $joins)
+    protected function compileJoins(Builder $query, array $joins): string
     {
         return collect($joins)->map(function ($join) use ($query) {
             $table = $this->wrapTable($join->table);
 
-            $nestedJoins = is_null($join->joins) ? '' : ' '.$this->compileJoins($query, $join->joins);
+            $nestedJoins = is_null($join->joins) ? '' : ' ' . $this->compileJoins($query, $join->joins);
 
-            $tableAndNestedJoins = is_null($join->joins) ? $table : '('.$table.$nestedJoins.')';
+            $tableAndNestedJoins = is_null($join->joins) ? $table : '(' . $table . $nestedJoins . ')';
 
             return trim("{$join->type} join {$tableAndNestedJoins} {$this->compileWheres($join)}");
         })->implode(' ');
@@ -181,10 +184,10 @@ class Grammar extends BaseGrammar
     /**
      * Compile the "where" portions of the query.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
+     * @param Builder $query
      * @return string
      */
-    protected function compileWheres(Builder $query)
+    protected function compileWheres(Builder $query): string
     {
         // Each type of where clauses has its own compiler function which is responsible
         // for actually creating the where clauses SQL. This helps keep the code nice
@@ -206,38 +209,38 @@ class Grammar extends BaseGrammar
     /**
      * Get an array of all the where clauses for the query.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
+     * @param Builder $query
      * @return array
      */
-    protected function compileWheresToArray($query)
+    protected function compileWheresToArray(Builder $query): array
     {
         return collect($query->wheres)->map(function ($where) use ($query) {
-            return $where['boolean'].' '.$this->{"where{$where['type']}"}($query, $where);
+            return $where['boolean'] . ' ' . $this->{"where{$where['type']}"}($query, $where);
         })->all();
     }
 
     /**
      * Format the where clause statements into one string.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $sql
+     * @param Builder $query
+     * @param array $sql
      * @return string
      */
-    protected function concatenateWhereClauses($query, $sql)
+    protected function concatenateWhereClauses(Builder $query, array $sql): string
     {
         $conjunction = $query instanceof JoinClause ? 'on' : 'where';
 
-        return $conjunction.' '.$this->removeLeadingBoolean(implode(' ', $sql));
+        return $conjunction . ' ' . $this->removeLeadingBoolean(implode(' ', $sql));
     }
 
     /**
      * Compile a raw where clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereRaw(Builder $query, $where)
+    protected function whereRaw(Builder $query, array $where): string
     {
         return $where['sql'];
     }
@@ -245,28 +248,28 @@ class Grammar extends BaseGrammar
     /**
      * Compile a basic where clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereBasic(Builder $query, $where)
+    protected function whereBasic(Builder $query, array $where): string
     {
         $value = $this->parameter($where['value']);
 
-        return $this->wrap($where['column']).' '.$where['operator'].' '.$value;
+        return $this->wrap($where['column']) . ' ' . $where['operator'] . ' ' . $value;
     }
 
     /**
      * Compile a "where in" clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereIn(Builder $query, $where)
+    protected function whereIn(Builder $query, array $where): string
     {
-        if (! empty($where['values'])) {
-            return $this->wrap($where['column']).' in ('.$this->parameterize($where['values']).')';
+        if (!empty($where['values'])) {
+            return $this->wrap($where['column']) . ' in (' . $this->parameterize($where['values']) . ')';
         }
 
         return '0 = 1';
@@ -275,14 +278,14 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "where not in" clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereNotIn(Builder $query, $where)
+    protected function whereNotIn(Builder $query, array $where): string
     {
-        if (! empty($where['values'])) {
-            return $this->wrap($where['column']).' not in ('.$this->parameterize($where['values']).')';
+        if (!empty($where['values'])) {
+            return $this->wrap($where['column']) . ' not in (' . $this->parameterize($where['values']) . ')';
         }
 
         return '1 = 1';
@@ -293,14 +296,14 @@ class Grammar extends BaseGrammar
      *
      * For safety, whereIntegerInRaw ensures this method is only used with integer values.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereNotInRaw(Builder $query, $where)
+    protected function whereNotInRaw(Builder $query, array $where): string
     {
-        if (! empty($where['values'])) {
-            return $this->wrap($where['column']).' not in ('.implode(', ', $where['values']).')';
+        if (!empty($where['values'])) {
+            return $this->wrap($where['column']) . ' not in (' . implode(', ', $where['values']) . ')';
         }
 
         return '1 = 1';
@@ -311,14 +314,14 @@ class Grammar extends BaseGrammar
      *
      * For safety, whereIntegerInRaw ensures this method is only used with integer values.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereInRaw(Builder $query, $where)
+    protected function whereInRaw(Builder $query, array $where): string
     {
-        if (! empty($where['values'])) {
-            return $this->wrap($where['column']).' in ('.implode(', ', $where['values']).')';
+        if (!empty($where['values'])) {
+            return $this->wrap($where['column']) . ' in (' . implode(', ', $where['values']) . ')';
         }
 
         return '0 = 1';
@@ -327,35 +330,35 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "where null" clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereNull(Builder $query, $where)
+    protected function whereNull(Builder $query, array $where): string
     {
-        return $this->wrap($where['column']).' is null';
+        return $this->wrap($where['column']) . ' is null';
     }
 
     /**
      * Compile a "where not null" clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereNotNull(Builder $query, $where)
+    protected function whereNotNull(Builder $query, array $where): string
     {
-        return $this->wrap($where['column']).' is not null';
+        return $this->wrap($where['column']) . ' is not null';
     }
 
     /**
      * Compile a "between" where clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereBetween(Builder $query, $where)
+    protected function whereBetween(Builder $query, array $where): string
     {
         $between = $where['not'] ? 'not between' : 'between';
 
@@ -363,17 +366,17 @@ class Grammar extends BaseGrammar
 
         $max = $this->parameter(end($where['values']));
 
-        return $this->wrap($where['column']).' '.$between.' '.$min.' and '.$max;
+        return $this->wrap($where['column']) . ' ' . $between . ' ' . $min . ' and ' . $max;
     }
 
     /**
      * Compile a "where date" clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereDate(Builder $query, $where)
+    protected function whereDate(Builder $query, array $where): string
     {
         return $this->dateBasedWhere('date', $query, $where);
     }
@@ -381,11 +384,11 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "where time" clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereTime(Builder $query, $where)
+    protected function whereTime(Builder $query, array $where): string
     {
         return $this->dateBasedWhere('time', $query, $where);
     }
@@ -393,11 +396,11 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "where day" clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereDay(Builder $query, $where)
+    protected function whereDay(Builder $query, array $where): string
     {
         return $this->dateBasedWhere('day', $query, $where);
     }
@@ -405,11 +408,11 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "where month" clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereMonth(Builder $query, $where)
+    protected function whereMonth(Builder $query, array $where): string
     {
         return $this->dateBasedWhere('month', $query, $where);
     }
@@ -417,11 +420,11 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "where year" clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereYear(Builder $query, $where)
+    protected function whereYear(Builder $query, array $where): string
     {
         return $this->dateBasedWhere('year', $query, $where);
     }
@@ -429,109 +432,109 @@ class Grammar extends BaseGrammar
     /**
      * Compile a date based where clause.
      *
-     * @param  string  $type
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param string $type
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function dateBasedWhere($type, Builder $query, $where)
+    protected function dateBasedWhere(string $type, Builder $query, array $where): string
     {
         $value = $this->parameter($where['value']);
 
-        return $type.'('.$this->wrap($where['column']).') '.$where['operator'].' '.$value;
+        return $type . '(' . $this->wrap($where['column']) . ') ' . $where['operator'] . ' ' . $value;
     }
 
     /**
      * Compile a where clause comparing two columns..
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereColumn(Builder $query, $where)
+    protected function whereColumn(Builder $query, array $where): string
     {
-        return $this->wrap($where['first']).' '.$where['operator'].' '.$this->wrap($where['second']);
+        return $this->wrap($where['first']) . ' ' . $where['operator'] . ' ' . $this->wrap($where['second']);
     }
 
     /**
      * Compile a nested where clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereNested(Builder $query, $where)
+    protected function whereNested(Builder $query, array $where): string
     {
         // Here we will calculate what portion of the string we need to remove. If this
         // is a join clause query, we need to remove the "on" portion of the SQL and
         // if it is a normal query we need to take the leading "where" of queries.
         $offset = $query instanceof JoinClause ? 3 : 6;
 
-        return '('.substr($this->compileWheres($where['query']), $offset).')';
+        return '(' . substr($this->compileWheres($where['query']), $offset) . ')';
     }
 
     /**
      * Compile a where condition with a sub-select.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereSub(Builder $query, $where)
+    protected function whereSub(Builder $query, array $where): string
     {
         $select = $this->compileSelect($where['query']);
 
-        return $this->wrap($where['column']).' '.$where['operator']." ($select)";
+        return $this->wrap($where['column']) . ' ' . $where['operator'] . " ($select)";
     }
 
     /**
      * Compile a where exists clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereExists(Builder $query, $where)
+    protected function whereExists(Builder $query, array $where): string
     {
-        return 'exists ('.$this->compileSelect($where['query']).')';
+        return 'exists (' . $this->compileSelect($where['query']) . ')';
     }
 
     /**
      * Compile a where exists clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereNotExists(Builder $query, $where)
+    protected function whereNotExists(Builder $query, array $where): string
     {
-        return 'not exists ('.$this->compileSelect($where['query']).')';
+        return 'not exists (' . $this->compileSelect($where['query']) . ')';
     }
 
     /**
      * Compile a where row values condition.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereRowValues(Builder $query, $where)
+    protected function whereRowValues(Builder $query, array $where): string
     {
         $columns = $this->columnize($where['columns']);
 
         $values = $this->parameterize($where['values']);
 
-        return '('.$columns.') '.$where['operator'].' ('.$values.')';
+        return '(' . $columns . ') ' . $where['operator'] . ' (' . $values . ')';
     }
 
     /**
      * Compile a "where JSON boolean" clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereJsonBoolean(Builder $query, $where)
+    protected function whereJsonBoolean(Builder $query, array $where): string
     {
         $column = $this->wrapJsonBooleanSelector($where['column']);
 
@@ -539,35 +542,35 @@ class Grammar extends BaseGrammar
             $this->parameter($where['value'])
         );
 
-        return $column.' '.$where['operator'].' '.$value;
+        return $column . ' ' . $where['operator'] . ' ' . $value;
     }
 
     /**
      * Compile a "where JSON contains" clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereJsonContains(Builder $query, $where)
+    protected function whereJsonContains(Builder $query, array $where): string
     {
         $not = $where['not'] ? 'not ' : '';
 
-        return $not.$this->compileJsonContains(
-            $where['column'], $this->parameter($where['value'])
-        );
+        return $not . $this->compileJsonContains(
+                $where['column'], $this->parameter($where['value'])
+            );
     }
 
     /**
      * Compile a "JSON contains" statement into SQL.
      *
-     * @param  string  $column
-     * @param  string  $value
+     * @param string $column
+     * @param string $value
      * @return string
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
-    protected function compileJsonContains($column, $value)
+    protected function compileJsonContains(string $column, string $value): string
     {
         throw new RuntimeException('This database engine does not support JSON contains operations.');
     }
@@ -575,22 +578,22 @@ class Grammar extends BaseGrammar
     /**
      * Prepare the binding for a "JSON contains" statement.
      *
-     * @param  mixed  $binding
+     * @param mixed $binding
      * @return string
      */
-    public function prepareBindingForJsonContains($binding)
+    public function prepareBindingForJsonContains($binding): string
     {
-        return json_encode($binding);
+        return json_encode($binding, JSON_UNESCAPED_UNICODE);
     }
 
     /**
      * Compile a "where JSON length" clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereJsonLength(Builder $query, $where)
+    protected function whereJsonLength(Builder $query, array $where): string
     {
         return $this->compileJsonLength(
             $where['column'], $where['operator'], $this->parameter($where['value'])
@@ -600,14 +603,14 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "JSON length" statement into SQL.
      *
-     * @param  string  $column
-     * @param  string  $operator
-     * @param  string  $value
+     * @param string $column
+     * @param string $operator
+     * @param string $value
      * @return string
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
-    protected function compileJsonLength($column, $operator, $value)
+    protected function compileJsonLength(string $column, string $operator, string $value): string
     {
         throw new RuntimeException('This database engine does not support JSON length operations.');
     }
@@ -615,42 +618,42 @@ class Grammar extends BaseGrammar
     /**
      * Compile the "group by" portions of the query.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $groups
+     * @param Builder $query
+     * @param array $groups
      * @return string
      */
-    protected function compileGroups(Builder $query, $groups)
+    protected function compileGroups(Builder $query, array $groups): string
     {
-        return 'group by '.$this->columnize($groups);
+        return 'group by ' . $this->columnize($groups);
     }
 
     /**
      * Compile the "having" portions of the query.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $havings
+     * @param Builder $query
+     * @param array $havings
      * @return string
      */
-    protected function compileHavings(Builder $query, $havings)
+    protected function compileHavings(Builder $query, array $havings): string
     {
         $sql = implode(' ', array_map([$this, 'compileHaving'], $havings));
 
-        return 'having '.$this->removeLeadingBoolean($sql);
+        return 'having ' . $this->removeLeadingBoolean($sql);
     }
 
     /**
      * Compile a single having clause.
      *
-     * @param  array  $having
+     * @param array $having
      * @return string
      */
-    protected function compileHaving(array $having)
+    protected function compileHaving(array $having): string
     {
         // If the having clause is "raw", we can just return the clause straight away
         // without doing any more processing on it. Otherwise, we will compile the
         // clause into SQL based on the components that make it up from builder.
         if ($having['type'] === 'Raw') {
-            return $having['boolean'].' '.$having['sql'];
+            return $having['boolean'] . ' ' . $having['sql'];
         } elseif ($having['type'] === 'between') {
             return $this->compileHavingBetween($having);
         }
@@ -661,25 +664,25 @@ class Grammar extends BaseGrammar
     /**
      * Compile a basic having clause.
      *
-     * @param  array  $having
+     * @param array $having
      * @return string
      */
-    protected function compileBasicHaving($having)
+    protected function compileBasicHaving(array $having): string
     {
         $column = $this->wrap($having['column']);
 
         $parameter = $this->parameter($having['value']);
 
-        return $having['boolean'].' '.$column.' '.$having['operator'].' '.$parameter;
+        return $having['boolean'] . ' ' . $column . ' ' . $having['operator'] . ' ' . $parameter;
     }
 
     /**
      * Compile a "between" having clause.
      *
-     * @param  array  $having
+     * @param array $having
      * @return string
      */
-    protected function compileHavingBetween($having)
+    protected function compileHavingBetween(array $having): string
     {
         $between = $having['not'] ? 'not between' : 'between';
 
@@ -689,20 +692,20 @@ class Grammar extends BaseGrammar
 
         $max = $this->parameter(last($having['values']));
 
-        return $having['boolean'].' '.$column.' '.$between.' '.$min.' and '.$max;
+        return $having['boolean'] . ' ' . $column . ' ' . $between . ' ' . $min . ' and ' . $max;
     }
 
     /**
      * Compile the "order by" portions of the query.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $orders
+     * @param Builder $query
+     * @param array $orders
      * @return string
      */
-    protected function compileOrders(Builder $query, $orders)
+    protected function compileOrders(Builder $query, array $orders): string
     {
-        if (! empty($orders)) {
-            return 'order by '.implode(', ', $this->compileOrdersToArray($query, $orders));
+        if (!empty($orders)) {
+            return 'order by ' . implode(', ', $this->compileOrdersToArray($query, $orders));
         }
 
         return '';
@@ -711,24 +714,24 @@ class Grammar extends BaseGrammar
     /**
      * Compile the query orders to an array.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $orders
+     * @param Builder $query
+     * @param array $orders
      * @return array
      */
-    protected function compileOrdersToArray(Builder $query, $orders)
+    protected function compileOrdersToArray(Builder $query, array $orders): array
     {
         return array_map(function ($order) {
-            return $order['sql'] ?? $this->wrap($order['column']).' '.$order['direction'];
+            return $order['sql'] ?? $this->wrap($order['column']) . ' ' . $order['direction'];
         }, $orders);
     }
 
     /**
      * Compile the random statement into SQL.
      *
-     * @param  string  $seed
+     * @param string $seed
      * @return string
      */
-    public function compileRandom($seed)
+    public function compileRandom(string $seed): string
     {
         return 'RANDOM()';
     }
@@ -736,34 +739,34 @@ class Grammar extends BaseGrammar
     /**
      * Compile the "limit" portions of the query.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  int  $limit
+     * @param Builder $query
+     * @param int $limit
      * @return string
      */
-    protected function compileLimit(Builder $query, $limit)
+    protected function compileLimit(Builder $query, int $limit): string
     {
-        return 'limit '.(int) $limit;
+        return 'limit ' . $limit;
     }
 
     /**
      * Compile the "offset" portions of the query.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  int  $offset
+     * @param Builder $query
+     * @param int $offset
      * @return string
      */
-    protected function compileOffset(Builder $query, $offset)
+    protected function compileOffset(Builder $query, int $offset): string
     {
-        return 'offset '.(int) $offset;
+        return 'offset ' . $offset;
     }
 
     /**
      * Compile the "union" queries attached to the main query.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
+     * @param Builder $query
      * @return string
      */
-    protected function compileUnions(Builder $query)
+    protected function compileUnions(Builder $query): string
     {
         $sql = '';
 
@@ -771,16 +774,16 @@ class Grammar extends BaseGrammar
             $sql .= $this->compileUnion($union);
         }
 
-        if (! empty($query->unionOrders)) {
-            $sql .= ' '.$this->compileOrders($query, $query->unionOrders);
+        if (!empty($query->unionOrders)) {
+            $sql .= ' ' . $this->compileOrders($query, $query->unionOrders);
         }
 
         if (isset($query->unionLimit)) {
-            $sql .= ' '.$this->compileLimit($query, $query->unionLimit);
+            $sql .= ' ' . $this->compileLimit($query, $query->unionLimit);
         }
 
         if (isset($query->unionOffset)) {
-            $sql .= ' '.$this->compileOffset($query, $query->unionOffset);
+            $sql .= ' ' . $this->compileOffset($query, $query->unionOffset);
         }
 
         return ltrim($sql);
@@ -789,49 +792,49 @@ class Grammar extends BaseGrammar
     /**
      * Compile a single union statement.
      *
-     * @param  array  $union
+     * @param array $union
      * @return string
      */
-    protected function compileUnion(array $union)
+    protected function compileUnion(array $union): string
     {
         $conjunction = $union['all'] ? ' union all ' : ' union ';
 
-        return $conjunction.$this->wrapUnion($union['query']->toSql());
+        return $conjunction . $this->wrapUnion($union['query']->toSql());
     }
 
     /**
      * Wrap a union subquery in parentheses.
      *
-     * @param  string  $sql
+     * @param string $sql
      * @return string
      */
-    protected function wrapUnion($sql)
+    protected function wrapUnion(string $sql): string
     {
-        return '('.$sql.')';
+        return '(' . $sql . ')';
     }
 
     /**
      * Compile a union aggregate query into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
+     * @param Builder $query
      * @return string
      */
-    protected function compileUnionAggregate(Builder $query)
+    protected function compileUnionAggregate(Builder $query): string
     {
         $sql = $this->compileAggregate($query, $query->aggregate);
 
         $query->aggregate = null;
 
-        return $sql.' from ('.$this->compileSelect($query).') as '.$this->wrapTable('temp_table');
+        return $sql . ' from (' . $this->compileSelect($query) . ') as ' . $this->wrapTable('temp_table');
     }
 
     /**
      * Compile an exists statement into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
+     * @param Builder $query
      * @return string
      */
-    public function compileExists(Builder $query)
+    public function compileExists(Builder $query): string
     {
         $select = $this->compileSelect($query);
 
@@ -841,11 +844,11 @@ class Grammar extends BaseGrammar
     /**
      * Compile an insert statement into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $values
+     * @param Builder $query
+     * @param array $values
      * @return string
      */
-    public function compileInsert(Builder $query, array $values)
+    public function compileInsert(Builder $query, array $values): string
     {
         // Essentially we will force every insert to be treated as a batch insert which
         // simply makes creating the SQL easier for us since we can utilize the same
@@ -856,7 +859,7 @@ class Grammar extends BaseGrammar
             return "insert into {$table} default values";
         }
 
-        if (! is_array(reset($values))) {
+        if (!is_array(reset($values))) {
             $values = [$values];
         }
 
@@ -866,7 +869,7 @@ class Grammar extends BaseGrammar
         // to the query. Each insert should have the exact same amount of parameter
         // bindings so we will loop through the record and parameterize them all.
         $parameters = collect($values)->map(function ($record) {
-            return '('.$this->parameterize($record).')';
+            return '(' . $this->parameterize($record) . ')';
         })->implode(', ');
 
         return "insert into $table ($columns) values $parameters";
@@ -875,13 +878,13 @@ class Grammar extends BaseGrammar
     /**
      * Compile an insert ignore statement into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $values
+     * @param Builder $query
+     * @param array $values
      * @return string
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
-    public function compileInsertOrIgnore(Builder $query, array $values)
+    public function compileInsertOrIgnore(Builder $query, array $values): string
     {
         throw new RuntimeException('This database engine does not support inserting while ignoring errors.');
     }
@@ -889,12 +892,12 @@ class Grammar extends BaseGrammar
     /**
      * Compile an insert and get ID statement into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $values
-     * @param  string  $sequence
+     * @param Builder $query
+     * @param array $values
+     * @param string $sequence
      * @return string
      */
-    public function compileInsertGetId(Builder $query, $values, $sequence)
+    public function compileInsertGetId(Builder $query, array $values, string $sequence): string
     {
         return $this->compileInsert($query, $values);
     }
@@ -902,12 +905,12 @@ class Grammar extends BaseGrammar
     /**
      * Compile an insert statement using a subquery into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $columns
-     * @param  string  $sql
+     * @param Builder $query
+     * @param array $columns
+     * @param string $sql
      * @return string
      */
-    public function compileInsertUsing(Builder $query, array $columns, string $sql)
+    public function compileInsertUsing(Builder $query, array $columns, string $sql): string
     {
         return "insert into {$this->wrapTable($query->from)} ({$this->columnize($columns)}) $sql";
     }
@@ -915,11 +918,11 @@ class Grammar extends BaseGrammar
     /**
      * Compile an update statement into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $values
+     * @param Builder $query
+     * @param array $values
      * @return string
      */
-    public function compileUpdate(Builder $query, array $values)
+    public function compileUpdate(Builder $query, array $values): string
     {
         $table = $this->wrapTable($query->from);
 
@@ -937,27 +940,27 @@ class Grammar extends BaseGrammar
     /**
      * Compile the columns for an update statement.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $values
+     * @param Builder $query
+     * @param array $values
      * @return string
      */
-    protected function compileUpdateColumns(Builder $query, array $values)
+    protected function compileUpdateColumns(Builder $query, array $values): string
     {
         return collect($values)->map(function ($value, $key) {
-            return $this->wrap($key).' = '.$this->parameter($value);
+            return $this->wrap($key) . ' = ' . $this->parameter($value);
         })->implode(', ');
     }
 
     /**
      * Compile an update statement without joins into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  string  $table
-     * @param  string  $columns
-     * @param  string  $where
+     * @param Builder $query
+     * @param string $table
+     * @param string $columns
+     * @param string $where
      * @return string
      */
-    protected function compileUpdateWithoutJoins(Builder $query, $table, $columns, $where)
+    protected function compileUpdateWithoutJoins(Builder $query, string $table, string $columns, string $where): string
     {
         return "update {$table} set {$columns} {$where}";
     }
@@ -965,13 +968,13 @@ class Grammar extends BaseGrammar
     /**
      * Compile an update statement with joins into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  string  $table
-     * @param  string  $columns
-     * @param  string  $where
+     * @param Builder $query
+     * @param string $table
+     * @param string $columns
+     * @param string $where
      * @return string
      */
-    protected function compileUpdateWithJoins(Builder $query, $table, $columns, $where)
+    protected function compileUpdateWithJoins(Builder $query, string $table, string $columns, string $where): string
     {
         $joins = $this->compileJoins($query, $query->joins);
 
@@ -981,11 +984,11 @@ class Grammar extends BaseGrammar
     /**
      * Prepare the bindings for an update statement.
      *
-     * @param  array  $bindings
-     * @param  array  $values
+     * @param array $bindings
+     * @param array $values
      * @return array
      */
-    public function prepareBindingsForUpdate(array $bindings, array $values)
+    public function prepareBindingsForUpdate(array $bindings, array $values): array
     {
         $cleanBindings = Arr::except($bindings, ['select', 'join']);
 
@@ -997,10 +1000,10 @@ class Grammar extends BaseGrammar
     /**
      * Compile a delete statement into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
+     * @param Builder $query
      * @return string
      */
-    public function compileDelete(Builder $query)
+    public function compileDelete(Builder $query): string
     {
         $table = $this->wrapTable($query->from);
 
@@ -1016,12 +1019,12 @@ class Grammar extends BaseGrammar
     /**
      * Compile a delete statement without joins into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  string  $table
-     * @param  string  $where
+     * @param Builder $query
+     * @param string $table
+     * @param string $where
      * @return string
      */
-    protected function compileDeleteWithoutJoins(Builder $query, $table, $where)
+    protected function compileDeleteWithoutJoins(Builder $query, string $table, string $where): string
     {
         return "delete from {$table} {$where}";
     }
@@ -1029,12 +1032,12 @@ class Grammar extends BaseGrammar
     /**
      * Compile a delete statement with joins into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  string  $table
-     * @param  string  $where
+     * @param Builder $query
+     * @param string $table
+     * @param string $where
      * @return string
      */
-    protected function compileDeleteWithJoins(Builder $query, $table, $where)
+    protected function compileDeleteWithJoins(Builder $query, string $table, string $where): string
     {
         $alias = last(explode(' as ', $table));
 
@@ -1046,10 +1049,10 @@ class Grammar extends BaseGrammar
     /**
      * Prepare the bindings for a delete statement.
      *
-     * @param  array  $bindings
+     * @param array $bindings
      * @return array
      */
-    public function prepareBindingsForDelete(array $bindings)
+    public function prepareBindingsForDelete(array $bindings): array
     {
         return Arr::flatten(
             Arr::except($bindings, 'select')
@@ -1059,22 +1062,22 @@ class Grammar extends BaseGrammar
     /**
      * Compile a truncate table statement into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
+     * @param Builder $query
      * @return array
      */
-    public function compileTruncate(Builder $query)
+    public function compileTruncate(Builder $query): array
     {
-        return ['truncate table '.$this->wrapTable($query->from) => []];
+        return ['truncate table ' . $this->wrapTable($query->from) => []];
     }
 
     /**
      * Compile the lock into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  bool|string  $value
+     * @param Builder $query
+     * @param bool|string $value
      * @return string
      */
-    protected function compileLock(Builder $query, $value)
+    protected function compileLock(Builder $query, string $value): string
     {
         return is_string($value) ? $value : '';
     }
@@ -1084,7 +1087,7 @@ class Grammar extends BaseGrammar
      *
      * @return bool
      */
-    public function supportsSavepoints()
+    public function supportsSavepoints(): bool
     {
         return true;
     }
@@ -1092,33 +1095,33 @@ class Grammar extends BaseGrammar
     /**
      * Compile the SQL statement to define a savepoint.
      *
-     * @param  string  $name
+     * @param string $name
      * @return string
      */
-    public function compileSavepoint($name)
+    public function compileSavepoint(string $name): string
     {
-        return 'SAVEPOINT '.$name;
+        return 'SAVEPOINT ' . $name;
     }
 
     /**
      * Compile the SQL statement to execute a savepoint rollback.
      *
-     * @param  string  $name
+     * @param string $name
      * @return string
      */
-    public function compileSavepointRollBack($name)
+    public function compileSavepointRollBack(string $name): string
     {
-        return 'ROLLBACK TO SAVEPOINT '.$name;
+        return 'ROLLBACK TO SAVEPOINT ' . $name;
     }
 
     /**
      * Wrap a value in keyword identifiers.
      *
-     * @param  \Mini\Database\Mysql\Query\Expression|string  $value
-     * @param  bool  $prefixAlias
+     * @param Expression|string $value
+     * @param bool $prefixAlias
      * @return string
      */
-    public function wrap($value, $prefixAlias = false)
+    public function wrap($value, bool $prefixAlias = false): string
     {
         if ($this->isExpression($value)) {
             return $this->getValue($value);
@@ -1144,12 +1147,12 @@ class Grammar extends BaseGrammar
     /**
      * Wrap the given JSON selector.
      *
-     * @param  string  $value
+     * @param string $value
      * @return string
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
-    protected function wrapJsonSelector($value)
+    protected function wrapJsonSelector(string $value): string
     {
         throw new RuntimeException('This database engine does not support JSON operations.');
     }
@@ -1157,10 +1160,10 @@ class Grammar extends BaseGrammar
     /**
      * Wrap the given JSON selector for boolean values.
      *
-     * @param  string  $value
+     * @param string $value
      * @return string
      */
-    protected function wrapJsonBooleanSelector($value)
+    protected function wrapJsonBooleanSelector(string $value): string
     {
         return $this->wrapJsonSelector($value);
     }
@@ -1168,10 +1171,10 @@ class Grammar extends BaseGrammar
     /**
      * Wrap the given JSON boolean value.
      *
-     * @param  string  $value
+     * @param string $value
      * @return string
      */
-    protected function wrapJsonBooleanValue($value)
+    protected function wrapJsonBooleanValue(string $value): string
     {
         return $value;
     }
@@ -1179,16 +1182,16 @@ class Grammar extends BaseGrammar
     /**
      * Split the given JSON selector into the field and the optional path and wrap them separately.
      *
-     * @param  string  $column
+     * @param string $column
      * @return array
      */
-    protected function wrapJsonFieldAndPath($column)
+    protected function wrapJsonFieldAndPath(string $column): array
     {
         $parts = explode('->', $column, 2);
 
         $field = $this->wrap($parts[0]);
 
-        $path = count($parts) > 1 ? ', '.$this->wrapJsonPath($parts[1], '->') : '';
+        $path = count($parts) > 1 ? ', ' . $this->wrapJsonPath($parts[1], '->') : '';
 
         return [$field, $path];
     }
@@ -1196,24 +1199,24 @@ class Grammar extends BaseGrammar
     /**
      * Wrap the given JSON path.
      *
-     * @param  string  $value
-     * @param  string  $delimiter
+     * @param string $value
+     * @param string $delimiter
      * @return string
      */
-    protected function wrapJsonPath($value, $delimiter = '->')
+    protected function wrapJsonPath(string $value, string $delimiter = '->'): string
     {
         $value = preg_replace("/([\\\\]+)?\\'/", "\\'", $value);
 
-        return '\'$."'.str_replace($delimiter, '"."', $value).'"\'';
+        return '\'$."' . str_replace($delimiter, '"."', $value) . '"\'';
     }
 
     /**
      * Determine if the given string is a JSON selector.
      *
-     * @param  string  $value
+     * @param string $value
      * @return bool
      */
-    protected function isJsonSelector($value)
+    protected function isJsonSelector(string $value): bool
     {
         return Str::contains($value, '->');
     }
@@ -1221,23 +1224,23 @@ class Grammar extends BaseGrammar
     /**
      * Concatenate an array of segments, removing empties.
      *
-     * @param  array  $segments
+     * @param array $segments
      * @return string
      */
-    protected function concatenate($segments)
+    protected function concatenate(array $segments): string
     {
-        return implode(' ', array_filter($segments, function ($value) {
-            return (string) $value !== '';
+        return implode(' ', array_filter($segments, static function ($value) {
+            return (string)$value !== '';
         }));
     }
 
     /**
      * Remove the leading boolean from a statement.
      *
-     * @param  string  $value
+     * @param string $value
      * @return string
      */
-    protected function removeLeadingBoolean($value)
+    protected function removeLeadingBoolean(string $value): string
     {
         return preg_replace('/and |or /i', '', $value, 1);
     }
@@ -1247,7 +1250,7 @@ class Grammar extends BaseGrammar
      *
      * @return array
      */
-    public function getOperators()
+    public function getOperators(): array
     {
         return $this->operators;
     }

@@ -3,21 +3,28 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Connectors;
 
+use Exception;
 use InvalidArgumentException;
+use PDO;
+use Throwable;
 
 class SQLiteConnector extends Connector implements ConnectorInterface
 {
     /**
      * Establish a database connection.
      *
-     * @param  array  $config
-     * @return \PDO
+     * @param array $config
+     * @return PDO
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
+     * @throws Exception
+     * @throws Throwable
      */
-    public function connect(array $config)
+    public function connect(array $config): PDO
     {
         $options = $this->getOptions($config);
 

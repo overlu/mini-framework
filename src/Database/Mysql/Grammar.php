@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql;
 
 use Mini\Database\Mysql\Query\Expression;
@@ -17,15 +19,15 @@ abstract class Grammar
      *
      * @var string
      */
-    protected $tablePrefix = '';
+    protected string $tablePrefix = '';
 
     /**
      * Wrap an array of values.
      *
-     * @param  array  $values
+     * @param array $values
      * @return array
      */
-    public function wrapArray(array $values)
+    public function wrapArray(array $values): array
     {
         return array_map([$this, 'wrap'], $values);
     }
@@ -33,13 +35,13 @@ abstract class Grammar
     /**
      * Wrap a table in keyword identifiers.
      *
-     * @param  \Mini\Database\Mysql\Query\Expression|string  $table
+     * @param Expression|string $table
      * @return string
      */
-    public function wrapTable($table)
+    public function wrapTable($table): string
     {
-        if (! $this->isExpression($table)) {
-            return $this->wrap($this->tablePrefix.$table, true);
+        if (!$this->isExpression($table)) {
+            return $this->wrap($this->tablePrefix . $table, true);
         }
 
         return $this->getValue($table);
@@ -48,11 +50,11 @@ abstract class Grammar
     /**
      * Wrap a value in keyword identifiers.
      *
-     * @param  \Mini\Database\Mysql\Query\Expression|string  $value
-     * @param  bool  $prefixAlias
+     * @param Expression|string $value
+     * @param bool $prefixAlias
      * @return string
      */
-    public function wrap($value, $prefixAlias = false)
+    public function wrap($value, bool $prefixAlias = false): string
     {
         if ($this->isExpression($value)) {
             return $this->getValue($value);
@@ -71,11 +73,11 @@ abstract class Grammar
     /**
      * Wrap a value that has an alias.
      *
-     * @param  string  $value
-     * @param  bool  $prefixAlias
+     * @param string $value
+     * @param bool $prefixAlias
      * @return string
      */
-    protected function wrapAliasedValue($value, $prefixAlias = false)
+    protected function wrapAliasedValue(string $value, bool $prefixAlias = false): string
     {
         $segments = preg_split('/\s+as\s+/i', $value);
 
@@ -83,37 +85,37 @@ abstract class Grammar
         // as well in order to generate proper syntax. If this is a column of course
         // no prefix is necessary. The condition will be true when from wrapTable.
         if ($prefixAlias) {
-            $segments[1] = $this->tablePrefix.$segments[1];
+            $segments[1] = $this->tablePrefix . $segments[1];
         }
 
-        return $this->wrap($segments[0]).' as '.$this->wrapValue($segments[1]);
+        return $this->wrap($segments[0]) . ' as ' . $this->wrapValue($segments[1]);
     }
 
     /**
      * Wrap the given value segments.
      *
-     * @param  array  $segments
+     * @param array $segments
      * @return string
      */
-    protected function wrapSegments($segments)
+    protected function wrapSegments(array $segments): string
     {
         return collect($segments)->map(function ($segment, $key) use ($segments) {
-            return $key == 0 && count($segments) > 1
-                            ? $this->wrapTable($segment)
-                            : $this->wrapValue($segment);
+            return $key === 0 && count($segments) > 1
+                ? $this->wrapTable($segment)
+                : $this->wrapValue($segment);
         })->implode('.');
     }
 
     /**
      * Wrap a single string in keyword identifiers.
      *
-     * @param  string  $value
+     * @param string $value
      * @return string
      */
-    protected function wrapValue($value)
+    protected function wrapValue(string $value): string
     {
         if ($value !== '*') {
-            return '"'.str_replace('"', '""', $value).'"';
+            return '"' . str_replace('"', '""', $value) . '"';
         }
 
         return $value;
@@ -122,10 +124,10 @@ abstract class Grammar
     /**
      * Convert an array of column names into a delimited string.
      *
-     * @param  array  $columns
+     * @param array $columns
      * @return string
      */
-    public function columnize(array $columns)
+    public function columnize(array $columns): string
     {
         return implode(', ', array_map([$this, 'wrap'], $columns));
     }
@@ -133,10 +135,10 @@ abstract class Grammar
     /**
      * Create query parameter place-holders for an array.
      *
-     * @param  array  $values
+     * @param array $values
      * @return string
      */
-    public function parameterize(array $values)
+    public function parameterize(array $values): string
     {
         return implode(', ', array_map([$this, 'parameter'], $values));
     }
@@ -144,10 +146,10 @@ abstract class Grammar
     /**
      * Get the appropriate query parameter place-holder for a value.
      *
-     * @param  mixed  $value
+     * @param mixed $value
      * @return string
      */
-    public function parameter($value)
+    public function parameter($value): string
     {
         return $this->isExpression($value) ? $this->getValue($value) : '?';
     }
@@ -155,10 +157,10 @@ abstract class Grammar
     /**
      * Quote the given string literal.
      *
-     * @param  string|array  $value
+     * @param string|array $value
      * @return string
      */
-    public function quoteString($value)
+    public function quoteString($value): string
     {
         if (is_array($value)) {
             return implode(', ', array_map([$this, __FUNCTION__], $value));
@@ -170,10 +172,10 @@ abstract class Grammar
     /**
      * Determine if the given value is a raw expression.
      *
-     * @param  mixed  $value
+     * @param mixed $value
      * @return bool
      */
-    public function isExpression($value)
+    public function isExpression($value): bool
     {
         return $value instanceof Expression;
     }
@@ -181,10 +183,10 @@ abstract class Grammar
     /**
      * Get the value of a raw expression.
      *
-     * @param  \Mini\Database\Mysql\Query\Expression  $expression
+     * @param Expression $expression
      * @return string
      */
-    public function getValue($expression)
+    public function getValue(Expression $expression): string
     {
         return $expression->getValue();
     }
@@ -194,7 +196,7 @@ abstract class Grammar
      *
      * @return string
      */
-    public function getDateFormat()
+    public function getDateFormat(): string
     {
         return 'Y-m-d H:i:s';
     }
@@ -204,7 +206,7 @@ abstract class Grammar
      *
      * @return string
      */
-    public function getTablePrefix()
+    public function getTablePrefix(): string
     {
         return $this->tablePrefix;
     }
@@ -212,10 +214,10 @@ abstract class Grammar
     /**
      * Set the grammar's table prefix.
      *
-     * @param  string  $prefix
+     * @param string $prefix
      * @return $this
      */
-    public function setTablePrefix($prefix)
+    public function setTablePrefix(string $prefix): self
     {
         $this->tablePrefix = $prefix;
 

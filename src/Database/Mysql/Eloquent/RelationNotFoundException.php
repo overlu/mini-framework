@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Eloquent;
 
 use RuntimeException;
@@ -14,23 +16,23 @@ class RelationNotFoundException extends RuntimeException
      *
      * @var string
      */
-    public $model;
+    public string $model;
 
     /**
      * The name of the relation.
      *
      * @var string
      */
-    public $relation;
+    public string $relation;
 
     /**
      * Create a new exception instance.
      *
-     * @param  object  $model
-     * @param  string  $relation
+     * @param object $model
+     * @param string $relation
      * @return static
      */
-    public static function make($model, $relation)
+    public static function make(object $model, string $relation)
     {
         $class = get_class($model);
 

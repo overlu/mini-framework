@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql;
 
 use Doctrine\DBAL\Driver\PDOPgSql\Driver as DoctrineDriver;
@@ -11,17 +13,18 @@ use Mini\Database\Mysql\Query\Processors\PostgresProcessor;
 use Mini\Database\Mysql\Schema\Grammars\PostgresGrammar as SchemaGrammar;
 use Mini\Database\Mysql\Schema\PostgresBuilder;
 use PDO;
+use PDOStatement;
 
 class PostgresConnection extends Connection
 {
     /**
      * Bind values to their parameters in the given statement.
      *
-     * @param  \PDOStatement  $statement
-     * @param  array  $bindings
+     * @param PDOStatement $statement
+     * @param array $bindings
      * @return void
      */
-    public function bindValues($statement, $bindings)
+    public function bindValues(PDOStatement $statement, array $bindings): void
     {
         foreach ($bindings as $key => $value) {
             if (is_int($value)) {
@@ -43,7 +46,7 @@ class PostgresConnection extends Connection
     /**
      * Get the default query grammar instance.
      *
-     * @return \Mini\Database\Mysql\Query\Grammars\PostgresGrammar
+     * @return QueryGrammar|mixed
      */
     protected function getDefaultQueryGrammar()
     {
@@ -53,7 +56,7 @@ class PostgresConnection extends Connection
     /**
      * Get a schema builder instance for the connection.
      *
-     * @return \Mini\Database\Mysql\Schema\PostgresBuilder
+     * @return PostgresBuilder|mixed
      */
     public function getSchemaBuilder()
     {
@@ -67,7 +70,7 @@ class PostgresConnection extends Connection
     /**
      * Get the default schema grammar instance.
      *
-     * @return \Mini\Database\Mysql\Schema\Grammars\PostgresGrammar
+     * @return SchemaGrammar|mixed
      */
     protected function getDefaultSchemaGrammar()
     {
@@ -77,7 +80,7 @@ class PostgresConnection extends Connection
     /**
      * Get the default post processor instance.
      *
-     * @return \Mini\Database\Mysql\Query\Processors\PostgresProcessor
+     * @return PostgresProcessor|mixed
      */
     protected function getDefaultPostProcessor()
     {
@@ -87,9 +90,9 @@ class PostgresConnection extends Connection
     /**
      * Get the Doctrine DBAL driver.
      *
-     * @return \Doctrine\DBAL\Driver\PDOPgSql\Driver
+     * @return DoctrineDriver
      */
-    protected function getDoctrineDriver()
+    protected function getDoctrineDriver(): DoctrineDriver
     {
         return new DoctrineDriver;
     }

@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql;
 
 use Closure;
@@ -18,13 +20,13 @@ class SqlServerConnection extends Connection
     /**
      * Execute a Closure within a transaction.
      *
-     * @param  \Closure  $callback
-     * @param  int  $attempts
+     * @param Closure $callback
+     * @param int $attempts
      * @return mixed
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function transaction(Closure $callback, $attempts = 1)
+    public function transaction(Closure $callback, int $attempts = 1)
     {
         for ($a = 1; $a <= $attempts; $a++) {
             if ($this->getDriverName() === 'sqlsrv') {
@@ -42,9 +44,9 @@ class SqlServerConnection extends Connection
                 $this->getPdo()->exec('COMMIT TRAN');
             }
 
-            // If we catch an exception, we will roll back so nothing gets messed
-            // up in the database. Then we'll re-throw the exception so it can
-            // be handled how the developer sees fit for their applications.
+                // If we catch an exception, we will roll back so nothing gets messed
+                // up in the database. Then we'll re-throw the exception so it can
+                // be handled how the developer sees fit for their applications.
             catch (Throwable $e) {
                 $this->getPdo()->exec('ROLLBACK TRAN');
 
@@ -58,7 +60,7 @@ class SqlServerConnection extends Connection
     /**
      * Get the default query grammar instance.
      *
-     * @return \Mini\Database\Mysql\Query\Grammars\SqlServerGrammar
+     * @return QueryGrammar|mixed
      */
     protected function getDefaultQueryGrammar()
     {
@@ -68,7 +70,7 @@ class SqlServerConnection extends Connection
     /**
      * Get a schema builder instance for the connection.
      *
-     * @return \Mini\Database\Mysql\Schema\SqlServerBuilder
+     * @return SqlServerBuilder|mixed
      */
     public function getSchemaBuilder()
     {
@@ -82,7 +84,7 @@ class SqlServerConnection extends Connection
     /**
      * Get the default schema grammar instance.
      *
-     * @return \Mini\Database\Mysql\Schema\Grammars\SqlServerGrammar
+     * @return SchemaGrammar|mixed
      */
     protected function getDefaultSchemaGrammar()
     {
@@ -92,7 +94,7 @@ class SqlServerConnection extends Connection
     /**
      * Get the default post processor instance.
      *
-     * @return \Mini\Database\Mysql\Query\Processors\SqlServerProcessor
+     * @return SqlServerProcessor|mixed
      */
     protected function getDefaultPostProcessor()
     {
@@ -102,9 +104,9 @@ class SqlServerConnection extends Connection
     /**
      * Get the Doctrine DBAL driver.
      *
-     * @return \Doctrine\DBAL\Driver\PDOSqlsrv\Driver
+     * @return DoctrineDriver
      */
-    protected function getDoctrineDriver()
+    protected function getDoctrineDriver(): DoctrineDriver
     {
         return new DoctrineDriver;
     }

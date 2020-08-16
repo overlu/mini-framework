@@ -3,19 +3,25 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Connectors;
 
+use Exception;
 use PDO;
+use Throwable;
 
 class MySqlConnector extends Connector implements ConnectorInterface
 {
     /**
      * Establish a database connection.
      *
-     * @param  array  $config
-     * @return \PDO
+     * @param array $config
+     * @return PDO
+     * @throws Exception
+     * @throws Throwable
      */
-    public function connect(array $config)
+    public function connect(array $config): PDO
     {
         $dsn = $this->getDsn($config);
 
@@ -26,7 +32,7 @@ class MySqlConnector extends Connector implements ConnectorInterface
         // connection's behavior, and some might be specified by the developers.
         $connection = $this->createConnection($dsn, $config, $options);
 
-        if (! empty($config['database'])) {
+        if (!empty($config['database'])) {
             $connection->exec("use `{$config['database']}`;");
         }
 
@@ -45,28 +51,28 @@ class MySqlConnector extends Connector implements ConnectorInterface
     /**
      * Set the connection character set and collation.
      *
-     * @param  \PDO  $connection
-     * @param  array  $config
+     * @param PDO $connection
+     * @param array $config
      * @return void
      */
-    protected function configureEncoding($connection, array $config)
+    protected function configureEncoding(PDO $connection, array $config): void
     {
-        if (! isset($config['charset'])) {
-            return $connection;
+        if (!isset($config['charset'])) {
+            return;
         }
 
         $connection->prepare(
-            "set names '{$config['charset']}'".$this->getCollation($config)
+            "set names '{$config['charset']}'" . $this->getCollation($config)
         )->execute();
     }
 
     /**
      * Get the collation for the configuration.
      *
-     * @param  array  $config
+     * @param array $config
      * @return string
      */
-    protected function getCollation(array $config)
+    protected function getCollation(array $config): string
     {
         return isset($config['collation']) ? " collate '{$config['collation']}'" : '';
     }
@@ -74,14 +80,14 @@ class MySqlConnector extends Connector implements ConnectorInterface
     /**
      * Set the timezone on the connection.
      *
-     * @param  \PDO  $connection
-     * @param  array  $config
+     * @param PDO $connection
+     * @param array $config
      * @return void
      */
-    protected function configureTimezone($connection, array $config)
+    protected function configureTimezone(PDO $connection, array $config): void
     {
         if (isset($config['timezone'])) {
-            $connection->prepare('set time_zone="'.$config['timezone'].'"')->execute();
+            $connection->prepare('set time_zone="' . $config['timezone'] . '"')->execute();
         }
     }
 
@@ -90,34 +96,34 @@ class MySqlConnector extends Connector implements ConnectorInterface
      *
      * Chooses socket or host/port based on the 'unix_socket' config value.
      *
-     * @param  array  $config
+     * @param array $config
      * @return string
      */
-    protected function getDsn(array $config)
+    protected function getDsn(array $config): string
     {
         return $this->hasSocket($config)
-                            ? $this->getSocketDsn($config)
-                            : $this->getHostDsn($config);
+            ? $this->getSocketDsn($config)
+            : $this->getHostDsn($config);
     }
 
     /**
      * Determine if the given configuration array has a UNIX socket value.
      *
-     * @param  array  $config
+     * @param array $config
      * @return bool
      */
-    protected function hasSocket(array $config)
+    protected function hasSocket(array $config): bool
     {
-        return isset($config['unix_socket']) && ! empty($config['unix_socket']);
+        return isset($config['unix_socket']) && !empty($config['unix_socket']);
     }
 
     /**
      * Get the DSN string for a socket configuration.
      *
-     * @param  array  $config
+     * @param array $config
      * @return string
      */
-    protected function getSocketDsn(array $config)
+    protected function getSocketDsn(array $config): string
     {
         return "mysql:unix_socket={$config['unix_socket']};dbname={$config['database']}";
     }
@@ -125,26 +131,26 @@ class MySqlConnector extends Connector implements ConnectorInterface
     /**
      * Get the DSN string for a host / port configuration.
      *
-     * @param  array  $config
+     * @param array $config
      * @return string
      */
-    protected function getHostDsn(array $config)
+    protected function getHostDsn(array $config): string
     {
         extract($config, EXTR_SKIP);
 
         return isset($port)
-                    ? "mysql:host={$host};port={$port};dbname={$database}"
-                    : "mysql:host={$host};dbname={$database}";
+            ? "mysql:host={$host};port={$port};dbname={$database}"
+            : "mysql:host={$host};dbname={$database}";
     }
 
     /**
      * Set the modes for the connection.
      *
-     * @param  \PDO  $connection
-     * @param  array  $config
+     * @param PDO $connection
+     * @param array $config
      * @return void
      */
-    protected function setModes(PDO $connection, array $config)
+    protected function setModes(PDO $connection, array $config): void
     {
         if (isset($config['modes'])) {
             $this->setCustomModes($connection, $config);
@@ -160,11 +166,11 @@ class MySqlConnector extends Connector implements ConnectorInterface
     /**
      * Set the custom modes on the connection.
      *
-     * @param  \PDO  $connection
-     * @param  array  $config
+     * @param PDO $connection
+     * @param array $config
      * @return void
      */
-    protected function setCustomModes(PDO $connection, array $config)
+    protected function setCustomModes(PDO $connection, array $config): void
     {
         $modes = implode(',', $config['modes']);
 
@@ -174,11 +180,11 @@ class MySqlConnector extends Connector implements ConnectorInterface
     /**
      * Get the query to enable strict mode.
      *
-     * @param  \PDO  $connection
-     * @param  array  $config
+     * @param PDO $connection
+     * @param array $config
      * @return string
      */
-    protected function strictMode(PDO $connection, $config)
+    protected function strictMode(PDO $connection, array $config): string
     {
         $version = $config['version'] ?? $connection->getAttribute(PDO::ATTR_SERVER_VERSION);
 

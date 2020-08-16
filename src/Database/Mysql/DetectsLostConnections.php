@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql;
 
 use Mini\Support\Str;
@@ -13,10 +15,10 @@ trait DetectsLostConnections
     /**
      * Determine if the given exception was caused by a lost connection.
      *
-     * @param  \Throwable  $e
+     * @param Throwable $e
      * @return bool
      */
-    protected function causedByLostConnection(Throwable $e)
+    protected function causedByLostConnection(Throwable $e): bool
     {
         $message = $e->getMessage();
 

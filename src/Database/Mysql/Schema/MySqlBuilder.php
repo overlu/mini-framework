@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Schema;
 
 class MySqlBuilder extends Builder
@@ -10,27 +12,27 @@ class MySqlBuilder extends Builder
     /**
      * Determine if the given table exists.
      *
-     * @param  string  $table
+     * @param string $table
      * @return bool
      */
-    public function hasTable($table)
+    public function hasTable(string $table): bool
     {
-        $table = $this->connection->getTablePrefix().$table;
+        $table = $this->connection->getTablePrefix() . $table;
 
         return count($this->connection->select(
-            $this->grammar->compileTableExists(), [$this->connection->getDatabaseName(), $table]
-        )) > 0;
+                $this->grammar->compileTableExists(), [$this->connection->getDatabaseName(), $table]
+            )) > 0;
     }
 
     /**
      * Get the column listing for a given table.
      *
-     * @param  string  $table
+     * @param string $table
      * @return array
      */
-    public function getColumnListing($table)
+    public function getColumnListing(string $table): array
     {
-        $table = $this->connection->getTablePrefix().$table;
+        $table = $this->connection->getTablePrefix() . $table;
 
         $results = $this->connection->select(
             $this->grammar->compileColumnListing(), [$this->connection->getDatabaseName(), $table]
@@ -44,12 +46,12 @@ class MySqlBuilder extends Builder
      *
      * @return void
      */
-    public function dropAllTables()
+    public function dropAllTables(): void
     {
         $tables = [];
 
         foreach ($this->getAllTables() as $row) {
-            $row = (array) $row;
+            $row = (array)$row;
 
             $tables[] = reset($row);
         }
@@ -72,12 +74,12 @@ class MySqlBuilder extends Builder
      *
      * @return void
      */
-    public function dropAllViews()
+    public function dropAllViews(): void
     {
         $views = [];
 
         foreach ($this->getAllViews() as $row) {
-            $row = (array) $row;
+            $row = (array)$row;
 
             $views[] = reset($row);
         }
@@ -96,7 +98,7 @@ class MySqlBuilder extends Builder
      *
      * @return array
      */
-    public function getAllTables()
+    public function getAllTables(): array
     {
         return $this->connection->select(
             $this->grammar->compileGetAllTables()
@@ -108,7 +110,7 @@ class MySqlBuilder extends Builder
      *
      * @return array
      */
-    public function getAllViews()
+    public function getAllViews(): array
     {
         return $this->connection->select(
             $this->grammar->compileGetAllViews()

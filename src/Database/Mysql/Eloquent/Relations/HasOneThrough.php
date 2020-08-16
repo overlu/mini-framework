@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Eloquent\Relations;
 
 use Mini\Database\Mysql\Eloquent\Collection;
@@ -26,11 +28,11 @@ class HasOneThrough extends HasManyThrough
     /**
      * Initialize the relation on a set of models.
      *
-     * @param  array  $models
-     * @param  string  $relation
+     * @param array $models
+     * @param string $relation
      * @return array
      */
-    public function initRelation(array $models, $relation)
+    public function initRelation(array $models, string $relation): array
     {
         foreach ($models as $model) {
             $model->setRelation($relation, $this->getDefaultFor($model));
@@ -42,12 +44,12 @@ class HasOneThrough extends HasManyThrough
     /**
      * Match the eagerly loaded results to their parents.
      *
-     * @param  array  $models
-     * @param  \Mini\Database\Mysql\Eloquent\Collection  $results
-     * @param  string  $relation
+     * @param array $models
+     * @param Collection $results
+     * @param string $relation
      * @return array
      */
-    public function match(array $models, Collection $results, $relation)
+    public function match(array $models, Collection $results, string $relation): array
     {
         $dictionary = $this->buildDictionary($results);
 
@@ -69,10 +71,10 @@ class HasOneThrough extends HasManyThrough
     /**
      * Make a new related instance for the given model.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Model  $parent
-     * @return \Mini\Database\Mysql\Eloquent\Model
+     * @param Model|null $parent
+     * @return Model
      */
-    public function newRelatedInstanceFor(Model $parent)
+    public function newRelatedInstanceFor(?Model $parent = null): Model
     {
         return $this->related->newInstance();
     }

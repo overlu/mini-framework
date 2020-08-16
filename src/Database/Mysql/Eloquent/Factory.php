@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Eloquent;
 
 use ArrayAccess;
@@ -16,40 +18,40 @@ class Factory implements ArrayAccess
      *
      * @var array
      */
-    protected $definitions = [];
+    protected array $definitions = [];
 
     /**
      * The registered model states.
      *
      * @var array
      */
-    protected $states = [];
+    protected array $states = [];
 
     /**
      * The registered after making callbacks.
      *
      * @var array
      */
-    protected $afterMaking = [];
+    protected array $afterMaking = [];
 
     /**
      * The registered after creating callbacks.
      *
      * @var array
      */
-    protected $afterCreating = [];
+    protected array $afterCreating = [];
 
     /**
      * The Faker instance for the builder.
      *
      * @var \Faker\Generator
      */
-    protected $faker;
+    protected Faker $faker;
 
     /**
      * Create a new factory instance.
      *
-     * @param  \Faker\Generator  $faker
+     * @param \Faker\Generator $faker
      * @return void
      */
     public function __construct(Faker $faker)
@@ -60,11 +62,11 @@ class Factory implements ArrayAccess
     /**
      * Create a new factory container.
      *
-     * @param  \Faker\Generator  $faker
-     * @param  string|null  $pathToFactories
+     * @param \Faker\Generator $faker
+     * @param string|null $pathToFactories
      * @return static
      */
-    public static function construct(Faker $faker, $pathToFactories = null)
+    public static function construct(Faker $faker, ?string $pathToFactories = null)
     {
         $pathToFactories = $pathToFactories ?: database_path('factories');
 
@@ -74,11 +76,11 @@ class Factory implements ArrayAccess
     /**
      * Define a class with a given set of attributes.
      *
-     * @param  string  $class
-     * @param  callable  $attributes
+     * @param string $class
+     * @param callable $attributes
      * @return $this
      */
-    public function define($class, callable $attributes)
+    public function define(string $class, callable $attributes): self
     {
         $this->definitions[$class] = $attributes;
 
@@ -88,12 +90,12 @@ class Factory implements ArrayAccess
     /**
      * Define a state with a given set of attributes.
      *
-     * @param  string  $class
-     * @param  string  $state
-     * @param  callable|array  $attributes
+     * @param string $class
+     * @param string $state
+     * @param callable|array $attributes
      * @return $this
      */
-    public function state($class, $state, $attributes)
+    public function state(string $class, string $state, $attributes): self
     {
         $this->states[$class][$state] = $attributes;
 
@@ -103,12 +105,12 @@ class Factory implements ArrayAccess
     /**
      * Define a callback to run after making a model.
      *
-     * @param  string  $class
-     * @param  callable  $callback
-     * @param  string  $name
+     * @param string $class
+     * @param callable $callback
+     * @param string $name
      * @return $this
      */
-    public function afterMaking($class, callable $callback, $name = 'default')
+    public function afterMaking(string $class, callable $callback, string $name = 'default'): self
     {
         $this->afterMaking[$class][$name][] = $callback;
 
@@ -118,12 +120,12 @@ class Factory implements ArrayAccess
     /**
      * Define a callback to run after making a model with given state.
      *
-     * @param  string  $class
-     * @param  string  $state
-     * @param  callable  $callback
+     * @param string $class
+     * @param string $state
+     * @param callable $callback
      * @return $this
      */
-    public function afterMakingState($class, $state, callable $callback)
+    public function afterMakingState(string $class, string $state, callable $callback): self
     {
         return $this->afterMaking($class, $callback, $state);
     }
@@ -131,12 +133,12 @@ class Factory implements ArrayAccess
     /**
      * Define a callback to run after creating a model.
      *
-     * @param  string  $class
-     * @param  callable  $callback
-     * @param  string  $name
+     * @param string $class
+     * @param callable $callback
+     * @param string $name
      * @return $this
      */
-    public function afterCreating($class, callable $callback, $name = 'default')
+    public function afterCreating(string $class, callable $callback, string $name = 'default'): self
     {
         $this->afterCreating[$class][$name][] = $callback;
 
@@ -146,12 +148,12 @@ class Factory implements ArrayAccess
     /**
      * Define a callback to run after creating a model with given state.
      *
-     * @param  string  $class
-     * @param  string  $state
-     * @param  callable  $callback
+     * @param string $class
+     * @param string $state
+     * @param callable $callback
      * @return $this
      */
-    public function afterCreatingState($class, $state, callable $callback)
+    public function afterCreatingState(string $class, string $state, callable $callback): self
     {
         return $this->afterCreating($class, $callback, $state);
     }
@@ -159,11 +161,11 @@ class Factory implements ArrayAccess
     /**
      * Create an instance of the given model and persist it to the database.
      *
-     * @param  string  $class
-     * @param  array  $attributes
+     * @param string $class
+     * @param array $attributes
      * @return mixed
      */
-    public function create($class, array $attributes = [])
+    public function create(string $class, array $attributes = [])
     {
         return $this->of($class)->create($attributes);
     }
@@ -171,11 +173,11 @@ class Factory implements ArrayAccess
     /**
      * Create an instance of the given model.
      *
-     * @param  string  $class
-     * @param  array  $attributes
+     * @param string $class
+     * @param array $attributes
      * @return mixed
      */
-    public function make($class, array $attributes = [])
+    public function make(string $class, array $attributes = [])
     {
         return $this->of($class)->make($attributes);
     }
@@ -183,11 +185,11 @@ class Factory implements ArrayAccess
     /**
      * Get the raw attribute array for a given model.
      *
-     * @param  string  $class
-     * @param  array  $attributes
+     * @param string $class
+     * @param array $attributes
      * @return array
      */
-    public function raw($class, array $attributes = [])
+    public function raw(string $class, array $attributes = []): array
     {
         return array_merge(
             call_user_func($this->definitions[$class], $this->faker), $attributes
@@ -197,10 +199,10 @@ class Factory implements ArrayAccess
     /**
      * Create a builder for the given model.
      *
-     * @param  string  $class
-     * @return \Mini\Database\Mysql\Eloquent\FactoryBuilder
+     * @param string $class
+     * @return FactoryBuilder
      */
-    public function of($class)
+    public function of(string $class): FactoryBuilder
     {
         return new FactoryBuilder(
             $class, $this->definitions, $this->states,
@@ -211,10 +213,10 @@ class Factory implements ArrayAccess
     /**
      * Load factories from path.
      *
-     * @param  string  $path
+     * @param string $path
      * @return $this
      */
-    public function load($path)
+    public function load(string $path): self
     {
         $factory = $this;
 
@@ -230,7 +232,7 @@ class Factory implements ArrayAccess
     /**
      * Determine if the given offset exists.
      *
-     * @param  string  $offset
+     * @param string $offset
      * @return bool
      */
     public function offsetExists($offset)
@@ -241,7 +243,7 @@ class Factory implements ArrayAccess
     /**
      * Get the value of the given offset.
      *
-     * @param  string  $offset
+     * @param string $offset
      * @return mixed
      */
     public function offsetGet($offset)
@@ -252,8 +254,8 @@ class Factory implements ArrayAccess
     /**
      * Set the given offset to the given value.
      *
-     * @param  string  $offset
-     * @param  callable  $value
+     * @param string $offset
+     * @param callable $value
      * @return void
      */
     public function offsetSet($offset, $value)
@@ -264,7 +266,7 @@ class Factory implements ArrayAccess
     /**
      * Unset the value at the given offset.
      *
-     * @param  string  $offset
+     * @param string $offset
      * @return void
      */
     public function offsetUnset($offset)

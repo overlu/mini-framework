@@ -3,87 +3,96 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
 
 namespace Mini\Database\Mysql\Migrations;
 
 use Mini\Contracts\Events\Dispatcher;
+use Mini\Database\Mysql\Connection;
+use Mini\Database\Mysql\ConnectionInterface;
 use Mini\Database\Mysql\ConnectionResolverInterface as Resolver;
 use Mini\Database\Mysql\Events\MigrationEnded;
 use Mini\Database\Mysql\Events\MigrationsEnded;
 use Mini\Database\Mysql\Events\MigrationsStarted;
 use Mini\Database\Mysql\Events\MigrationStarted;
 use Mini\Database\Mysql\Events\NoPendingMigrations;
+use Mini\Database\Mysql\Schema\Grammars\Grammar;
 use Mini\Support\Command;
 use Mini\Support\Filesystem;
 use Mini\Support\Arr;
 use Mini\Support\Collection;
 use Mini\Support\Str;
 use Mini\Database\Mysql\OutputInterface;
+use Throwable;
 
+/**
+ * Class Migrator
+ * @package Mini\Database\Mysql\Migrations
+ */
 class Migrator
 {
     /**
      * The event dispatcher instance.
      *
-     * @var \Mini\Contracts\Events\Dispatcher
+     * @var Dispatcher
      */
-    protected $events;
+    protected ?Dispatcher $events;
 
     /**
      * The migration repository implementation.
      *
-     * @var \Mini\Database\Mysql\Migrations\MigrationRepositoryInterface
+     * @var MigrationRepositoryInterface
      */
-    protected $repository;
+    protected MigrationRepositoryInterface $repository;
 
     /**
      * The filesystem instance.
      *
-     * @var \Mini\Support\Filesystem
+     * @var Filesystem
      */
-    protected $files;
+    protected Filesystem $files;
 
     /**
      * The connection resolver instance.
      *
-     * @var \Mini\Database\Mysql\ConnectionResolverInterface
+     * @var Resolver
      */
-    protected $resolver;
+    protected Resolver $resolver;
 
     /**
      * The name of the default connection.
      *
      * @var string
      */
-    protected $connection;
+    protected string $connection;
 
     /**
      * The paths to all of the migration files.
      *
      * @var array
      */
-    protected $paths = [];
+    protected array $paths = [];
 
     /**
      * The output interface implementation.
      *
      * @var OutputInterface
      */
-    protected $output;
+    protected OutputInterface $output;
 
     /**
      * Create a new migrator instance.
      *
-     * @param \Mini\Database\Mysql\Migrations\MigrationRepositoryInterface $repository
-     * @param \Mini\Database\Mysql\ConnectionResolverInterface $resolver
-     * @param \Mini\Support\Filesystem $files
-     * @param \Mini\Contracts\Events\Dispatcher|null $dispatcher
+     * @param MigrationRepositoryInterface $repository
+     * @param Resolver $resolver
+     * @param Filesystem $files
+     * @param Dispatcher|null $dispatcher
      * @return void
      */
     public function __construct(MigrationRepositoryInterface $repository,
                                 Resolver $resolver,
                                 Filesystem $files,
-                                Dispatcher $dispatcher = null)
+                                ?Dispatcher $dispatcher = null)
     {
         $this->files = $files;
         $this->events = $dispatcher;
@@ -97,8 +106,9 @@ class Migrator
      * @param array|string $paths
      * @param array $options
      * @return array
+     * @throws Throwable
      */
-    public function run($paths = [], array $options = [])
+    public function run($paths = [], array $options = []): array
     {
         // Once we grab all of the migration files for the path, we will compare them
         // against the migrations that have already been run for this package then
@@ -124,11 +134,11 @@ class Migrator
      * @param array $ran
      * @return array
      */
-    protected function pendingMigrations($files, $ran)
+    protected function pendingMigrations(array $files, array $ran): array
     {
         return Collection::make($files)
             ->reject(function ($file) use ($ran) {
-                return in_array($this->getMigrationName($file), $ran);
+                return in_array($this->getMigrationName($file), $ran, true);
             })->values()->all();
     }
 
@@ -138,8 +148,9 @@ class Migrator
      * @param array $migrations
      * @param array $options
      * @return void
+     * @throws Throwable
      */
-    public function runPending(array $migrations, array $options = [])
+    public function runPending(array $migrations, array $options = []): void
     {
         // First we will just make sure that there are any migrations to run. If there
         // aren't, we will just make a note of it to the developer so they're aware
@@ -184,8 +195,9 @@ class Migrator
      * @param int $batch
      * @param bool $pretend
      * @return void
+     * @throws Throwable
      */
-    protected function runUp($file, $batch, $pretend)
+    protected function runUp($file, $batch, $pretend): void
     {
         // First we will resolve a "real" instance of the migration class from this
         // migration file name. Once we have the instances we can run the actual
@@ -220,8 +232,9 @@ class Migrator
      * @param array|string $paths
      * @param array $options
      * @return array
+     * @throws Throwable
      */
-    public function rollback($paths = [], array $options = [])
+    public function rollback($paths = [], array $options = []): array
     {
         // We want to pull in the last batch of migrations that ran on the previous
         // migration operation. We'll then reverse those migrations and run each
@@ -245,7 +258,7 @@ class Migrator
      * @param array $options
      * @return array
      */
-    protected function getMigrationsForRollback(array $options)
+    protected function getMigrationsForRollback(array $options): array
     {
         if (($steps = $options['step'] ?? 0) > 0) {
             return $this->repository->getMigrations($steps);
@@ -261,8 +274,9 @@ class Migrator
      * @param array|string $paths
      * @param array $options
      * @return array
+     * @throws Throwable
      */
-    protected function rollbackMigrations(array $migrations, $paths, array $options)
+    protected function rollbackMigrations(array $migrations, $paths, array $options): array
     {
         $rolledBack = [];
 
@@ -302,7 +316,7 @@ class Migrator
      * @param bool $pretend
      * @return array
      */
-    public function reset($paths = [], $pretend = false)
+    public function reset($paths = [], bool $pretend = false): array
     {
         // Next, we will reverse the migration list so we can run them back in the
         // correct order for resetting this database. This will allow us to get
@@ -325,8 +339,9 @@ class Migrator
      * @param array $paths
      * @param bool $pretend
      * @return array
+     * @throws Throwable
      */
-    protected function resetMigrations(array $migrations, array $paths, $pretend = false)
+    protected function resetMigrations(array $migrations, array $paths, bool $pretend = false): array
     {
         // Since the getRan method that retrieves the migration name just gives us the
         // migration name, we will format the names into objects with the name as a
@@ -347,8 +362,9 @@ class Migrator
      * @param object $migration
      * @param bool $pretend
      * @return void
+     * @throws Throwable
      */
-    protected function runDown($file, $migration, $pretend)
+    protected function runDown(string $file, object $migration, bool $pretend): void
     {
         // First we will get the file name of the migration so we can resolve out an
         // instance of the migration. Once we get an instance we can either run a
@@ -383,8 +399,9 @@ class Migrator
      * @param object $migration
      * @param string $method
      * @return void
+     * @throws Throwable
      */
-    protected function runMigration($migration, $method)
+    protected function runMigration(object $migration, string $method): void
     {
         $connection = $this->resolveConnection(
             $migration->getConnection()
@@ -413,7 +430,7 @@ class Migrator
      * @param string $method
      * @return void
      */
-    protected function pretendToRun($migration, $method)
+    protected function pretendToRun(object $migration, string $method): void
     {
         foreach ($this->getQueries($migration, $method) as $query) {
             $name = get_class($migration);
@@ -429,7 +446,7 @@ class Migrator
      * @param string $method
      * @return array
      */
-    protected function getQueries($migration, $method)
+    protected function getQueries(object $migration, string $method): array
     {
         // Now that we have the connections we can resolve it and pretend to run the
         // queries against the database returning the array of raw SQL statements
@@ -438,7 +455,7 @@ class Migrator
             $migration->getConnection()
         );
 
-        return $db->pretend(function () use ($migration, $method) {
+        return $db->pretend(static function () use ($migration, $method) {
             if (method_exists($migration, $method)) {
                 $migration->{$method}();
             }
@@ -451,7 +468,7 @@ class Migrator
      * @param string $file
      * @return object
      */
-    public function resolve($file)
+    public function resolve(string $file)
     {
         $class = Str::studly(implode('_', array_slice(explode('_', $file), 4)));
 
@@ -464,7 +481,7 @@ class Migrator
      * @param string|array $paths
      * @return array
      */
-    public function getMigrationFiles($paths)
+    public function getMigrationFiles($paths): array
     {
         return Collection::make($paths)->flatMap(function ($path) {
             return Str::endsWith($path, '.php') ? [$path] : $this->files->glob($path . '/*_*.php');
@@ -481,7 +498,7 @@ class Migrator
      * @param array $files
      * @return void
      */
-    public function requireFiles(array $files)
+    public function requireFiles(array $files): void
     {
         foreach ($files as $file) {
             $this->files->requireOnce($file);
@@ -494,7 +511,7 @@ class Migrator
      * @param string $path
      * @return string
      */
-    public function getMigrationName($path)
+    public function getMigrationName(string $path): string
     {
         return str_replace('.php', '', basename($path));
     }
@@ -505,7 +522,7 @@ class Migrator
      * @param string $path
      * @return void
      */
-    public function path($path)
+    public function path(string $path): void
     {
         $this->paths = array_unique(array_merge($this->paths, [$path]));
     }
@@ -515,7 +532,7 @@ class Migrator
      *
      * @return array
      */
-    public function paths()
+    public function paths(): array
     {
         return $this->paths;
     }
@@ -525,7 +542,7 @@ class Migrator
      *
      * @return string
      */
-    public function getConnection()
+    public function getConnection(): string
     {
         return $this->connection;
     }
@@ -537,7 +554,7 @@ class Migrator
      * @param callable $callback
      * @return mixed
      */
-    public function usingConnection($name, callable $callback)
+    public function usingConnection(string $name, callable $callback)
     {
         $previousConnection = $this->resolver->getDefaultConnection();
 
@@ -554,7 +571,7 @@ class Migrator
      * @param string $name
      * @return void
      */
-    public function setConnection($name)
+    public function setConnection(string $name): void
     {
         if (!is_null($name)) {
             $this->resolver->setDefaultConnection($name);
@@ -569,9 +586,9 @@ class Migrator
      * Resolve the database connection instance.
      *
      * @param string $connection
-     * @return \Mini\Database\Mysql\ConnectionInterface
+     * @return ConnectionInterface
      */
-    public function resolveConnection($connection)
+    public function resolveConnection(string $connection): ConnectionInterface
     {
         return $this->resolver->connection($connection ?: $this->connection);
     }
@@ -579,10 +596,10 @@ class Migrator
     /**
      * Get the schema grammar out of a migration connection.
      *
-     * @param \Mini\Database\Mysql\Connection $connection
-     * @return \Mini\Database\Mysql\Schema\Grammars\Grammar
+     * @param Connection $connection
+     * @return Grammar
      */
-    protected function getSchemaGrammar($connection)
+    protected function getSchemaGrammar(Connection $connection): Grammar
     {
         if (is_null($grammar = $connection->getSchemaGrammar())) {
             $connection->useDefaultSchemaGrammar();
@@ -596,9 +613,9 @@ class Migrator
     /**
      * Get the migration repository instance.
      *
-     * @return \Mini\Database\Mysql\Migrations\MigrationRepositoryInterface
+     * @return MigrationRepositoryInterface
      */
-    public function getRepository()
+    public function getRepository(): MigrationRepositoryInterface
     {
         return $this->repository;
     }
@@ -608,7 +625,7 @@ class Migrator
      *
      * @return bool
      */
-    public function repositoryExists()
+    public function repositoryExists(): bool
     {
         return $this->repository->repositoryExists();
     }
@@ -616,9 +633,9 @@ class Migrator
     /**
      * Get the file system instance.
      *
-     * @return \Mini\Support\Filesystem
+     * @return Filesystem
      */
-    public function getFilesystem()
+    public function getFilesystem(): Filesystem
     {
         return $this->files;
     }
@@ -629,7 +646,7 @@ class Migrator
      * @param OutputInterface $output
      * @return $this
      */
-    public function setOutput(OutputInterface $output)
+    public function setOutput(OutputInterface $output): self
     {
         $this->output = $output;
 
@@ -642,7 +659,7 @@ class Migrator
      * @param string $message
      * @return void
      */
-    protected function note($message)
+    protected function note(string $message): void
     {
         if ($this->output) {
             $this->output->writeln($message);
@@ -654,10 +671,10 @@ class Migrator
     /**
      * Fire the given event for the migration.
      *
-     * @param \Mini\Contracts\Database\Events\MigrationEvent $event
+     * @param mixed $event
      * @return void
      */
-    public function fireMigrationEvent($event)
+    public function fireMigrationEvent($event): void
     {
         if ($this->events) {
             $this->events->dispatch($event);

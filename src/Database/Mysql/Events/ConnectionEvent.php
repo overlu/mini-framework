@@ -3,7 +3,11 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Events;
+
+use Mini\Database\Mysql\Connection;
 
 abstract class ConnectionEvent
 {
@@ -12,22 +16,22 @@ abstract class ConnectionEvent
      *
      * @var string
      */
-    public $connectionName;
+    public ?string $connectionName;
 
     /**
      * The database connection instance.
      *
-     * @var \Mini\Database\Mysql\Connection
+     * @var Connection
      */
-    public $connection;
+    public Connection $connection;
 
     /**
      * Create a new event instance.
      *
-     * @param  \Mini\Database\Mysql\Connection  $connection
+     * @param Connection $connection
      * @return void
      */
-    public function __construct($connection)
+    public function __construct(Connection $connection)
     {
         $this->connection = $connection;
         $this->connectionName = $connection->getName();

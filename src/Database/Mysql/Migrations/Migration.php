@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Migrations;
 
 abstract class Migration
@@ -12,21 +14,21 @@ abstract class Migration
      *
      * @var string|null
      */
-    protected $connection;
+    protected ?string $connection;
 
     /**
      * Enables, if supported, wrapping the migration within a transaction.
      *
      * @var bool
      */
-    public $withinTransaction = true;
+    public bool $withinTransaction = true;
 
     /**
      * Get the migration connection name.
      *
      * @return string|null
      */
-    public function getConnection()
+    public function getConnection(): ?string
     {
         return $this->connection;
     }

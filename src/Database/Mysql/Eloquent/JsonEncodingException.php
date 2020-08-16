@@ -3,8 +3,11 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Eloquent;
 
+use Mini\Http\Resources\Json\JsonResource;
 use RuntimeException;
 
 class JsonEncodingException extends RuntimeException
@@ -12,38 +15,38 @@ class JsonEncodingException extends RuntimeException
     /**
      * Create a new JSON encoding exception for the model.
      *
-     * @param  mixed  $model
-     * @param  string  $message
+     * @param mixed $model
+     * @param string $message
      * @return static
      */
-    public static function forModel($model, $message)
+    public static function forModel($model, string $message)
     {
-        return new static('Error encoding model ['.get_class($model).'] with ID ['.$model->getKey().'] to JSON: '.$message);
+        return new static('Error encoding model [' . get_class($model) . '] with ID [' . $model->getKey() . '] to JSON: ' . $message);
     }
 
     /**
      * Create a new JSON encoding exception for the resource.
      *
-     * @param  \Mini\Http\Resources\Json\JsonResource  $resource
-     * @param  string  $message
+     * @param JsonResource $resource
+     * @param string $message
      * @return static
      */
-    public static function forResource($resource, $message)
+    public static function forResource($resource, string $message)
     {
         $model = $resource->resource;
 
-        return new static('Error encoding resource ['.get_class($resource).'] with model ['.get_class($model).'] with ID ['.$model->getKey().'] to JSON: '.$message);
+        return new static('Error encoding resource [' . get_class($resource) . '] with model [' . get_class($model) . '] with ID [' . $model->getKey() . '] to JSON: ' . $message);
     }
 
     /**
      * Create a new JSON encoding exception for an attribute.
      *
-     * @param  mixed  $model
-     * @param  mixed  $key
-     * @param  string  $message
+     * @param mixed $model
+     * @param mixed $key
+     * @param string $message
      * @return static
      */
-    public static function forAttribute($model, $key, $message)
+    public static function forAttribute($model, $key, string $message)
     {
         $class = get_class($model);
 

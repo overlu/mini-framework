@@ -3,10 +3,13 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql;
 
 use Mini\Console\Command;
 use Mini\Container\Container;
+use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Support\Arr;
 use InvalidArgumentException;
 
@@ -15,25 +18,25 @@ abstract class Seeder
     /**
      * The container instance.
      *
-     * @var \Mini\Container\Container
+     * @var Container
      */
-    protected $container;
+    protected Container $container;
 
     /**
      * The console command instance.
      *
-     * @var \Mini\Console\Command
+     * @var Command
      */
-    protected $command;
+    protected Command $command;
 
     /**
      * Seed the given connection from the given path.
      *
-     * @param  array|string  $class
-     * @param  bool  $silent
+     * @param array|string $class
+     * @param bool $silent
      * @return $this
      */
-    public function call($class, $silent = false)
+    public function call($class, bool $silent = false): self
     {
         $classes = Arr::wrap($class);
 
@@ -63,10 +66,10 @@ abstract class Seeder
     /**
      * Silently seed the given connection from the given path.
      *
-     * @param  array|string  $class
+     * @param array|string $class
      * @return void
      */
-    public function callSilent($class)
+    public function callSilent($class): void
     {
         $this->call($class, true);
     }
@@ -74,10 +77,11 @@ abstract class Seeder
     /**
      * Resolve an instance of the given seeder class.
      *
-     * @param  string  $class
-     * @return \Mini\Database\Mysql\Seeder
+     * @param string $class
+     * @return Seeder
+     * @throws BindingResolutionException
      */
-    protected function resolve($class)
+    protected function resolve(string $class): Seeder
     {
         if (isset($this->container)) {
             $instance = $this->container->make($class);
@@ -97,10 +101,10 @@ abstract class Seeder
     /**
      * Set the IoC container instance.
      *
-     * @param  \Mini\Container\Container  $container
+     * @param Container $container
      * @return $this
      */
-    public function setContainer(Container $container)
+    public function setContainer(Container $container): self
     {
         $this->container = $container;
 
@@ -110,10 +114,10 @@ abstract class Seeder
     /**
      * Set the console command instance.
      *
-     * @param  \Mini\Console\Command  $command
+     * @param Command $command
      * @return $this
      */
-    public function setCommand(Command $command)
+    public function setCommand(Command $command): self
     {
         $this->command = $command;
 
@@ -125,16 +129,17 @@ abstract class Seeder
      *
      * @return mixed
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
+     * @throws BindingResolutionException
      */
     public function __invoke()
     {
-        if (! method_exists($this, 'run')) {
-            throw new InvalidArgumentException('Method [run] missing from '.get_class($this));
+        if (!method_exists($this, 'run')) {
+            throw new InvalidArgumentException('Method [run] missing from ' . get_class($this));
         }
 
         return isset($this->container)
-                    ? $this->container->call([$this, 'run'])
-                    : $this->run();
+            ? $this->container->call([$this, 'run'])
+            : $this->run();
     }
 }

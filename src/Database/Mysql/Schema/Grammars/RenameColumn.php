@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Schema\Grammars;
 
 use Doctrine\DBAL\Schema\AbstractSchemaManager as SchemaManager;
@@ -17,23 +19,23 @@ class RenameColumn
     /**
      * Compile a rename column command.
      *
-     * @param  \Mini\Database\Mysql\Schema\Grammars\Grammar  $grammar
-     * @param  \Mini\Database\Mysql\Schema\Blueprint  $blueprint
-     * @param  \Mini\Support\Fluent  $command
-     * @param  \Mini\Database\Mysql\Connection  $connection
+     * @param Grammar $grammar
+     * @param Blueprint $blueprint
+     * @param Fluent $command
+     * @param Connection $connection
      * @return array
      */
-    public static function compile(Grammar $grammar, Blueprint $blueprint, Fluent $command, Connection $connection)
+    public static function compile(Grammar $grammar, Blueprint $blueprint, Fluent $command, Connection $connection): array
     {
         $schema = $connection->getDoctrineSchemaManager();
         $databasePlatform = $schema->getDatabasePlatform();
         $databasePlatform->registerDoctrineTypeMapping('enum', 'string');
 
         $column = $connection->getDoctrineColumn(
-            $grammar->getTablePrefix().$blueprint->getTable(), $command->from
+            $grammar->getTablePrefix() . $blueprint->getTable(), $command->from
         );
 
-        return (array) $databasePlatform->getAlterTableSQL(static::getRenamedDiff(
+        return (array)$databasePlatform->getAlterTableSQL(static::getRenamedDiff(
             $grammar, $blueprint, $command, $column, $schema
         ));
     }
@@ -41,14 +43,14 @@ class RenameColumn
     /**
      * Get a new column instance with the new column name.
      *
-     * @param  \Mini\Database\Mysql\Schema\Grammars\Grammar  $grammar
-     * @param  \Mini\Database\Mysql\Schema\Blueprint  $blueprint
-     * @param  \Mini\Support\Fluent  $command
-     * @param  \Doctrine\DBAL\Schema\Column  $column
-     * @param  \Doctrine\DBAL\Schema\AbstractSchemaManager  $schema
-     * @return \Doctrine\DBAL\Schema\TableDiff
+     * @param Grammar $grammar
+     * @param Blueprint $blueprint
+     * @param Fluent $command
+     * @param Column $column
+     * @param SchemaManager $schema
+     * @return TableDiff
      */
-    protected static function getRenamedDiff(Grammar $grammar, Blueprint $blueprint, Fluent $command, Column $column, SchemaManager $schema)
+    protected static function getRenamedDiff(Grammar $grammar, Blueprint $blueprint, Fluent $command, Column $column, SchemaManager $schema): TableDiff
     {
         return static::setRenamedColumns(
             $grammar->getDoctrineTableDiff($blueprint, $schema), $command, $column
@@ -58,12 +60,12 @@ class RenameColumn
     /**
      * Set the renamed columns on the table diff.
      *
-     * @param  \Doctrine\DBAL\Schema\TableDiff  $tableDiff
-     * @param  \Mini\Support\Fluent  $command
-     * @param  \Doctrine\DBAL\Schema\Column  $column
-     * @return \Doctrine\DBAL\Schema\TableDiff
+     * @param TableDiff $tableDiff
+     * @param Fluent $command
+     * @param Column $column
+     * @return TableDiff
      */
-    protected static function setRenamedColumns(TableDiff $tableDiff, Fluent $command, Column $column)
+    protected static function setRenamedColumns(TableDiff $tableDiff, Fluent $command, Column $column): TableDiff
     {
         $tableDiff->renamedColumns = [
             $command->from => new Column($command->to, $column->getType(), $column->toArray()),

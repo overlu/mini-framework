@@ -3,9 +3,12 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Query\Grammars;
 
 use Mini\Database\Mysql\Query\Builder;
+use Mini\Database\Mysql\Query\Expression;
 use Mini\Support\Arr;
 use Mini\Support\Str;
 
@@ -16,7 +19,7 @@ class SqlServerGrammar extends Grammar
      *
      * @var array
      */
-    protected $operators = [
+    protected array $operators = [
         '=', '<', '>', '<=', '>=', '!<', '!>', '<>', '!=',
         'like', 'not like', 'ilike',
         '&', '&=', '|', '|=', '^', '^=',
@@ -25,12 +28,12 @@ class SqlServerGrammar extends Grammar
     /**
      * Compile a select query into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
+     * @param Builder $query
      * @return string
      */
-    public function compileSelect(Builder $query)
+    public function compileSelect(Builder $query): string
     {
-        if (! $query->offset) {
+        if (!$query->offset) {
             return parent::compileSelect($query);
         }
 
@@ -49,14 +52,14 @@ class SqlServerGrammar extends Grammar
     /**
      * Compile the "select *" portion of the query.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $columns
+     * @param Builder $query
+     * @param array $columns
      * @return string|null
      */
-    protected function compileColumns(Builder $query, $columns)
+    protected function compileColumns(Builder $query, array $columns): ?string
     {
-        if (! is_null($query->aggregate)) {
-            return;
+        if (!is_null($query->aggregate)) {
+            return null;
         }
 
         $select = $query->distinct ? 'select distinct ' : 'select ';
@@ -65,29 +68,29 @@ class SqlServerGrammar extends Grammar
         // clause to the query, which serves as a "limit" type clause within the
         // SQL Server system similar to the limit keywords available in MySQL.
         if ($query->limit > 0 && $query->offset <= 0) {
-            $select .= 'top '.$query->limit.' ';
+            $select .= 'top ' . $query->limit . ' ';
         }
 
-        return $select.$this->columnize($columns);
+        return $select . $this->columnize($columns);
     }
 
     /**
      * Compile the "from" portion of the query.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  string  $table
+     * @param Builder $query
+     * @param string $table
      * @return string
      */
-    protected function compileFrom(Builder $query, $table)
+    protected function compileFrom(Builder $query, string $table): string
     {
         $from = parent::compileFrom($query, $table);
 
         if (is_string($query->lock)) {
-            return $from.' '.$query->lock;
+            return $from . ' ' . $query->lock;
         }
 
-        if (! is_null($query->lock)) {
-            return $from.' with(rowlock,'.($query->lock ? 'updlock,' : '').'holdlock)';
+        if (!is_null($query->lock)) {
+            return $from . ' with(rowlock,' . ($query->lock ? 'updlock,' : '') . 'holdlock)';
         }
 
         return $from;
@@ -96,79 +99,79 @@ class SqlServerGrammar extends Grammar
     /**
      * Compile a "where date" clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereDate(Builder $query, $where)
+    protected function whereDate(Builder $query, array $where): string
     {
         $value = $this->parameter($where['value']);
 
-        return 'cast('.$this->wrap($where['column']).' as date) '.$where['operator'].' '.$value;
+        return 'cast(' . $this->wrap($where['column']) . ' as date) ' . $where['operator'] . ' ' . $value;
     }
 
     /**
      * Compile a "where time" clause.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array $where
      * @return string
      */
-    protected function whereTime(Builder $query, $where)
+    protected function whereTime(Builder $query, array $where): string
     {
         $value = $this->parameter($where['value']);
 
-        return 'cast('.$this->wrap($where['column']).' as time) '.$where['operator'].' '.$value;
+        return 'cast(' . $this->wrap($where['column']) . ' as time) ' . $where['operator'] . ' ' . $value;
     }
 
     /**
      * Compile a "JSON contains" statement into SQL.
      *
-     * @param  string  $column
-     * @param  string  $value
+     * @param string $column
+     * @param string $value
      * @return string
      */
-    protected function compileJsonContains($column, $value)
+    protected function compileJsonContains(string $column, string $value): string
     {
         [$field, $path] = $this->wrapJsonFieldAndPath($column);
 
-        return $value.' in (select [value] from openjson('.$field.$path.'))';
+        return $value . ' in (select [value] from openjson(' . $field . $path . '))';
     }
 
     /**
      * Prepare the binding for a "JSON contains" statement.
      *
-     * @param  mixed  $binding
+     * @param mixed $binding
      * @return string
      */
-    public function prepareBindingForJsonContains($binding)
+    public function prepareBindingForJsonContains($binding): string
     {
-        return is_bool($binding) ? json_encode($binding) : $binding;
+        return is_bool($binding) ? json_encode($binding, JSON_UNESCAPED_UNICODE) : $binding;
     }
 
     /**
      * Compile a "JSON length" statement into SQL.
      *
-     * @param  string  $column
-     * @param  string  $operator
-     * @param  string  $value
+     * @param string $column
+     * @param string $operator
+     * @param string $value
      * @return string
      */
-    protected function compileJsonLength($column, $operator, $value)
+    protected function compileJsonLength(string $column, string $operator, string $value): string
     {
         [$field, $path] = $this->wrapJsonFieldAndPath($column);
 
-        return '(select count(*) from openjson('.$field.$path.')) '.$operator.' '.$value;
+        return '(select count(*) from openjson(' . $field . $path . ')) ' . $operator . ' ' . $value;
     }
 
     /**
      * Create a full ANSI offset clause for the query.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  array  $components
+     * @param Builder $query
+     * @param array $components
      * @return string
      */
-    protected function compileAnsiOffset(Builder $query, $components)
+    protected function compileAnsiOffset(Builder $query, array $components): string
     {
         // An ORDER BY clause is required to make this offset query work, so if one does
         // not exist we'll just create a dummy clause to trick the database and so it
@@ -195,10 +198,10 @@ class SqlServerGrammar extends Grammar
     /**
      * Compile the over statement for a table expression.
      *
-     * @param  string  $orderings
+     * @param string $orderings
      * @return string
      */
-    protected function compileOver($orderings)
+    protected function compileOver(string $orderings): string
     {
         return ", row_number() over ({$orderings}) as row_num";
     }
@@ -206,11 +209,11 @@ class SqlServerGrammar extends Grammar
     /**
      * Compile a common table expression for a query.
      *
-     * @param  string  $sql
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
+     * @param string $sql
+     * @param Builder $query
      * @return string
      */
-    protected function compileTableExpression($sql, $query)
+    protected function compileTableExpression(string $sql, Builder $query): string
     {
         $constraint = $this->compileRowConstraint($query);
 
@@ -220,10 +223,10 @@ class SqlServerGrammar extends Grammar
     /**
      * Compile the limit / offset row constraint for a query.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
+     * @param Builder $query
      * @return string
      */
-    protected function compileRowConstraint($query)
+    protected function compileRowConstraint(Builder $query): string
     {
         $start = $query->offset + 1;
 
@@ -239,27 +242,27 @@ class SqlServerGrammar extends Grammar
     /**
      * Compile a delete statement without joins into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  string  $table
-     * @param  string  $where
+     * @param Builder $query
+     * @param string $table
+     * @param string $where
      * @return string
      */
-    protected function compileDeleteWithoutJoins(Builder $query, $table, $where)
+    protected function compileDeleteWithoutJoins(Builder $query, string $table, string $where): string
     {
         $sql = parent::compileDeleteWithoutJoins($query, $table, $where);
 
-        return ! is_null($query->limit) && $query->limit > 0 && $query->offset <= 0
-                        ? Str::replaceFirst('delete', 'delete top ('.$query->limit.')', $sql)
-                        : $sql;
+        return !is_null($query->limit) && $query->limit > 0 && $query->offset <= 0
+            ? Str::replaceFirst('delete', 'delete top (' . $query->limit . ')', $sql)
+            : $sql;
     }
 
     /**
      * Compile the random statement into SQL.
      *
-     * @param  string  $seed
+     * @param string $seed
      * @return string
      */
-    public function compileRandom($seed)
+    public function compileRandom(string $seed): string
     {
         return 'NEWID()';
     }
@@ -267,11 +270,11 @@ class SqlServerGrammar extends Grammar
     /**
      * Compile the "limit" portions of the query.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  int  $limit
+     * @param Builder $query
+     * @param int $limit
      * @return string
      */
-    protected function compileLimit(Builder $query, $limit)
+    protected function compileLimit(Builder $query, int $limit): string
     {
         return '';
     }
@@ -279,11 +282,11 @@ class SqlServerGrammar extends Grammar
     /**
      * Compile the "offset" portions of the query.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  int  $offset
+     * @param Builder $query
+     * @param int $offset
      * @return string
      */
-    protected function compileOffset(Builder $query, $offset)
+    protected function compileOffset(Builder $query, int $offset): string
     {
         return '';
     }
@@ -291,11 +294,11 @@ class SqlServerGrammar extends Grammar
     /**
      * Compile the lock into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  bool|string  $value
+     * @param Builder $query
+     * @param bool|string $value
      * @return string
      */
-    protected function compileLock(Builder $query, $value)
+    protected function compileLock(Builder $query, $value): string
     {
         return '';
     }
@@ -303,21 +306,21 @@ class SqlServerGrammar extends Grammar
     /**
      * Wrap a union subquery in parentheses.
      *
-     * @param  string  $sql
+     * @param string $sql
      * @return string
      */
-    protected function wrapUnion($sql)
+    protected function wrapUnion(string $sql): string
     {
-        return 'select * from ('.$sql.') as '.$this->wrapTable('temp_table');
+        return 'select * from (' . $sql . ') as ' . $this->wrapTable('temp_table');
     }
 
     /**
      * Compile an exists statement into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
+     * @param Builder $query
      * @return string
      */
-    public function compileExists(Builder $query)
+    public function compileExists(Builder $query): string
     {
         $existsQuery = clone $query;
 
@@ -329,13 +332,13 @@ class SqlServerGrammar extends Grammar
     /**
      * Compile an update statement with joins into SQL.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  string  $table
-     * @param  string  $columns
-     * @param  string  $where
+     * @param Builder $query
+     * @param string $table
+     * @param string $columns
+     * @param string $where
      * @return string
      */
-    protected function compileUpdateWithJoins(Builder $query, $table, $columns, $where)
+    protected function compileUpdateWithJoins(Builder $query, string $table, string $columns, string $where): string
     {
         $alias = last(explode(' as ', $table));
 
@@ -347,11 +350,11 @@ class SqlServerGrammar extends Grammar
     /**
      * Prepare the bindings for an update statement.
      *
-     * @param  array  $bindings
-     * @param  array  $values
+     * @param array $bindings
+     * @param array $values
      * @return array
      */
-    public function prepareBindingsForUpdate(array $bindings, array $values)
+    public function prepareBindingsForUpdate(array $bindings, array $values): array
     {
         $cleanBindings = Arr::except($bindings, 'select');
 
@@ -363,23 +366,23 @@ class SqlServerGrammar extends Grammar
     /**
      * Compile the SQL statement to define a savepoint.
      *
-     * @param  string  $name
+     * @param string $name
      * @return string
      */
-    public function compileSavepoint($name)
+    public function compileSavepoint(string $name): string
     {
-        return 'SAVE TRANSACTION '.$name;
+        return 'SAVE TRANSACTION ' . $name;
     }
 
     /**
      * Compile the SQL statement to execute a savepoint rollback.
      *
-     * @param  string  $name
+     * @param string $name
      * @return string
      */
-    public function compileSavepointRollBack($name)
+    public function compileSavepointRollBack(string $name): string
     {
-        return 'ROLLBACK TRANSACTION '.$name;
+        return 'ROLLBACK TRANSACTION ' . $name;
     }
 
     /**
@@ -387,7 +390,7 @@ class SqlServerGrammar extends Grammar
      *
      * @return string
      */
-    public function getDateFormat()
+    public function getDateFormat(): string
     {
         return 'Y-m-d H:i:s.v';
     }
@@ -395,47 +398,47 @@ class SqlServerGrammar extends Grammar
     /**
      * Wrap a single string in keyword identifiers.
      *
-     * @param  string  $value
+     * @param string $value
      * @return string
      */
-    protected function wrapValue($value)
+    protected function wrapValue(string $value): string
     {
-        return $value === '*' ? $value : '['.str_replace(']', ']]', $value).']';
+        return $value === '*' ? $value : '[' . str_replace(']', ']]', $value) . ']';
     }
 
     /**
      * Wrap the given JSON selector.
      *
-     * @param  string  $value
+     * @param string $value
      * @return string
      */
-    protected function wrapJsonSelector($value)
+    protected function wrapJsonSelector(string $value): string
     {
         [$field, $path] = $this->wrapJsonFieldAndPath($value);
 
-        return 'json_value('.$field.$path.')';
+        return 'json_value(' . $field . $path . ')';
     }
 
     /**
      * Wrap the given JSON boolean value.
      *
-     * @param  string  $value
+     * @param string $value
      * @return string
      */
-    protected function wrapJsonBooleanValue($value)
+    protected function wrapJsonBooleanValue(string $value): string
     {
-        return "'".$value."'";
+        return "'" . $value . "'";
     }
 
     /**
      * Wrap a table in keyword identifiers.
      *
-     * @param  \Mini\Database\Mysql\Query\Expression|string  $table
+     * @param Expression|string $table
      * @return string
      */
-    public function wrapTable($table)
+    public function wrapTable($table): string
     {
-        if (! $this->isExpression($table)) {
+        if (!$this->isExpression($table)) {
             return $this->wrapTableValuedFunction(parent::wrapTable($table));
         }
 
@@ -445,13 +448,13 @@ class SqlServerGrammar extends Grammar
     /**
      * Wrap a table in keyword identifiers.
      *
-     * @param  string  $table
+     * @param string $table
      * @return string
      */
-    protected function wrapTableValuedFunction($table)
+    protected function wrapTableValuedFunction(string $table): string
     {
         if (preg_match('/^(.+?)(\(.*?\))]$/', $table, $matches) === 1) {
-            $table = $matches[1].']'.$matches[2];
+            $table = $matches[1] . ']' . $matches[2];
         }
 
         return $table;

@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Schema;
 
 class PostgresBuilder extends Builder
@@ -10,18 +12,18 @@ class PostgresBuilder extends Builder
     /**
      * Determine if the given table exists.
      *
-     * @param  string  $table
+     * @param string $table
      * @return bool
      */
-    public function hasTable($table)
+    public function hasTable(string $table): bool
     {
         [$schema, $table] = $this->parseSchemaAndTable($table);
 
-        $table = $this->connection->getTablePrefix().$table;
+        $table = $this->connection->getTablePrefix() . $table;
 
         return count($this->connection->select(
-            $this->grammar->compileTableExists(), [$schema, $table]
-        )) > 0;
+                $this->grammar->compileTableExists(), [$schema, $table]
+            )) > 0;
     }
 
     /**
@@ -29,18 +31,18 @@ class PostgresBuilder extends Builder
      *
      * @return void
      */
-    public function dropAllTables()
+    public function dropAllTables(): void
     {
         $tables = [];
 
         $excludedTables = $this->connection->getConfig('dont_drop') ?? ['spatial_ref_sys'];
 
         foreach ($this->getAllTables() as $row) {
-            $row = (array) $row;
+            $row = (array)$row;
 
             $table = reset($row);
 
-            if (! in_array($table, $excludedTables)) {
+            if (!in_array($table, $excludedTables, true)) {
                 $tables[] = $table;
             }
         }
@@ -59,12 +61,12 @@ class PostgresBuilder extends Builder
      *
      * @return void
      */
-    public function dropAllViews()
+    public function dropAllViews(): void
     {
         $views = [];
 
         foreach ($this->getAllViews() as $row) {
-            $row = (array) $row;
+            $row = (array)$row;
 
             $views[] = reset($row);
         }
@@ -83,12 +85,12 @@ class PostgresBuilder extends Builder
      *
      * @return void
      */
-    public function dropAllTypes()
+    public function dropAllTypes(): void
     {
         $types = [];
 
         foreach ($this->getAllTypes() as $row) {
-            $row = (array) $row;
+            $row = (array)$row;
 
             $types[] = reset($row);
         }
@@ -107,10 +109,10 @@ class PostgresBuilder extends Builder
      *
      * @return array
      */
-    public function getAllTables()
+    public function getAllTables(): array
     {
         return $this->connection->select(
-            $this->grammar->compileGetAllTables((array) $this->connection->getConfig('schema'))
+            $this->grammar->compileGetAllTables((array)$this->connection->getConfig('schema'))
         );
     }
 
@@ -119,10 +121,10 @@ class PostgresBuilder extends Builder
      *
      * @return array
      */
-    public function getAllViews()
+    public function getAllViews(): array
     {
         return $this->connection->select(
-            $this->grammar->compileGetAllViews((array) $this->connection->getConfig('schema'))
+            $this->grammar->compileGetAllViews((array)$this->connection->getConfig('schema'))
         );
     }
 
@@ -131,7 +133,7 @@ class PostgresBuilder extends Builder
      *
      * @return array
      */
-    public function getAllTypes()
+    public function getAllTypes(): array
     {
         return $this->connection->select(
             $this->grammar->compileGetAllTypes()
@@ -141,14 +143,14 @@ class PostgresBuilder extends Builder
     /**
      * Get the column listing for a given table.
      *
-     * @param  string  $table
+     * @param string $table
      * @return array
      */
-    public function getColumnListing($table)
+    public function getColumnListing(string $table): array
     {
         [$schema, $table] = $this->parseSchemaAndTable($table);
 
-        $table = $this->connection->getTablePrefix().$table;
+        $table = $this->connection->getTablePrefix() . $table;
 
         $results = $this->connection->select(
             $this->grammar->compileColumnListing(), [$schema, $table]
@@ -160,15 +162,15 @@ class PostgresBuilder extends Builder
     /**
      * Parse the table name and extract the schema and table.
      *
-     * @param  string  $table
+     * @param string $table
      * @return array
      */
-    protected function parseSchemaAndTable($table)
+    protected function parseSchemaAndTable(string $table): array
     {
         $table = explode('.', $table);
 
         if (is_array($schema = $this->connection->getConfig('schema'))) {
-            if (in_array($table[0], $schema)) {
+            if (in_array($table[0], $schema, true)) {
                 return [array_shift($table), implode('.', $table)];
             }
 

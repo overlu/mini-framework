@@ -3,15 +3,22 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql;
 
 use Mini\Database\Mysql\Capsule\Manager;
 
+/**
+ * Class Model
+ * @package Mini\Database\Mysql
+ * @mixin Query\Builder
+ */
 class Model
 {
-    protected $table;
+    protected string $table;
 
-    protected $model;
+    protected Query\Builder $model;
 
     public function __construct()
     {

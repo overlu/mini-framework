@@ -3,9 +3,12 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
 
 namespace Mini\Database\Mysql;
 
+use Mini\Contracts\Container\Container;
+use Mini\Contracts\Foundation\Application;
 use Mini\Database\Mysql\Connectors\ConnectionFactory;
 use Mini\Support\Arr;
 use Mini\Support\ConfigurationUrlParser;
@@ -23,16 +26,16 @@ class DatabaseManager implements ConnectionResolverInterface
     /**
      * The application instance.
      *
-     * @var \Mini\Contracts\Foundation\Application
+     * @var Container|null
      */
-    protected $app;
+    protected ?Container $app = null;
 
     /**
      * The database connection factory instance.
      *
-     * @var \Mini\Database\Mysql\Connectors\ConnectionFactory
+     * @var ConnectionFactory
      */
-    protected $factory;
+    protected ?ConnectionFactory $factory = null;
 
     /**
      * The active connection instances.
@@ -65,11 +68,11 @@ class DatabaseManager implements ConnectionResolverInterface
     /**
      * Create a new database manager instance.
      *
-     * @param \Mini\Contracts\Container\Container $app
-     * @param \Mini\Database\Mysql\Connectors\ConnectionFactory $factory
+     * @param Container $app
+     * @param ConnectionFactory $factory
      * @param array $poolsConfig
      */
-    public function __construct($app, ConnectionFactory $factory, array $poolsConfig = [])
+    public function __construct(Container $app, ConnectionFactory $factory, array $poolsConfig = [])
     {
         $this->app = $app;
         $this->factory = $factory;
@@ -91,7 +94,7 @@ class DatabaseManager implements ConnectionResolverInterface
      * @param string|null $name
      * @return Connection
      */
-    public function connection($name = null)
+    public function connection(?string $name = null): ConnectionInterface
     {
         $name = $name ?: $this->getDefaultConnection();
 
@@ -194,7 +197,7 @@ class DatabaseManager implements ConnectionResolverInterface
      * @param string $name
      * @return array
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function configuration(string $name): array
     {
@@ -220,7 +223,7 @@ class DatabaseManager implements ConnectionResolverInterface
      * @param string $type
      * @return Connection
      */
-    protected function configure(Connection $connection, $type)
+    protected function configure(Connection $connection, $type): Connection
     {
         $connection = $this->setPdoForType($connection, $type);
 
@@ -246,7 +249,7 @@ class DatabaseManager implements ConnectionResolverInterface
      * @param string|null $type
      * @return Connection
      */
-    protected function setPdoForType(Connection $connection, $type = null): Connection
+    protected function setPdoForType(Connection $connection, ?string $type = null): Connection
     {
         if ($type === 'read') {
             $connection->setPdo($connection->getReadPdo());
@@ -314,7 +317,7 @@ class DatabaseManager implements ConnectionResolverInterface
      * @param Connection $connection
      * @return Connection
      */
-    public function poolReconnect(Connection $connection)
+    public function poolReconnect(Connection $connection): Connection
     {
         $connection->disconnect();
 
@@ -332,7 +335,7 @@ class DatabaseManager implements ConnectionResolverInterface
      * @param callable $callback
      * @return mixed
      */
-    public function usingConnection($name, callable $callback)
+    public function usingConnection(string $name, callable $callback)
     {
         $previousName = $this->getDefaultConnection();
 
@@ -349,7 +352,7 @@ class DatabaseManager implements ConnectionResolverInterface
      * @param string $name
      * @return Connection
      */
-    protected function refreshPdoConnections($name)
+    protected function refreshPdoConnections(string $name): Connection
     {
         $fresh = $this->makeConnection($name);
 
@@ -363,7 +366,7 @@ class DatabaseManager implements ConnectionResolverInterface
      *
      * @return string
      */
-    public function getDefaultConnection()
+    public function getDefaultConnection(): string
     {
         return $this->app['config']['database.default'];
     }
@@ -374,7 +377,7 @@ class DatabaseManager implements ConnectionResolverInterface
      * @param string $name
      * @return void
      */
-    public function setDefaultConnection($name)
+    public function setDefaultConnection(string $name): void
     {
         $this->app['config']['database.default'] = $name;
     }
@@ -384,7 +387,7 @@ class DatabaseManager implements ConnectionResolverInterface
      *
      * @return array
      */
-    public function supportedDrivers()
+    public function supportedDrivers(): array
     {
         return ['mysql', 'pgsql', 'sqlite', 'sqlsrv'];
     }
@@ -394,7 +397,7 @@ class DatabaseManager implements ConnectionResolverInterface
      *
      * @return array
      */
-    public function availableDrivers()
+    public function availableDrivers(): array
     {
         return array_intersect(
             $this->supportedDrivers(),
@@ -409,7 +412,7 @@ class DatabaseManager implements ConnectionResolverInterface
      * @param callable $resolver
      * @return void
      */
-    public function extend($name, callable $resolver)
+    public function extend(string $name, callable $resolver): void
     {
         $this->extensions[$name] = $resolver;
     }
@@ -419,7 +422,7 @@ class DatabaseManager implements ConnectionResolverInterface
      *
      * @return array
      */
-    public function getConnections()
+    public function getConnections(): array
     {
         return $this->connections;
     }
@@ -430,7 +433,7 @@ class DatabaseManager implements ConnectionResolverInterface
      * @param callable $reconnector
      * @return void
      */
-    public function setReconnector(callable $reconnector)
+    public function setReconnector(callable $reconnector): void
     {
         $this->reconnector = $reconnector;
     }

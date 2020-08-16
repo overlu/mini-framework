@@ -3,17 +3,18 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
 
 namespace Mini\Database\Mysql\Migrations;
 
 class TableGuesser
 {
-    const CREATE_PATTERNS = [
+    public const CREATE_PATTERNS = [
         '/^create_(\w+)_table$/',
         '/^create_(\w+)$/',
     ];
 
-    const CHANGE_PATTERNS = [
+    public const CHANGE_PATTERNS = [
         '/_(to|from|in)_(\w+)_table$/',
         '/_(to|from|in)_(\w+)$/',
     ];
@@ -21,10 +22,10 @@ class TableGuesser
     /**
      * Attempt to guess the table name and "creation" status of the given migration.
      *
-     * @param  string  $migration
+     * @param string $migration
      * @return array
      */
-    public static function guess($migration)
+    public static function guess(string $migration): ?array
     {
         foreach (self::CREATE_PATTERNS as $pattern) {
             if (preg_match($pattern, $migration, $matches)) {

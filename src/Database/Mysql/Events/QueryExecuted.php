@@ -3,7 +3,11 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Events;
+
+use Mini\Database\Mysql\Connection;
 
 class QueryExecuted
 {
@@ -12,46 +16,46 @@ class QueryExecuted
      *
      * @var string
      */
-    public $sql;
+    public string $sql;
 
     /**
      * The array of query bindings.
      *
      * @var array
      */
-    public $bindings;
+    public array $bindings;
 
     /**
      * The number of milliseconds it took to execute the query.
      *
      * @var float
      */
-    public $time;
+    public ?float $time;
 
     /**
      * The database connection instance.
      *
-     * @var \Mini\Database\Mysql\Connection
+     * @var Connection
      */
-    public $connection;
+    public Connection $connection;
 
     /**
      * The database connection name.
      *
      * @var string
      */
-    public $connectionName;
+    public ?string $connectionName;
 
     /**
      * Create a new event instance.
      *
-     * @param  string  $sql
-     * @param  array  $bindings
-     * @param  float|null  $time
-     * @param  \Mini\Database\Mysql\Connection  $connection
+     * @param string $sql
+     * @param array $bindings
+     * @param float|null $time
+     * @param Connection $connection
      * @return void
      */
-    public function __construct($sql, $bindings, $time, $connection)
+    public function __construct(string $sql, array $bindings, ?float $time, Connection $connection)
     {
         $this->sql = $sql;
         $this->time = $time;

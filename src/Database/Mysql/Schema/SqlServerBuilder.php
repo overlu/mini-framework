@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Schema;
 
 class SqlServerBuilder extends Builder
@@ -12,7 +14,7 @@ class SqlServerBuilder extends Builder
      *
      * @return void
      */
-    public function dropAllTables()
+    public function dropAllTables(): void
     {
         $this->connection->statement($this->grammar->compileDropAllForeignKeys());
 
@@ -24,7 +26,7 @@ class SqlServerBuilder extends Builder
      *
      * @return void
      */
-    public function dropAllViews()
+    public function dropAllViews(): void
     {
         $this->connection->statement($this->grammar->compileDropAllViews());
     }

@@ -3,10 +3,13 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Eloquent\Concerns;
 
 use Closure;
 use Mini\Database\Mysql\Eloquent\Builder;
+use Mini\Database\Mysql\Eloquent\Relations\BelongsTo;
 use Mini\Database\Mysql\Eloquent\Relations\MorphTo;
 use Mini\Database\Mysql\Eloquent\Relations\Relation;
 use Mini\Database\Mysql\Query\Builder as QueryBuilder;
@@ -19,16 +22,16 @@ trait QueriesRelationships
     /**
      * Add a relationship count / exists condition to the query.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Relations\Relation|string  $relation
-     * @param  string  $operator
-     * @param  int  $count
-     * @param  string  $boolean
-     * @param  \Closure|null  $callback
-     * @return \Mini\Database\Mysql\Eloquent\Builder|static
+     * @param Relation|string $relation
+     * @param string $operator
+     * @param int $count
+     * @param string $boolean
+     * @param Closure|null $callback
+     * @return Builder|static
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
-    public function has($relation, $operator = '>=', $count = 1, $boolean = 'and', Closure $callback = null)
+    public function has($relation, string $operator = '>=', int $count = 1, string $boolean = 'and', ?Closure $callback = null)
     {
         if (is_string($relation)) {
             if (strpos($relation, '.') !== false) {
@@ -46,8 +49,8 @@ trait QueriesRelationships
         // the subquery to only run a "where exists" clause instead of this full "count"
         // clause. This will make these queries run much faster compared with a count.
         $method = $this->canUseExistsForExistenceCheck($operator, $count)
-                        ? 'getRelationExistenceQuery'
-                        : 'getRelationExistenceCountQuery';
+            ? 'getRelationExistenceQuery'
+            : 'getRelationExistenceCountQuery';
 
         $hasQuery = $relation->{$method}(
             $relation->getRelated()->newQueryWithoutRelationships(), $this
@@ -70,14 +73,14 @@ trait QueriesRelationships
      *
      * Sets up recursive call to whereHas until we finish the nested relation.
      *
-     * @param  string  $relations
-     * @param  string  $operator
-     * @param  int  $count
-     * @param  string  $boolean
-     * @param  \Closure|null  $callback
-     * @return \Mini\Database\Mysql\Eloquent\Builder|static
+     * @param string $relations
+     * @param string $operator
+     * @param int $count
+     * @param string $boolean
+     * @param Closure|null $callback
+     * @return Builder|static
      */
-    protected function hasNested($relations, $operator = '>=', $count = 1, $boolean = 'and', $callback = null)
+    protected function hasNested(string $relations, string $operator = '>=', int $count = 1, string $boolean = 'and', ?Closure $callback = null)
     {
         $relations = explode('.', $relations);
 
@@ -88,7 +91,7 @@ trait QueriesRelationships
             $count = 1;
         }
 
-        $closure = function ($q) use (&$closure, &$relations, $operator, $count, $callback) {
+        $closure = static function ($q) use (&$closure, &$relations, $operator, $count, $callback) {
             // In order to nest "has", we need to add count relation constraints on the
             // callback Closure. We'll do this by simply passing the Closure its own
             // reference to itself so it calls itself recursively on each segment.
@@ -103,12 +106,12 @@ trait QueriesRelationships
     /**
      * Add a relationship count / exists condition to the query with an "or".
      *
-     * @param  string  $relation
-     * @param  string  $operator
-     * @param  int  $count
-     * @return \Mini\Database\Mysql\Eloquent\Builder|static
+     * @param string $relation
+     * @param string $operator
+     * @param int $count
+     * @return Builder|static
      */
-    public function orHas($relation, $operator = '>=', $count = 1)
+    public function orHas(string $relation, string $operator = '>=', int $count = 1)
     {
         return $this->has($relation, $operator, $count, 'or');
     }
@@ -116,12 +119,12 @@ trait QueriesRelationships
     /**
      * Add a relationship count / exists condition to the query.
      *
-     * @param  string  $relation
-     * @param  string  $boolean
-     * @param  \Closure|null  $callback
-     * @return \Mini\Database\Mysql\Eloquent\Builder|static
+     * @param string $relation
+     * @param string $boolean
+     * @param Closure|null $callback
+     * @return Builder|static
      */
-    public function doesntHave($relation, $boolean = 'and', Closure $callback = null)
+    public function doesntHave(string $relation, string $boolean = 'and', ?Closure $callback = null)
     {
         return $this->has($relation, '<', 1, $boolean, $callback);
     }
@@ -129,10 +132,10 @@ trait QueriesRelationships
     /**
      * Add a relationship count / exists condition to the query with an "or".
      *
-     * @param  string  $relation
-     * @return \Mini\Database\Mysql\Eloquent\Builder|static
+     * @param string $relation
+     * @return Builder|static
      */
-    public function orDoesntHave($relation)
+    public function orDoesntHave(string $relation)
     {
         return $this->doesntHave($relation, 'or');
     }
@@ -140,13 +143,13 @@ trait QueriesRelationships
     /**
      * Add a relationship count / exists condition to the query with where clauses.
      *
-     * @param  string  $relation
-     * @param  \Closure|null  $callback
-     * @param  string  $operator
-     * @param  int  $count
-     * @return \Mini\Database\Mysql\Eloquent\Builder|static
+     * @param string $relation
+     * @param Closure|null $callback
+     * @param string $operator
+     * @param int $count
+     * @return Builder|static
      */
-    public function whereHas($relation, Closure $callback = null, $operator = '>=', $count = 1)
+    public function whereHas(string $relation, ?Closure $callback = null, string $operator = '>=', int $count = 1)
     {
         return $this->has($relation, $operator, $count, 'and', $callback);
     }
@@ -154,13 +157,13 @@ trait QueriesRelationships
     /**
      * Add a relationship count / exists condition to the query with where clauses and an "or".
      *
-     * @param  string  $relation
-     * @param  \Closure|null  $callback
-     * @param  string  $operator
-     * @param  int  $count
-     * @return \Mini\Database\Mysql\Eloquent\Builder|static
+     * @param string $relation
+     * @param Closure|null $callback
+     * @param string $operator
+     * @param int $count
+     * @return Builder|static
      */
-    public function orWhereHas($relation, Closure $callback = null, $operator = '>=', $count = 1)
+    public function orWhereHas(string $relation, ?Closure $callback = null, string $operator = '>=', int $count = 1)
     {
         return $this->has($relation, $operator, $count, 'or', $callback);
     }
@@ -168,11 +171,11 @@ trait QueriesRelationships
     /**
      * Add a relationship count / exists condition to the query with where clauses.
      *
-     * @param  string  $relation
-     * @param  \Closure|null  $callback
-     * @return \Mini\Database\Mysql\Eloquent\Builder|static
+     * @param string $relation
+     * @param Closure|null $callback
+     * @return Builder|static
      */
-    public function whereDoesntHave($relation, Closure $callback = null)
+    public function whereDoesntHave(string $relation, ?Closure $callback = null)
     {
         return $this->doesntHave($relation, 'and', $callback);
     }
@@ -180,11 +183,11 @@ trait QueriesRelationships
     /**
      * Add a relationship count / exists condition to the query with where clauses and an "or".
      *
-     * @param  string  $relation
-     * @param  \Closure|null  $callback
-     * @return \Mini\Database\Mysql\Eloquent\Builder|static
+     * @param string $relation
+     * @param Closure|null $callback
+     * @return Builder|static
      */
-    public function orWhereDoesntHave($relation, Closure $callback = null)
+    public function orWhereDoesntHave(string $relation, ?Closure $callback = null)
     {
         return $this->doesntHave($relation, 'or', $callback);
     }
@@ -192,19 +195,19 @@ trait QueriesRelationships
     /**
      * Add a polymorphic relationship count / exists condition to the query.
      *
-     * @param  string  $relation
-     * @param  string|array  $types
-     * @param  string  $operator
-     * @param  int  $count
-     * @param  string  $boolean
-     * @param  \Closure|null  $callback
-     * @return \Mini\Database\Mysql\Eloquent\Builder|static
+     * @param string $relation
+     * @param string|array $types
+     * @param string $operator
+     * @param int $count
+     * @param string $boolean
+     * @param Closure|null $callback
+     * @return Builder|static
      */
-    public function hasMorph($relation, $types, $operator = '>=', $count = 1, $boolean = 'and', Closure $callback = null)
+    public function hasMorph(string $relation, $types, string $operator = '>=', int $count = 1, string $boolean = 'and', ?Closure $callback = null)
     {
         $relation = $this->getRelationWithoutConstraints($relation);
 
-        $types = (array) $types;
+        $types = (array)$types;
 
         if ($types === ['*']) {
             $types = $this->model->newModelQuery()->distinct()->pluck($relation->getMorphType())->filter()->all();
@@ -225,8 +228,8 @@ trait QueriesRelationships
                         };
                     }
 
-                    $query->where($this->query->from.'.'.$relation->getMorphType(), '=', (new $type)->getMorphClass())
-                                ->whereHas($belongsTo, $callback, $operator, $count);
+                    $query->where($this->query->from . '.' . $relation->getMorphType(), '=', (new $type)->getMorphClass())
+                        ->whereHas($belongsTo, $callback, $operator, $count);
                 });
             }
         }, null, null, $boolean);
@@ -235,11 +238,11 @@ trait QueriesRelationships
     /**
      * Get the BelongsTo relationship for a single polymorphic type.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Relations\MorphTo  $relation
-     * @param  string  $type
-     * @return \Mini\Database\Mysql\Eloquent\Relations\BelongsTo
+     * @param MorphTo $relation
+     * @param string $type
+     * @return BelongsTo
      */
-    protected function getBelongsToRelation(MorphTo $relation, $type)
+    protected function getBelongsToRelation(MorphTo $relation, string $type): BelongsTo
     {
         $belongsTo = Relation::noConstraints(function () use ($relation, $type) {
             return $this->model->belongsTo(
@@ -257,13 +260,13 @@ trait QueriesRelationships
     /**
      * Add a polymorphic relationship count / exists condition to the query with an "or".
      *
-     * @param  string  $relation
-     * @param  string|array  $types
-     * @param  string  $operator
-     * @param  int  $count
-     * @return \Mini\Database\Mysql\Eloquent\Builder|static
+     * @param string $relation
+     * @param string|array $types
+     * @param string $operator
+     * @param int $count
+     * @return Builder|static
      */
-    public function orHasMorph($relation, $types, $operator = '>=', $count = 1)
+    public function orHasMorph(string $relation, $types, string $operator = '>=', int $count = 1)
     {
         return $this->hasMorph($relation, $types, $operator, $count, 'or');
     }
@@ -271,13 +274,13 @@ trait QueriesRelationships
     /**
      * Add a polymorphic relationship count / exists condition to the query.
      *
-     * @param  string  $relation
-     * @param  string|array  $types
-     * @param  string  $boolean
-     * @param  \Closure|null  $callback
-     * @return \Mini\Database\Mysql\Eloquent\Builder|static
+     * @param string $relation
+     * @param string|array $types
+     * @param string $boolean
+     * @param Closure|null $callback
+     * @return Builder|static
      */
-    public function doesntHaveMorph($relation, $types, $boolean = 'and', Closure $callback = null)
+    public function doesntHaveMorph(string $relation, $types, string $boolean = 'and', ?Closure $callback = null)
     {
         return $this->hasMorph($relation, $types, '<', 1, $boolean, $callback);
     }
@@ -285,11 +288,11 @@ trait QueriesRelationships
     /**
      * Add a polymorphic relationship count / exists condition to the query with an "or".
      *
-     * @param  string  $relation
-     * @param  string|array  $types
-     * @return \Mini\Database\Mysql\Eloquent\Builder|static
+     * @param string $relation
+     * @param string|array $types
+     * @return Builder|static
      */
-    public function orDoesntHaveMorph($relation, $types)
+    public function orDoesntHaveMorph(string $relation, $types)
     {
         return $this->doesntHaveMorph($relation, $types, 'or');
     }
@@ -297,14 +300,14 @@ trait QueriesRelationships
     /**
      * Add a polymorphic relationship count / exists condition to the query with where clauses.
      *
-     * @param  string  $relation
-     * @param  string|array  $types
-     * @param  \Closure|null  $callback
-     * @param  string  $operator
-     * @param  int  $count
-     * @return \Mini\Database\Mysql\Eloquent\Builder|static
+     * @param string $relation
+     * @param string|array $types
+     * @param Closure|null $callback
+     * @param string $operator
+     * @param int $count
+     * @return Builder|static
      */
-    public function whereHasMorph($relation, $types, Closure $callback = null, $operator = '>=', $count = 1)
+    public function whereHasMorph(string $relation, $types, ?Closure $callback = null, string $operator = '>=', int $count = 1)
     {
         return $this->hasMorph($relation, $types, $operator, $count, 'and', $callback);
     }
@@ -312,14 +315,14 @@ trait QueriesRelationships
     /**
      * Add a polymorphic relationship count / exists condition to the query with where clauses and an "or".
      *
-     * @param  string  $relation
-     * @param  string|array  $types
-     * @param  \Closure|null  $callback
-     * @param  string  $operator
-     * @param  int  $count
-     * @return \Mini\Database\Mysql\Eloquent\Builder|static
+     * @param string $relation
+     * @param string|array $types
+     * @param Closure|null $callback
+     * @param string $operator
+     * @param int $count
+     * @return Builder|static
      */
-    public function orWhereHasMorph($relation, $types, Closure $callback = null, $operator = '>=', $count = 1)
+    public function orWhereHasMorph(string $relation, $types, ?Closure $callback = null, string $operator = '>=', int $count = 1)
     {
         return $this->hasMorph($relation, $types, $operator, $count, 'or', $callback);
     }
@@ -327,12 +330,12 @@ trait QueriesRelationships
     /**
      * Add a polymorphic relationship count / exists condition to the query with where clauses.
      *
-     * @param  string  $relation
-     * @param  string|array  $types
-     * @param  \Closure|null  $callback
-     * @return \Mini\Database\Mysql\Eloquent\Builder|static
+     * @param string $relation
+     * @param string|array $types
+     * @param Closure|null $callback
+     * @return Builder|static
      */
-    public function whereDoesntHaveMorph($relation, $types, Closure $callback = null)
+    public function whereDoesntHaveMorph(string $relation, $types, ?Closure $callback = null)
     {
         return $this->doesntHaveMorph($relation, $types, 'and', $callback);
     }
@@ -340,12 +343,12 @@ trait QueriesRelationships
     /**
      * Add a polymorphic relationship count / exists condition to the query with where clauses and an "or".
      *
-     * @param  string  $relation
-     * @param  string|array  $types
-     * @param  \Closure|null  $callback
-     * @return \Mini\Database\Mysql\Eloquent\Builder|static
+     * @param string $relation
+     * @param string|array $types
+     * @param Closure|null $callback
+     * @return Builder|static
      */
-    public function orWhereDoesntHaveMorph($relation, $types, Closure $callback = null)
+    public function orWhereDoesntHaveMorph(string $relation, $types, ?Closure $callback = null)
     {
         return $this->doesntHaveMorph($relation, $types, 'or', $callback);
     }
@@ -353,17 +356,17 @@ trait QueriesRelationships
     /**
      * Add subselect queries to count the relations.
      *
-     * @param  mixed  $relations
+     * @param mixed $relations
      * @return $this
      */
-    public function withCount($relations)
+    public function withCount($relations): self
     {
         if (empty($relations)) {
             return $this;
         }
 
         if (is_null($this->query->columns)) {
-            $this->query->select([$this->query->from.'.*']);
+            $this->query->select([$this->query->from . '.*']);
         }
 
         $relations = is_array($relations) ? $relations : func_get_args();
@@ -406,7 +409,7 @@ trait QueriesRelationships
             // Finally we will add the proper result column alias to the query and run the subselect
             // statement against the query builder. Then we will return the builder instance back
             // to the developer for further constraint chaining that needs to take place on it.
-            $column = $alias ?? Str::snake($name.'_count');
+            $column = $alias ?? Str::snake($name . '_count');
 
             $this->selectSub($query, $column);
         }
@@ -417,27 +420,27 @@ trait QueriesRelationships
     /**
      * Add the "has" condition where clause to the query.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $hasQuery
-     * @param  \Mini\Database\Mysql\Eloquent\Relations\Relation  $relation
-     * @param  string  $operator
-     * @param  int  $count
-     * @param  string  $boolean
-     * @return \Mini\Database\Mysql\Eloquent\Builder|static
+     * @param Builder $hasQuery
+     * @param Relation $relation
+     * @param string $operator
+     * @param int $count
+     * @param string $boolean
+     * @return Builder|static
      */
-    protected function addHasWhere(Builder $hasQuery, Relation $relation, $operator, $count, $boolean)
+    protected function addHasWhere(Builder $hasQuery, Relation $relation, string $operator, int $count, string $boolean)
     {
         $hasQuery->mergeConstraintsFrom($relation->getQuery());
 
         return $this->canUseExistsForExistenceCheck($operator, $count)
-                ? $this->addWhereExistsQuery($hasQuery->toBase(), $boolean, $operator === '<' && $count === 1)
-                : $this->addWhereCountQuery($hasQuery->toBase(), $operator, $count, $boolean);
+            ? $this->addWhereExistsQuery($hasQuery->toBase(), $boolean, $operator === '<' && $count === 1)
+            : $this->addWhereCountQuery($hasQuery->toBase(), $operator, $count, $boolean);
     }
 
     /**
      * Merge the where constraints from another query to the current query.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $from
-     * @return \Mini\Database\Mysql\Eloquent\Builder|static
+     * @param Builder $from
+     * @return Builder|static
      */
     public function mergeConstraintsFrom(Builder $from)
     {
@@ -456,18 +459,18 @@ trait QueriesRelationships
     /**
      * Add a sub-query count clause to this query.
      *
-     * @param  \Mini\Database\Mysql\Query\Builder  $query
-     * @param  string  $operator
-     * @param  int  $count
-     * @param  string  $boolean
+     * @param QueryBuilder $query
+     * @param string $operator
+     * @param int $count
+     * @param string $boolean
      * @return $this
      */
-    protected function addWhereCountQuery(QueryBuilder $query, $operator = '>=', $count = 1, $boolean = 'and')
+    protected function addWhereCountQuery(QueryBuilder $query, string $operator = '>=', int $count = 1, string $boolean = 'and'): self
     {
         $this->query->addBinding($query->getBindings(), 'where');
 
         return $this->where(
-            new Expression('('.$query->toSql().')'),
+            new Expression('(' . $query->toSql() . ')'),
             $operator,
             is_numeric($count) ? new Expression($count) : $count,
             $boolean
@@ -477,10 +480,10 @@ trait QueriesRelationships
     /**
      * Get the "has relation" base query instance.
      *
-     * @param  string  $relation
-     * @return \Mini\Database\Mysql\Eloquent\Relations\Relation
+     * @param string $relation
+     * @return Relation
      */
-    protected function getRelationWithoutConstraints($relation)
+    protected function getRelationWithoutConstraints(string $relation): Relation
     {
         return Relation::noConstraints(function () use ($relation) {
             return $this->getModel()->{$relation}();
@@ -490,11 +493,11 @@ trait QueriesRelationships
     /**
      * Check if we can run an "exists" query to optimize performance.
      *
-     * @param  string  $operator
-     * @param  int  $count
+     * @param string $operator
+     * @param int $count
      * @return bool
      */
-    protected function canUseExistsForExistenceCheck($operator, $count)
+    protected function canUseExistsForExistenceCheck(string $operator, int $count): bool
     {
         return ($operator === '>=' || $operator === '<') && $count === 1;
     }

@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Events;
 
 use Mini\Contracts\Database\Events\MigrationEvent as MigrationEventContract;
@@ -13,25 +15,25 @@ abstract class MigrationEvent implements MigrationEventContract
     /**
      * An migration instance.
      *
-     * @var \Mini\Database\Mysql\Migrations\Migration
+     * @var Migration
      */
-    public $migration;
+    public Migration $migration;
 
     /**
      * The migration method that was called.
      *
      * @var string
      */
-    public $method;
+    public string $method;
 
     /**
      * Create a new event instance.
      *
-     * @param  \Mini\Database\Mysql\Migrations\Migration  $migration
-     * @param  string  $method
+     * @param Migration $migration
+     * @param string $method
      * @return void
      */
-    public function __construct(Migration $migration, $method)
+    public function __construct(Migration $migration, string $method)
     {
         $this->method = $method;
         $this->migration = $migration;

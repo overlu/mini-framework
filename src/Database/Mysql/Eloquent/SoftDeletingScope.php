@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Eloquent;
 
 class SoftDeletingScope implements Scope
@@ -12,16 +14,16 @@ class SoftDeletingScope implements Scope
      *
      * @var array
      */
-    protected $extensions = ['Restore', 'WithTrashed', 'WithoutTrashed', 'OnlyTrashed'];
+    protected array $extensions = ['Restore', 'WithTrashed', 'WithoutTrashed', 'OnlyTrashed'];
 
     /**
      * Apply the scope to a given Eloquent query builder.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $builder
-     * @param  \Mini\Database\Mysql\Eloquent\Model  $model
+     * @param Builder $builder
+     * @param Model $model
      * @return void
      */
-    public function apply(Builder $builder, Model $model)
+    public function apply(Builder $builder, Model $model): void
     {
         $builder->whereNull($model->getQualifiedDeletedAtColumn());
     }
@@ -29,10 +31,10 @@ class SoftDeletingScope implements Scope
     /**
      * Extend the query builder with the needed functions.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $builder
+     * @param Builder $builder
      * @return void
      */
-    public function extend(Builder $builder)
+    public function extend(Builder $builder): void
     {
         foreach ($this->extensions as $extension) {
             $this->{"add{$extension}"}($builder);
@@ -50,12 +52,12 @@ class SoftDeletingScope implements Scope
     /**
      * Get the "deleted at" column for the builder.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $builder
+     * @param Builder $builder
      * @return string
      */
-    protected function getDeletedAtColumn(Builder $builder)
+    protected function getDeletedAtColumn(Builder $builder): string
     {
-        if (count((array) $builder->getQuery()->joins) > 0) {
+        if (count((array)$builder->getQuery()->joins) > 0) {
             return $builder->getModel()->getQualifiedDeletedAtColumn();
         }
 
@@ -65,10 +67,10 @@ class SoftDeletingScope implements Scope
     /**
      * Add the restore extension to the builder.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $builder
+     * @param Builder $builder
      * @return void
      */
-    protected function addRestore(Builder $builder)
+    protected function addRestore(Builder $builder): void
     {
         $builder->macro('restore', function (Builder $builder) {
             $builder->withTrashed();
@@ -80,13 +82,13 @@ class SoftDeletingScope implements Scope
     /**
      * Add the with-trashed extension to the builder.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $builder
+     * @param Builder $builder
      * @return void
      */
-    protected function addWithTrashed(Builder $builder)
+    protected function addWithTrashed(Builder $builder): void
     {
         $builder->macro('withTrashed', function (Builder $builder, $withTrashed = true) {
-            if (! $withTrashed) {
+            if (!$withTrashed) {
                 return $builder->withoutTrashed();
             }
 
@@ -97,10 +99,10 @@ class SoftDeletingScope implements Scope
     /**
      * Add the without-trashed extension to the builder.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $builder
+     * @param Builder $builder
      * @return void
      */
-    protected function addWithoutTrashed(Builder $builder)
+    protected function addWithoutTrashed(Builder $builder): void
     {
         $builder->macro('withoutTrashed', function (Builder $builder) {
             $model = $builder->getModel();
@@ -116,10 +118,10 @@ class SoftDeletingScope implements Scope
     /**
      * Add the only-trashed extension to the builder.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $builder
+     * @param Builder $builder
      * @return void
      */
-    protected function addOnlyTrashed(Builder $builder)
+    protected function addOnlyTrashed(Builder $builder): void
     {
         $builder->macro('onlyTrashed', function (Builder $builder) {
             $model = $builder->getModel();

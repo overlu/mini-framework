@@ -20,9 +20,6 @@ class OrmServiceProvider implements ServiceProviderInterface
     {
         $config = config('database', []);
         if (!empty($config)) {
-            /**
-             * @url https://github.com/illuminate/database
-             */
             new DatabaseBoot($config);
         }
     }

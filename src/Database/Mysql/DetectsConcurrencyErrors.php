@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql;
 
 use Mini\Support\Str;
@@ -14,10 +16,10 @@ trait DetectsConcurrencyErrors
     /**
      * Determine if the given exception was caused by a concurrency error such as a deadlock or serialization failure.
      *
-     * @param  \Throwable  $e
+     * @param Throwable $e
      * @return bool
      */
-    protected function causedByConcurrencyError(Throwable $e)
+    protected function causedByConcurrencyError(Throwable $e): bool
     {
         if ($e instanceof PDOException && $e->getCode() === '40001') {
             return true;
