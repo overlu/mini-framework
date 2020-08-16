@@ -51,63 +51,63 @@ abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializab
      *
      * @var string
      */
-    protected $table;
+    protected string $table;
 
     /**
      * The primary key for the model.
      *
      * @var string
      */
-    protected $primaryKey = 'id';
+    protected string $primaryKey = 'id';
 
     /**
      * The "type" of the primary key ID.
      *
      * @var string
      */
-    protected $keyType = 'int';
+    protected string $keyType = 'int';
 
     /**
      * Indicates if the IDs are auto-incrementing.
      *
      * @var bool
      */
-    public $incrementing = true;
+    public bool $incrementing = true;
 
     /**
      * The relations to eager load on every query.
      *
      * @var array
      */
-    protected $with = [];
+    protected array $with = [];
 
     /**
      * The relationship counts that should be eager loaded on every query.
      *
      * @var array
      */
-    protected $withCount = [];
+    protected array $withCount = [];
 
     /**
      * The number of models to return for pagination.
      *
      * @var int
      */
-    protected $perPage = 15;
+    protected int $perPage = 15;
 
     /**
      * Indicates if the model exists.
      *
      * @var bool
      */
-    public $exists = false;
+    public bool $exists = false;
 
     /**
      * Indicates if the model was inserted during the current request lifecycle.
      *
      * @var bool
      */
-    public $wasRecentlyCreated = false;
+    public bool $wasRecentlyCreated = false;
 
     /**
      * The connection resolver instance.
@@ -128,28 +128,28 @@ abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializab
      *
      * @var array
      */
-    protected static $booted = [];
+    protected static array $booted = [];
 
     /**
      * The array of trait initializers that will be called on each new instance.
      *
      * @var array
      */
-    protected static $traitInitializers = [];
+    protected static array $traitInitializers = [];
 
     /**
      * The array of global scopes on the model.
      *
      * @var array
      */
-    protected static $globalScopes = [];
+    protected static array $globalScopes = [];
 
     /**
      * The list of models classes that should not be affected with touch.
      *
      * @var array
      */
-    protected static $ignoreOnTouch = [];
+    protected static array $ignoreOnTouch = [];
 
     /**
      * The name of the "created at" column.

@@ -14,7 +14,7 @@ trait HasTimestamps
      *
      * @var bool
      */
-    public $timestamps = true;
+    public bool $timestamps = true;
 
     /**
      * Update the model's update timestamp.

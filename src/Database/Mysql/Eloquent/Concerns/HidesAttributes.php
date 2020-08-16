@@ -14,14 +14,14 @@ trait HidesAttributes
      *
      * @var array
      */
-    protected $hidden = [];
+    protected array $hidden = [];
 
     /**
      * The attributes that should be visible in serialization.
      *
      * @var array
      */
-    protected $visible = [];
+    protected array $visible = [];
 
     /**
      * Get the hidden attributes for the model.

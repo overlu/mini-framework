@@ -25,42 +25,42 @@ trait HasAttributes
      *
      * @var array
      */
-    protected $attributes = [];
+    protected array $attributes = [];
 
     /**
      * The model attribute's original state.
      *
      * @var array
      */
-    protected $original = [];
+    protected array $original = [];
 
     /**
      * The changed model attributes.
      *
      * @var array
      */
-    protected $changes = [];
+    protected array $changes = [];
 
     /**
      * The attributes that should be cast.
      *
      * @var array
      */
-    protected $casts = [];
+    protected array $casts = [];
 
     /**
      * The attributes that have been cast using custom classes.
      *
      * @var array
      */
-    protected $classCastCache = [];
+    protected array $classCastCache = [];
 
     /**
      * The built-in, primitive cast types supported by Eloquent.
      *
      * @var array
      */
-    protected static $primitiveCastTypes = [
+    protected static array $primitiveCastTypes = [
         'array',
         'bool',
         'boolean',
@@ -85,7 +85,7 @@ trait HasAttributes
      *
      * @var array
      */
-    protected $dates = [];
+    protected array $dates = [];
 
     /**
      * The storage format of the model's date columns.

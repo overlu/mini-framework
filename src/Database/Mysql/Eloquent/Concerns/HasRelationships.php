@@ -30,21 +30,21 @@ trait HasRelationships
      *
      * @var array
      */
-    protected $relations = [];
+    protected array $relations = [];
 
     /**
      * The relationships that should be touched on save.
      *
      * @var array
      */
-    protected $touches = [];
+    protected array $touches = [];
 
     /**
      * The many to many relationship methods.
      *
      * @var array
      */
-    public static $manyMethods = [
+    public static array $manyMethods = [
         'belongsToMany', 'morphToMany', 'morphedByMany',
     ];
 

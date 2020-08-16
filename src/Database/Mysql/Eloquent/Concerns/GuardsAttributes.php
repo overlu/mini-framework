@@ -14,21 +14,21 @@ trait GuardsAttributes
      *
      * @var array
      */
-    protected $fillable = [];
+    protected array $fillable = [];
 
     /**
      * The attributes that aren't mass assignable.
      *
      * @var array
      */
-    protected $guarded = ['*'];
+    protected array $guarded = ['*'];
 
     /**
      * Indicates if all mass assignment is enabled.
      *
      * @var bool
      */
-    protected static $unguarded = false;
+    protected static bool $unguarded = false;
 
     /**
      * Get the fillable attributes for the model.

@@ -19,7 +19,7 @@ trait HasEvents
      *
      * @var array
      */
-    protected $dispatchesEvents = [];
+    protected array $dispatchesEvents = [];
 
     /**
      * User exposed observable events.
@@ -28,7 +28,7 @@ trait HasEvents
      *
      * @var array
      */
-    protected $observables = [];
+    protected array $observables = [];
 
     /**
      * Register observers with the model.
