@@ -14,9 +14,9 @@ class Model
 
     protected DB $db;
 
-    protected array $variables;
-    protected string $primaryKey;
-    protected string $table;
+    protected array $variables = [];
+    protected string $primaryKey = 'id';
+    protected string $table = '';
 
     public function __construct($data = [])
     {
