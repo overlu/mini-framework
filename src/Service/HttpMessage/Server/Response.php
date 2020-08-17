@@ -45,8 +45,8 @@ class Response extends \Mini\Service\HttpMessage\Base\Response implements Sendab
         if ($content instanceof FileInterface) {
             return $this->swooleResponse->sendfile($content->getFilename());
         }
-        if ($withContent) {
-            $this->swooleResponse->write($content->getContents());
+        if ($withContent && $content = $content->getContents()) {
+            $this->swooleResponse->write($content);
         }
         $this->swooleResponse->end();
     }
