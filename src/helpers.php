@@ -815,3 +815,63 @@ if (!function_exists('debug')) {
         }
     }
 }
+
+if (!function_exists('failed')) {
+    /**
+     * @param string $error_message
+     * @param int $code
+     * @return array
+     */
+    function failed($error_message = 'failed', $code = 0): array
+    {
+        return [
+            'requestId' => \SeasLog::getRequestID(),
+            'status' => [
+                'success' => false,
+                'message' => $error_message,
+                'code' => $code,
+            ],
+            'method' => request()->getMethod(),
+            'data' => []
+        ];
+    }
+}
+
+if (!function_exists('success')) {
+    /**
+     * @param array $data
+     * @param string $success_message
+     * @param int $code
+     * @return array
+     */
+    function success(array $data = [], string $success_message = 'succeed', $code = 200): array
+    {
+        return [
+            'requestId' => \SeasLog::getRequestID(),
+            'status' => [
+                'success' => true,
+                'message' => $success_message,
+                'code' => $code,
+            ],
+            'method' => request()->getMethod(),
+            'data' => $data
+        ];
+    }
+}
+
+if (!function_exists('write')) {
+    /**
+     * 写入swoole数据
+     * @param $content
+     * @throws JsonException
+     */
+    function write($content)
+    {
+        $swResponse = response()->getSwooleResponse();
+        if ($swResponse) {
+            $swResponse->header('content-type', 'application/json;charset=UTF-8', true);
+            $swResponse->header('Server', 'Mini', true);
+            $swResponse->write(is_array($content) ? json_encode($content, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE) : $content);
+        }
+    }
+}
