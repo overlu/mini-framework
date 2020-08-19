@@ -861,17 +861,47 @@ if (!function_exists('success')) {
 
 if (!function_exists('write')) {
     /**
-     * 写入swoole数据
      * @param $content
+     * @param bool $stop
      * @throws JsonException
      */
-    function write($content)
+    function write($content, $stop = false)
     {
         $swResponse = response()->getSwooleResponse();
         if ($swResponse) {
-            $swResponse->header('content-type', 'application/json;charset=UTF-8', true);
+            if (is_array($content)) {
+                $swResponse->header('content-type', 'application/json;charset=UTF-8', true);
+                $content = json_encode($content, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+            }
             $swResponse->header('Server', 'Mini', true);
-            $swResponse->write(is_array($content) ? json_encode($content, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE) : $content);
+            $swResponse->write($content);
+            if ($stop) {
+                $swResponse->close();
+            }
         }
+    }
+}
+
+if (!function_exists('writeSucceed')) {
+    /**
+     * @param $content
+     * @param bool $stop
+     * @throws JsonException
+     */
+    function writeSucceed($content, $stop = false)
+    {
+        write(success($content), $stop);
+    }
+}
+
+if (!function_exists('writeFailed')) {
+    /**
+     * @param $content
+     * @param bool $stop
+     * @throws JsonException
+     */
+    function writeFailed($content, $stop = false)
+    {
+        write(failed($content), $stop);
     }
 }
