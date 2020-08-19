@@ -905,3 +905,15 @@ if (!function_exists('writeFailed')) {
         write(failed($content), $stop);
     }
 }
+
+if (!function_exists('__')) {
+    /**
+     * translate
+     * @param $key
+     * @return string
+     */
+    function __(string $key): string
+    {
+        return \Mini\Translate\Translate::getInstance()->get($key);
+    }
+}

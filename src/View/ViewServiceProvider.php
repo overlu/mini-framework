@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\View;
 
+use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\ServiceProviderInterface;
 use Mini\View\Compilers\BladeCompiler;
 use Mini\View\Engines\CompilerEngine;
@@ -36,21 +37,16 @@ class ViewServiceProvider implements ServiceProviderInterface
      * @param Server|null $server
      * @param int|null $workerId
      * @return void
-     * @throws \Mini\Contracts\Container\BindingResolutionException
      */
     public function register(?Server $server, ?int $workerId): void
     {
-        $this->registerViewFinder();
-        $this->registerBladeCompiler();
-        $this->registerEngineResolver();
-        $this->registerFactory();
     }
 
     /**
      * Register the view environment.
      *
      * @return void
-     * @throws \Mini\Contracts\Container\BindingResolutionException
+     * @throws BindingResolutionException
      */
     public function registerFactory(): void
     {
@@ -130,9 +126,13 @@ class ViewServiceProvider implements ServiceProviderInterface
 
     /**
      * @inheritDoc
+     * @throws BindingResolutionException
      */
     public function boot(?Server $server, ?int $workerId): void
     {
-        // TODO: Implement boot() method.
+        $this->registerViewFinder();
+        $this->registerBladeCompiler();
+        $this->registerEngineResolver();
+        $this->registerFactory();
     }
 }
