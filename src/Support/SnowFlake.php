@@ -9,7 +9,7 @@ namespace Mini\Support;
 
 class SnowFlake
 {
-    private static float $lastTimestamp;
+    private static float $lastTimestamp = 0.0;
     private static int $lastSequence = 0;
     private static int $sequenceMask = 4095;
     private static int $twepoch = 1508945092000;
