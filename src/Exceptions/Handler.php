@@ -34,7 +34,10 @@ class Handler implements HandlerInterface
      */
     public function throw(): void
     {
-        Log::error($this->format($this->throwable));
+        if ($this->throwable instanceof HttpResponseException) {
+            write(failed($this->throwable->getMessage(), $this->throwable->getCode() ?? 0));
+            return;
+        }
         if ($this->environment !== 'production') {
             $request = request();
             if (class_exists(\App\Exceptions\Handler::class)) {
@@ -77,6 +80,7 @@ class Handler implements HandlerInterface
     public function render(RequestInterface $request, Throwable $throwable): void
     {
         toCode(500, $this->formatResponseException($throwable));
+        Log::error($this->format($this->throwable));
     }
 
     /**
