@@ -115,8 +115,9 @@ class Model
         } else {
             $sql = 'INSERT INTO ' . $this->table . ' () VALUES ()';
         }
+        $id = $this->variables[$this->primaryKey] ?? null;
         if ($this->exec($sql)) {
-            return $this->db->lastInsertId();
+            return $id ?: $this->db->lastInsertId();
         }
         return 0;
     }
