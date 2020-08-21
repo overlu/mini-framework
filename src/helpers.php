@@ -511,7 +511,7 @@ if (!function_exists('array_plus')) {
 if (!function_exists('request')) {
     /**
      * 获取request资源
-     * @return Mini\Service\HttpServer\Request
+     * @return Mini\Service\HttpServer\Request | Mini\Service\HttpMessage\Server\Request
      */
     function request()
     {
