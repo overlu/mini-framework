@@ -172,15 +172,16 @@ class Model
     }
 
     /**
-     * @param array $fields .
+     * @param array $wheres
+     * @param array|string $fields .
      * @param array $sort .
-     * @return array of Collection.
+     * @return mixed|null
      */
-    public function search($fields = [], $sort = [])
+    public function search($wheres = [], $fields = ['*'], $sort = [])
     {
-        $this->variables = $fields ?: $this->variables;
+        $this->variables = $wheres ?: $this->variables;
 
-        $sql = 'SELECT * FROM ' . $this->table;
+        $sql = 'SELECT ' . (is_array($fields) ? implode(',', $fields) : $fields) . ' FROM ' . $this->table;
 
         if (!empty($this->variables)) {
             $fields_val = array();
