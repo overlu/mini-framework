@@ -85,7 +85,7 @@ class Handler implements HandlerInterface
 
     /**
      * @param Throwable $throwable
-     * @return string
+     * @return mixed
      */
     private function formatException(Throwable $throwable)
     {

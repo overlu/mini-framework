@@ -5,16 +5,27 @@
  */
 declare(strict_types=1);
 
+use Mini\Config;
 use Mini\Container\Container;
+use Mini\Contracts\Container\BindingResolutionException;
+use Mini\Contracts\Support\Htmlable;
+use Mini\Contracts\View\Factory;
 use Mini\Database\Redis\Pool;
 use Mini\Di;
+use Mini\Exceptions\InvalidResponseException;
+use Mini\Service\HttpMessage\Stream\SwooleStream;
 use Mini\Support\ApplicationContext;
 use Mini\Support\Arr;
 use Mini\Support\Collection;
 use Mini\Support\Coroutine;
+use Mini\Support\Dotenv;
 use Mini\Support\HigherOrderTapProxy;
 use Mini\Support\Str;
+use Mini\Translate\Translate;
+use Mini\View\View;
 use Swoole\Runtime;
+use Symfony\Component\VarDumper\Cloner\VarCloner;
+use Symfony\Component\VarDumper\Dumper\HtmlDumper;
 
 if (!function_exists('value')) {
     /**
@@ -460,7 +471,7 @@ if (!function_exists('env')) {
      */
     function env($key, $default = null)
     {
-        return \Mini\Support\Dotenv::getInstance()->getValue($key, $default);
+        return Dotenv::getInstance()->getValue($key, $default);
     }
 }
 
@@ -473,7 +484,7 @@ if (!function_exists('config')) {
      */
     function config($name, $default = null)
     {
-        return \Mini\Config::getInstance()->get($name, $default);
+        return Config::getInstance()->get($name, $default);
     }
 }
 
@@ -703,7 +714,7 @@ if (!function_exists('array_plus')) {
 if (!function_exists('to404')) {
     /**
      * @return string|null
-     * @throws \Mini\Exceptions\InvalidResponseException
+     * @throws InvalidResponseException
      */
     function to404(): ?string
     {
@@ -714,7 +725,7 @@ if (!function_exists('to404')) {
 if (!function_exists('to405')) {
     /**
      * @return string|null
-     * @throws \Mini\Exceptions\InvalidResponseException
+     * @throws InvalidResponseException
      */
     function to405(): ?string
     {
@@ -727,7 +738,7 @@ if (!function_exists('toCode')) {
      * @param int $code
      * @param mixed $message
      * @return string|null
-     * @throws \Mini\Exceptions\InvalidResponseException
+     * @throws InvalidResponseException
      */
     function toCode(int $code, $message): ?string
     {
@@ -746,13 +757,13 @@ if (!function_exists('toCode')) {
 if (!function_exists('e')) {
     /**
      * Escape HTML special characters in a string.
-     * @param \Mini\Contracts\Support\Htmlable|string $value
+     * @param Htmlable|string $value
      * @param bool $doubleEncode
      * @return string
      */
     function e($value, $doubleEncode = false): string
     {
-        if ($value instanceof \Mini\Contracts\Support\Htmlable) {
+        if ($value instanceof Htmlable) {
             return $value->toHtml();
         }
         return htmlspecialchars($value, ENT_QUOTES, 'UTF-8', $doubleEncode);
@@ -766,8 +777,8 @@ if (!function_exists('view')) {
      * @param string $view
      * @param array $data
      * @param array $mergeData
-     * @return \Mini\View\View|\Mini\Contracts\View\Factory
-     * @throws \Mini\Contracts\Container\BindingResolutionException
+     * @return View|Factory
+     * @throws BindingResolutionException
      */
     function view($view = null, $data = [], $mergeData = [])
     {
@@ -799,8 +810,8 @@ if (!function_exists('debug')) {
      */
     function debug($var, ...$moreVars)
     {
-        $cloner = new \Symfony\Component\VarDumper\Cloner\VarCloner();
-        $dumper = new \Symfony\Component\VarDumper\Dumper\HtmlDumper();
+        $cloner = new VarCloner();
+        $dumper = new HtmlDumper();
         $output = fopen('php://memory', 'r+b');
         $dumper->dump($cloner->cloneVar($var), $output);
         foreach ($moreVars as $moreVar) {
@@ -811,7 +822,7 @@ if (!function_exists('debug')) {
         if ($swResponse) {
             $swResponse->header('content-type', 'text/html;charset=UTF-8', true);
             $swResponse->header('Server', 'Mini', true);
-            $swResponse->write(new \Mini\Service\HttpMessage\Stream\SwooleStream($output));
+            $swResponse->write(new SwooleStream($output));
         }
     }
 }
@@ -844,7 +855,7 @@ if (!function_exists('success')) {
      * @param int $code
      * @return array
      */
-    function success(array $data = [], string $success_message = 'succeed', $code = 200): array
+    function success(string $success_message = 'succeed', array $data = [], $code = 200): array
     {
         return [
             'requestId' => \SeasLog::getRequestID(),
@@ -863,7 +874,6 @@ if (!function_exists('write')) {
     /**
      * @param $content
      * @param bool $stop
-     * @throws JsonException
      */
     function write($content, $stop = false)
     {
@@ -884,13 +894,12 @@ if (!function_exists('write')) {
 
 if (!function_exists('writeSucceed')) {
     /**
-     * @param $content
+     * @param $message
      * @param bool $stop
-     * @throws JsonException
      */
-    function writeSucceed($content, $stop = false)
+    function writeSucceed($message, $stop = false)
     {
-        write(success($content), $stop);
+        write(success($message), $stop);
     }
 }
 
@@ -898,7 +907,6 @@ if (!function_exists('writeFailed')) {
     /**
      * @param $content
      * @param bool $stop
-     * @throws JsonException
      */
     function writeFailed($content, $stop = false)
     {
@@ -914,6 +922,6 @@ if (!function_exists('__')) {
      */
     function __(string $key): string
     {
-        return \Mini\Translate\Translate::getInstance()->get($key);
+        return Translate::getInstance()->get($key);
     }
 }
