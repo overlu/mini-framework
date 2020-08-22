@@ -69,7 +69,8 @@ class RouteService
                         if (is_string($group) && is_array($route[0])) {
                             $routerCollector->addGroup('/' . ltrim($group, '/'), static function (RouteCollector $routerCollector) use ($route) {
                                 foreach ($route as $r) {
-                                    $routerCollector->addRoute(static::parasMethod($r[0]), '/' . ltrim($r[1], '/'), $r[2]);
+                                    $uri = trim($r[1], '/');
+                                    $routerCollector->addRoute(static::parasMethod($r[0]), $uri ? '/' . $uri : '', $r[2]);
                                 }
                             });
                         } else {
