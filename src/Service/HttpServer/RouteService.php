@@ -117,7 +117,7 @@ class RouteService
                     if (!class_exists($className)) {
                         throw new RuntimeException("Router {$uri} defined Class Not Found");
                     }
-                    $controller = new $className();
+                    $controller = new $className($func);
                     if (!method_exists($controller, $func)) {
                         throw new RuntimeException("Router {$uri} defined {$func} Method Not Found");
                     }
@@ -183,7 +183,7 @@ class RouteService
         if ($uri === '') {
             $className = IndexController::class;
             if (class_exists($className) && method_exists($className, 'index')) {
-                return (new $className())->index(\request(), \response());
+                return (new $className('index'))->index(\request(), \response());
             }
         }
         return to404();
