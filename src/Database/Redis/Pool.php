@@ -47,8 +47,9 @@ class Pool
 
     public function getConnection($key = ''): \Redis
     {
+        $key = $key ?: 'default';
         if (Coroutine::inCoroutine()) {
-            $connection = $this->pools[$key ?: 'default']->get();
+            $connection = $this->pools[$key]->get();
             Coroutine::defer(function () use ($key, $connection) {
                 $this->close($key, $connection);
             });
