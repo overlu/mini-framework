@@ -10,6 +10,11 @@ namespace Mini\Database\Mini;
 use JsonException;
 use Throwable;
 
+/**
+ * Class Model
+ * @package Mini\Database\Mini
+ * @mixin DB
+ */
 class Model
 {
 
