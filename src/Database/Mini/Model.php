@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mini;
 
+use JsonException;
 use Throwable;
 
 class Model
@@ -55,8 +56,19 @@ class Model
     }
 
     /**
+     * @param $name
+     * @param $arguments
+     * @return mixed
+     */
+    public function __call($name, $arguments)
+    {
+        return $this->db->$name(...$arguments);
+    }
+
+    /**
      * @param array $data
      * @return mixed|null
+     * @throws JsonException
      */
     public function update($data = [])
     {
@@ -91,6 +103,7 @@ class Model
     /**
      * @param array $data
      * @return int|mixed|null
+     * @throws JsonException
      */
     public function save($data = [])
     {
@@ -101,6 +114,7 @@ class Model
     /**
      * @param array $data
      * @return int|mixed
+     * @throws JsonException
      */
     public function insert($data = [])
     {
@@ -108,7 +122,7 @@ class Model
 
         if (!empty($this->variables)) {
             $fields = array_keys($this->variables);
-            $fields_val = array(implode(',', array_map(function ($field) {
+            $fields_val = array(implode(',', array_map(static function ($field) {
                 return '`' . $field . '`';
             }, $fields)), ':' . implode(',:', $fields));
             $sql = 'INSERT INTO ' . $this->table . ' (' . $fields_val[0] . ') VALUES (' . $fields_val[1] . ')';
@@ -125,6 +139,7 @@ class Model
     /**
      * @param string $id
      * @return mixed|null
+     * @throws JsonException
      */
     public function delete($id = '')
     {
@@ -176,6 +191,7 @@ class Model
      * @param array|string $fields .
      * @param array $sort .
      * @return mixed|null
+     * @throws JsonException
      */
     public function search($wheres = [], $fields = ['*'], $sort = [])
     {
@@ -270,6 +286,7 @@ class Model
      * @param $sql
      * @param null $array
      * @return mixed|null
+     * @throws JsonException
      */
     private function exec($sql, $array = null)
     {
