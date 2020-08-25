@@ -35,21 +35,26 @@ class Pool
     private function __construct(array $config = [])
     {
         if (empty($this->pools)) {
-            foreach ($config as $key => $value) {
-                $conf = array_replace_recursive($this->config, $value);
-                $this->pools[$key] = new PDOPool(
-                    (new PDOConfig())
-                        ->withDriver($conf['driver'])
-                        ->withHost($conf['host'])
-                        ->withPort($conf['port'])
-                        ->withDbName($conf['database'])
-                        ->withCharset($conf['charset'])
-                        ->withUsername($conf['username'])
-                        ->withPassword($conf['password'])
-                        ->withOptions($conf['options']),
-                    $conf['size']
-                );
-            }
+            $this->initialize($config);
+        }
+    }
+
+    private function initialize(array $config)
+    {
+        foreach ($config as $key => $value) {
+            $conf = array_replace_recursive($this->config, $value);
+            $this->pools[$key] = new PDOPool(
+                (new PDOConfig())
+                    ->withDriver($conf['driver'])
+                    ->withHost($conf['host'])
+                    ->withPort($conf['port'])
+                    ->withDbName($conf['database'])
+                    ->withCharset($conf['charset'])
+                    ->withUsername($conf['username'])
+                    ->withPassword($conf['password'])
+                    ->withOptions($conf['options']),
+                $conf['size']
+            );
         }
     }
 
@@ -79,6 +84,9 @@ class Pool
     {
         $key = $key ?: 'default';
         if (Coroutine::inCoroutine()) {
+            if (empty($this->pools)) {
+                $this->initialize(config('database', []));
+            }
             $connection = $this->pools[$key]->get();
             Coroutine::defer(function () use ($key, $connection) {
                 $this->close($key, $connection);

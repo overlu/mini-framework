@@ -491,13 +491,12 @@ if (!function_exists('config')) {
 if (!function_exists('redis')) {
     /**
      * 获取redis实例
-     * @param array $config
      * @param string $connection
      * @return \Swoole\Coroutine\Redis | \Redis
      */
-    function redis(array $config = [], $connection = 'default')
+    function redis($connection = 'default')
     {
-        return Pool::getInstance($config ?: [])->getConnection($connection);
+        return Pool::getInstance()->getConnection($connection);
     }
 }
 

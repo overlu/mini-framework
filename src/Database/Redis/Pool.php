@@ -30,18 +30,23 @@ class Pool
     private function __construct(array $config = [])
     {
         if (empty($this->pools)) {
-            foreach ($config as $key => $value) {
-                $conf = array_replace_recursive($this->config, $value);
-                $this->pools[$key] = new RedisPool(
-                    (new RedisConfig())
-                        ->withHost($conf['host'])
-                        ->withPort((int)$conf['port'])
-                        ->withAuth((string)$conf['password'])
-                        ->withDbIndex((int)$conf['database'])
-                        ->withTimeout((float)$conf['time_out']),
-                    (int)$conf['size']
-                );
-            }
+            $this->initialize($config);
+        }
+    }
+
+    private function initialize(array $config)
+    {
+        foreach ($config as $key => $value) {
+            $conf = array_replace_recursive($this->config, $value);
+            $this->pools[$key] = new RedisPool(
+                (new RedisConfig())
+                    ->withHost($conf['host'])
+                    ->withPort((int)$conf['port'])
+                    ->withAuth((string)$conf['password'])
+                    ->withDbIndex((int)$conf['database'])
+                    ->withTimeout((float)$conf['time_out']),
+                (int)$conf['size']
+            );
         }
     }
 
@@ -49,6 +54,9 @@ class Pool
     {
         $key = $key ?: 'default';
         if (Coroutine::inCoroutine()) {
+            if (empty($this->pools)) {
+                $this->initialize(config('redis', []));
+            }
             $connection = $this->pools[$key]->get();
             Coroutine::defer(function () use ($key, $connection) {
                 $this->close($key, $connection);
