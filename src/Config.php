@@ -35,7 +35,7 @@ class Config
             if (!is_file($config_file = CONFIG_PATH . $file . '.php')) {
                 return null;
             }
-            self::$config[$file] = include_once $config_file;
+            self::$config[$file] = include $config_file;
         }
         $config = self::$config[$file];
         while ($keys) {
