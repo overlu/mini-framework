@@ -81,13 +81,13 @@ abstract class AbstractServer
      */
     public function onWorkerStart(Server $server, int $workerId): void
     {
-        Listener::getInstance()->listen('workerStart', $server, $workerId);
         try {
             BaseProviderService::getInstance()->register($server, $workerId);
             BaseProviderService::getInstance()->boot($server, $workerId);
         } catch (Throwable $throwable) {
             Command::error($throwable);
         }
+        Listener::getInstance()->listen('workerStart', $server, $workerId);
     }
 
     /**
@@ -104,6 +104,7 @@ abstract class AbstractServer
     {
         try {
             BaseRequestService::getInstance()->before($request, $response);
+            Listener::getInstance()->listen('request', $request, $response);
         } catch (Throwable $throwable) {
             Command::error($throwable);
         }

@@ -34,10 +34,10 @@ class Listener
      * @param mixed ...$args
      * @throws Throwable
      */
-    public function listen($listener, ...$args)
+    public function listen($listener, ...$args): void
     {
         try {
-            $listeners = isset(self::$config[$listener]) ? self::$config[$listener] : [];
+            $listeners = self::$config[$listener] ?? [];
             while ($listeners) {
                 [$class, $func] = array_shift($listeners);
                 $class::getInstance()->{$func}(...$args);

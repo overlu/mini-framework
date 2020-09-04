@@ -87,7 +87,7 @@ class Handler implements HandlerInterface
      * @param Throwable $throwable
      * @return mixed
      */
-    private function formatException(Throwable $throwable)
+    protected function formatException(Throwable $throwable)
     {
         if ($this->debug) {
             return $throwable;
@@ -99,7 +99,7 @@ class Handler implements HandlerInterface
      * @param Throwable $throwable
      * @return string|array
      */
-    private function formatResponseException(Throwable $throwable)
+    protected function formatResponseException(Throwable $throwable)
     {
         if ($this->debug) {
             return $this->format($throwable);
@@ -111,7 +111,7 @@ class Handler implements HandlerInterface
      * @param Throwable $throwable
      * @return array
      */
-    private function format(Throwable $throwable): array
+    protected function format(Throwable $throwable): array
     {
         return [
             'exception' => get_class($throwable),
