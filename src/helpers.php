@@ -20,6 +20,7 @@ use Mini\Support\Collection;
 use Mini\Support\Coroutine;
 use Mini\Support\Dotenv;
 use Mini\Support\HigherOrderTapProxy;
+use Mini\Support\Parallel;
 use Mini\Support\Str;
 use Mini\Translate\Translate;
 use Mini\View\View;
@@ -406,6 +407,21 @@ if (!function_exists('getter')) {
     function getter(string $property): string
     {
         return 'get' . Str::studly($property);
+    }
+}
+
+if (!function_exists('parallel')) {
+    /**
+     * @param callable[] $callables
+     * @return array
+     */
+    function parallel(array $callables)
+    {
+        $parallel = new Parallel();
+        foreach ($callables as $key => $callable) {
+            $parallel->add($callable, $key);
+        }
+        return $parallel->wait();
     }
 }
 
