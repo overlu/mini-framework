@@ -22,7 +22,7 @@ use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Throwable;
 use function FastRoute\cachedDispatcher;
-use App\Controller\IndexController;
+use App\Controllers\IndexController;
 
 class RouteService
 {
@@ -113,7 +113,7 @@ class RouteService
                     if (count($handler) !== 2) {
                         throw new RuntimeException("Router {$uri} config error, Only @ are supported");
                     }
-                    $className = '\\App\\Controller\\' . $handler[0];
+                    $className = '\\App\\Controllers\\' . $handler[0];
                     $func = $handler[1];
                     if (!class_exists($className)) {
                         throw new RuntimeException("Router {$uri} defined Class Not Found");
