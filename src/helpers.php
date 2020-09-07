@@ -729,7 +729,7 @@ if (!function_exists('array_plus')) {
 if (!function_exists('to404')) {
     /**
      * @return string|null
-     * @throws InvalidResponseException
+     * @throws InvalidResponseException|JsonException
      */
     function to404(): ?string
     {
@@ -740,7 +740,7 @@ if (!function_exists('to404')) {
 if (!function_exists('to405')) {
     /**
      * @return string|null
-     * @throws InvalidResponseException
+     * @throws InvalidResponseException|JsonException
      */
     function to405(): ?string
     {
