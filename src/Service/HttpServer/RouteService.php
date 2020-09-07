@@ -154,7 +154,7 @@ class RouteService
                 }
                 $data[$name] = $obj;
             } else {
-                $data[$name] = $vars[$name];
+                $data[$name] = $vars[$name] ?? ($param->isDefaultValueAvailable() ? $param->getDefaultValue() : null);
             }
         }
         return $data;

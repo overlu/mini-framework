@@ -738,6 +738,7 @@ if (!function_exists('toCode')) {
      * @param mixed $message
      * @return string|null
      * @throws InvalidResponseException
+     * @throws JsonException
      */
     function toCode(int $code, $message): ?string
     {
@@ -795,8 +796,11 @@ if (!function_exists('is_json')) {
      * @param $string
      * @return bool
      */
-    function is_json(string $string): bool
+    function is_json($string): bool
     {
+        if (!is_string($string)) {
+            return false;
+        }
         json_decode($string);
         return (json_last_error() === JSON_ERROR_NONE);
     }
