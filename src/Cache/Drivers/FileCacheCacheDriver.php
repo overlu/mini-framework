@@ -7,6 +7,9 @@ declare(strict_types=1);
 
 namespace Mini\Cache\Drivers;
 
+use JsonException;
+use RuntimeException;
+
 class FileCacheCacheDriver extends AbstractCacheDriver
 {
     protected string $path;
@@ -16,7 +19,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
         $this->path = rtrim(config('cache.drivers.file.path', BASE_PATH . '/storage/cache'), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         $this->prefix = config('cache.prefix', '');
         if (!is_dir($this->path) && !mkdir($concurrentDirectory = $this->path, 0755, true) && !is_dir($concurrentDirectory)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
 
@@ -34,6 +37,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
      * @param mixed $value
      * @param null $ttl
      * @return bool
+     * @throws JsonException
      */
     public function set($key, $value, $ttl = null): bool
     {
@@ -52,6 +56,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
      * @param string $key
      * @param array $data
      * @return bool
+     * @throws JsonException
      */
     protected function setContent(string $key, array $data): bool
     {
@@ -65,6 +70,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
      * @param string $key
      * @param null $default
      * @return bool|mixed|string|null
+     * @throws JsonException
      */
     public function get($key, $default = null)
     {
@@ -76,6 +82,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
      * @param $key
      * @param null $default
      * @return bool|mixed|string|null
+     * @throws JsonException
      */
     protected function getContent($key, $default = null)
     {
@@ -99,6 +106,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
      * @param $key
      * @param int $step
      * @return bool|int|mixed|string
+     * @throws JsonException
      */
     public function inc($key, int $step = 1)
     {
@@ -117,6 +125,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
      * @param $key
      * @param int $step
      * @return bool|int|mixed|string
+     * @throws JsonException
      */
     public function dec($key, int $step = 1)
     {
@@ -134,6 +143,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
     /**
      * @param string $key
      * @return bool
+     * @throws JsonException
      */
     public function has($key): bool
     {

@@ -357,7 +357,7 @@ class App
         foreach ($data as $command => $item) {
             $command = str_pad($command, $this->keyWidth, ' ');
             $desc = $item['desc'] ? ucfirst($item['desc']) : 'No description for the command';
-            $help .= "  <green>$command</green>   $desc\n";
+            $help .= "<green>$command</green>   $desc\n";
         }
 
         $help .= "\nFor command usage please run: <cyan>{$this->script} command [options] [arguments]</cyan>";
