@@ -18,7 +18,6 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
 {
     /** @var Table */
     protected Table $table;
-    protected $prefix;
 
     /**
      * SwooleTable constructor.

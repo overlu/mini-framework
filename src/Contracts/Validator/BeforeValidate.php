@@ -14,5 +14,5 @@ interface BeforeValidate
      *
      * @return void
      */
-    public function beforeValidate();
+    public function beforeValidate() :void;
 }

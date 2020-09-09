@@ -99,7 +99,7 @@ class UploadedFile extends Rule implements BeforeValidate
     /**
      * {@inheritDoc}
      */
-    public function beforeValidate()
+    public function beforeValidate(): void
     {
         $attribute = $this->getAttribute();
 

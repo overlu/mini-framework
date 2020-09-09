@@ -607,6 +607,7 @@ if (!function_exists('sys_error_format')) {
      * @param $error_message
      * @param int $code
      * @return string
+     * @throws JsonException
      */
     function sys_error_format($error_message, $code = 0)
     {
@@ -733,7 +734,7 @@ if (!function_exists('to404')) {
      */
     function to404(): ?string
     {
-        return toCode(404, 'Whoops, not found.');
+        return abort(404, 'Whoops, not found.');
     }
 }
 
@@ -744,11 +745,11 @@ if (!function_exists('to405')) {
      */
     function to405(): ?string
     {
-        return toCode(405, 'Whoops, method not allowed.');
+        return abort(405, 'Whoops, method not allowed.');
     }
 }
 
-if (!function_exists('toCode')) {
+if (!function_exists('abort')) {
     /**
      * @param int $code
      * @param mixed $message
@@ -756,7 +757,7 @@ if (!function_exists('toCode')) {
      * @throws InvalidResponseException
      * @throws JsonException
      */
-    function toCode(int $code, $message): ?string
+    function abort(int $code, $message): ?string
     {
         if ($response = response()) {
             $response->withStatus($code)
@@ -764,7 +765,7 @@ if (!function_exists('toCode')) {
                 ->withHeader('Server', 'Mini')
                 ->raw(sys_error_format($message, $code))
                 ->send(true);
-            return '#%Mini::code%#';
+            return '#%Mini::abort%#';
         }
         return null;
     }
@@ -893,6 +894,7 @@ if (!function_exists('write')) {
     /**
      * @param $content
      * @param bool $stop
+     * @throws JsonException
      */
     function write($content, $stop = false)
     {
@@ -915,6 +917,7 @@ if (!function_exists('writeSucceed')) {
     /**
      * @param $message
      * @param bool $stop
+     * @throws JsonException
      */
     function writeSucceed($message, $stop = false)
     {
@@ -926,6 +929,7 @@ if (!function_exists('writeFailed')) {
     /**
      * @param $content
      * @param bool $stop
+     * @throws JsonException
      */
     function writeFailed($content, $stop = false)
     {

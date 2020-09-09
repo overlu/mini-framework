@@ -55,7 +55,7 @@ class Handler implements HandlerInterface
                 $this->report($this->throwable);
             }
         } else {
-            toCode(500, 'The server is busy, please try again later.');
+            abort(500, 'The server is busy, please try again later.');
         }
     }
 
@@ -79,7 +79,7 @@ class Handler implements HandlerInterface
      */
     public function render(RequestInterface $request, Throwable $throwable): void
     {
-        toCode(500, $this->formatResponseException($throwable));
+        abort(500, $this->formatResponseException($throwable));
         Log::error($this->format($this->throwable));
     }
 

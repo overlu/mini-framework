@@ -51,7 +51,7 @@ class Cache
     private function __construct()
     {
         $driver = config('cache.default', 'file');
-        $this->default = $this->mapping[$driver] ?? FileCacheCacheDriver::class;
+        $this->default = new (config('cache.drivers.' . $driver . '.driver', $this->mapping[$driver] ?? FileCacheCacheDriver::class));
     }
 
     /**
@@ -78,7 +78,7 @@ class Cache
      */
     public function getDriver(string $driverName = null): AbstractCacheDriver
     {
-        return $driverName ? new $this->drivers[$driverName] : new $this->default;
+        return $driverName ? new $this->drivers[$driverName] : $this->default;
     }
 
     /**

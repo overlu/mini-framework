@@ -78,7 +78,7 @@ class HttpServer extends AbstractServer
         try {
             [$psr7Request, $psr7Response] = $this->initRequestAndResponse($request, $response);
             $resp = $this->route->dispatch($request, $response);
-            if ($resp === '#%Mini::code%#') {
+            if ($resp === '#%Mini::abort%#') {
                 return;
             }
             if (!$resp instanceof \Psr\Http\Message\ResponseInterface) {
