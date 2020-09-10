@@ -42,11 +42,11 @@ class HigherOrderCollectionProxy
     /**
      * Proxy accessing an attribute onto the collection items.
      * @param string $key
-     * @return
+     * @return mixed
      */
     public function __get(string $key)
     {
-        return $this->collection->{$this->method}(function ($value) use ($key) {
+        return $this->collection->{$this->method}(static function ($value) use ($key) {
             return is_array($value) ? $value[$key] : $value->{$key};
         });
     }
@@ -55,7 +55,7 @@ class HigherOrderCollectionProxy
      * Proxy a method call onto the collection items.
      * @param string $method
      * @param array $parameters
-     * @return
+     * @return mixed
      */
     public function __call(string $method, array $parameters)
     {

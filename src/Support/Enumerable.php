@@ -27,7 +27,7 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
      * Create a new instance by invoking the callback a given amount of times.
      *
      * @param int $number
-     * @param callable|null $callback
+     * @param callable $callback
      * @return static
      */
     public static function times($number, callable $callback = null);
@@ -253,7 +253,7 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
      *
      * @param bool $value
      * @param callable $callback
-     * @param callable|null $default
+     * @param callable $default
      * @return static|mixed
      */
     public function when($value, callable $callback, callable $default = null);
@@ -262,7 +262,7 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
      * Apply the callback if the collection is empty.
      *
      * @param callable $callback
-     * @param callable|null $default
+     * @param callable $default
      * @return static|mixed
      */
     public function whenEmpty(callable $callback, callable $default = null);
@@ -271,7 +271,7 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
      * Apply the callback if the collection is not empty.
      *
      * @param callable $callback
-     * @param callable|null $default
+     * @param callable $default
      * @return static|mixed
      */
     public function whenNotEmpty(callable $callback, callable $default = null);
@@ -281,7 +281,7 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
      *
      * @param bool $value
      * @param callable $callback
-     * @param callable|null $default
+     * @param callable $default
      * @return static|mixed
      */
     public function unless($value, callable $callback, callable $default = null);
@@ -290,7 +290,7 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
      * Apply the callback unless the collection is empty.
      *
      * @param callable $callback
-     * @param callable|null $default
+     * @param callable $default
      * @return static|mixed
      */
     public function unlessEmpty(callable $callback, callable $default = null);
@@ -299,7 +299,7 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
      * Apply the callback unless the collection is not empty.
      *
      * @param callable $callback
-     * @param callable|null $default
+     * @param callable $default
      * @return static|mixed
      */
     public function unlessNotEmpty(callable $callback, callable $default = null);
@@ -451,7 +451,7 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
      * Concatenate values of a given key as a string.
      *
      * @param string $value
-     * @param string|null $glue
+     * @param string $glue
      * @return string
      */
     public function implode($value, $glue = null);
@@ -719,7 +719,7 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
     /**
      * Shuffle the items in the collection.
      *
-     * @param int|null $seed
+     * @param int $seed
      * @return static
      */
     public function shuffle($seed = null);
@@ -736,7 +736,7 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
      * Get a slice of items from the enumerable.
      *
      * @param int $offset
-     * @param int|null $length
+     * @param int $length
      * @return static
      */
     public function slice($offset, $length = null);
@@ -760,18 +760,10 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
     /**
      * Sort through each item with a callback.
      *
-     * @param callable|null|int $callback
+     * @param callable|null $callback
      * @return static
      */
-    public function sort($callback = null);
-
-    /**
-     * Sort items in descending order.
-     *
-     * @param int $options
-     * @return static
-     */
-    public function sortDesc($options = SORT_REGULAR);
+    public function sort(callable $callback = null);
 
     /**
      * Sort the collection using the given callback.
@@ -902,7 +894,7 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
     /**
      * Collect the values into a collection.
      *
-     * @return \Mini\Support\Collection
+     * @return \Illuminate\Support\Collection
      */
     public function collect();
 

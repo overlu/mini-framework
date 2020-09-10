@@ -9,7 +9,6 @@ namespace Mini\Support\Traits;
 
 use CachingIterator;
 use Closure;
-use Exception;
 use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\Support\Jsonable;
 use Mini\Support\Arr;

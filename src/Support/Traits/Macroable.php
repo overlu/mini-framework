@@ -33,7 +33,7 @@ trait Macroable
      * @param array $parameters
      *
      * @return mixed
-     * @throws \BadMethodCallException
+     * @throws BadMethodCallException
      */
     public static function __callStatic($method, $parameters)
     {
@@ -59,7 +59,7 @@ trait Macroable
      * @param array $parameters
      *
      * @return mixed
-     * @throws \BadMethodCallException
+     * @throws BadMethodCallException
      */
     public function __call($method, $parameters)
     {

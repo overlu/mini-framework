@@ -3,6 +3,7 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+
 namespace Mini\Database\Mysql\Eloquent;
 
 use Mini\Contracts\Queue\QueueableCollection;
@@ -363,7 +364,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param bool $strict
      * @return static|\Mini\Support\Collection
      */
-    public function unique($key = null, bool $strict = false): self
+    public function unique($key = null, $strict = false): self
     {
         if (!is_null($key)) {
             return parent::unique($key, $strict);
@@ -505,7 +506,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * Get a flattened array of the items in the collection.
      *
      * @param int $depth
-     * @return \Mini\Support\Collection
+     * @return Collection
      */
     public function flatten($depth = INF): self
     {
