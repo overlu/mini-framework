@@ -28,7 +28,7 @@ abstract class AbstractServer
 
     protected array $config;
 
-    protected string $type = 'Custom';
+    protected string $type = '';
 
     protected int $worker_num = 1;
 
@@ -37,9 +37,10 @@ abstract class AbstractServer
      * @throws Throwable
      * @throws InvalidResponseException
      */
-    public function __construct()
+    public function __construct($type = '')
     {
         try {
+            $this->type = $this->type ?: $type;
             $this->initialize();
             $this->server->on('workerStart', [$this, 'onWorkerStart']);
             $this->server->set($this->config['settings']);
@@ -50,8 +51,7 @@ abstract class AbstractServer
                 $this->server->on('start', [$this, 'onStart']);
             }
             foreach ($this->config['callbacks'] as $eventKey => $callbackItem) {
-                [$class, $func] = $callbackItem;
-                $this->server->on($eventKey, [$class, $func]);
+                $this->server->on($eventKey, $callbackItem);
             }
             $this->server->start();
         } catch (Throwable $throwable) {
@@ -67,7 +67,7 @@ abstract class AbstractServer
      */
     public function onStart(Server $server): void
     {
-        Command::infoWithTime("🚀 Mini {$this->type} Server [{$this->worker_num} workers] running：http://{$this->config['ip']}:{$this->config['port']}...");
+        Command::infoWithTime("🚀 Mini {$this->type} Server [{$this->worker_num} workers] running：{$this->config['ip']}:{$this->config['port']}...");
         Listener::getInstance()->listen('start', $server);
         if (config('mini.hot_reload') && config('mini.env', 'local') !== 'production') {
             Runner::start();
@@ -96,7 +96,7 @@ abstract class AbstractServer
      */
     public function onManagerStart(Server $server): void
     {
-        Command::infoWithTime("🚀 Mini {$this->type} Server running：http://{$this->config['ip']}:{$this->config['port']}...");
+        Command::infoWithTime("🚀 Mini {$this->type} Server [{$this->worker_num} workers] running：{$this->config['ip']}:{$this->config['port']}...\"");
         Listener::getInstance()->listen('managerStart', $server);
     }
 
@@ -112,17 +112,17 @@ abstract class AbstractServer
 
     public function onReceive(Server $server, $fd, $fromId, $data): void
     {
-//        Listener::getInstance()->listen('receive', $server);
+        Listener::getInstance()->listen('receive', $server);
     }
 
     public function onTask(Server $server): void
     {
-//        Listener::getInstance()->listen('task', $server);
+        Listener::getInstance()->listen('task', $server);
     }
 
     public function onFinish(Server $server): void
     {
-//        Listener::getInstance()->listen('finish', $server);
+        Listener::getInstance()->listen('finish', $server);
     }
 
 }

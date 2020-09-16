@@ -51,6 +51,28 @@ class Str
     }
 
     /**
+     * Return the remainder of a string after the last occurrence of a given value.
+     *
+     * @param string $subject
+     * @param string $search
+     * @return string
+     */
+    public static function afterLast($subject, $search): string
+    {
+        if ($search === '') {
+            return $subject;
+        }
+
+        $position = strrpos($subject, (string)$search);
+
+        if ($position === false) {
+            return $subject;
+        }
+
+        return substr($subject, $position + strlen($search));
+    }
+
+    /**
      * Transliterate a UTF-8 value to ASCII.
      *
      * @param string $value
@@ -85,6 +107,45 @@ class Str
     }
 
     /**
+     * Get the portion of a string before the last occurrence of a given value.
+     *
+     * @param string $subject
+     * @param string $search
+     * @return string
+     */
+    public static function beforeLast($subject, $search): string
+    {
+        if ($search === '') {
+            return $subject;
+        }
+
+        $pos = mb_strrpos($subject, $search);
+
+        if ($pos === false) {
+            return $subject;
+        }
+
+        return static::substr($subject, 0, $pos);
+    }
+
+    /**
+     * Get the portion of a string between two given values.
+     *
+     * @param string $subject
+     * @param string $from
+     * @param string $to
+     * @return string
+     */
+    public static function between($subject, $from, $to): string
+    {
+        if ($from === '' || $to === '') {
+            return $subject;
+        }
+
+        return static::beforeLast(static::after($subject, $from), $to);
+    }
+
+    /**
      * Convert a value to camel case.
      *
      * @param string $value
@@ -115,6 +176,24 @@ class Str
         }
 
         return false;
+    }
+
+    /**
+     * Determine if a given string contains all array values.
+     *
+     * @param string $haystack
+     * @param string[] $needles
+     * @return bool
+     */
+    public static function containsAll($haystack, array $needles): bool
+    {
+        foreach ($needles as $needle) {
+            if (!static::contains($haystack, $needle)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -373,6 +452,17 @@ class Str
         }
 
         return $subject;
+    }
+
+    /**
+     * Get a new stringable object from the given string.
+     *
+     * @param string $string
+     * @return Stringable
+     */
+    public static function of($string): Stringable
+    {
+        return new Stringable($string);
     }
 
     /**
