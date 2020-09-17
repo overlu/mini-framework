@@ -34,8 +34,9 @@ abstract class AbstractServer
 
     /**
      * AbstractServer constructor.
-     * @throws Throwable
+     * @param string $type
      * @throws InvalidResponseException
+     * @throws Throwable
      */
     public function __construct($type = '')
     {
@@ -67,7 +68,8 @@ abstract class AbstractServer
      */
     public function onStart(Server $server): void
     {
-        Command::infoWithTime("🚀 Mini {$this->type} Server [{$this->worker_num} workers] running：{$this->config['ip']}:{$this->config['port']}...");
+        $type = ucfirst($this->type);
+        Command::infoWithTime("🚀 Mini {$type} Server [{$this->worker_num} workers] running：{$this->config['ip']}:{$this->config['port']}...");
         Listener::getInstance()->listen('start', $server);
         if (config('mini.hot_reload') && config('mini.env', 'local') !== 'production') {
             Runner::start();
@@ -96,7 +98,8 @@ abstract class AbstractServer
      */
     public function onManagerStart(Server $server): void
     {
-        Command::infoWithTime("🚀 Mini {$this->type} Server [{$this->worker_num} workers] running：{$this->config['ip']}:{$this->config['port']}...\"");
+        $type = ucfirst($this->type);
+        Command::infoWithTime("🚀 Mini {$type} Server [{$this->worker_num} workers] running：{$this->config['ip']}:{$this->config['port']}...\"");
         Listener::getInstance()->listen('managerStart', $server);
     }
 
@@ -110,19 +113,18 @@ abstract class AbstractServer
         }
     }
 
-    public function onReceive(Server $server, $fd, $fromId, $data): void
-    {
-        Listener::getInstance()->listen('receive', $server);
-    }
-
-    public function onTask(Server $server): void
-    {
-        Listener::getInstance()->listen('task', $server);
-    }
-
-    public function onFinish(Server $server): void
-    {
-        Listener::getInstance()->listen('finish', $server);
-    }
-
+//    public function onReceive(Server $server, $fd, $fromId, $data): void
+//    {
+//        Listener::getInstance()->listen('receive', $server);
+//    }
+//
+//    public function onTask(Server $server): void
+//    {
+//        Listener::getInstance()->listen('task', $server);
+//    }
+//
+//    public function onFinish(Server $server): void
+//    {
+//        Listener::getInstance()->listen('finish', $server);
+//    }
 }

@@ -9,7 +9,7 @@ namespace Mini\Service\Server;
 
 use Swoole\WebSocket\Server;
 
-class WebSocket extends AbstractServer
+class WebSocket extends HttpServer
 {
     protected string $type = 'WebSocket';
 
@@ -18,12 +18,7 @@ class WebSocket extends AbstractServer
         $this->config = config('servers.ws');
         $this->worker_num = $this->config['settings']['worker_num'] ?? 1;
         $this->server = new Server($this->config['ip'], $this->config['port'], $this->config['mode']);
+        $this->server->on('request', [$this, 'onRequest']);
         \Mini\Server::getInstance()->set(self::class, $this->server);
-    }
-
-    public function onWorkerStart(\Swoole\Server $server, int $workerId): void
-    {
-//            $this->route = Route::getInstance();
-        parent::onWorkerStart($server, $workerId);
     }
 }

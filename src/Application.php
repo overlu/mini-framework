@@ -19,7 +19,7 @@ use Mini\Support\Command;
 
 class Application
 {
-    public static string $version = '1.1.1';
+    public static string $version = '1.1.2';
 
     public static array $mapping = [
         'http' => HttpServer::class,
