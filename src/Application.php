@@ -42,20 +42,22 @@ class Application
         $env = ucfirst(env('APP_ENV', 'local'));
         $timezone = ini_get('date.timezone');
         $info = <<<EOL
-     ___  ___   _   __   _   _  
-    /   |/   | | | |  \ | | | | 
-   / /|   /| | | | |   \| | | | 
-  / / |__/ | | | | | |\   | | | 
- / /       | | | | | | \  | | | 
-/_/        |_| |_| |_|  \_| |_| \n
+ _______ _____ __   _ _____
+ |  |  |   |   | \  |   |  
+ |  |  | __|__ |  \_| __|__\n
 EOL;
         Command::line($info);
         $data = [
-            'Application name' => "\e[0;32m{$appName}\e[0m",
-            'Application Environment' => "\e[0;32m{$env}\e[0m",
-            'Mini/PHP/Swoole version' => "\e[0;32m{$appVersion}/{$phpVersion}/{$swooleVersion}\e[0m",
-            'OS version' => "\e[0;32m{$serverOs}\e[0m",
-            'Timezone' => "\e[0;32m{$timezone}\e[0m",
+            "App Information" => [
+                'Name' => "\e[0;32m{$appName}\e[0m",
+                'Mini' => "\e[0;32m{$appVersion}\e[0m",
+                'Timezone' => "\e[0;32m{$timezone}\e[0m",
+            ],
+            'System Information' => [
+                'OS' => "\e[0;32m{$serverOs}\e[0m",
+                'PHP' => "\e[0;32m{$phpVersion}\e[0m",
+                'Swoole' => "\e[0;32m{$swooleVersion}\e[0m",
+            ],
         ];
         Panel::show($data, '');
     }

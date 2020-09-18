@@ -601,7 +601,7 @@ if (!function_exists('http_build_url')) {
     }
 }
 
-if (!function_exists('sys_error_format')) {
+if (!function_exists('http_error_fornat')) {
     /**
      * 系统错误信息式化
      * @param $error_message
@@ -609,7 +609,7 @@ if (!function_exists('sys_error_format')) {
      * @return string
      * @throws JsonException
      */
-    function sys_error_format($error_message, $code = 0)
+    function http_error_format($error_message, $code = 0)
     {
         $error_info = [
             'requestId' => \SeasLog::getRequestID(),
@@ -621,7 +621,30 @@ if (!function_exists('sys_error_format')) {
             'method' => request()->getMethod(),
             'data' => []
         ];
-        return json_encode($error_info, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        return json_encode($error_info, JSON_UNESCAPED_UNICODE);
+    }
+}
+
+if (!function_exists('ws_error_format')) {
+    /**
+     * 系统错误信息式化
+     * @param $error_message
+     * @param int $code
+     * @return string
+     * @throws JsonException
+     */
+    function ws_error_format($error_message, $code = 0)
+    {
+        $error_info = [
+            'requestId' => \SeasLog::getRequestID(),
+            'status' => [
+                'success' => false,
+                'message' => $error_message,
+                'code' => $code,
+            ],
+            'data' => []
+        ];
+        return json_encode($error_info, JSON_UNESCAPED_UNICODE);
     }
 }
 
@@ -763,7 +786,7 @@ if (!function_exists('abort')) {
             $response->withStatus($code)
                 ->withAddedHeader('content-type', 'application/json;charset=UTF-8')
                 ->withHeader('Server', 'Mini')
-                ->raw(sys_error_format($message, $code))
+                ->raw(http_error_fornat($message, $code))
                 ->send(true);
             return '#%Mini::abort%#';
         }

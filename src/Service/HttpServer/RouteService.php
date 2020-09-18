@@ -35,7 +35,8 @@ class RouteService
     /**
      * @var Dispatcher
      */
-    private static Dispatcher $dispatcher;
+    private static Dispatcher $httpDispatcher;
+    private static Dispatcher $wsDispatcher;
 
     private function __construct()
     {
@@ -46,9 +47,17 @@ class RouteService
     /**
      * @param array $route
      */
-    public static function register(array $route): void
+    public static function registerHttpRoute(array $route): void
     {
-        self::$routes[] = $route;
+        self::$routes['http'][] = $route;
+    }
+
+    /**
+     * @param array $route
+     */
+    public static function registerWsRoute(array $route): void
+    {
+        self::$routes['ws'][] = $route;
     }
 
     private static function parasMethod($method): array
@@ -63,9 +72,9 @@ class RouteService
     {
         if (!isset(self::$instance)) {
             self::$instance = new self();
-            self::$dispatcher = cachedDispatcher(
+            self::$httpDispatcher = cachedDispatcher(
                 static function (RouteCollector $routerCollector) {
-                    foreach (self::$routes as $group => $route) {
+                    foreach (self::$routes['http'] ?? [] as $group => $route) {
                         if (is_string($group) && is_array($route[0])) {
                             $routerCollector->addGroup('/' . ltrim($group, '/'), static function (RouteCollector $routerCollector) use ($route) {
                                 foreach ($route as $r) {
@@ -79,7 +88,27 @@ class RouteService
                     }
                 },
                 [
-                    'cacheFile' => BASE_PATH . '/storage/app/route.cache', /* required 缓存文件路径，必须设置 */
+                    'cacheFile' => BASE_PATH . '/storage/app/http.route.cache', /* required 缓存文件路径，必须设置 */
+                    'cacheDisabled' => static::$cached,     /* optional, enabled by default 是否缓存，可选参数，默认情况下开启 */
+                ]
+            );
+            self::$wsDispatcher = cachedDispatcher(
+                static function (RouteCollector $routerCollector) {
+                    foreach (self::$routes['ws'] ?? [] as $group => $route) {
+                        if (is_string($group) && is_array($route[0])) {
+                            $routerCollector->addGroup('/' . ltrim($group, '/'), static function (RouteCollector $routerCollector) use ($route) {
+                                foreach ($route as $r) {
+                                    $uri = trim($r[1], '/');
+                                    $routerCollector->addRoute('GET', $uri ? '/' . $uri : '', $r[2]);
+                                }
+                            });
+                        } else {
+                            $routerCollector->addRoute('GET', '/' . ltrim($route[1], '/'), $route[2]);
+                        }
+                    }
+                },
+                [
+                    'cacheFile' => BASE_PATH . '/storage/app/ws.route.cache', /* required 缓存文件路径，必须设置 */
                     'cacheDisabled' => static::$cached,     /* optional, enabled by default 是否缓存，可选参数，默认情况下开启 */
                 ]
             );
@@ -89,16 +118,15 @@ class RouteService
 
     /**
      * @param Request $request
-     * @param Response $response
      * @return mixed
      * @throws ReflectionException
      * @throws Throwable
      */
-    public function dispatch(Request $request, Response $response)
+    public function dispatch(Request $request)
     {
         $method = $request->server['request_method'] ?? 'GET';
         $uri = $request->server['request_uri'] ?? '/';
-        $routeInfo = self::$dispatcher->dispatch($method, $uri);
+        $routeInfo = self::$httpDispatcher->dispatch($method, $uri);
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
                 return $this->defaultRouter($uri);
@@ -133,6 +161,57 @@ class RouteService
                 return $this->defaultRouter($uri);
         }
         return $this->defaultRouter($uri);
+    }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     * @throws ReflectionException
+     * @throws Throwable
+     */
+    public function dispatchWs(Request $request)
+    {
+        $method = $request->server['request_method'] ?? 'GET';
+        $uri = $request->server['request_uri'] ?? '/';
+        $routeInfo = self::$wsDispatcher->dispatch($method, $uri);
+        switch ($routeInfo[0]) {
+            case Dispatcher::NOT_FOUND:
+                return ['error' => 'method not found.', 'code' => 404];
+                break;
+            case Dispatcher::METHOD_NOT_ALLOWED:
+                return ['error' => 'method not allowed, please change method to GET', 'code' => 405];
+                break;
+            case Dispatcher::FOUND:
+                $handler = $routeInfo[1];
+                if (is_string($handler)) {
+                    $handler = explode('@', $handler);
+                    if (count($handler) !== 2) {
+                        throw new RuntimeException("Router {$uri} config error, Only @ are supported");
+                    }
+                    $className = '\\App\\Controllers\\' . $handler[0];
+                    $func = $handler[1];
+                    if (!class_exists($className)) {
+                        throw new RuntimeException("Router {$uri} defined Class Not Found");
+                    }
+                    if (!method_exists($className, $func)) {
+                        throw new RuntimeException("Router {$uri} defined {$func} Method Not Found");
+                    }
+                    return [
+                        'class' => $className,
+                        'method' => $func,
+                        'data' => $routeInfo[2]
+                    ];
+                }
+                if (is_callable($handler)) {
+                    return $handler;
+                }
+                return ['error' => 'method not found.', 'code' => 404];
+        }
+        return [
+            'class' => IndexController::class,
+            'method' => 'index',
+            'data' => []
+        ];
     }
 
     /**
