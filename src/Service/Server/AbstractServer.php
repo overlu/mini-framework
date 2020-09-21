@@ -106,7 +106,6 @@ abstract class AbstractServer
     public function onRequest(Request $request, Response $response): void
     {
         try {
-            BaseRequestService::getInstance()->before($request, $response);
             Listener::getInstance()->listen('request', $request, $response);
         } catch (Throwable $throwable) {
             Command::error($throwable);

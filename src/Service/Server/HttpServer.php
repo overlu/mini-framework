@@ -72,6 +72,7 @@ class HttpServer extends AbstractServer
         parent::onRequest($request, $response);
         try {
             [$psr7Request, $psr7Response] = $this->initRequestAndResponse($request, $response);
+            BaseRequestService::getInstance()->before();
             $resp = $this->route->dispatch($request);
             if ($resp === '#%Mini::abort%#') {
                 return;
@@ -83,7 +84,7 @@ class HttpServer extends AbstractServer
                 return;
             }
             $resp = $resp->withHeader('Server', 'Mini');
-            BaseRequestService::getInstance()->after($request, $response);
+            $resp = BaseRequestService::getInstance()->after($resp);
             if ($psr7Request->getMethod() === 'HEAD') {
                 $resp->send(false);
             } else {

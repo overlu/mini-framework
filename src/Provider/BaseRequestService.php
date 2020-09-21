@@ -7,10 +7,9 @@ declare(strict_types=1);
 
 namespace Mini\Provider;
 
+use Mini\Contracts\HttpMessage\ResponseInterface;
 use Mini\Contracts\ServiceRequestInterface;
 use Mini\Singleton;
-use Swoole\Http\Request;
-use Swoole\Http\Response;
 
 class BaseRequestService
 {
@@ -23,23 +22,24 @@ class BaseRequestService
         $this->services = config('app.requests', []);
     }
 
-    public function before(Request $request, Response $response): void
+    public function before()
     {
         foreach ($this->services as $service) {
             $service = new $service;
             if ($service instanceof ServiceRequestInterface) {
-                $service->before($request, $response);
+                $service->before();
             }
         }
     }
 
-    public function after(Request $request, Response $response): void
+    public function after(\Psr\Http\Message\ResponseInterface $response)
     {
         foreach ($this->services as $service) {
             $service = new $service;
             if ($service instanceof ServiceRequestInterface) {
-                $service->after($request, $response);
+                $response = $service->after($response);
             }
         }
+        return $response;
     }
 }

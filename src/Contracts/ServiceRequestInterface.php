@@ -7,12 +7,17 @@ declare(strict_types=1);
 
 namespace Mini\Contracts;
 
+use Mini\Contracts\HttpMessage\ResponseInterface;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 
 interface ServiceRequestInterface
 {
-    public function before(Request $request, Response $response): void;
+    public function before();
 
-    public function after(Request $request, Response $response): void;
+    /**
+     * @param Mini\Service\HttpServer\Response | Mini\Service\HttpMessage\Server\Response $response
+     * @return mixed
+     */
+    public function after(\Psr\Http\Message\ResponseInterface $response);
 }

@@ -14,13 +14,13 @@ use Swoole\Http\Response;
 
 class LoggingRequestProvider implements ServiceRequestInterface
 {
-    public function before(Request $request, Response $response): void
+    public function before()
     {
         Seaslog::setRequestID(uniqid('', true));
     }
 
-    public function after(Request $request, Response $response): void
+    public function after($response)
     {
-        $response->setHeader('mini-request-id', Seaslog::getRequestID());
+        return $response->withHeader('mini-request-id', Seaslog::getRequestID());
     }
 }
