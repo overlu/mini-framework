@@ -98,12 +98,12 @@ class RouteService
                         if (is_string($group) && is_array($route[0])) {
                             $routerCollector->addGroup('/' . ltrim($group, '/'), static function (RouteCollector $routerCollector) use ($route) {
                                 foreach ($route as $r) {
-                                    $uri = trim($r[1], '/');
-                                    $routerCollector->addRoute('GET', $uri ? '/' . $uri : '', $r[2]);
+                                    $uri = trim($r[0], '/');
+                                    $routerCollector->addRoute('GET', $uri ? '/' . $uri : '', $r[1]);
                                 }
                             });
                         } else {
-                            $routerCollector->addRoute('GET', '/' . ltrim($route[1], '/'), $route[2]);
+                            $routerCollector->addRoute('GET', '/' . ltrim($route[0], '/'), $route[1]);
                         }
                     }
                 },
@@ -193,9 +193,11 @@ class RouteService
                     if (!class_exists($className)) {
                         throw new RuntimeException("Router {$uri} defined Class Not Found");
                     }
-                    if (!method_exists($className, $func)) {
+                    $controller = new $className($func);
+                    if (!method_exists($controller, $func)) {
                         throw new RuntimeException("Router {$uri} defined {$func} Method Not Found");
                     }
+                    $method = (new ReflectionMethod($controller, $func));
                     return [
                         'class' => $className,
                         'method' => $func,
@@ -203,7 +205,10 @@ class RouteService
                     ];
                 }
                 if (is_callable($handler)) {
-                    return $handler;
+                    return [
+                        'callbale' => $handler,
+                        'data' => $routeInfo[2]
+                    ];
                 }
                 return ['error' => 'method not found.', 'code' => 404];
         }

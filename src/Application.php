@@ -19,7 +19,7 @@ use Mini\Support\Command;
 
 class Application
 {
-    public static string $version = '1.1.2';
+    public static string $version = '1.1.3';
 
     public static array $mapping = [
         'http' => HttpServer::class,
@@ -50,6 +50,7 @@ EOL;
         $data = [
             "App Information" => [
                 'Name' => "\e[0;32m{$appName}\e[0m",
+                'Env' => "\e[0;32m{$env}\e[0m",
                 'Mini' => "\e[0;32m{$appVersion}\e[0m",
                 'Timezone' => "\e[0;32m{$timezone}\e[0m",
             ],

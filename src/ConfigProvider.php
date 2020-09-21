@@ -11,6 +11,7 @@ use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Contracts\HttpMessage\ResponseInterface;
 use Mini\Service\HttpServer\Request;
 use Mini\Service\HttpServer\Response;
+
 class ConfigProvider
 {
     public static function _invoke(): array
