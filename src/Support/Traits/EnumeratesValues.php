@@ -108,7 +108,7 @@ trait EnumeratesValues
      * @param array|static $value
      * @return array
      */
-    public static function unwrap($value): array
+    public static function unwrap($value)
     {
         return $value instanceof Enumerable ? $value->all() : $value;
     }
@@ -132,7 +132,7 @@ trait EnumeratesValues
      * @param mixed $value
      * @return bool
      */
-    public function some($key, $operator = null, $value = null): bool
+    public function some($key, $operator = null, $value = null)
     {
         return $this->contains(...func_get_args());
     }
@@ -144,7 +144,7 @@ trait EnumeratesValues
      * @param mixed $value
      * @return bool
      */
-    public function containsStrict($key, $value = null): bool
+    public function containsStrict($key, $value = null)
     {
         if (func_num_args() === 2) {
             return $this->contains(function ($item) use ($key, $value) {
@@ -171,7 +171,7 @@ trait EnumeratesValues
      * @param mixed ...$args
      * @return void
      */
-    public function dd(...$args): void
+    public function dd(...$args)
     {
         call_user_func_array([$this, 'dump'], $args);
 
@@ -183,7 +183,7 @@ trait EnumeratesValues
      *
      * @return $this
      */
-    public function dump(): self
+    public function dump()
     {
         (new static(func_get_args()))
             ->push($this)
@@ -200,7 +200,7 @@ trait EnumeratesValues
      * @param callable $callback
      * @return $this
      */
-    public function each(callable $callback): self
+    public function each(callable $callback)
     {
         foreach ($this as $key => $item) {
             if ($callback($item, $key) === false) {
@@ -234,7 +234,7 @@ trait EnumeratesValues
      * @param mixed $value
      * @return bool
      */
-    public function every($key, $operator = null, $value = null): bool
+    public function every($key, $operator = null, $value = null)
     {
         if (func_num_args() === 1) {
             $callback = $this->valueRetriever($key);
@@ -269,7 +269,7 @@ trait EnumeratesValues
      *
      * @return bool
      */
-    public function isNotEmpty(): bool
+    public function isNotEmpty()
     {
         return !$this->isEmpty();
     }
@@ -676,7 +676,7 @@ trait EnumeratesValues
      * @param callable $callback
      * @return $this
      */
-    public function tap(callable $callback): self
+    public function tap(callable $callback)
     {
         $callback(clone $this);
 

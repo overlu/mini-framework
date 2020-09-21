@@ -14,12 +14,12 @@ class Composer
     /**
      * @var Collection
      */
-    private static Collection $content;
+    private static ?Collection $content = null;
 
     /**
      * @var Collection
      */
-    private static Collection $json;
+    private static ?Collection $json = null;
 
     /**
      * @var array
@@ -41,9 +41,9 @@ class Composer
      */
     public static function getLockContent(): Collection
     {
-        if (! self::$content) {
+        if (!self::$content) {
             $path = self::discoverLockFile();
-            if (! $path) {
+            if (!$path) {
                 throw new \RuntimeException('composer.lock not found.');
             }
             self::$content = collect(json_decode(file_get_contents($path), true));
@@ -75,9 +75,9 @@ class Composer
 
     public static function getJsonContent(): Collection
     {
-        if (! self::$json) {
+        if (!self::$json) {
             $path = BASE_PATH . '/composer.json';
-            if (! is_readable($path)) {
+            if (!is_readable($path)) {
                 throw new \RuntimeException('composer.json is not readable.');
             }
             self::$json = collect(json_decode(file_get_contents($path), true));
@@ -96,7 +96,7 @@ class Composer
 
     public static function getMergedExtra(string $key = null): array
     {
-        if (! self::$extra) {
+        if (!self::$extra) {
             self::getLockContent();
         }
         if ($key === null) {
@@ -133,7 +133,7 @@ class Composer
                 break;
             }
         }
-        if (! $composerClass) {
+        if (!$composerClass) {
             throw new \RuntimeException('Composer loader not found.');
         }
         return $composerClass::getLoader();

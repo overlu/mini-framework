@@ -53,16 +53,16 @@ if (!function_exists('app')) {
     }*/
     function app(?string $abstract = null, array $parameters = [])
     {
-        if (is_null($abstract)) {
+        /*if (is_null($abstract)) {
             return Di::getInstance();
         }
 
-        return Di::getInstance()->make($abstract, $parameters);
-        /*if (is_null($abstract)) {
+        return Di::getInstance()->make($abstract, $parameters);*/
+        if (is_null($abstract)) {
             return Container::getInstance();
         }
 
-        return Container::getInstance()->make($abstract, $parameters);*/
+        return Container::getInstance()->make($abstract, $parameters);
     }
 }
 
@@ -541,7 +541,7 @@ if (!function_exists('request')) {
      */
     function request()
     {
-        return Di::getInstance()->make(Mini\Contracts\HttpMessage\RequestInterface::class);
+        return app(Mini\Contracts\HttpMessage\RequestInterface::class);
     }
 }
 
@@ -552,7 +552,7 @@ if (!function_exists('response')) {
      */
     function response()
     {
-        return Di::getInstance()->make(Mini\Contracts\HttpMessage\ResponseInterface::class);
+        return app(Mini\Contracts\HttpMessage\ResponseInterface::class);
     }
 }
 
@@ -601,7 +601,7 @@ if (!function_exists('http_build_url')) {
     }
 }
 
-if (!function_exists('http_error_fornat')) {
+if (!function_exists('http_error_format')) {
     /**
      * 系统错误信息式化
      * @param $error_message
@@ -786,7 +786,7 @@ if (!function_exists('abort')) {
             $response->withStatus($code)
                 ->withAddedHeader('content-type', 'application/json;charset=UTF-8')
                 ->withHeader('Server', 'Mini')
-                ->raw(http_error_fornat($message, $code))
+                ->raw(http_error_format($message, $code))
                 ->send(true);
             return '#%Mini::abort%#';
         }

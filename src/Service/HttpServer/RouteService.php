@@ -228,7 +228,7 @@ class RouteService
             $name = $param->getName();
             if ($type = $param->getType()) {
                 $key = $type->getName();
-                if (!$obj = Di::getInstance()->make($key)) {
+                if (!$obj = app()->make($key)) {
                     $obj = $this->getConfigProvider($key);
                 }
                 $data[$name] = $obj;

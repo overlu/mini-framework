@@ -147,7 +147,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param array $path
      * @return void
      */
-    protected function loadMissingRelation(self $models, array $path)
+    protected function loadMissingRelation($models, $path)
     {
         $relation = array_shift($path);
 
@@ -224,7 +224,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param mixed $value
      * @return bool
      */
-    public function contains($key, $operator = null, $value = null): bool
+    public function contains($key, $operator = null, $value = null)
     {
         if (func_num_args() > 1 || $this->useAsCallable($key)) {
             return parent::contains(...func_get_args());
@@ -259,7 +259,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param \ArrayAccess|array $items
      * @return static
      */
-    public function merge($items): self
+    public function merge($items)
     {
         $dictionary = $this->getDictionary();
 
@@ -276,7 +276,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param callable $callback
      * @return \Mini\Support\Collection|static
      */
-    public function map(callable $callback): self
+    public function map(callable $callback)
     {
         $result = parent::map($callback);
 
@@ -317,7 +317,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param \ArrayAccess|array $items
      * @return static
      */
-    public function diff($items): self
+    public function diff($items)
     {
         $diff = new static;
 
@@ -338,7 +338,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param \ArrayAccess|array $items
      * @return static
      */
-    public function intersect($items): self
+    public function intersect($items)
     {
         $intersect = new static;
 
@@ -364,7 +364,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param bool $strict
      * @return static|\Mini\Support\Collection
      */
-    public function unique($key = null, $strict = false): self
+    public function unique($key = null, $strict = false)
     {
         if (!is_null($key)) {
             return parent::unique($key, $strict);
@@ -379,7 +379,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param mixed $keys
      * @return static
      */
-    public function only($keys): self
+    public function only($keys)
     {
         if (is_null($keys)) {
             return new static($this->items);
@@ -396,7 +396,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param mixed $keys
      * @return static
      */
-    public function except($keys): self
+    public function except($keys)
     {
         $dictionary = Arr::except($this->getDictionary(), $keys);
 
@@ -466,7 +466,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param string|null $key
      * @return \Mini\Support\Collection
      */
-    public function pluck($value, ?string $key = null): self
+    public function pluck($value, $key = null)
     {
         return $this->toBase()->pluck($value, $key);
     }
@@ -476,7 +476,7 @@ class Collection extends BaseCollection implements QueueableCollection
      *
      * @return \Mini\Support\Collection
      */
-    public function keys(): self
+    public function keys()
     {
         return $this->toBase()->keys();
     }
@@ -487,7 +487,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param mixed ...$items
      * @return \Mini\Support\Collection
      */
-    public function zip($items): self
+    public function zip($items)
     {
         return call_user_func_array([$this->toBase(), 'zip'], func_get_args());
     }
@@ -497,7 +497,7 @@ class Collection extends BaseCollection implements QueueableCollection
      *
      * @return \Mini\Support\Collection
      */
-    public function collapse(): self
+    public function collapse()
     {
         return $this->toBase()->collapse();
     }
@@ -508,7 +508,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param int $depth
      * @return Collection
      */
-    public function flatten($depth = INF): self
+    public function flatten($depth = INF)
     {
         return $this->toBase()->flatten($depth);
     }
@@ -518,7 +518,7 @@ class Collection extends BaseCollection implements QueueableCollection
      *
      * @return \Mini\Support\Collection
      */
-    public function flip(): self
+    public function flip()
     {
         return $this->toBase()->flip();
     }
@@ -530,7 +530,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param mixed $value
      * @return \Mini\Support\Collection
      */
-    public function pad($size, $value): self
+    public function pad($size, $value)
     {
         return $this->toBase()->pad($size, $value);
     }

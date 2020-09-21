@@ -9,15 +9,9 @@ namespace Mini\Support;
 
 use ArrayAccess;
 use ArrayIterator;
-use Countable;
-use Mini\Contracts\Support\Arrayable;
-use Mini\Contracts\Support\Jsonable;
-use IteratorAggregate;
-use JsonSerializable;
 use Mini\Support\Traits\EnumeratesValues;
 use Mini\Support\Traits\Macroable;
 use stdClass;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Most of the methods in this file come from illuminate/support,
@@ -43,7 +37,7 @@ use Symfony\Component\VarDumper\VarDumper;
  * @property HigherOrderCollectionProxy $sum
  * @property HigherOrderCollectionProxy $unique
  */
-class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate, Jsonable, JsonSerializable
+class Collection implements ArrayAccess, Enumerable
 {
     use EnumeratesValues, Macroable;
 
