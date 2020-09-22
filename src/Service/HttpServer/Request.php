@@ -445,9 +445,13 @@ class Request implements RequestInterface
         return $this->call(__FUNCTION__, func_get_args());
     }
 
-    public function getClientIp()
+    public function getClientIP()
     {
-        return $this->server('remote_addr');
+        $ip = $this->server('remote_addr');
+        if (empty($ip) || $ip === '127.0.0.1') {
+            $ip = $this->header('x-real-ip');
+        }
+        return $ip ?: '127.0.0.1';
     }
 
     public function ip()
