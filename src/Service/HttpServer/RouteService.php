@@ -152,7 +152,11 @@ class RouteService
                     }
                     $method = (new ReflectionMethod($controller, $func));
                     $data = $this->initialParams($method, $routeInfo[2]);
-                    return $method->invokeArgs($controller, $data);
+                    $resp = $method->invokeArgs($controller, $data);
+                    if (method_exists($controller, 'afterRun')) {
+                        $resp = $controller->afterRun($resp);
+                    }
+                    return $resp;
                 }
                 if (is_callable($handler)) {
                     $data = $this->initialParams(new ReflectionFunction($handler), $routeInfo[2]);

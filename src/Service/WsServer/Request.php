@@ -33,4 +33,14 @@ class Request
         $data = $this->all();
         return $key === null ? $data : ($data[$key] ?? $default);
     }
+
+    public function getMethod()
+    {
+        return 'GET';
+    }
+
+    public function __call($name, $arguments)
+    {
+        return null;
+    }
 }
