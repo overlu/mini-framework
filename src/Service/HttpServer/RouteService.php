@@ -74,7 +74,8 @@ class RouteService
             self::$instance = new self();
             self::$httpDispatcher = cachedDispatcher(
                 static function (RouteCollector $routerCollector) {
-                    foreach (self::$routes['http'] ?? [] as $group => $route) {
+                    $httpRoutes = isset(self::$routes['ws']) ? (self::$routes['http'] ?? []) : self::$routes;
+                    foreach ($httpRoutes as $group => $route) {
                         if (is_string($group) && is_array($route[0])) {
                             $routerCollector->addGroup('/' . ltrim($group, '/'), static function (RouteCollector $routerCollector) use ($route) {
                                 foreach ($route as $r) {
