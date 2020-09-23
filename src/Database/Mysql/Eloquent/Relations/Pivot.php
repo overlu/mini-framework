@@ -24,5 +24,5 @@ class Pivot extends Model
      *
      * @var array
      */
-    protected $guarded = [];
+    protected array $guarded = [];
 }
