@@ -342,6 +342,12 @@ class Request implements RequestInterface
         return Arr::get($this->getUploadedFiles(), $key, $default);
     }
 
+    public function route(?string $key = null, $default = null)
+    {
+        $routes = $this->getRequest()->getSwooleRequest()->routes ?? [];
+        return $key ? ($routes[$key] ?? $default) : $routes;
+    }
+
     /**
      * Determine if the uploaded data contains a file.
      * @param string $key

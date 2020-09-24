@@ -137,6 +137,7 @@ class RouteService
                 break;
             case Dispatcher::FOUND:
                 $handler = $routeInfo[1];
+                $request->routes = $routeInfo[2] ?? [];
                 if (is_string($handler)) {
                     $handler = explode('@', $handler);
                     if (count($handler) !== 2) {
@@ -152,15 +153,15 @@ class RouteService
                         throw new RuntimeException("Router {$uri} defined {$func} Method Not Found");
                     }
                     $method = (new ReflectionMethod($controller, $func));
-                    $data = $this->initialParams($method, $routeInfo[2]);
-                    $resp = $method->invokeArgs($controller, $data);
-                    if (method_exists($controller, 'afterRun')) {
-                        $resp = $controller->afterRun($resp);
+                    $data = $this->initialParams($method, $routeInfo[2] ?? []);
+                    if (method_exists($controller, 'beforeDispatch') && $resp = $controller->beforeDispatch()) {
+                        return $resp;
                     }
-                    return $resp;
+                    $resp = $method->invokeArgs($controller, $data);
+                    return method_exists($controller, 'afterDispatch') ? $controller->afterDispatch($resp) : $resp;
                 }
                 if (is_callable($handler)) {
-                    $data = $this->initialParams(new ReflectionFunction($handler), $routeInfo[2]);
+                    $data = $this->initialParams(new ReflectionFunction($handler), $routeInfo[2] ?? []);
                     return call_user_func_array($handler, $data);
                 }
                 return $this->defaultRouter($uri);
