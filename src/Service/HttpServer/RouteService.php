@@ -172,7 +172,6 @@ class RouteService
     /**
      * @param Request $request
      * @return mixed
-     * @throws ReflectionException
      * @throws Throwable
      */
     public function dispatchWs(Request $request)
