@@ -19,6 +19,8 @@ class Handler implements HandlerInterface
 
     protected string $environment = 'production';
 
+    protected array $dontReport = [];
+
     protected Throwable $throwable;
 
     public function __construct(Throwable $throwable)
@@ -65,7 +67,7 @@ class Handler implements HandlerInterface
      */
     public function report(Throwable $throwable): void
     {
-        if (!$throwable instanceof ExitException) {
+        if ($this->checkDontReport() && !$throwable instanceof ExitException) {
             Command::line();
             Command::error($this->formatException($throwable));
             Command::line();
@@ -79,8 +81,10 @@ class Handler implements HandlerInterface
      */
     public function render(RequestInterface $request, Throwable $throwable): void
     {
-        abort(500, $this->formatResponseException($throwable));
-        Log::error($this->format($this->throwable));
+        if ($this->checkDontReport()) {
+            abort(500, $this->formatResponseException($throwable));
+            Log::error($this->format($this->throwable));
+        }
     }
 
     /**
@@ -120,4 +124,16 @@ class Handler implements HandlerInterface
         ];
     }
 
+    /**
+     * @return bool
+     */
+    private function checkDontReport(): bool
+    {
+        foreach ($this->dontReport as $throw) {
+            if ($this->throwable instanceof $throw) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
