@@ -607,7 +607,6 @@ if (!function_exists('http_error_format')) {
      * @param $error_message
      * @param int $code
      * @return string
-     * @throws JsonException
      */
     function http_error_format($error_message, $code = 0)
     {
@@ -631,12 +630,10 @@ if (!function_exists('ws_error_format')) {
      * @param $error_message
      * @param int $code
      * @return string
-     * @throws JsonException
      */
     function ws_error_format($error_message, $code = 0)
     {
         $error_info = [
-            'requestId' => \SeasLog::getRequestID(),
             'status' => [
                 'success' => false,
                 'message' => $error_message,
