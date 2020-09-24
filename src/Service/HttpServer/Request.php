@@ -642,7 +642,7 @@ class Request implements RequestInterface
     {
         $request = $this->getRequest();
         if (!method_exists($request, $name)) {
-            throw new \RuntimeException('Method not exist.');
+            throw new \RuntimeException('Method [' . $name . '] not exist.');
         }
         return $request->{$name}(...$arguments);
     }
