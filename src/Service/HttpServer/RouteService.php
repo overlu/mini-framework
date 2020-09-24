@@ -199,11 +199,9 @@ class RouteService
                     if (!class_exists($className)) {
                         throw new RuntimeException("Router {$uri} defined Class Not Found");
                     }
-                    $controller = new $className($func);
-                    if (!method_exists($controller, $func)) {
+                    if (!method_exists($className, $func)) {
                         throw new RuntimeException("Router {$uri} defined {$func} Method Not Found");
                     }
-                    $method = (new ReflectionMethod($controller, $func));
                     return [
                         'class' => $className,
                         'method' => $func,
