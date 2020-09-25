@@ -18,7 +18,7 @@ trait SizeTrait
      */
     protected function getValueSize($value): ?float
     {
-        if (is_int($value) || is_float($value)) {
+        if (is_numeric($value)) {
             return (float)$value;
         }
         if (is_string($value)) {
