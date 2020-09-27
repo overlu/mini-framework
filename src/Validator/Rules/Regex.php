@@ -29,6 +29,6 @@ class Regex extends Rule
     {
         $this->requireParameters($this->fillableParams);
         $regex = $this->parameter('regex');
-        return isset($value) && preg_match($regex, $value) > 0;
+        return preg_match($regex, $value) > 0;
     }
 }
