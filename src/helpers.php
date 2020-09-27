@@ -963,8 +963,20 @@ if (!function_exists('__')) {
      * @param $key
      * @return string
      */
-    function __(string $key): string
+    function __(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
     {
-        return Translate::getInstance()->get($key);
+        return Translate::getInstance()->get($id, $parameters, $domain, $locale);
+    }
+}
+
+if (!function_exists('trans')) {
+    /**
+     * translate
+     * @param $key
+     * @return string
+     */
+    function trans(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
+    {
+        return Translate::getInstance()->trans($id, $parameters, $domain, $locale);
     }
 }
