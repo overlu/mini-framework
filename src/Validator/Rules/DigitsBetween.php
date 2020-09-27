@@ -34,7 +34,7 @@ class DigitsBetween extends Rule
 
         $length = strlen((string)$value);
 
-        return !preg_match('/\D/', $value)
+        return isset($value) && !preg_match('/\D/', $value)
             && $length >= $min && $length <= $max;
     }
 }

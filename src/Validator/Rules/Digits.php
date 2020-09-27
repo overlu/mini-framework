@@ -31,7 +31,7 @@ class Digits extends Rule
 
         $length = (int)$this->parameter('length');
 
-        return !preg_match('/\D/', $value)
+        return isset($value) && !preg_match('/\D/', $value)
             && strlen((string)$value) === $length;
     }
 }

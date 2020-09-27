@@ -108,6 +108,6 @@ class Url extends Rule
      */
     public function validateJdbcScheme($value): bool
     {
-        return (bool)preg_match("/^jdbc:\w+:\/\//", $value);
+        return isset($value) && (bool)preg_match("/^jdbc:\w+:\/\//", $value);
     }
 }
