@@ -13,6 +13,7 @@ use Mini\Contracts\View\Factory;
 use Mini\Database\Redis\Pool;
 use Mini\Di;
 use Mini\Exceptions\InvalidResponseException;
+use Mini\Service\HttpMessage\Cookie\Cookie;
 use Mini\Service\HttpMessage\Stream\SwooleStream;
 use Mini\Support\ApplicationContext;
 use Mini\Support\Arr;
@@ -960,7 +961,10 @@ if (!function_exists('writeFailed')) {
 if (!function_exists('__')) {
     /**
      * translate
-     * @param $key
+     * @param string|null $id
+     * @param array $parameters
+     * @param string|null $domain
+     * @param string|null $locale
      * @return string
      */
     function __(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
@@ -972,11 +976,32 @@ if (!function_exists('__')) {
 if (!function_exists('trans')) {
     /**
      * translate
-     * @param $key
+     * @param string|null $id
+     * @param array $parameters
+     * @param string|null $domain
+     * @param string|null $locale
      * @return string
      */
     function trans(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
     {
         return Translate::getInstance()->trans($id, $parameters, $domain, $locale);
+    }
+}
+
+if (!function_exists('cookie')) {
+    /**
+     * @param string $name
+     * @param $value
+     * @param int $minutes
+     * @param string $path
+     * @param string $domain
+     * @param bool $secure
+     * @param bool $httpOnly
+     * @return Cookie
+     */
+    function cookie(string $name, $value, int $minutes = 0, string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = true)
+    {
+        $value = is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value;
+        return new Mini\Service\HttpMessage\Cookie\Cookie($name, $value, $minutes, $path, $domain, $secure, $httpOnly);
     }
 }
