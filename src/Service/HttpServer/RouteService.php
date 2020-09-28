@@ -154,7 +154,7 @@ class RouteService
                     }
                     $method = (new ReflectionMethod($controller, $func));
                     $data = $this->initialParams($method, $routeInfo[2] ?? []);
-                    if (method_exists($controller, 'beforeDispatch') && $resp = $controller->beforeDispatch()) {
+                    if (method_exists($controller, 'beforeDispatch') && $resp = $controller->beforeDispatch($func)) {
                         return $resp;
                     }
                     $resp = $method->invokeArgs($controller, $data);
