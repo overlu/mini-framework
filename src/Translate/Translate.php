@@ -40,7 +40,7 @@ class Translate
 
     public function get(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
     {
-        $trans = empty($parameters) ? ($this->translation[$this->locate][$id] ?? $id) : $this->trans($id, $parameters, $domain, $locale);
+        return empty($parameters) ? ($this->translation[$this->locate][$id] ?? $id) : $this->trans($id, $parameters, $domain, $locale);
     }
 
     public function trans(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
