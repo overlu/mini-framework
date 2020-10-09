@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini;
 
 use Mini\Console\Panel;
+use Mini\Console\Util\Format;
 use Mini\Service\Server\HelpServer;
 use Mini\Service\Server\HttpServer;
 use Mini\Service\Server\MiniServer;
@@ -19,7 +20,7 @@ use Mini\Support\Command;
 
 class Application
 {
-    public static string $version = '1.1.11';
+    public static string $version = '1.1.13';
 
     public static array $mapping = [
         'http' => HttpServer::class,
@@ -34,13 +35,6 @@ class Application
 
     public static function welcome(): void
     {
-        $appVersion = self::$version;
-        $swooleVersion = SWOOLE_VERSION;
-        $phpVersion = PHP_VERSION;
-        $serverOs = PHP_OS . '-' . php_uname('r') . '-' . php_uname('m');
-        $appName = env('APP_NAME', 'Mini App');
-        $env = ucfirst(env('APP_ENV', 'local'));
-        $timezone = ini_get('date.timezone');
         $info = <<<EOL
  _______ _____ __   _ _____
  |  |  |   |   | \  |   |  
@@ -49,15 +43,15 @@ EOL;
         Command::line($info);
         $data = [
             "App Information" => [
-                'Name' => "\e[0;32m{$appName}\e[0m",
-                'Env' => "\e[0;32m{$env}\e[0m",
-                'Mini' => "\e[0;32m{$appVersion}\e[0m",
-                'Timezone' => "\e[0;32m{$timezone}\e[0m",
+                'Name' => env('APP_NAME', 'Mini App'),
+                'Env' => ucfirst(env('APP_ENV', 'local')),
+                'Mini' => self::$version,
+                'Timezone' => ini_get('date.timezone'),
             ],
             'System Information' => [
-                'OS' => "\e[0;32m{$serverOs}\e[0m",
-                'PHP' => "\e[0;32m{$phpVersion}\e[0m",
-                'Swoole' => "\e[0;32m{$swooleVersion}\e[0m",
+                'OS' => PHP_OS . '-' . php_uname('r') . '-' . php_uname('m'),
+                'PHP' => PHP_VERSION,
+                'Swoole' => SWOOLE_VERSION,
             ],
         ];
         Panel::show($data, '');

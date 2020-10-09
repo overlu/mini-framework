@@ -130,6 +130,7 @@ class Table
             $colIndex = 0;
 
             foreach ((array)$row as $value) {
+                $value = Color::clearColor($value);
                 // collection column max width
                 if (isset($info['columnMaxWidth'][$colIndex])) {
                     $colWidth = mb_strlen($value, 'UTF-8');
@@ -204,7 +205,8 @@ class Table
             foreach ((array)$row as $value) {
                 $colMaxWidth = $info['columnMaxWidth'][$colIndex];
                 // format
-                $value = str_pad($value, (int)$colMaxWidth, ' ');
+                $temp_length = (int)$colMaxWidth - mb_strlen(Color::clearColor($value), 'UTF-8');
+                $value = $temp_length > 0 ? $value . str_repeat(' ', $temp_length) : str_pad($value, (int)$colMaxWidth, ' ');
                 $value = ColorTag::wrap($value, $opts['bodyStyle']);
                 $rowStr .= " {$value} {$colBorderChar}";
                 $colIndex++;
