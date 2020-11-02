@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Exceptions;
 
+use Mini\Context;
 use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Logging\Log;
 use Mini\Support\Command;
@@ -41,18 +42,17 @@ class Handler implements HandlerInterface
             return;
         }
         if ($this->environment !== 'production') {
-            $request = request();
             if (class_exists(\App\Exceptions\Handler::class)) {
                 $handler = new \App\Exceptions\Handler($this->throwable);
                 if ($handler instanceof HandlerInterface) {
-                    if ($response = response()) {
-                        $handler->render($request, $this->throwable);
+                    if (Context::has('IsInRequestEvent')) {
+                        $handler->render(request(), $this->throwable);
                     }
                     $handler->report($this->throwable);
                 }
             } else {
-                if ($response = response()) {
-                    $this->render($request, $this->throwable);
+                if (Context::has('IsInRequestEvent')) {
+                    $this->render(request(), $this->throwable);
                 }
                 $this->report($this->throwable);
             }

@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Service\Server;
 
+use Mini\Context;
 use Mini\Exceptions\Handler;
 use Mini\Exceptions\InvalidResponseException;
 use Mini\Listener;
@@ -14,6 +15,7 @@ use Mini\Provider\BaseProviderService;
 use Mini\Provider\BaseRequestService;
 use Mini\Service\Watch\Runner;
 use Mini\Support\Command;
+use Mini\Support\Coroutine;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Server;
@@ -32,6 +34,10 @@ abstract class AbstractServer
 
     protected int $worker_num = 1;
 
+    private $events = [
+        'shutdown', 'workerStart', 'workerStop', 'workerExit', 'connect', 'receive', 'packet', 'close', 'task', 'finish', 'pipeMessage', 'workerError', 'managerStop', 'beforeReload', 'afterReload', 'request', 'handShake', 'open', 'message'
+    ];
+
     /**
      * AbstractServer constructor.
      * @param string $type
@@ -43,20 +49,31 @@ abstract class AbstractServer
         try {
             $this->type = $this->type ?: $type;
             $this->initialize();
-            $this->server->on('workerStart', [$this, 'onWorkerStart']);
             $this->server->set($this->config['settings']);
-
-            if ($this->config['mode'] === SWOOLE_BASE) {
-                $this->server->on('managerStart', [$this, 'onManagerStart']);
-            } else {
-                $this->server->on('start', [$this, 'onStart']);
-            }
-            foreach ($this->config['callbacks'] as $eventKey => $callbackItem) {
-                $this->server->on($eventKey, $callbackItem);
-            }
+            $this->eventDispatch();
             $this->server->start();
         } catch (Throwable $throwable) {
             (new Handler($throwable))->throw();
+        }
+    }
+
+    private function eventDispatch()
+    {
+        foreach ($this->events as $event) {
+            $method = 'on' . ucfirst($event);
+            if (method_exists($this, $method)) {
+                $this->server->on($event, [$this, $method]);
+            }
+        }
+        foreach ($this->config['callbacks'] as $event => $callbackItem) {
+            if (!method_exists($this, 'on' . ucfirst($event))) {
+                $this->server->on($event, $callbackItem);
+            }
+        }
+        if ($this->config['mode'] === SWOOLE_BASE) {
+            $this->server->on('managerStart', [$this, 'onManagerStart']);
+        } else {
+            $this->server->on('start', [$this, 'onStart']);
         }
     }
 
@@ -106,6 +123,7 @@ abstract class AbstractServer
     public function onRequest(Request $request, Response $response): void
     {
         try {
+            Context::set('IsInRequestEvent', true);
             Listener::getInstance()->listen('request', $request, $response);
         } catch (Throwable $throwable) {
             Command::error($throwable);
@@ -117,13 +135,13 @@ abstract class AbstractServer
 //        Listener::getInstance()->listen('receive', $server);
 //    }
 //
-//    public function onTask(Server $server): void
-//    {
-//        Listener::getInstance()->listen('task', $server);
-//    }
-//
-//    public function onFinish(Server $server): void
-//    {
-//        Listener::getInstance()->listen('finish', $server);
-//    }
+    public function onTask(Server $server): void
+    {
+        Listener::getInstance()->listen('task', $server);
+    }
+
+    public function onFinish(Server $server): void
+    {
+        Listener::getInstance()->listen('finish', $server);
+    }
 }

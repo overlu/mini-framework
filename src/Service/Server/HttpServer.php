@@ -43,7 +43,6 @@ class HttpServer extends AbstractServer
         $this->config = config('servers.http', []);
         $this->worker_num = $this->config['settings']['worker_num'] ?? 1;
         $this->server = new Server($this->config['ip'], $this->config['port'], $this->config['mode'], $this->config['sock_type']);
-        $this->server->on('request', [$this, 'onRequest']);
         \Mini\Server::getInstance()->set(self::class, $this->server);
     }
 

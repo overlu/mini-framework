@@ -32,9 +32,6 @@ class WebSocket extends HttpServer
         $this->config = config('servers.ws');
         $this->worker_num = $this->config['settings']['worker_num'] ?? 1;
         $this->server = new Server($this->config['ip'], $this->config['port'], $this->config['mode']);
-        $this->server->on('request', [$this, 'onRequest']);
-        $this->server->on('open', [$this, 'onOpen']);
-        $this->server->on('message', [$this, 'OnMessage']);
         \Mini\Server::getInstance()->set(self::class, $this->server);
     }
 

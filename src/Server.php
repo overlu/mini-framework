@@ -23,10 +23,13 @@ class Server
         $this->container[$key] = $server;
     }
 
-    public function reload(): void
+    /**
+     * @param bool $only_reload_task_worker
+     */
+    public function reload(bool $only_reload_task_worker = false): void
     {
         foreach ($this->container as $server) {
-            $server->reload();
+            $server->reload($only_reload_task_worker);
         }
     }
 
