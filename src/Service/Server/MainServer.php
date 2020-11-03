@@ -9,10 +9,10 @@ namespace Mini\Service\Server;
 
 class MainServer extends AbstractServer
 {
+    protected string $type = 'Main';
+
     public function initialize(): void
     {
-        $this->config = config('servers.main');
-        $this->worker_num = $this->config['settings']['worker_num'] ?? 1;
         $this->server = new $this->config['class_name'](
             $this->config['ip'],
             $this->config['port'],
@@ -37,6 +37,5 @@ class MainServer extends AbstractServer
                 }
             }
         }
-        \Mini\Server::getInstance()->set(self::class, $this->server);
     }
 }

@@ -16,10 +16,7 @@ class MqttServer extends AbstractServer
 
     public function initialize(): void
     {
-        $this->config = config('servers.mqtt');
-        $this->worker_num = $this->config['settings']['worker_num'] ?? 1;
         $this->server = new Server($this->config['ip'], $this->config['port'], $this->config['mode']);
-        \Mini\Server::getInstance()->set(self::class, $this->server);
     }
 
     public function onReceive(Server $server, $fd, $fromId, $data): void

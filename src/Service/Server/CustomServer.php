@@ -11,7 +11,6 @@ class CustomServer extends AbstractServer
 {
     public function initialize(): void
     {
-        $this->config = config('servers.' . $this->type);
         $this->worker_num = $this->config['settings']['worker_num'] ?? 1;
         $serverClass = $this->config['class_name'] ?? \Swoole\Server::class;
         $this->server = new $serverClass(
@@ -38,6 +37,5 @@ class CustomServer extends AbstractServer
                 }
             }
         }
-        \Mini\Server::getInstance()->set(self::class, $this->server);
     }
 }

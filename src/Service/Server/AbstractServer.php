@@ -40,17 +40,23 @@ abstract class AbstractServer
 
     /**
      * AbstractServer constructor.
-     * @param string $type
+     * @param string $key
      * @throws InvalidResponseException
      * @throws Throwable
      */
-    public function __construct($type = '')
+    public function __construct($key = '')
     {
         try {
-            $this->type = $this->type ?: $type;
+            $this->key = $key;
+            $this->config = config('servers.' . $this->key, []);
+            if (empty($this->config)) {
+                throw new \Exception('server key: [' . $this->key . '] not exists in config/servers.php');
+            }
+            $this->worker_num = $this->config['settings']['worker_num'] ?? 1;
             $this->initialize();
             $this->server->set($this->config['settings']);
             $this->eventDispatch();
+            \Mini\Server::getInstance()->set(self::class, $this->server);
             $this->server->start();
         } catch (Throwable $throwable) {
             (new Handler($throwable))->throw();
@@ -85,7 +91,7 @@ abstract class AbstractServer
      */
     public function onStart(Server $server): void
     {
-        $type = ucfirst($this->type);
+        $type = ucfirst($this->type ?: $this->key);
         Command::infoWithTime("🚀 Mini {$type} Server [{$this->worker_num} workers] running：{$this->config['ip']}:{$this->config['port']}...");
         Listener::getInstance()->listen('start', $server);
         if (config('mini.hot_reload') && config('mini.env', 'local') !== 'production') {

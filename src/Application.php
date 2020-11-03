@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini;
 
 use Mini\Console\Panel;
+use Mini\Service\Server\CustomServer;
 use Mini\Service\Server\HelpServer;
 use Mini\Service\Server\HttpServer;
 use Mini\Service\Server\MiniServer;
@@ -19,7 +20,7 @@ use Mini\Support\Command;
 
 class Application
 {
-    public static string $version = '1.1.15';
+    public static string $version = '1.1.16';
 
     public static array $mapping = [
         'http' => HttpServer::class,
@@ -67,8 +68,9 @@ EOL;
         if ($argv[1] === 'stop') {
             new StopServer($argv[2] ?? '');
         } else {
-            $server = static::$mapping[$argv[2] ?? 'http'] ?? HelpServer::class;
-            new $server();
+            $key = $argv[2] ?? 'http';
+            $server = static::$mapping[$key] ?? CustomServer::class;
+            new $server($key);
         }
     }
 

@@ -16,9 +16,10 @@ class MiniServer
     {
         $servers = config('servers', []);
         foreach ($servers as $key => $server) {
-            if (isset($server['ip'], $server['port'], Application::$mapping[$key])) {
+            if (isset($server['ip'], $server['port'])) {
                 $process = new Process(static function () use ($key) {
-                    new Application::$mapping[$key]();
+                    $server = Application::$mapping[$key] ?? CustomServer::class;
+                    new $server($key);
                 });
                 $process->start();
             }
