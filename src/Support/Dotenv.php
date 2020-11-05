@@ -59,17 +59,28 @@ class Dotenv
         return $data[$key] ?? $default;
     }
 
+    public function getAllValues(): array
+    {
+        return $this->env ?: $this->parseEnvFile();
+    }
+
     /**
      * @return array
      */
     public function parseEnvFile(): array
     {
         if (is_file($this->path)) {
-            $temps = file($this->path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-            foreach ($temps as $temp) {
-                if (count($data = explode('=', $temp, 2)) === 2) {
-                    $key = trim($data[0]);
-                    $value = trim($data[1]);
+            $lines = file($this->path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            foreach ($lines as $line) {
+                if ($line === '' || $line[0] === '#') {
+                    continue;
+                }
+                if ($pos = strpos($line, ' #')) {
+                    $line = substr($line, 0, $pos);
+                }
+                $line = trim($line);
+                if (count($parts = explode('=', $line, 2)) === 2) {
+                    list($key, $value) = $parts;
                     switch (strtolower($value)) {
                         case 'true':
                         case '(true)':
@@ -87,6 +98,22 @@ class Dotenv
                         case '(null)':
                             $value = null;
                             break;
+                        default:
+                            if (str_contains($value, '${')) {
+                                preg_match_all('#\${([\w.]+)}#', $value, $matches);
+                                foreach ((array)$matches[1] as $match) {
+                                    if (isset($this->env[$match])) {
+                                        $value = strtr($value, ['${' . $match . '}' => $this->env[$match]]);
+                                    }
+                                }
+                            } elseif (str_contains($value, '$')) {
+                                preg_match_all('#\$([A-Z_\d]+)#', $value, $matches);
+                                foreach ((array)$matches[1] as $match) {
+                                    if (isset($this->env[$match])) {
+                                        $value = strtr($value, ['$' . $match => $this->env[$match]]);
+                                    }
+                                }
+                            }
                     }
                     $this->env[$key] = $value;
                 }
