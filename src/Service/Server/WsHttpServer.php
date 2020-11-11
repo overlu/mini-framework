@@ -16,15 +16,15 @@ use Mini\Contracts\Support\Sendable;
 use Mini\Exceptions\Handler;
 use Mini\Provider\BaseRequestService;
 use Mini\Service\HttpMessage\Server\Request as Psr7Request;
-use Mini\Service\HttpServer\RouteService;
+use Mini\Service\HttpMessage\Stream\SwooleStream;
 use Mini\Service\WsServer\Request;
 use Mini\Service\WsServer\Response;
-use Swoole\Server as HttpSwooleServer;
+use Mini\View\View;
 use Swoole\WebSocket\Server;
 
-class WebSocket extends AbstractServer
+class WsHttpServer extends HttpServer
 {
-    protected string $type = 'WebSocket';
+    protected string $type = 'WebSocket And Http';
 
     /**
      * @var array|callable
@@ -34,21 +34,6 @@ class WebSocket extends AbstractServer
     public function initialize(): void
     {
         $this->server = new Server($this->config['ip'], $this->config['port'], $this->config['mode']);
-    }
-
-    /**
-     * @param HttpSwooleServer $server
-     * @param int $workerId
-     * @throws Throwable
-     */
-    public function onWorkerStart(HttpSwooleServer $server, int $workerId): void
-    {
-        try {
-            $this->route = RouteService::getInstance();
-        } catch (Throwable $throwable) {
-            (new Handler($throwable))->throw();
-        }
-        parent::onWorkerStart($server, $workerId);
     }
 
     public function onOpen(Server $server, $request)

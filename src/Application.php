@@ -16,15 +16,17 @@ use Mini\Service\Server\StopServer;
 use Mini\Service\Server\WebSocket;
 use Mini\Service\Server\MqttServer;
 use Mini\Service\Server\MainServer;
+use Mini\Service\Server\WsHttpServer;
 use Mini\Support\Command;
 
 class Application
 {
-    public static string $version = '1.1.17';
+    public static string $version = '1.1.18';
 
     public static array $mapping = [
         'http' => HttpServer::class,
         'ws' => WebSocket::class,
+        'wshttp' => WsHttpServer::class,
         'mqtt' => MqttServer::class,
         'main' => MainServer::class,
         'help' => HelpServer::class,
