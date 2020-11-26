@@ -24,38 +24,27 @@ class Handler implements HandlerInterface
 
     protected Throwable $throwable;
 
-    public function __construct(Throwable $throwable)
+    public function __construct()
     {
         $this->environment = env('APP_ENV', 'production');
         $this->debug = env('APP_DEBUG', false);
-        $this->throwable = $throwable;
     }
 
     /**
      * @throws InvalidResponseException
      * @throws Throwable
      */
-    public function throw(): void
+    public function throw(Throwable $throwable): void
     {
-        if ($this->throwable instanceof HttpResponseException) {
-            write(failed($this->throwable->getMessage(), $this->throwable->getCode() ?? 0));
+        if ($throwable instanceof HttpResponseException) {
+            write(failed($throwable->getMessage(), $throwable->getCode() ?? 0));
             return;
         }
         if ($this->environment !== 'production') {
-            if (class_exists(\App\Exceptions\Handler::class)) {
-                $handler = new \App\Exceptions\Handler($this->throwable);
-                if ($handler instanceof HandlerInterface) {
-                    if (Context::has('IsInRequestEvent')) {
-                        $handler->render(request(), $this->throwable);
-                    }
-                    $handler->report($this->throwable);
-                }
-            } else {
-                if (Context::has('IsInRequestEvent')) {
-                    $this->render(request(), $this->throwable);
-                }
-                $this->report($this->throwable);
+            if (Context::has('IsInRequestEvent')) {
+                $this->render(request(), $throwable);
             }
+            $this->report($throwable);
         } else {
             abort(500, 'The server is busy, please try again later.');
         }
@@ -67,7 +56,7 @@ class Handler implements HandlerInterface
      */
     public function report(Throwable $throwable): void
     {
-        if ($this->checkDontReport() && !$throwable instanceof ExitException) {
+        if ($this->checkDontReport($throwable) && !$throwable instanceof ExitException) {
             Command::line();
             Command::error($this->formatException($throwable));
             Command::line();
@@ -81,9 +70,9 @@ class Handler implements HandlerInterface
      */
     public function render(RequestInterface $request, Throwable $throwable): void
     {
-        if ($this->checkDontReport()) {
+        if ($this->checkDontReport($throwable)) {
             abort(500, $this->formatResponseException($throwable));
-            Log::error($this->format($this->throwable));
+            Log::error($this->format($throwable));
         }
     }
 
@@ -127,10 +116,10 @@ class Handler implements HandlerInterface
     /**
      * @return bool
      */
-    private function checkDontReport(): bool
+    private function checkDontReport(Throwable $throwable): bool
     {
         foreach ($this->dontReport as $throw) {
-            if ($this->throwable instanceof $throw) {
+            if ($throwable instanceof $throw) {
                 return false;
             }
         }

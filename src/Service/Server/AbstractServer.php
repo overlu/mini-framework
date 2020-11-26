@@ -35,7 +35,25 @@ abstract class AbstractServer
     protected int $worker_num = 1;
 
     private $events = [
-        'shutdown', 'workerStart', 'workerStop', 'workerExit', 'connect', 'receive', 'packet', 'close', 'task', 'finish', 'pipeMessage', 'workerError', 'managerStop', 'beforeReload', 'afterReload', 'request', 'handShake', 'open', 'message'
+        'shutdown',
+        'workerStart',
+        'workerStop',
+        'workerExit',
+        'connect',
+        'receive',
+        'packet',
+        'close',
+        'task',
+        'finish',
+        'pipeMessage',
+        'workerError',
+        'managerStop',
+        'beforeReload',
+        'afterReload',
+        'request',
+        'handShake',
+        'open',
+        'message'
     ];
 
     /**
@@ -52,38 +70,60 @@ abstract class AbstractServer
             if (empty($this->config)) {
                 throw new \Exception('server key: [' . $this->key . '] not exists in config/servers.php');
             }
-            $this->worker_num = $this->config['settings']['worker_num'] ?? 1;
+            $this->worker_num = $this->config['settings']['worker_num'] ?? swoole_cpu_num();
             $this->initialize();
-            $this->server->set($this->config['settings']);
+            $this->setServerConfig();
             $this->eventDispatch();
-            \Mini\Server::getInstance()->set(self::class, $this->server);
+            \Mini\Server::getInstance()->set($this->server);
             $this->server->start();
         } catch (Throwable $throwable) {
-            (new Handler($throwable))->throw();
+            app('exception')->throw($throwable);
         }
     }
 
-    private function eventDispatch()
+    abstract public function initialize(): void;
+
+    private function setServerConfig(): void
+    {
+        $this->server->set($this->config['settings']);
+    }
+
+    private function eventDispatch(): void
+    {
+        $this->callbackDispatch();
+        $this->eventOnDispatch();
+        $this->startDispatch();
+    }
+
+    private function eventOnDispatch(): void
     {
         foreach ($this->events as $event) {
             $method = 'on' . ucfirst($event);
             if (method_exists($this, $method)) {
                 $this->server->on($event, [$this, $method]);
+            } else {
+                Listener::getInstance()->on($this->server, $event);
             }
         }
+    }
+
+    private function callbackDispatch(): void
+    {
         foreach ($this->config['callbacks'] as $event => $callbackItem) {
             if (!method_exists($this, 'on' . ucfirst($event))) {
                 $this->server->on($event, $callbackItem);
             }
         }
+    }
+
+    private function startDispatch(): void
+    {
         if ($this->config['mode'] === SWOOLE_BASE) {
             $this->server->on('managerStart', [$this, 'onManagerStart']);
         } else {
             $this->server->on('start', [$this, 'onStart']);
         }
     }
-
-    abstract public function initialize(): void;
 
     /**
      * @param Server $server
@@ -121,7 +161,7 @@ abstract class AbstractServer
      */
     public function onManagerStart(Server $server): void
     {
-        $type = ucfirst($this->type);
+        $type = ucfirst($this->type ?: $this->key);
         Command::infoWithTime("🚀 Mini {$type} Server [{$this->worker_num} workers] running：{$this->config['ip']}:{$this->config['port']}...\"");
         Listener::getInstance()->listen('managerStart', $server);
     }
@@ -140,14 +180,28 @@ abstract class AbstractServer
 //    {
 //        Listener::getInstance()->listen('receive', $server);
 //    }
-//
-    public function onTask(Server $server): void
+
+    public function onTask(Server $server, Server\Task $task)
     {
-        Listener::getInstance()->listen('task', $server);
+        try {
+            $data = $task->data;
+            if (isset($data['type'], $data['params'])) {
+                if ($data['type'] === 'events') {
+                    $response = app('events')->dispatch(...(array)$data['params']);
+                }
+                if ($data['type'] === 'callable') {
+                    $response = call_user_func_array(\Opis\Closure\unserialize($data['callable']), (array)$data['params']);
+                }
+                return $task->finish($response);
+            }
+            Listener::getInstance()->listen('task', $server);
+        } catch (Throwable $throwable) {
+            Command::error($throwable);
+        }
     }
 
-    public function onFinish(Server $server): void
+    public function onFinish(Server $server, int $task_id, $data): void
     {
-        Listener::getInstance()->listen('finish', $server);
+        Listener::getInstance()->listen('finish', $server, $task_id, $data);
     }
 }

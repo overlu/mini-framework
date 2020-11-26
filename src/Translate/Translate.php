@@ -13,13 +13,11 @@ use Symfony\Component\Translation\Translator;
 
 class Translate
 {
-    use Singleton;
-
     protected array $translation = [];
     protected string $locate = 'en';
     protected Translator $translator;
 
-    private function __construct()
+    public function __construct()
     {
         $this->locate = config('mini.language', 'en');
         $this->translator = new Translator($this->locate);

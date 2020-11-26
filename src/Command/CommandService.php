@@ -40,7 +40,7 @@ class CommandService
                 $app->run();
             } catch (\Throwable $throwable) {
                 if (!$throwable instanceof ExitException) {
-                    (new Handler($throwable))->throw();
+                    app('exception')->throw($throwable);
                 }
             }
         });

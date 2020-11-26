@@ -5,13 +5,13 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Events;
+namespace Mini\Exceptions;
 
-use Mini\Contracts\Queue\Factory as QueueFactoryContract;
+use App\Exceptions\Handler;
 use Mini\Contracts\ServiceProviderInterface;
 use Swoole\Server;
 
-class EventServiceProvider implements ServiceProviderInterface
+class ExceptionServiceProvider implements ServiceProviderInterface
 {
     /**
      * @param Server|null $server
@@ -21,16 +21,13 @@ class EventServiceProvider implements ServiceProviderInterface
     public function register(?Server $server, ?int $workerId): void
     {
         $app = app();
-        $app->alias(Dispatcher::class, 'events');
-        $app->singleton(Dispatcher::class, Dispatcher::class);
+        $handler = class_exists(Handler::class) ? Handler::class : \Mini\Exceptions\Handler::class;
+        $app->alias($handler, 'exception');
+        $app->singleton($handler, $handler);
     }
 
     public function boot(?Server $server, ?int $workerId): void
     {
-        $dispatch = app('events');
-        $events = config('listeners.events', []);
-        foreach ((array)$events as $event => $listen) {
-            $dispatch->listen($event, $listen);
-        }
+        // TODO: Implement boot() method.
     }
 }

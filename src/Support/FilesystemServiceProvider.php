@@ -21,7 +21,7 @@ class FilesystemServiceProvider implements ServiceProviderInterface
     {
         $app = app();
         $app->alias(Filesystem::class, 'files');
-        $app->bind(Filesystem::class, Filesystem::class);
+        $app->singleton(Filesystem::class, Filesystem::class);
     }
 
     /**

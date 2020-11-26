@@ -55,7 +55,7 @@ class ViewServiceProvider implements ServiceProviderInterface
         /*$app->bind(Factory::class, function () {
             return new Factory($this->resolver, $this->viewFinder, app('events'));
         });*/
-        $app->bind(Factory::class, Factory::class, $this->resolver, $this->viewFinder, app('events'));
+        $app->singleton(Factory::class, Factory::class, $this->resolver, $this->viewFinder, app('events'));
     }
 
     /**

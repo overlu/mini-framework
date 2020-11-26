@@ -46,7 +46,7 @@ class WebSocket extends AbstractServer
         try {
             $this->route = RouteService::getInstance();
         } catch (Throwable $throwable) {
-            (new Handler($throwable))->throw();
+            app('exception')->throw($throwable);
         }
         parent::onWorkerStart($server, $workerId);
     }
@@ -77,7 +77,7 @@ class WebSocket extends AbstractServer
             $server->close($request->fd);
         } catch (Throwable $throwable) {
             $server->close($request->fd);
-            (new Handler($throwable))->throw();
+            app('exception')->throw($throwable);
         }
     }
 

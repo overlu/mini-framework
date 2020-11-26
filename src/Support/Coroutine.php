@@ -61,7 +61,7 @@ class Coroutine
             try {
                 call($callable);
             } catch (Throwable $throwable) {
-                (new Handler($throwable))->throw();
+                app('exception')->throw($throwable);
             }
         });
         return is_int($result) ? $result : -1;

@@ -41,7 +41,7 @@ class Console
             CommandService::register([...config('console', []), ...static::$systemCommandService]);
             CommandService::run();
         } catch (Throwable $throwable) {
-            (new Handler($throwable))->throw();
+            app('exception')->throw($throwable);
         }
     }
 }

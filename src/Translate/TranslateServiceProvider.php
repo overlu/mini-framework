@@ -26,6 +26,9 @@ class TranslateServiceProvider implements ServiceProviderInterface
      */
     public function boot(?Server $server, ?int $workerId): void
     {
-        Translate::getInstance()->initialize();
+        $app = app();
+        $app->alias(Translate::class, 'translate');
+        $app->singleton(Translate::class, Translate::class);
+        $app->make('translate')->initialize();
     }
 }

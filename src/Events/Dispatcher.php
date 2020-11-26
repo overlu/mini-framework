@@ -201,9 +201,34 @@ class Dispatcher implements DispatcherContract
      * @param mixed $payload
      * @return array|null
      */
-    public function until($event, $payload = []): ?array
+    public function until($event, $payload = [])
     {
         return $this->dispatch($event, $payload, true);
+    }
+
+    /**
+     *  Fire an event and call the listeners.
+     *
+     * @param $event
+     * @param array $payload
+     * @param bool $halt
+     * @return mixed
+     */
+    public function task($event, $payload = [], $halt = false)
+    {
+        if (is_callable($event)) {
+            $taskData = [
+                'type' => 'callable',
+                'callable' => \Opis\Closure\serialize($event),
+                'params' => $payload
+            ];
+        } else {
+            $taskData = [
+                'type' => 'events',
+                'params' => [$event, $payload, $halt]
+            ];
+        }
+        return server()->task($taskData);
     }
 
     /**
@@ -214,7 +239,7 @@ class Dispatcher implements DispatcherContract
      * @param bool $halt
      * @return array|null
      */
-    public function dispatch($event, $payload = [], $halt = false): ?array
+    public function dispatch($event, $payload = [], $halt = false)
     {
         // When the given "event" is actually an object we will assume it is an event
         // object and use the class as the event name and this event itself as the
@@ -223,9 +248,9 @@ class Dispatcher implements DispatcherContract
             $event, $payload
         );
 
-        if ($this->shouldBroadcast($payload)) {
+        /*if ($this->shouldBroadcast($payload)) {
             $this->broadcastEvent($payload[0]);
-        }
+        }*/
 
         $responses = [];
 
@@ -422,9 +447,10 @@ class Dispatcher implements DispatcherContract
             ? $listener
             : $this->parseClassCallable($listener);
 
-        if ($this->handlerShouldBeQueued($class)) {
+        // 屏蔽队列模式
+        /*if ($this->handlerShouldBeQueued($class)) {
             return $this->createQueuedHandlerCallable($class, $method);
-        }
+        }*/
 
         return [$this->container->make($class), $method];
     }

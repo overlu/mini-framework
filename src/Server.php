@@ -11,16 +11,15 @@ class Server
 {
     use Singleton;
 
-    private array $container = [];
-
+    private \Swoole\Server $server;
 
     /**
      * @param $key
      * @param $server
      */
-    public function set(string $key, \Swoole\Server $server): void
+    public function set(\Swoole\Server $server): void
     {
-        $this->container[$key] = $server;
+        $this->server = $server;
     }
 
     /**
@@ -28,46 +27,25 @@ class Server
      */
     public function reload(bool $only_reload_task_worker = false): void
     {
-        foreach ($this->container as $server) {
-            $server->reload($only_reload_task_worker);
-        }
+        $this->server->reload($only_reload_task_worker);
     }
 
     public function stop(): void
     {
-        foreach ($this->container as $server) {
-            $server->shutdown();
-        }
-    }
-
-    /**
-     * @param $key
-     */
-    public function delete(string $key): void
-    {
-        unset($this->container[$key]);
+        $this->server->shutdown();
     }
 
 
     public function clear(): void
     {
-        foreach ($this->container as $server) {
-            $server->shutdown();
-        }
-        $this->container = array();
+        $this->server->shutdown();
     }
 
     /**
-     * @param $key
-     * @return array|mixed
+     * @return \Swoole\Server
      */
-    public function get(string $key)
+    public function get(): \Swoole\Server
     {
-        return $this->container[$key] ?? [];
-    }
-
-    public function all(): array
-    {
-        return $this->container;
+        return $this->server;
     }
 }

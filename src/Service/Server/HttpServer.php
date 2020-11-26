@@ -53,7 +53,7 @@ class HttpServer extends AbstractServer
         try {
             $this->route = RouteService::getInstance();
         } catch (Throwable $throwable) {
-            (new Handler($throwable))->throw();
+            app('exception')->throw($throwable);
         }
         parent::onWorkerStart($server, $workerId);
     }
@@ -87,7 +87,7 @@ class HttpServer extends AbstractServer
                 $resp->send(true);
             }
         } catch (Throwable $throwable) {
-            (new Handler($throwable))->throw();
+            app('exception')->throw($throwable);
         }
     }
 

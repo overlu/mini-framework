@@ -30,17 +30,30 @@ class Listener
     }
 
     /**
-     * @param $listener
+     * @param $event
      * @param mixed ...$args
      * @throws Throwable
      */
-    public function listen($listener, ...$args): void
+    public function listen($event, ...$args): void
     {
         try {
-            $listeners = self::$config[$listener] ?? [];
-            while ($listeners) {
-                [$class, $func] = array_shift($listeners);
-                $class::getInstance()->{$func}(...$args);
+            if (isset(self::$config['server'][$event]) && $listener = self::$config['server'][$event]) {
+                if (is_array($listener) && method_exists($listener[0], 'getInstance')) {
+                    $listener[0]::getInstance()->{$listener[1]}(...$args);
+                } else {
+                    call($listener, $args);
+                }
+            }
+        } catch (Throwable $throwable) {
+            Command::error($throwable);
+        }
+    }
+
+    public function on(\Swoole\Server $server, $event)
+    {
+        try {
+            if (isset(self::$config['server'][$event])) {
+                $server->on($event, self::$config['server'][$event]);
             }
         } catch (Throwable $throwable) {
             Command::error($throwable);

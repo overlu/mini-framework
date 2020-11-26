@@ -62,7 +62,7 @@ class WsHttpServer extends HttpServer
             $server->close($request->fd);
         } catch (Throwable $throwable) {
             $server->close($request->fd);
-            (new Handler($throwable))->throw();
+            app('exception')->throw($throwable);
         }
     }
 

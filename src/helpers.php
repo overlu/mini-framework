@@ -535,6 +535,47 @@ if (!function_exists('array_plus')) {
     }
 }
 
+if (!function_exists('server')) {
+    /**
+     * 获取server
+     * @return \Swoole\Server
+     */
+    function server(): \Swoole\Server
+    {
+        return \Mini\Server::getInstance()->get();
+    }
+}
+
+if (!function_exists('event')) {
+    /**
+     * Dispatch an event and call the listeners.
+     *
+     * @param string|object $event
+     * @param mixed $payload
+     * @param bool $halt
+     * @return array|null
+     */
+    function event(...$args)
+    {
+        return app('events')->dispatch(...$args);
+    }
+}
+
+if (!function_exists('task')) {
+    /**
+     * Dispatch an event and call the listeners.
+     *
+     * @param string|object $event
+     * @param mixed $payload
+     * @param bool $halt
+     * @return array|null
+     */
+    function task(...$args)
+    {
+        return app('events')->task(...$args);
+    }
+}
+
 if (!function_exists('request')) {
     /**
      * 获取request资源
@@ -960,7 +1001,7 @@ if (!function_exists('writeFailed')) {
 
 if (!function_exists('__')) {
     /**
-     * translate
+     * translate，参数为空不会解析
      * @param string|null $id
      * @param array $parameters
      * @param string|null $domain
@@ -969,13 +1010,13 @@ if (!function_exists('__')) {
      */
     function __(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
     {
-        return Translate::getInstance()->get($id, $parameters, $domain, $locale);
+        return app('translate')->get($id, $parameters, $domain, $locale);
     }
 }
 
 if (!function_exists('trans')) {
     /**
-     * translate
+     * translate，会解析参数
      * @param string|null $id
      * @param array $parameters
      * @param string|null $domain
@@ -984,7 +1025,7 @@ if (!function_exists('trans')) {
      */
     function trans(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
     {
-        return Translate::getInstance()->trans($id, $parameters, $domain, $locale);
+        return app('translate')->trans($id, $parameters, $domain, $locale);
     }
 }
 
@@ -1003,5 +1044,19 @@ if (!function_exists('cookie')) {
     {
         $value = is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value;
         return new Mini\Service\HttpMessage\Cookie\Cookie($name, $value, $minutes, $path, $domain, $secure, $httpOnly);
+    }
+}
+
+if (!function_exists('redirect')) {
+    /**
+     * 跳转
+     * @param string $toUrl
+     * @param int $status
+     * @param string $schema
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    function redirect(string $toUrl, int $status = 302, string $schema = 'http')
+    {
+        return response()->redirect($toUrl, $status, $schema);
     }
 }
