@@ -36,15 +36,13 @@ class Log
 
     public static function __callStatic($name, $arguments)
     {
-        go(static function () use ($name, $arguments) {
-            if (isset($arguments[0]) && is_array($arguments[0])) {
-                $arguments[0] = json_encode($arguments, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
-            }
-            if (config('logging.output', false)) {
-                static::output($name, $arguments);
-            }
-            SeasLog::$name(...$arguments);
-        });
+        if (isset($arguments[0]) && is_array($arguments[0])) {
+            $arguments[0] = json_encode($arguments, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+        }
+        if (config('logging.output', false)) {
+            static::output($name, $arguments);
+        }
+        SeasLog::$name(...$arguments);
     }
 
     private static function output($name, $arguments): void
