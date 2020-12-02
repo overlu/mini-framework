@@ -51,7 +51,8 @@ class Cache
     private function __construct()
     {
         $driver = config('cache.default', 'file');
-        $this->default = new (config('cache.drivers.' . $driver . '.driver', $this->mapping[$driver] ?? FileCacheCacheDriver::class));
+        $driverClass = config('cache.drivers.' . $driver . '.driver', $this->mapping[$driver] ?? FileCacheCacheDriver::class);
+        $this->default = new $driverClass;
     }
 
     /**
