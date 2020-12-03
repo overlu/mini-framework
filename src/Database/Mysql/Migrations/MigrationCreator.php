@@ -7,7 +7,7 @@ namespace Mini\Database\Mysql\Migrations;
 
 use Closure;
 use Mini\Exceptions\FileNotFoundException;
-use Mini\Support\Filesystem;
+use Mini\Filesystem\Filesystem;
 use Mini\Support\Str;
 use InvalidArgumentException;
 

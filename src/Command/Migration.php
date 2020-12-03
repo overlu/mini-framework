@@ -13,7 +13,7 @@ use Mini\Database\Mysql\Migrations\MigrationCreator;
 use Mini\Database\Mysql\Migrations\MigrationRepositoryInterface;
 use Mini\Database\Mysql\Migrations\Migrator;
 use Mini\Support\Command;
-use Mini\Support\Filesystem;
+use Mini\Filesystem\Filesystem;
 
 trait Migration
 {

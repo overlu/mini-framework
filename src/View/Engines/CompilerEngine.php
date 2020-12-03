@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Mini\View\Engines;
 
 use ErrorException;
-use Mini\Support\Filesystem;
+use Mini\Filesystem\Filesystem;
 use Mini\View\Compilers\CompilerInterface;
 use Throwable;
 

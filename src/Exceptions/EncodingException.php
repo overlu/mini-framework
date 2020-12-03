@@ -7,7 +7,10 @@ declare(strict_types=1);
 
 namespace Mini\Exceptions;
 
+/**
+ * Class EncodingException
+ * @package Mini\Exceptions
+ */
 class EncodingException extends \Exception
 {
-
 }

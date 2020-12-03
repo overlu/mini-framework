@@ -7,15 +7,22 @@ declare(strict_types=1);
 
 namespace Mini\Service\HttpMessage\Upload;
 
+use Mini\Container\Container;
+use Mini\Contracts\Filesystem\Factory as FilesystemFactory;
+use Mini\Exceptions\FileNotFoundException;
+use Mini\Support\Arr;
 use InvalidArgumentException;
 use Mini\Service\HttpMessage\Stream\StandardStream;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
 use SplFileInfo;
+use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 
 class UploadedFile extends SplFileInfo implements UploadedFileInterface
 {
+    use FileHelpers;
+
     /**
      * @var int[]
      */
@@ -359,5 +366,100 @@ class UploadedFile extends SplFileInfo implements UploadedFileInterface
         if ($this->isMoved()) {
             throw new RuntimeException('Cannot retrieve stream after it has already been moved');
         }
+    }
+
+    /**
+     * Store the uploaded file on a filesystem disk.
+     *
+     * @param string $path
+     * @param array|string $options
+     * @return string|false
+     */
+    public function store($path, $options = [])
+    {
+        return $this->storeAs($path, $this->hashName(), $this->parseOptions($options));
+    }
+
+    /**
+     * Store the uploaded file on a filesystem disk with public visibility.
+     *
+     * @param string $path
+     * @param array|string $options
+     * @return string|false
+     */
+    public function storePublicly($path, $options = [])
+    {
+        $options = $this->parseOptions($options);
+
+        $options['visibility'] = 'public';
+
+        return $this->storeAs($path, $this->hashName(), $options);
+    }
+
+    /**
+     * Store the uploaded file on a filesystem disk with public visibility.
+     *
+     * @param string $path
+     * @param string $name
+     * @param array|string $options
+     * @return string|false
+     */
+    public function storePubliclyAs($path, $name, $options = [])
+    {
+        $options = $this->parseOptions($options);
+
+        $options['visibility'] = 'public';
+
+        return $this->storeAs($path, $name, $options);
+    }
+
+    /**
+     * Store the uploaded file on a filesystem disk.
+     *
+     * @param string $path
+     * @param string $name
+     * @param array|string $options
+     * @return string|false
+     */
+    public function storeAs($path, $name, $options = [])
+    {
+        $options = $this->parseOptions($options);
+
+        $disk = Arr::pull($options, 'disk');
+
+        return app('filesystem')->disk($disk)->putFileAs(
+            $path, $this, $name, $options
+        );
+    }
+
+    /**
+     * Get the contents of the uploaded file.
+     *
+     * @return false|string
+     *
+     * @throws FileNotFoundException
+     */
+    public function get()
+    {
+        if (!$this->isValid()) {
+            throw new FileNotFoundException("File does not exist at path {$this->getPathname()}.");
+        }
+
+        return file_get_contents($this->getPathname());
+    }
+
+    /**
+     * Parse and format the given options.
+     *
+     * @param array|string $options
+     * @return array
+     */
+    protected function parseOptions($options)
+    {
+        if (is_string($options)) {
+            $options = ['disk' => $options];
+        }
+
+        return $options;
     }
 }

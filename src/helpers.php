@@ -723,6 +723,18 @@ if (!function_exists('config_path')) {
     }
 }
 
+if (!function_exists('public_path')) {
+    /**
+     * 开放目录
+     * @param string $path
+     * @return string
+     */
+    function public_path(string $path = ''): string
+    {
+        return BASE_PATH . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . trim($path, DIRECTORY_SEPARATOR);
+    }
+}
+
 if (!function_exists('stub_path')) {
     /**
      * 获取模板目录
@@ -1058,5 +1070,17 @@ if (!function_exists('redirect')) {
     function redirect(string $toUrl, int $status = 302, string $schema = 'http')
     {
         return response()->redirect($toUrl, $status, $schema);
+    }
+}
+
+if (!function_exists('windows_os')) {
+    /**
+     * Determine whether the current environment is Windows based.
+     *
+     * @return bool
+     */
+    function windows_os()
+    {
+        return PHP_OS_FAMILY === 'Windows';
     }
 }

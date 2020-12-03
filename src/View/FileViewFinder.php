@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\View;
 
-use Mini\Support\Filesystem;
+use Mini\Filesystem\Filesystem;
 use InvalidArgumentException;
 
 class FileViewFinder implements ViewFinderInterface

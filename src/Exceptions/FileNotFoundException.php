@@ -7,6 +7,10 @@ declare(strict_types=1);
 
 namespace Mini\Exceptions;
 
+/**
+ * Class FileNotFoundException
+ * @package Mini\Exceptions
+ */
 class FileNotFoundException extends \Exception
 {
 }

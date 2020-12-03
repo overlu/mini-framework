@@ -14,7 +14,7 @@ use Mini\Database\Mysql\Events\MigrationsStarted;
 use Mini\Database\Mysql\Events\MigrationStarted;
 use Mini\Database\Mysql\Events\NoPendingMigrations;
 use Mini\Support\Command;
-use Mini\Support\Filesystem;
+use Mini\Filesystem\Filesystem;
 use Mini\Support\Arr;
 use Mini\Support\Collection;
 use Mini\Support\Str;
@@ -39,7 +39,7 @@ class Migrator
     /**
      * The filesystem instance.
      *
-     * @var \Mini\Support\Filesystem
+     * @var \Mini\Filesystem\Filesystem
      */
     protected $files;
 
@@ -76,7 +76,7 @@ class Migrator
      *
      * @param \Mini\Database\Mysql\Migrations\MigrationRepositoryInterface $repository
      * @param \Mini\Database\Mysql\ConnectionResolverInterface $resolver
-     * @param \Mini\Support\Filesystem $files
+     * @param \Mini\Filesystem\Filesystem $files
      * @param \Mini\Contracts\Events\Dispatcher|null $dispatcher
      * @return void
      */
@@ -616,7 +616,7 @@ class Migrator
     /**
      * Get the file system instance.
      *
-     * @return \Mini\Support\Filesystem
+     * @return \Mini\Filesystem\Filesystem
      */
     public function getFilesystem()
     {

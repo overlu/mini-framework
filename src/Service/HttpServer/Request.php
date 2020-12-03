@@ -335,7 +335,7 @@ class Request implements RequestInterface
      *
      * @param string $key
      * @param null|mixed $default
-     * @return null|UploadedFile|UploadedFile[]
+     * @return UploadedFile|UploadedFile[]
      */
     public function file(string $key, $default = null)
     {

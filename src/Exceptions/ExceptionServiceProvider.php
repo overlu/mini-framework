@@ -11,6 +11,10 @@ use App\Exceptions\Handler;
 use Mini\Contracts\ServiceProviderInterface;
 use Swoole\Server;
 
+/**
+ * Class ExceptionServiceProvider
+ * @package Mini\Exceptions
+ */
 class ExceptionServiceProvider implements ServiceProviderInterface
 {
     /**

@@ -32,6 +32,6 @@ class Event
 {
     public static function __callStatic($name, $arguments)
     {
-        return (new Dispatcher(Container::getInstance()))->{$name}(...$arguments);
+        return app('events')->{$name}(...$arguments);
     }
 }

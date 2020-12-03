@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Mini\View\Engines;
 
 use Mini\Contracts\View\Engine;
-use Mini\Support\Filesystem;
+use Mini\Filesystem\Filesystem;
 
 class FileEngine implements Engine
 {

@@ -7,6 +7,10 @@ declare(strict_types=1);
 
 namespace Mini\Exceptions;
 
+/**
+ * Class ParallelExecutionException
+ * @package Mini\Exceptions
+ */
 class ParallelExecutionException extends \RuntimeException
 {
     /**

@@ -14,6 +14,10 @@ use Mini\Support\Command;
 use Swoole\ExitException;
 use Throwable;
 
+/**
+ * Class Handler
+ * @package Mini\Exceptions
+ */
 class Handler implements HandlerInterface
 {
     protected bool $debug = false;

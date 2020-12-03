@@ -9,7 +9,10 @@ namespace Mini\Exceptions;
 
 use RuntimeException;
 
+/**
+ * Class DecryptException
+ * @package Mini\Exceptions
+ */
 class DecryptException extends RuntimeException
 {
-    //
 }

@@ -7,8 +7,10 @@ declare(strict_types=1);
 
 namespace Mini\Exceptions;
 
-
+/**
+ * Class PoolException
+ * @package Mini\Exceptions
+ */
 class PoolException extends \Exception
 {
-
 }

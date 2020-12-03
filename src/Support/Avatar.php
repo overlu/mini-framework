@@ -27,8 +27,9 @@ class Avatar
 
     public function __construct()
     {
-        $this->uploadPath = config('file.upload_path.avatar') . DIRECTORY_SEPARATOR . date('Ymd');
-        $this->fontPath = config('file.font_path') . DIRECTORY_SEPARATOR;
+        $path = config('filesystems.path');
+        $this->uploadPath = $path['upload']['avatar'] . DIRECTORY_SEPARATOR . date('Ymd');
+        $this->fontPath = $path['font'] . DIRECTORY_SEPARATOR;
     }
 
     /**

@@ -9,6 +9,10 @@ namespace Mini\Exceptions;
 
 use Mini\Contracts\HttpMessage\RequestInterface;
 
+/**
+ * Interface HandlerInterface
+ * @package Mini\Exceptions
+ */
 interface HandlerInterface
 {
     public function report(\Throwable $throwable);

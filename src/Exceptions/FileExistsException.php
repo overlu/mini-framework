@@ -8,9 +8,9 @@ declare(strict_types=1);
 namespace Mini\Exceptions;
 
 /**
- * Class MysqliException
+ * Class FileExistsException
  * @package Mini\Exceptions
  */
-class MysqliException extends \Exception
+class FileExistsException extends \Exception
 {
 }

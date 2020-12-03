@@ -10,7 +10,7 @@ namespace Mini\View\Compilers;
 use Mini\Container\Container;
 use Mini\Contracts\Foundation\Application;
 use Mini\Contracts\View\Factory;
-use Mini\Support\Filesystem;
+use Mini\Filesystem\Filesystem;
 use Mini\Support\Str;
 use Mini\View\AnonymousComponent;
 use InvalidArgumentException;
