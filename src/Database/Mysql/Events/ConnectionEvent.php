@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Events;
 
 abstract class ConnectionEvent
@@ -24,7 +26,7 @@ abstract class ConnectionEvent
     /**
      * Create a new event instance.
      *
-     * @param  \Mini\Database\Mysql\Connection  $connection
+     * @param \Mini\Database\Mysql\Connection $connection
      * @return void
      */
     public function __construct($connection)

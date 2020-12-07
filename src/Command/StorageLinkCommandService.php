@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
-
 use Mini\Support\Command;
 
 class StorageLinkCommandService extends BaseCommandService

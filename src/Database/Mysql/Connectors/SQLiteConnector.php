@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Connectors;
 
 use InvalidArgumentException;
@@ -12,7 +14,7 @@ class SQLiteConnector extends Connector implements ConnectorInterface
     /**
      * Establish a database connection.
      *
-     * @param  array  $config
+     * @param array $config
      * @return \PDO
      *
      * @throws \InvalidArgumentException

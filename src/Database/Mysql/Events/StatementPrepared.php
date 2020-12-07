@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Events;
 
 class StatementPrepared
@@ -24,8 +26,8 @@ class StatementPrepared
     /**
      * Create a new event instance.
      *
-     * @param  \Mini\Database\Mysql\Connection  $connection
-     * @param  \PDOStatement  $statement
+     * @param \Mini\Database\Mysql\Connection $connection
+     * @param \PDOStatement $statement
      * @return void
      */
     public function __construct($connection, $statement)

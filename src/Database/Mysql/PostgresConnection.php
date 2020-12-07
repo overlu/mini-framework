@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql;
 
 use Doctrine\DBAL\Driver\PDOPgSql\Driver as DoctrineDriver;
@@ -17,8 +19,8 @@ class PostgresConnection extends Connection
     /**
      * Bind values to their parameters in the given statement.
      *
-     * @param  \PDOStatement  $statement
-     * @param  array  $bindings
+     * @param \PDOStatement $statement
+     * @param array $bindings
      * @return void
      */
     public function bindValues($statement, $bindings)

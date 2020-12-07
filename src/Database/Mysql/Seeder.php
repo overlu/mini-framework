@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql;
 
 use Mini\Console\Command;
@@ -29,8 +31,8 @@ abstract class Seeder
     /**
      * Seed the given connection from the given path.
      *
-     * @param  array|string  $class
-     * @param  bool  $silent
+     * @param array|string $class
+     * @param bool $silent
      * @return $this
      */
     public function call($class, $silent = false)
@@ -63,7 +65,7 @@ abstract class Seeder
     /**
      * Silently seed the given connection from the given path.
      *
-     * @param  array|string  $class
+     * @param array|string $class
      * @return void
      */
     public function callSilent($class)
@@ -74,7 +76,7 @@ abstract class Seeder
     /**
      * Resolve an instance of the given seeder class.
      *
-     * @param  string  $class
+     * @param string $class
      * @return \Mini\Database\Mysql\Seeder
      */
     protected function resolve($class)
@@ -97,7 +99,7 @@ abstract class Seeder
     /**
      * Set the IoC container instance.
      *
-     * @param  \Mini\Container\Container  $container
+     * @param \Mini\Container\Container $container
      * @return $this
      */
     public function setContainer(Container $container)
@@ -110,7 +112,7 @@ abstract class Seeder
     /**
      * Set the console command instance.
      *
-     * @param  \Mini\Console\Command  $command
+     * @param \Mini\Console\Command $command
      * @return $this
      */
     public function setCommand(Command $command)
@@ -129,12 +131,12 @@ abstract class Seeder
      */
     public function __invoke()
     {
-        if (! method_exists($this, 'run')) {
-            throw new InvalidArgumentException('Method [run] missing from '.get_class($this));
+        if (!method_exists($this, 'run')) {
+            throw new InvalidArgumentException('Method [run] missing from ' . get_class($this));
         }
 
         return isset($this->container)
-                    ? $this->container->call([$this, 'run'])
-                    : $this->run();
+            ? $this->container->call([$this, 'run'])
+            : $this->run();
     }
 }

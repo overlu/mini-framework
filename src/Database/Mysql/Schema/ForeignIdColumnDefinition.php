@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Schema;
 
 use Mini\Support\Str;
@@ -19,8 +21,8 @@ class ForeignIdColumnDefinition extends ColumnDefinition
     /**
      * Create a new foreign ID column definition.
      *
-     * @param  \Mini\Database\Mysql\Schema\Blueprint  $blueprint
-     * @param  array  $attributes
+     * @param \Mini\Database\Mysql\Schema\Blueprint $blueprint
+     * @param array $attributes
      * @return void
      */
     public function __construct(Blueprint $blueprint, $attributes = [])
@@ -33,19 +35,19 @@ class ForeignIdColumnDefinition extends ColumnDefinition
     /**
      * Create a foreign key constraint on this column referencing the "id" column of the conventionally related table.
      *
-     * @param  string|null  $table
-     * @param  string  $column
+     * @param string|null $table
+     * @param string $column
      * @return \Mini\Support\Fluent|\Mini\Database\Mysql\Schema\ForeignKeyDefinition
      */
     public function constrained($table = null, $column = 'id')
     {
-        return $this->references($column)->on($table ?? Str::plural(Str::beforeLast($this->name, '_'.$column)));
+        return $this->references($column)->on($table ?? Str::plural(Str::beforeLast($this->name, '_' . $column)));
     }
 
     /**
      * Specify which column this foreign ID references on another table.
      *
-     * @param  string  $column
+     * @param string $column
      * @return \Mini\Support\Fluent|\Mini\Database\Mysql\Schema\ForeignKeyDefinition
      */
     public function references($column)

@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Eloquent;
 
 /**
@@ -27,8 +29,8 @@ class HigherOrderBuilderProxy
     /**
      * Create a new proxy instance.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $builder
-     * @param  string  $method
+     * @param \Mini\Database\Mysql\Eloquent\Builder $builder
+     * @param string $method
      * @return void
      */
     public function __construct(Builder $builder, $method)
@@ -40,8 +42,8 @@ class HigherOrderBuilderProxy
     /**
      * Proxy a scope call onto the query builder.
      *
-     * @param  string  $method
-     * @param  array  $parameters
+     * @param string $method
+     * @param array $parameters
      * @return mixed
      */
     public function __call($method, $parameters)

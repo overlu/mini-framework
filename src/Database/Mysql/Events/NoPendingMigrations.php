@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Events;
 
 class NoPendingMigrations
@@ -17,7 +19,7 @@ class NoPendingMigrations
     /**
      * Create a new event instance.
      *
-     * @param  string  $method
+     * @param string $method
      * @return void
      */
     public function __construct($method)

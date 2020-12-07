@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Eloquent\Relations;
 
 use Mini\Database\Mysql\Eloquent\Builder;
@@ -52,11 +54,11 @@ class BelongsTo extends Relation
     /**
      * Create a new belongs to relationship instance.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $query
-     * @param  \Mini\Database\Mysql\Eloquent\Model  $child
-     * @param  string  $foreignKey
-     * @param  string  $ownerKey
-     * @param  string  $relationName
+     * @param \Mini\Database\Mysql\Eloquent\Builder $query
+     * @param \Mini\Database\Mysql\Eloquent\Model $child
+     * @param string $foreignKey
+     * @param string $ownerKey
+     * @param string $relationName
      *
      * @return void
      */
@@ -101,14 +103,14 @@ class BelongsTo extends Relation
             // of the related models matching on the foreign key that's on a parent.
             $table = $this->related->getTable();
 
-            $this->query->where($table.'.'.$this->ownerKey, '=', $this->child->{$this->foreignKey});
+            $this->query->where($table . '.' . $this->ownerKey, '=', $this->child->{$this->foreignKey});
         }
     }
 
     /**
      * Set the constraints for an eager load of the relation.
      *
-     * @param  array  $models
+     * @param array $models
      * @return void
      */
     public function addEagerConstraints(array $models)
@@ -116,7 +118,7 @@ class BelongsTo extends Relation
         // We'll grab the primary key name of the related models since it could be set to
         // a non-standard name and not "id". We will then construct the constraint for
         // our eagerly loading query so it returns the proper models from execution.
-        $key = $this->related->getTable().'.'.$this->ownerKey;
+        $key = $this->related->getTable() . '.' . $this->ownerKey;
 
         $whereIn = $this->whereInMethod($this->related, $this->ownerKey);
 
@@ -126,7 +128,7 @@ class BelongsTo extends Relation
     /**
      * Gather the keys from an array of related models.
      *
-     * @param  array  $models
+     * @param array $models
      * @return array
      */
     protected function getEagerModelKeys(array $models)
@@ -137,7 +139,7 @@ class BelongsTo extends Relation
         // to query for via the eager loading query. We will add them to an array then
         // execute a "where in" statement to gather up all of those related records.
         foreach ($models as $model) {
-            if (! is_null($value = $model->{$this->foreignKey})) {
+            if (!is_null($value = $model->{$this->foreignKey})) {
                 $keys[] = $value;
             }
         }
@@ -150,8 +152,8 @@ class BelongsTo extends Relation
     /**
      * Initialize the relation on a set of models.
      *
-     * @param  array  $models
-     * @param  string  $relation
+     * @param array $models
+     * @param string $relation
      * @return array
      */
     public function initRelation(array $models, $relation)
@@ -166,9 +168,9 @@ class BelongsTo extends Relation
     /**
      * Match the eagerly loaded results to their parents.
      *
-     * @param  array  $models
-     * @param  \Mini\Database\Mysql\Eloquent\Collection  $results
-     * @param  string  $relation
+     * @param array $models
+     * @param \Mini\Database\Mysql\Eloquent\Collection $results
+     * @param string $relation
      * @return array
      */
     public function match(array $models, Collection $results, $relation)
@@ -201,7 +203,7 @@ class BelongsTo extends Relation
     /**
      * Associate the model instance to the given parent.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Model|int|string  $model
+     * @param \Mini\Database\Mysql\Eloquent\Model|int|string $model
      * @return \Mini\Database\Mysql\Eloquent\Model
      */
     public function associate($model)
@@ -234,9 +236,9 @@ class BelongsTo extends Relation
     /**
      * Add the constraints for a relationship query.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $query
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $parentQuery
-     * @param  array|mixed  $columns
+     * @param \Mini\Database\Mysql\Eloquent\Builder $query
+     * @param \Mini\Database\Mysql\Eloquent\Builder $parentQuery
+     * @param array|mixed $columns
      * @return \Mini\Database\Mysql\Eloquent\Builder
      */
     public function getRelationExistenceQuery(Builder $query, Builder $parentQuery, $columns = ['*'])
@@ -253,21 +255,21 @@ class BelongsTo extends Relation
     /**
      * Add the constraints for a relationship query on the same table.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $query
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $parentQuery
-     * @param  array|mixed  $columns
+     * @param \Mini\Database\Mysql\Eloquent\Builder $query
+     * @param \Mini\Database\Mysql\Eloquent\Builder $parentQuery
+     * @param array|mixed $columns
      * @return \Mini\Database\Mysql\Eloquent\Builder
      */
     public function getRelationExistenceQueryForSelfRelation(Builder $query, Builder $parentQuery, $columns = ['*'])
     {
         $query->select($columns)->from(
-            $query->getModel()->getTable().' as '.$hash = $this->getRelationCountHash()
+            $query->getModel()->getTable() . ' as ' . $hash = $this->getRelationCountHash()
         );
 
         $query->getModel()->setTable($hash);
 
         return $query->whereColumn(
-            $hash.'.'.$this->ownerKey, '=', $this->getQualifiedForeignKeyName()
+            $hash . '.' . $this->ownerKey, '=', $this->getQualifiedForeignKeyName()
         );
     }
 
@@ -278,7 +280,7 @@ class BelongsTo extends Relation
      */
     public function getRelationCountHash()
     {
-        return 'laravel_reserved_'.static::$selfJoinCount++;
+        return 'laravel_reserved_' . static::$selfJoinCount++;
     }
 
     /**
@@ -295,7 +297,7 @@ class BelongsTo extends Relation
     /**
      * Make a new related instance for the given model.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Model  $parent
+     * @param \Mini\Database\Mysql\Eloquent\Model $parent
      * @return \Mini\Database\Mysql\Eloquent\Model
      */
     protected function newRelatedInstanceFor(Model $parent)

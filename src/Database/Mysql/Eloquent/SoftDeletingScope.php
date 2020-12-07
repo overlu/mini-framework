@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Eloquent;
 
 class SoftDeletingScope implements Scope
@@ -17,8 +19,8 @@ class SoftDeletingScope implements Scope
     /**
      * Apply the scope to a given Eloquent query builder.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $builder
-     * @param  \Mini\Database\Mysql\Eloquent\Model  $model
+     * @param \Mini\Database\Mysql\Eloquent\Builder $builder
+     * @param \Mini\Database\Mysql\Eloquent\Model $model
      * @return void
      */
     public function apply(Builder $builder, Model $model)
@@ -29,7 +31,7 @@ class SoftDeletingScope implements Scope
     /**
      * Extend the query builder with the needed functions.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $builder
+     * @param \Mini\Database\Mysql\Eloquent\Builder $builder
      * @return void
      */
     public function extend(Builder $builder)
@@ -50,12 +52,12 @@ class SoftDeletingScope implements Scope
     /**
      * Get the "deleted at" column for the builder.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $builder
+     * @param \Mini\Database\Mysql\Eloquent\Builder $builder
      * @return string
      */
     protected function getDeletedAtColumn(Builder $builder)
     {
-        if (count((array) $builder->getQuery()->joins) > 0) {
+        if (count((array)$builder->getQuery()->joins) > 0) {
             return $builder->getModel()->getQualifiedDeletedAtColumn();
         }
 
@@ -65,7 +67,7 @@ class SoftDeletingScope implements Scope
     /**
      * Add the restore extension to the builder.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $builder
+     * @param \Mini\Database\Mysql\Eloquent\Builder $builder
      * @return void
      */
     protected function addRestore(Builder $builder)
@@ -80,13 +82,13 @@ class SoftDeletingScope implements Scope
     /**
      * Add the with-trashed extension to the builder.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $builder
+     * @param \Mini\Database\Mysql\Eloquent\Builder $builder
      * @return void
      */
     protected function addWithTrashed(Builder $builder)
     {
         $builder->macro('withTrashed', function (Builder $builder, $withTrashed = true) {
-            if (! $withTrashed) {
+            if (!$withTrashed) {
                 return $builder->withoutTrashed();
             }
 
@@ -97,7 +99,7 @@ class SoftDeletingScope implements Scope
     /**
      * Add the without-trashed extension to the builder.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $builder
+     * @param \Mini\Database\Mysql\Eloquent\Builder $builder
      * @return void
      */
     protected function addWithoutTrashed(Builder $builder)
@@ -116,7 +118,7 @@ class SoftDeletingScope implements Scope
     /**
      * Add the only-trashed extension to the builder.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $builder
+     * @param \Mini\Database\Mysql\Eloquent\Builder $builder
      * @return void
      */
     protected function addOnlyTrashed(Builder $builder)

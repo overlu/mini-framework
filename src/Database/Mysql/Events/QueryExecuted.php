@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Events;
 
 class QueryExecuted
@@ -45,10 +47,10 @@ class QueryExecuted
     /**
      * Create a new event instance.
      *
-     * @param  string  $sql
-     * @param  array  $bindings
-     * @param  float|null  $time
-     * @param  \Mini\Database\Mysql\Connection  $connection
+     * @param string $sql
+     * @param array $bindings
+     * @param float|null $time
+     * @param \Mini\Database\Mysql\Connection $connection
      * @return void
      */
     public function __construct($sql, $bindings, $time, $connection)

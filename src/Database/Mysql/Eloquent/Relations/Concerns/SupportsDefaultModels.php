@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Eloquent\Relations\Concerns;
 
 use Mini\Database\Mysql\Eloquent\Model;
@@ -21,7 +23,7 @@ trait SupportsDefaultModels
     /**
      * Make a new related instance for the given model.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Model  $parent
+     * @param \Mini\Database\Mysql\Eloquent\Model $parent
      * @return \Mini\Database\Mysql\Eloquent\Model
      */
     abstract protected function newRelatedInstanceFor(Model $parent);
@@ -29,7 +31,7 @@ trait SupportsDefaultModels
     /**
      * Return a new model instance in case the relationship does not exist.
      *
-     * @param  \Closure|array|bool  $callback
+     * @param \Closure|array|bool $callback
      * @return $this
      */
     public function withDefault($callback = true)
@@ -42,12 +44,12 @@ trait SupportsDefaultModels
     /**
      * Get the default value for this relation.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Model  $parent
+     * @param \Mini\Database\Mysql\Eloquent\Model $parent
      * @return \Mini\Database\Mysql\Eloquent\Model|null
      */
     protected function getDefaultFor(Model $parent)
     {
-        if (! $this->withDefault) {
+        if (!$this->withDefault) {
             return;
         }
 

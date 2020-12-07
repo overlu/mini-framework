@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Schema\Grammars;
 
 use Doctrine\DBAL\Schema\AbstractSchemaManager as SchemaManager;
@@ -19,17 +21,17 @@ class ChangeColumn
     /**
      * Compile a change column command into a series of SQL statements.
      *
-     * @param  \Mini\Database\Mysql\Schema\Grammars\Grammar  $grammar
-     * @param  \Mini\Database\Mysql\Schema\Blueprint  $blueprint
-     * @param  \Mini\Support\Fluent  $command
-     * @param  \Mini\Database\Mysql\Connection  $connection
+     * @param \Mini\Database\Mysql\Schema\Grammars\Grammar $grammar
+     * @param \Mini\Database\Mysql\Schema\Blueprint $blueprint
+     * @param \Mini\Support\Fluent $command
+     * @param \Mini\Database\Mysql\Connection $connection
      * @return array
      *
      * @throws \RuntimeException
      */
     public static function compile($grammar, Blueprint $blueprint, Fluent $command, Connection $connection)
     {
-        if (! $connection->isDoctrineAvailable()) {
+        if (!$connection->isDoctrineAvailable()) {
             throw new RuntimeException(sprintf(
                 'Changing columns for table "%s" requires Doctrine DBAL. Please install the doctrine/dbal package.',
                 $blueprint->getTable()
@@ -45,7 +47,7 @@ class ChangeColumn
         );
 
         if ($tableDiff !== false) {
-            return (array) $databasePlatform->getAlterTableSQL($tableDiff);
+            return (array)$databasePlatform->getAlterTableSQL($tableDiff);
         }
 
         return [];
@@ -54,14 +56,14 @@ class ChangeColumn
     /**
      * Get the Doctrine table difference for the given changes.
      *
-     * @param  \Mini\Database\Mysql\Schema\Grammars\Grammar  $grammar
-     * @param  \Mini\Database\Mysql\Schema\Blueprint  $blueprint
-     * @param  \Doctrine\DBAL\Schema\AbstractSchemaManager  $schema
+     * @param \Mini\Database\Mysql\Schema\Grammars\Grammar $grammar
+     * @param \Mini\Database\Mysql\Schema\Blueprint $blueprint
+     * @param \Doctrine\DBAL\Schema\AbstractSchemaManager $schema
      * @return \Doctrine\DBAL\Schema\TableDiff|bool
      */
     protected static function getChangedDiff($grammar, Blueprint $blueprint, SchemaManager $schema)
     {
-        $current = $schema->listTableDetails($grammar->getTablePrefix().$blueprint->getTable());
+        $current = $schema->listTableDetails($grammar->getTablePrefix() . $blueprint->getTable());
 
         return (new Comparator)->diffTable(
             $current, static::getTableWithColumnChanges($blueprint, $current)
@@ -71,8 +73,8 @@ class ChangeColumn
     /**
      * Get a copy of the given Doctrine table after making the column changes.
      *
-     * @param  \Mini\Database\Mysql\Schema\Blueprint  $blueprint
-     * @param  \Doctrine\DBAL\Schema\Table  $table
+     * @param \Mini\Database\Mysql\Schema\Blueprint $blueprint
+     * @param \Doctrine\DBAL\Schema\Table $table
      * @return \Doctrine\DBAL\Schema\Table
      */
     protected static function getTableWithColumnChanges(Blueprint $blueprint, Table $table)
@@ -86,8 +88,8 @@ class ChangeColumn
             // Doctrine column definitions - which is necessary because Laravel and Doctrine
             // use some different terminology for various column attributes on the tables.
             foreach ($fluent->getAttributes() as $key => $value) {
-                if (! is_null($option = static::mapFluentOptionToDoctrine($key))) {
-                    if (method_exists($column, $method = 'set'.ucfirst($option))) {
+                if (!is_null($option = static::mapFluentOptionToDoctrine($key))) {
+                    if (method_exists($column, $method = 'set' . ucfirst($option))) {
                         $column->{$method}(static::mapFluentValueToDoctrine($option, $value));
                         continue;
                     }
@@ -103,8 +105,8 @@ class ChangeColumn
     /**
      * Get the Doctrine column instance for a column change.
      *
-     * @param  \Doctrine\DBAL\Schema\Table  $table
-     * @param  \Mini\Support\Fluent  $fluent
+     * @param \Doctrine\DBAL\Schema\Table $table
+     * @param \Mini\Support\Fluent $fluent
      * @return \Doctrine\DBAL\Schema\Column
      */
     protected static function getDoctrineColumn(Table $table, Fluent $fluent)
@@ -117,7 +119,7 @@ class ChangeColumn
     /**
      * Get the Doctrine column change options.
      *
-     * @param  \Mini\Support\Fluent  $fluent
+     * @param \Mini\Support\Fluent $fluent
      * @return array
      */
     protected static function getDoctrineColumnChangeOptions(Fluent $fluent)
@@ -141,7 +143,7 @@ class ChangeColumn
     /**
      * Get the doctrine column type.
      *
-     * @param  string  $type
+     * @param string $type
      * @return \Doctrine\DBAL\Types\Type
      */
     protected static function getDoctrineColumnType($type)
@@ -173,7 +175,7 @@ class ChangeColumn
     /**
      * Calculate the proper column length to force the Doctrine text type.
      *
-     * @param  string  $type
+     * @param string $type
      * @return int
      */
     protected static function calculateDoctrineTextLength($type)
@@ -191,7 +193,7 @@ class ChangeColumn
     /**
      * Determine if the given type does not need character / collation options.
      *
-     * @param  string  $type
+     * @param string $type
      * @return bool
      */
     protected static function doesntNeedCharacterOptions($type)
@@ -216,7 +218,7 @@ class ChangeColumn
     /**
      * Get the matching Doctrine option for a given Fluent attribute name.
      *
-     * @param  string  $attribute
+     * @param string $attribute
      * @return string|null
      */
     protected static function mapFluentOptionToDoctrine($attribute)
@@ -239,12 +241,12 @@ class ChangeColumn
     /**
      * Get the matching Doctrine value for a given Fluent attribute.
      *
-     * @param  string  $option
-     * @param  mixed  $value
+     * @param string $option
+     * @param mixed $value
      * @return mixed
      */
     protected static function mapFluentValueToDoctrine($option, $value)
     {
-        return $option === 'notnull' ? ! $value : $value;
+        return $option === 'notnull' ? !$value : $value;
     }
 }

@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Eloquent\Relations;
 
 use BadMethodCallException;
@@ -57,12 +59,12 @@ class MorphTo extends BelongsTo
     /**
      * Create a new morph to relationship instance.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $query
-     * @param  \Mini\Database\Mysql\Eloquent\Model  $parent
-     * @param  string  $foreignKey
-     * @param  string  $ownerKey
-     * @param  string  $type
-     * @param  string  $relation
+     * @param \Mini\Database\Mysql\Eloquent\Builder $query
+     * @param \Mini\Database\Mysql\Eloquent\Model $parent
+     * @param string $foreignKey
+     * @param string $ownerKey
+     * @param string $type
+     * @param string $relation
      * @return void
      */
     public function __construct(Builder $query, Model $parent, $foreignKey, $ownerKey, $type, $relation)
@@ -75,7 +77,7 @@ class MorphTo extends BelongsTo
     /**
      * Set the constraints for an eager load of the relation.
      *
-     * @param  array  $models
+     * @param array $models
      * @return void
      */
     public function addEagerConstraints(array $models)
@@ -86,7 +88,7 @@ class MorphTo extends BelongsTo
     /**
      * Build a dictionary with the models.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Collection  $models
+     * @param \Mini\Database\Mysql\Eloquent\Collection $models
      * @return void
      */
     protected function buildDictionary(Collection $models)
@@ -117,7 +119,7 @@ class MorphTo extends BelongsTo
     /**
      * Get all of the relation results for a type.
      *
-     * @param  string  $type
+     * @param string $type
      * @return \Mini\Database\Mysql\Eloquent\Collection
      */
     protected function getResultsByType($type)
@@ -127,26 +129,26 @@ class MorphTo extends BelongsTo
         $ownerKey = $this->ownerKey ?? $instance->getKeyName();
 
         $query = $this->replayMacros($instance->newQuery())
-                            ->mergeConstraintsFrom($this->getQuery())
-                            ->with(array_merge(
-                                $this->getQuery()->getEagerLoads(),
-                                (array) ($this->morphableEagerLoads[get_class($instance)] ?? [])
-                            ))
-                            ->withCount(
-                                (array) ($this->morphableEagerLoadCounts[get_class($instance)] ?? [])
-                            );
+            ->mergeConstraintsFrom($this->getQuery())
+            ->with(array_merge(
+                $this->getQuery()->getEagerLoads(),
+                (array)($this->morphableEagerLoads[get_class($instance)] ?? [])
+            ))
+            ->withCount(
+                (array)($this->morphableEagerLoadCounts[get_class($instance)] ?? [])
+            );
 
         $whereIn = $this->whereInMethod($instance, $ownerKey);
 
         return $query->{$whereIn}(
-            $instance->getTable().'.'.$ownerKey, $this->gatherKeysByType($type)
+            $instance->getTable() . '.' . $ownerKey, $this->gatherKeysByType($type)
         )->get();
     }
 
     /**
      * Gather all of the foreign keys for a given type.
      *
-     * @param  string  $type
+     * @param string $type
      * @return array
      */
     protected function gatherKeysByType($type)
@@ -157,7 +159,7 @@ class MorphTo extends BelongsTo
     /**
      * Create a new model instance by type.
      *
-     * @param  string  $type
+     * @param string $type
      * @return \Mini\Database\Mysql\Eloquent\Model
      */
     public function createModelByType($type)
@@ -165,7 +167,7 @@ class MorphTo extends BelongsTo
         $class = Model::getActualClassNameForMorph($type);
 
         return tap(new $class, function ($instance) {
-            if (! $instance->getConnectionName()) {
+            if (!$instance->getConnectionName()) {
                 $instance->setConnection($this->getConnection()->getName());
             }
         });
@@ -174,9 +176,9 @@ class MorphTo extends BelongsTo
     /**
      * Match the eagerly loaded results to their parents.
      *
-     * @param  array  $models
-     * @param  \Mini\Database\Mysql\Eloquent\Collection  $results
-     * @param  string  $relation
+     * @param array $models
+     * @param \Mini\Database\Mysql\Eloquent\Collection $results
+     * @param string $relation
      * @return array
      */
     public function match(array $models, Collection $results, $relation)
@@ -187,14 +189,14 @@ class MorphTo extends BelongsTo
     /**
      * Match the results for a given type to their parents.
      *
-     * @param  string  $type
-     * @param  \Mini\Database\Mysql\Eloquent\Collection  $results
+     * @param string $type
+     * @param \Mini\Database\Mysql\Eloquent\Collection $results
      * @return void
      */
     protected function matchToMorphParents($type, Collection $results)
     {
         foreach ($results as $result) {
-            $ownerKey = ! is_null($this->ownerKey) ? $result->{$this->ownerKey} : $result->getKey();
+            $ownerKey = !is_null($this->ownerKey) ? $result->{$this->ownerKey} : $result->getKey();
 
             if (isset($this->dictionary[$type][$ownerKey])) {
                 foreach ($this->dictionary[$type][$ownerKey] as $model) {
@@ -207,7 +209,7 @@ class MorphTo extends BelongsTo
     /**
      * Associate the model instance to the given parent.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Model  $model
+     * @param \Mini\Database\Mysql\Eloquent\Model $model
      * @return \Mini\Database\Mysql\Eloquent\Model
      */
     public function associate($model)
@@ -244,7 +246,7 @@ class MorphTo extends BelongsTo
      */
     public function touch()
     {
-        if (! is_null($this->child->{$this->foreignKey})) {
+        if (!is_null($this->child->{$this->foreignKey})) {
             parent::touch();
         }
     }
@@ -252,7 +254,7 @@ class MorphTo extends BelongsTo
     /**
      * Make a new related instance for the given model.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Model  $parent
+     * @param \Mini\Database\Mysql\Eloquent\Model $parent
      * @return \Mini\Database\Mysql\Eloquent\Model
      */
     protected function newRelatedInstanceFor(Model $parent)
@@ -283,7 +285,7 @@ class MorphTo extends BelongsTo
     /**
      * Specify which relations to load for a given morph type.
      *
-     * @param  array  $with
+     * @param array $with
      * @return \Mini\Database\Mysql\Eloquent\Relations\MorphTo
      */
     public function morphWith(array $with)
@@ -298,7 +300,7 @@ class MorphTo extends BelongsTo
     /**
      * Specify which relationship counts to load for a given morph type.
      *
-     * @param  array  $withCount
+     * @param array $withCount
      * @return \Mini\Database\Mysql\Eloquent\Relations\MorphTo
      */
     public function morphWithCount(array $withCount)
@@ -313,7 +315,7 @@ class MorphTo extends BelongsTo
     /**
      * Replay stored macro calls on the actual related instance.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $query
+     * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @return \Mini\Database\Mysql\Eloquent\Builder
      */
     protected function replayMacros(Builder $query)
@@ -328,8 +330,8 @@ class MorphTo extends BelongsTo
     /**
      * Handle dynamic method calls to the relationship.
      *
-     * @param  string  $method
-     * @param  array  $parameters
+     * @param string $method
+     * @param array $parameters
      * @return mixed
      */
     public function __call($method, $parameters)
@@ -344,9 +346,9 @@ class MorphTo extends BelongsTo
             return $result;
         }
 
-        // If we tried to call a method that does not exist on the parent Builder instance,
-        // we'll assume that we want to call a query macro (e.g. withTrashed) that only
-        // exists on related models. We will just store the call and replay it later.
+            // If we tried to call a method that does not exist on the parent Builder instance,
+            // we'll assume that we want to call a query macro (e.g. withTrashed) that only
+            // exists on related models. We will just store the call and replay it later.
         catch (BadMethodCallException $e) {
             $this->macroBuffer[] = compact('method', 'parameters');
 

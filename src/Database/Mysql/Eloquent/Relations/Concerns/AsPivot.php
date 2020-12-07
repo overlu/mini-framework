@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Eloquent\Relations\Concerns;
 
 use Mini\Database\Mysql\Eloquent\Builder;
@@ -35,10 +37,10 @@ trait AsPivot
     /**
      * Create a new pivot model instance.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Model  $parent
-     * @param  array  $attributes
-     * @param  string  $table
-     * @param  bool  $exists
+     * @param \Mini\Database\Mysql\Eloquent\Model $parent
+     * @param array $attributes
+     * @param string $table
+     * @param bool $exists
      * @return static
      */
     public static function fromAttributes(Model $parent, $attributes, $table, $exists = false)
@@ -68,10 +70,10 @@ trait AsPivot
     /**
      * Create a new pivot model from raw values returned from a query.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Model  $parent
-     * @param  array  $attributes
-     * @param  string  $table
-     * @param  bool  $exists
+     * @param \Mini\Database\Mysql\Eloquent\Model $parent
+     * @param array $attributes
+     * @param string $table
+     * @param bool $exists
      * @return static
      */
     public static function fromRawAttributes(Model $parent, $attributes, $table, $exists = false)
@@ -88,7 +90,7 @@ trait AsPivot
     /**
      * Set the keys for a save update query.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $query
+     * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @return \Mini\Database\Mysql\Eloquent\Builder
      */
     protected function setKeysForSaveQuery(Builder $query)
@@ -114,7 +116,7 @@ trait AsPivot
     public function delete()
     {
         if (isset($this->attributes[$this->getKeyName()])) {
-            return (int) parent::delete();
+            return (int)parent::delete();
         }
 
         if ($this->fireModelEvent('deleting') === false) {
@@ -148,7 +150,7 @@ trait AsPivot
      */
     public function getTable()
     {
-        if (! isset($this->table)) {
+        if (!isset($this->table)) {
             $this->setTable(str_replace(
                 '\\', '', Str::snake(Str::singular(class_basename($this)))
             ));
@@ -190,8 +192,8 @@ trait AsPivot
     /**
      * Set the key names for the pivot model instance.
      *
-     * @param  string  $foreignKey
-     * @param  string  $relatedKey
+     * @param string $foreignKey
+     * @param string $relatedKey
      * @return $this
      */
     public function setPivotKeys($foreignKey, $relatedKey)
@@ -206,7 +208,7 @@ trait AsPivot
     /**
      * Determine if the pivot model or given attributes has timestamp attributes.
      *
-     * @param  array|null  $attributes
+     * @param array|null $attributes
      * @return bool
      */
     public function hasTimestampAttributes($attributes = null)
@@ -259,7 +261,7 @@ trait AsPivot
     /**
      * Get a new query to restore one or more models by their queueable IDs.
      *
-     * @param  int[]|string[]|string  $ids
+     * @param int[]|string[]|string $ids
      * @return \Mini\Database\Mysql\Eloquent\Builder
      */
     public function newQueryForRestoration($ids)
@@ -268,7 +270,7 @@ trait AsPivot
             return $this->newQueryForCollectionRestoration($ids);
         }
 
-        if (! Str::contains($ids, ':')) {
+        if (!Str::contains($ids, ':')) {
             return parent::newQueryForRestoration($ids);
         }
 
@@ -282,12 +284,12 @@ trait AsPivot
     /**
      * Get a new query to restore multiple models by their queueable IDs.
      *
-     * @param  int[]|string[]  $ids
+     * @param int[]|string[] $ids
      * @return \Mini\Database\Mysql\Eloquent\Builder
      */
     protected function newQueryForCollectionRestoration(array $ids)
     {
-        if (! Str::contains($ids[0], ':')) {
+        if (!Str::contains($ids[0], ':')) {
             return parent::newQueryForRestoration($ids);
         }
 

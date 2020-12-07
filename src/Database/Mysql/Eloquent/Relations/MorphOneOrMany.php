@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Eloquent\Relations;
 
 use Mini\Database\Mysql\Eloquent\Builder;
@@ -27,11 +29,11 @@ abstract class MorphOneOrMany extends HasOneOrMany
     /**
      * Create a new morph one or many relationship instance.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $query
-     * @param  \Mini\Database\Mysql\Eloquent\Model  $parent
-     * @param  string  $type
-     * @param  string  $id
-     * @param  string  $localKey
+     * @param \Mini\Database\Mysql\Eloquent\Builder $query
+     * @param \Mini\Database\Mysql\Eloquent\Model $parent
+     * @param string $type
+     * @param string $id
+     * @param string $localKey
      * @return void
      */
     public function __construct(Builder $query, Model $parent, $type, $id, $localKey)
@@ -60,7 +62,7 @@ abstract class MorphOneOrMany extends HasOneOrMany
     /**
      * Set the constraints for an eager load of the relation.
      *
-     * @param  array  $models
+     * @param array $models
      * @return void
      */
     public function addEagerConstraints(array $models)
@@ -73,7 +75,7 @@ abstract class MorphOneOrMany extends HasOneOrMany
     /**
      * Set the foreign ID and type for creating a related model.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Model  $model
+     * @param \Mini\Database\Mysql\Eloquent\Model $model
      * @return void
      */
     protected function setForeignAttributesForCreate(Model $model)
@@ -86,9 +88,9 @@ abstract class MorphOneOrMany extends HasOneOrMany
     /**
      * Get the relationship query.
      *
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $query
-     * @param  \Mini\Database\Mysql\Eloquent\Builder  $parentQuery
-     * @param  array|mixed  $columns
+     * @param \Mini\Database\Mysql\Eloquent\Builder $query
+     * @param \Mini\Database\Mysql\Eloquent\Builder $parentQuery
+     * @param array|mixed $columns
      * @return \Mini\Database\Mysql\Eloquent\Builder
      */
     public function getRelationExistenceQuery(Builder $query, Builder $parentQuery, $columns = ['*'])

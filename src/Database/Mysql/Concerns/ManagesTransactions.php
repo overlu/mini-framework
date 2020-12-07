@@ -3,6 +3,8 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+declare(strict_types=1);
+
 namespace Mini\Database\Mysql\Concerns;
 
 use Closure;
@@ -13,8 +15,8 @@ trait ManagesTransactions
     /**
      * Execute a Closure within a transaction.
      *
-     * @param  \Closure  $callback
-     * @param  int  $attempts
+     * @param \Closure $callback
+     * @param int $attempts
      * @return mixed
      *
      * @throws \Throwable
@@ -31,9 +33,9 @@ trait ManagesTransactions
                 $callbackResult = $callback($this);
             }
 
-            // If we catch an exception we'll rollback this transaction and try again if we
-            // are not out of attempts. If we are out of attempts we will just throw the
-            // exception back out and let the developer handle an uncaught exceptions.
+                // If we catch an exception we'll rollback this transaction and try again if we
+                // are not out of attempts. If we are out of attempts we will just throw the
+                // exception back out and let the developer handle an uncaught exceptions.
             catch (Throwable $e) {
                 $this->handleTransactionException(
                     $e, $currentAttempt, $attempts
@@ -59,9 +61,9 @@ trait ManagesTransactions
     /**
      * Handle an exception encountered when running a transacted statement.
      *
-     * @param  \Throwable  $e
-     * @param  int  $currentAttempt
-     * @param  int  $maxAttempts
+     * @param \Throwable $e
+     * @param int $currentAttempt
+     * @param int $maxAttempts
      * @return void
      *
      * @throws \Throwable
@@ -139,14 +141,14 @@ trait ManagesTransactions
     protected function createSavepoint()
     {
         $this->getPdo()->exec(
-            $this->queryGrammar->compileSavepoint('trans'.($this->transactions + 1))
+            $this->queryGrammar->compileSavepoint('trans' . ($this->transactions + 1))
         );
     }
 
     /**
      * Handle an exception from a transaction beginning.
      *
-     * @param  \Throwable  $e
+     * @param \Throwable $e
      * @return void
      *
      * @throws \Throwable
@@ -183,9 +185,9 @@ trait ManagesTransactions
     /**
      * Handle an exception encountered when committing a transaction.
      *
-     * @param  \Throwable  $e
-     * @param  int  $currentAttempt
-     * @param  int  $maxAttempts
+     * @param \Throwable $e
+     * @param int $currentAttempt
+     * @param int $maxAttempts
      * @return void
      *
      * @throws \Throwable
@@ -209,7 +211,7 @@ trait ManagesTransactions
     /**
      * Rollback the active database transaction.
      *
-     * @param  int|null  $toLevel
+     * @param int|null $toLevel
      * @return void
      *
      * @throws \Throwable
@@ -220,8 +222,8 @@ trait ManagesTransactions
         // that this given transaction level is valid before attempting to rollback to
         // that level. If it's not we will just return out and not attempt anything.
         $toLevel = is_null($toLevel)
-                    ? $this->transactions - 1
-                    : $toLevel;
+            ? $this->transactions - 1
+            : $toLevel;
 
         if ($toLevel < 0 || $toLevel >= $this->transactions) {
             return;
@@ -244,7 +246,7 @@ trait ManagesTransactions
     /**
      * Perform a rollback within the database.
      *
-     * @param  int  $toLevel
+     * @param int $toLevel
      * @return void
      *
      * @throws \Throwable
@@ -255,7 +257,7 @@ trait ManagesTransactions
             $this->getPdo()->rollBack();
         } elseif ($this->queryGrammar->supportsSavepoints()) {
             $this->getPdo()->exec(
-                $this->queryGrammar->compileSavepointRollBack('trans'.($toLevel + 1))
+                $this->queryGrammar->compileSavepointRollBack('trans' . ($toLevel + 1))
             );
         }
     }
@@ -263,7 +265,7 @@ trait ManagesTransactions
     /**
      * Handle an exception from a rollback.
      *
-     * @param  \Throwable  $e
+     * @param \Throwable $e
      * @return void
      *
      * @throws \Throwable
