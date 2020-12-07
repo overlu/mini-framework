@@ -14,6 +14,7 @@ use Mini\Command\MigrateInstallCommandService;
 use Mini\Command\MigrateRefreshCommandService;
 use Mini\Command\MigrateResetCommandService;
 use Mini\Command\MigrateRollbackCommandService;
+use Mini\Command\StorageLinkCommandService;
 use Mini\Exceptions\Handler;
 use Mini\Provider\BaseProviderService;
 use Throwable;
@@ -27,6 +28,7 @@ class Console
         MigrateRollbackCommandService::class,
         MigrateRefreshCommandService::class,
         MakeMigrationCommandService::class,
+        StorageLinkCommandService::class,
     ];
 
     /**
