@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Translate;
 
 use Mini\Singleton;
+use Mini\Support\Arr;
 use Symfony\Component\Translation\Loader\ArrayLoader;
 use Symfony\Component\Translation\Translator;
 
@@ -29,8 +30,9 @@ class Translate
             $directory = resource_path('lang');
             $langFiles = app('files')->allFiles($directory);
             foreach ($langFiles as $langFile) {
-                $this->translation[$langFile->getRelativePath()] = require $langFile->getRealPath();
-                $this->translator->addResource('array', $this->translation[$langFile->getRelativePath()], $langFile->getRelativePath());
+                $lang = $langFile->getRelativePath();
+                $this->translation[$lang][$langFile->getFilenameWithoutExtension()] = require $langFile->getRealPath();
+                $this->translator->addResource('array', $this->translation[$lang], $lang);
             }
             $this->translator->addLoader('array', new ArrayLoader());
         }
@@ -38,7 +40,7 @@ class Translate
 
     public function get(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
     {
-        return empty($parameters) ? ($this->translation[$this->locate][$id] ?? $id) : $this->trans($id, $parameters, $domain, $locale);
+        return empty($parameters) ? (Arr::get($this->translation[$locale ?: $this->locate], $id) ?? $id) : $this->trans($id, $parameters, $domain, $locale);
     }
 
     public function trans(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
