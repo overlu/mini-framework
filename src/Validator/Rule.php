@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Validator;
 
+use Mini\Container\EntryNotFoundException;
 use Mini\Exceptions\MissingRequiredParameterException;
 
 abstract class Rule
@@ -18,7 +19,7 @@ abstract class Rule
     protected ?Attribute $attribute = null;
 
     /** @var Validation|null */
-    protected ?Validation $validation;
+    protected ?Validation $validation = null;
 
     /** @var bool */
     protected bool $implicit = false;
@@ -196,10 +197,13 @@ abstract class Rule
     /**
      * Get message
      * @return string
+     * @throws EntryNotFoundException
      */
     public function getMessage(): string
     {
-        return $this->message;
+        $key = 'validation.' . strtolower($this->getKey());
+        $message = app('translate')->get($key);
+        return $message !== $key ? $message : $this->message;
     }
 
     /**
@@ -210,9 +214,9 @@ abstract class Rule
      */
     protected function requireParameters(array $params): void
     {
+        $rule = $this->getKey();
         foreach ($params as $param) {
             if (!isset($this->params[$param])) {
-                $rule = $this->getKey();
                 throw new MissingRequiredParameterException("Missing required parameter '{$param}' on rule '{$rule}'");
             }
         }

@@ -18,10 +18,10 @@ class After extends Rule
     use DateUtilsTrait;
 
     /** @var string */
-    protected string $message = "The :attribute must be a date after :time.";
+    protected string $message = "The :attribute must be a date after :date.";
 
     /** @var array */
-    protected array $fillableParams = ['time'];
+    protected array $fillableParams = ['date'];
 
     /**
      * Check the value is valid
@@ -33,7 +33,7 @@ class After extends Rule
     public function check($value): bool
     {
         $this->requireParameters($this->fillableParams);
-        $time = $this->parameter('time');
+        $time = $this->parameter('date');
 
         if (!$this->isValidDate($value)) {
             throw $this->throwException($value);

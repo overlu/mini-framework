@@ -38,12 +38,37 @@ class Translate
         }
     }
 
-    public function get(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
+    /**
+     * @param string|null $id
+     * @param array $parameters
+     * @param string|null $domain
+     * @param string|null $locale
+     * @return string
+     */
+    public function get(?string $id = null, array $parameters = [], ?string $domain = null, ?string $locale = null): string
     {
         return empty($parameters) ? (Arr::get($this->translation[$locale ?: $this->locate], $id) ?? $id) : $this->trans($id, $parameters, $domain, $locale);
     }
 
-    public function trans(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
+    /**
+     * @param string|null $id
+     * @param string|null $default
+     * @param null $locale
+     * @return string
+     */
+    public function getOrDefault(?string $id, ?string $default = null, $locale = null): string
+    {
+        return Arr::get($this->translation[$locale ?: $this->locate], $id) ?? ($default ?: $id);
+    }
+
+    /**
+     * @param string|null $id
+     * @param array $parameters
+     * @param string|null $domain
+     * @param string|null $locale
+     * @return string
+     */
+    public function trans(?string $id = null, array $parameters = [], ?string $domain = null, ?string $locale = null): string
     {
         return $this->translator->trans($id, $parameters, $domain, $locale);
     }

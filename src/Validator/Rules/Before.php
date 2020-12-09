@@ -17,10 +17,10 @@ class Before extends Rule
     use DateUtilsTrait;
 
     /** @var string */
-    protected string $message = "The :attribute must be a date before :time.";
+    protected string $message = "The :attribute must be a date before :date.";
 
     /** @var array */
-    protected array $fillableParams = ['time'];
+    protected array $fillableParams = ['date'];
 
     /**
      * Check the $value is valid
@@ -32,7 +32,7 @@ class Before extends Rule
     public function check($value): bool
     {
         $this->requireParameters($this->fillableParams);
-        $time = $this->parameter('time');
+        $time = $this->parameter('date');
 
         if (!$this->isValidDate($value)) {
             throw $this->throwException($value);

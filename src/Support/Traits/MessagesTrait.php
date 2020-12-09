@@ -17,21 +17,23 @@ trait MessagesTrait
      * Given $key and $message to set message
      * @param mixed $key
      * @param mixed $message
-     * @return void
+     * @return static
      */
-    public function setMessage(string $key, string $message): void
+    public function setMessage(string $key, string $message): self
     {
         $this->messages[$key] = $message;
+        return $this;
     }
 
     /**
      * Given $messages and set multiple messages
      * @param array $messages
-     * @return void
+     * @return static
      */
-    public function setMessages(array $messages): void
+    public function setMessages(array $messages): self
     {
-        $this->messages = array_merge($this->messages, $messages);
+        $this->messages = $messages;
+        return $this;
     }
 
     /**
@@ -51,5 +53,13 @@ trait MessagesTrait
     public function getMessages(): array
     {
         return $this->messages;
+    }
+
+    /**
+     * clear all $messages
+     */
+    public function clearMessages(): void
+    {
+        $this->messages = [];
     }
 }

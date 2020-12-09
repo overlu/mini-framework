@@ -9,6 +9,8 @@ namespace Mini\Validator;
 
 use Closure;
 use Exception;
+use JsonException;
+use Mini\Container\EntryNotFoundException;
 use Mini\Contracts\Validator\BeforeValidate;
 use Mini\Contracts\Validator\ModifyValue;
 use Mini\Support\Traits\MessagesTrait;
@@ -43,16 +45,17 @@ class Validation
     /** @var ErrorBag */
     public ErrorBag $errors;
 
+    protected bool $implicit = false;
+
     /**
      * Constructor
-     * @param Validator $validator
+     * @param Factory $validator
      * @param array $inputs
      * @param array $rules
      * @param array $messages
      * @return void
-     * @throws Exception
      */
-    public function __construct(Validator $validator, array $inputs, array $rules, array $messages = [])
+    public function __construct(Factory $validator, array $inputs, array $rules, array $messages = [])
     {
         $this->validator = $validator;
         $this->inputs = $this->resolveInputAttributes($inputs);
@@ -68,7 +71,6 @@ class Validation
      * @param string $attributeKey
      * @param string|array $rules
      * @return void
-     * @throws Exception
      */
     public function addAttribute(string $attributeKey, $rules): void
     {
@@ -160,7 +162,7 @@ class Validation
             if (!$valid) {
                 $isValid = false;
                 $this->addError($attribute, $value, $ruleValidator);
-                if ($ruleValidator->isImplicit()) {
+                if ($this->implicit || $ruleValidator->isImplicit()) {
                     break;
                 }
             }
@@ -171,6 +173,7 @@ class Validation
         } else {
             $this->setInvalidData($attribute, $value);
         }
+        $this->implicit = false;
     }
 
     /**
@@ -345,20 +348,9 @@ class Validation
      */
     protected function resolveAttributeName(Attribute $attribute): string
     {
-        $primaryAttribute = $attribute->getPrimaryAttribute();
-        if (isset($this->aliases[$attribute->getKey()])) {
-            return $this->aliases[$attribute->getKey()];
-        }
 
-        if ($primaryAttribute && isset($this->aliases[$primaryAttribute->getKey()])) {
-            return $this->aliases[$primaryAttribute->getKey()];
-        }
-
-        if ($this->validator->isUsingHumanizedKey()) {
-            return $attribute->getHumanizedKey();
-        }
-
-        return $attribute->getKey();
+        $key = $attribute->getKey();
+        return $this->aliases[$key] ?? app('translate')->getOrDefault('attribute.' . $key, $key);
     }
 
     /**
@@ -367,6 +359,8 @@ class Validation
      * @param mixed $value
      * @param Rule $validator
      * @return mixed
+     * @throws JsonException
+     * @throws EntryNotFoundException
      */
     protected function resolveMessage(Attribute $attribute, $value, Rule $validator): string
     {
@@ -453,7 +447,6 @@ class Validation
      * Resolve $rules
      * @param mixed $rules
      * @return array
-     * @throws Exception
      */
     protected function resolveRules($rules): array
     {
@@ -465,12 +458,17 @@ class Validation
         $validatorFactory = $this->getValidator();
 
         foreach ($rules as $i => $rule) {
+            $rule = trim($rule);
             if (empty($rule)) {
                 continue;
             }
+            if ($rule === 'bail') {
+                $this->implicit = true;
+                continue;
+            }
             if (is_string($rule)) {
-                [$rulename, $params] = $this->parseRule($rule);
-                $validator = call_user_func_array($validatorFactory, array_merge([$rulename], $params));
+                [$ruleName, $params] = $this->parseRule($rule);
+                $validator = call_user_func_array($validatorFactory, array_merge([$ruleName], $params));
             } elseif ($rule instanceof Rule) {
                 $validator = $rule;
             } elseif ($rule instanceof Closure) {
@@ -584,10 +582,10 @@ class Validation
     }
 
     /**
-     * Get Validator class instance
-     * @return Validator
+     * Get Factory class instance
+     * @return Factory
      */
-    public function getValidator(): Validator
+    public function getValidator(): Factory
     {
         return $this->validator;
     }

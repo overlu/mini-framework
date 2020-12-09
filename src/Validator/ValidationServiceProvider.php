@@ -5,13 +5,13 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Translate;
+namespace Mini\Validator;
 
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\ServiceProviderInterface;
 use Swoole\Server;
 
-class TranslateServiceProvider implements ServiceProviderInterface
+class ValidationServiceProvider implements ServiceProviderInterface
 {
     /**
      * @param Server|null $server
@@ -29,8 +29,7 @@ class TranslateServiceProvider implements ServiceProviderInterface
     public function boot(?Server $server, ?int $workerId): void
     {
         $app = app();
-        $app->alias(Translate::class, 'translate');
-        $app->singleton(Translate::class, Translate::class);
-        $app->make('translate')->initialize();
+        $app->alias(Factory::class, 'validator');
+        $app->singleton(Factory::class, Factory::class);
     }
 }
