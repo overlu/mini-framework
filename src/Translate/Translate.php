@@ -70,6 +70,10 @@ class Translate
      */
     public function trans(?string $id = null, array $parameters = [], ?string $domain = null, ?string $locale = null): string
     {
+        foreach ($parameters as $key => $parameter) {
+            $parameters[':' . $key] = $parameter;
+            unset($parameters[$key]);
+        }
         return $this->translator->trans($id, $parameters, $domain, $locale);
     }
 }
