@@ -31,15 +31,16 @@ class DatabaseBoot
 
     public function __construct(array $config)
     {
+        Model::clearBootedModels();
+
         $capsule = new Manager();
-        $capsule->setEventDispatcher(new Dispatcher(new Container));
+//        $capsule->setEventDispatcher(new Dispatcher(new Container));
+        $capsule->setEventDispatcher(app('events'));
         foreach ($config as $key => $conf) {
             $conf = array_replace_recursive($this->config, $conf);
             $capsule->addConnection($conf, $key);
         }
         $capsule->setAsGlobal();
         $capsule->bootEloquent();
-
-        Model::clearBootedModels();
     }
 }

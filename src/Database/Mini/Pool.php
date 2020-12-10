@@ -31,12 +31,17 @@ class Pool
         'options' => [],
         'size' => 64,
     ];
+    /**
+     * @var mixed|null
+     */
+    protected string $defaultConnection;
 
     private function __construct(array $config = [])
     {
         if (empty($this->pools)) {
             $this->initialize($config);
         }
+        $this->defaultConnection = config('database.default', 'mysql');
     }
 
     private function initialize(array $config)
@@ -64,7 +69,7 @@ class Pool
      */
     public function getPdo(string $key = ''): PDO
     {
-        $conf = array_replace_recursive($this->config, config('database.' . ($key ?: 'default'), []));
+        $conf = array_replace_recursive($this->config, config('database.' . ($key ?: $this->defaultConnection), []));
         return new PDO(
             "{$conf['driver']}:"
             . "host={$conf['host']};" . "port={$conf['port']};"
@@ -82,7 +87,7 @@ class Pool
      */
     public function getConnection(string $key = ''): PDOProxy
     {
-        $key = $key ?: 'default';
+        $key = $key ?: $this->defaultConnection;
         if (Coroutine::inCoroutine()) {
             if (empty($this->pools)) {
                 $this->initialize(config('database', []));
@@ -104,7 +109,7 @@ class Pool
      */
     public function close(string $key = '', $connection = null): void
     {
-        $this->pools[$key ?: 'default']->put($connection);
+        $this->pools[$key ?: $this->defaultConnection]->put($connection);
     }
 
 

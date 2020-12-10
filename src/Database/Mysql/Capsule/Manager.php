@@ -60,7 +60,7 @@ class Manager
     {
         $this->container['config']['database.fetch'] = PDO::FETCH_OBJ;
 
-        $this->container['config']['database.default'] = 'default';
+        $this->container['config']['database.default'] = config('database.default', 'mysql');
     }
 
     /**

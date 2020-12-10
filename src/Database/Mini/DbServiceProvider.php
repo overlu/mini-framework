@@ -18,7 +18,7 @@ class DbServiceProvider implements ServiceProviderInterface
      */
     public function register(?Server $server, ?int $workerId): void
     {
-        $config = config('database', []);
+        $config = config('database.connections', []);
         if (!empty($config)) {
             Pool::getInstance($config);
         }

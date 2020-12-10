@@ -18,7 +18,7 @@ class OrmServiceProvider implements ServiceProviderInterface
      */
     public function register(?Server $server, ?int $workerId): void
     {
-        $config = config('database', []);
+        $config = config('database.connections', []);
         if (!empty($config)) {
             /**
              * @url https://github.com/illuminate/database
