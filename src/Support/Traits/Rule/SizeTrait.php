@@ -19,19 +19,19 @@ trait SizeTrait
     protected function getValueSize($value): ?float
     {
         if (is_numeric($value)) {
-            $this->setKey('min.numeric');
+            $this->setKey($this->getKey() . '.numeric');
             return (float)$value;
         }
         if (is_string($value)) {
-            $this->setKey('min.string');
+            $this->setKey($this->getKey() . '.string');
             return (float)mb_strlen($value, 'UTF-8');
         }
         if ($this->isUploadedFileValue($value)) {
-            $this->setKey('min.file');
+            $this->setKey($this->getKey() . '.file');
             return (float)$value['size'];
         }
         if (is_array($value)) {
-            $this->setKey('min.array');
+            $this->setKey($this->getKey() . '.array');
             return (float)count($value);
         }
         return null;

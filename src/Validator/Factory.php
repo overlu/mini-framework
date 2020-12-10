@@ -145,6 +145,7 @@ class Factory
             'extension' => new Rules\Extension,
             'array' => new Rules\TypeArray,
             'same' => new Rules\Same,
+            'size' => new Rules\Size,
             'regex' => new Rules\Regex,
             'date' => new Rules\Date,
             'accepted' => new Rules\Accepted,
