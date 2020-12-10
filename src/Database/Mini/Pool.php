@@ -69,7 +69,7 @@ class Pool
      */
     public function getPdo(string $key = ''): PDO
     {
-        $conf = array_replace_recursive($this->config, config('database.' . ($key ?: $this->defaultConnection), []));
+        $conf = array_replace_recursive($this->config, config('database.connections.' . ($key ?: $this->defaultConnection), []));
         return new PDO(
             "{$conf['driver']}:"
             . "host={$conf['host']};" . "port={$conf['port']};"
@@ -90,7 +90,7 @@ class Pool
         $key = $key ?: $this->defaultConnection;
         if (Coroutine::inCoroutine()) {
             if (empty($this->pools)) {
-                $this->initialize(config('database', []));
+                $this->initialize(config('database.connections', []));
             }
             $connection = $this->pools[$key]->get();
             Coroutine::defer(function () use ($key, $connection) {
