@@ -24,7 +24,7 @@ class Config
      */
     public function get($keys, $default = null)
     {
-        $keys = explode('.', strtolower($keys));
+        $keys = explode('.', $keys);
         if (empty($keys)) {
             return null;
         }
