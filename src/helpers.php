@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 use Mini\Config;
 use Mini\Container\Container;
+use Mini\Container\EntryNotFoundException;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\Support\Htmlable;
 use Mini\Contracts\View\Factory;
@@ -25,6 +26,7 @@ use Mini\Support\Parallel;
 use Mini\Support\Str;
 use Mini\Translate\Translate;
 use Mini\View\View;
+use Psr\Http\Message\ResponseInterface;
 use Swoole\Runtime;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\HtmlDumper;
@@ -829,7 +831,6 @@ if (!function_exists('abort')) {
      * @param mixed $message
      * @return string|null
      * @throws InvalidResponseException
-     * @throws JsonException
      */
     function abort(int $code, $message): ?string
     {
@@ -837,6 +838,7 @@ if (!function_exists('abort')) {
             $response->withStatus($code)
                 ->withAddedHeader('content-type', 'application/json;charset=UTF-8')
                 ->withHeader('Server', 'Mini')
+                ->withHeader('mini-request-id', \Seaslog::getRequestID())
                 ->raw(http_error_format($message, $code))
                 ->send(true);
             return '#%Mini::abort%#';
@@ -979,6 +981,7 @@ if (!function_exists('write')) {
                 $content = json_encode($content, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
             }
             $swResponse->header('Server', 'Mini', true);
+            $swResponse->header('mini-request-id', \Seaslog::getRequestID(), true);
             $swResponse->write($content);
             if ($stop) {
                 $swResponse->close();
@@ -1019,6 +1022,7 @@ if (!function_exists('__')) {
      * @param string|null $domain
      * @param string|null $locale
      * @return string
+     * @throws EntryNotFoundException
      */
     function __(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
     {
@@ -1065,7 +1069,7 @@ if (!function_exists('redirect')) {
      * @param string $toUrl
      * @param int $status
      * @param string $schema
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      */
     function redirect(string $toUrl, int $status = 302, string $schema = 'http')
     {
