@@ -13,6 +13,11 @@ use Mini\Contracts\Support\Jsonable;
 use Mini\Contracts\Support\Xmlable;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 
+/**
+ * Interface ResponseInterface
+ * @package Mini\Contracts\HttpMessage
+ * @mixin \Mini\Service\HttpServer\Response | \Mini\Service\HttpMessage\Server\Response
+ */
 interface ResponseInterface
 {
     /**

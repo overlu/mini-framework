@@ -17,7 +17,7 @@ class Response extends \Mini\Service\HttpMessage\Base\Response implements Sendab
     /**
      * @var null|\Swoole\Http\Response
      */
-    protected ?\Swoole\Http\Response $swooleResponse;
+    protected \Swoole\Http\Response $swooleResponse;
 
     /**
      * @var array
@@ -83,7 +83,7 @@ class Response extends \Mini\Service\HttpMessage\Base\Response implements Sendab
         return $this->cookies;
     }
 
-    public function getSwooleResponse(): ?\Swoole\Http\Response
+    public function getSwooleResponse(): \Swoole\Http\Response
     {
         return $this->swooleResponse;
     }
