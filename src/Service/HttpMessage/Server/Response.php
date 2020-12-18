@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Service\HttpMessage\Server;
 
+use Mini\Context;
 use Mini\Contracts\Support\Sendable;
 use Mini\Service\HttpMessage\Cookie\Cookie;
 use Mini\Contracts\HttpMessage\FileInterface;
@@ -46,7 +47,9 @@ class Response extends \Mini\Service\HttpMessage\Base\Response implements Sendab
             return $this->swooleResponse->sendfile($content->getFilename());
         }
         if ($withContent && $content = $content->getContents()) {
-            $this->swooleResponse->write($content);
+            return Context::has('hasWriteContent')
+                ? $this->swooleResponse->write($content)
+                : $this->swooleResponse->end($content);
         }
         $this->swooleResponse->end();
     }

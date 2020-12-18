@@ -8,6 +8,7 @@ declare(strict_types=1);
 use Mini\Config;
 use Mini\Container\Container;
 use Mini\Container\EntryNotFoundException;
+use Mini\Context;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\Support\Htmlable;
 use Mini\Contracts\View\Factory;
@@ -906,16 +907,17 @@ if (!function_exists('debug')) {
      */
     function debug($var, ...$moreVars)
     {
-        $cloner = new VarCloner();
-        $dumper = new HtmlDumper();
-        $output = fopen('php://memory', 'r+b');
-        $dumper->dump($cloner->cloneVar($var), $output);
-        foreach ($moreVars as $moreVar) {
-            $dumper->dump($cloner->cloneVar($moreVar), $output);
-        }
-        $output = stream_get_contents($output, -1, 0);
         $swResponse = response()->getSwooleResponse();
         if ($swResponse) {
+            Context::set('hasWriteContent', true);
+            $cloner = new VarCloner();
+            $dumper = new HtmlDumper();
+            $output = fopen('php://memory', 'r+b');
+            $dumper->dump($cloner->cloneVar($var), $output);
+            foreach ($moreVars as $moreVar) {
+                $dumper->dump($cloner->cloneVar($moreVar), $output);
+            }
+            $output = stream_get_contents($output, -1, 0);
             $swResponse->header('content-type', 'text/html;charset=UTF-8', true);
             $swResponse->header('Server', 'Mini', true);
             $swResponse->write(new SwooleStream($output));
