@@ -21,7 +21,7 @@ use Mini\Support\Command;
 
 class Application
 {
-    public static string $version = '1.2.10';
+    public static string $version = '1.2.11';
 
     public static array $mapping = [
         'http' => HttpServer::class,
@@ -78,7 +78,7 @@ EOL;
 
     private static function initial()
     {
-        ini_set('display_errors', env('APP_DEBUG') === true ? 'on' : 'off');
+        ini_set('display_errors', config('mini.debug') === true ? 'on' : 'off');
         ini_set('display_startup_errors', 'on');
         ini_set('date.timezone', config('mini.timezone', 'UTC'));
 //        error_reporting(env('APP_ENV', 'local') === 'production' ? 0 : E_ALL);
