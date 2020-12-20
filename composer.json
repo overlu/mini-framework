@@ -52,7 +52,7 @@
         ]
     },
     "scripts": {
-        "post-root-package-install": [
+        "post-install-cmd": [
             "@php -r \"file_exists('../../laravel') || mkdir('../../laravel','0644',true);\""
         ]
     }
