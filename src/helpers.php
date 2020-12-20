@@ -746,7 +746,7 @@ if (!function_exists('stub_path')) {
      */
     function stub_path(string $path = ''): string
     {
-        return storage_path('stubs/' . $path);
+        return resource_path('stubs/' . $path);
     }
 }
 
@@ -758,7 +758,7 @@ if (!function_exists('resource_path')) {
      */
     function resource_path(string $dir = ''): string
     {
-        return storage_path('resources/' . $dir);
+        return BASE_PATH . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . trim($path, DIRECTORY_SEPARATOR);
     }
 }
 
