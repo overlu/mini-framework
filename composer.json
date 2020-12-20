@@ -50,10 +50,5 @@
         "files": [
             "src/_ide_helper.php"
         ]
-    },
-    "scripts": {
-        "post-install-cmd": [
-            "@php -r \"file_exists('../../laravel') || mkdir('../../laravel','0644',true);\""
-        ]
     }
 }
