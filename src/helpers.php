@@ -753,10 +753,10 @@ if (!function_exists('stub_path')) {
 if (!function_exists('resource_path')) {
     /**
      * 获取资源目录
-     * @param string $dir
+     * @param string $path
      * @return string
      */
-    function resource_path(string $dir = ''): string
+    function resource_path(string $path = ''): string
     {
         return BASE_PATH . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . trim($path, DIRECTORY_SEPARATOR);
     }
