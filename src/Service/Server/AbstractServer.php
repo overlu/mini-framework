@@ -19,6 +19,7 @@ use Mini\Support\Coroutine;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Server;
+use Swoole\Table;
 use Throwable;
 
 abstract class AbstractServer
@@ -93,6 +94,16 @@ abstract class AbstractServer
         $this->callbackDispatch();
         $this->eventOnDispatch();
         $this->startDispatch();
+        $this->swooleTableDispatch();
+    }
+
+    private function swooleTableDispatch()
+    {
+        $table = new Table(4096, 0.2);
+        $table->column('value', Table::TYPE_STRING, 4096);
+        $table->column('expire', Table::TYPE_INT, 4);
+        $table->create();
+        $this->server->table = $table;
     }
 
     private function eventOnDispatch(): void

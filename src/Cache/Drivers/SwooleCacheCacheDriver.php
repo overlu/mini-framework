@@ -31,10 +31,7 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
 
     private function initTable(): void
     {
-        $this->table = new Table(4096, 0.2);
-        $this->table->column('value', Table::TYPE_STRING, 4096);
-        $this->table->column('expire', Table::TYPE_INT, 4);
-        $this->table->create();
+        $this->table = server()->table;
     }
 
     /**
