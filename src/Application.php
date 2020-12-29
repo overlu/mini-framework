@@ -21,7 +21,7 @@ use Mini\Support\Command;
 
 class Application
 {
-    public static string $version = '1.3.2';
+    public static string $version = '1.3.1';
 
     public static array $mapping = [
         'http' => HttpServer::class,
@@ -45,7 +45,7 @@ class Application
 EOL;
         Command::line($info);
         $data = [
-            "App Information" => [
+            'App Information' => [
                 'Name' => env('APP_NAME', 'Mini App'),
                 'Env' => ucfirst(env('APP_ENV', 'local')),
                 'Timezone' => ini_get('date.timezone'),
