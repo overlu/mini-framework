@@ -56,6 +56,16 @@ class Request implements RequestInterface
     }
 
     /**
+     * @param string|null $key
+     * @param null $default
+     * @return array|mixed
+     */
+    public function get(?string $key = null, $default = null)
+    {
+        return $this->query($key, $default);
+    }
+
+    /**
      * Retrieve the data from parsed body, if $key is null, will return all parsed body.
      *
      * @param string|null $key

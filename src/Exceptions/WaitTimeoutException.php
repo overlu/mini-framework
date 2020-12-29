@@ -8,9 +8,9 @@ declare(strict_types=1);
 namespace Mini\Exceptions;
 
 /**
- * Class DecryptException
+ * Class WaitTimeoutException
  * @package Mini\Exceptions
  */
-class DecryptException extends \RuntimeException
+class WaitTimeoutException extends \RuntimeException
 {
 }

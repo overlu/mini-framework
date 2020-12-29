@@ -49,7 +49,7 @@ if (!function_exists('app')) {
     /**
      * @param string|null $abstract
      * @param array $parameters
-     * @return Container|Di|object|mixed
+     * @return object|mixed
      */
     /*function app(string $abstract = '', array $parameters = [])
     {
@@ -586,6 +586,9 @@ if (!function_exists('request')) {
      */
     function request()
     {
+        if (!Context::has('IsInRequestEvent')) {
+            throw new Exception("Not In Request Environment.");
+        }
         return app(Mini\Contracts\HttpMessage\RequestInterface::class);
     }
 }
@@ -597,6 +600,9 @@ if (!function_exists('response')) {
      */
     function response()
     {
+        if (!Context::has('IsInRequestEvent')) {
+            throw new Exception("Not In Request Environment.");
+        }
         return app(Mini\Contracts\HttpMessage\ResponseInterface::class);
     }
 }
@@ -611,7 +617,7 @@ if (!function_exists('url')) {
      */
     function url(string $path = '', array $params = [], string $fragment = ''): string
     {
-        if ($request = request()) {
+        if (Context::has('IsInRequestEvent') && $request = request()) {
             $server = $request->getServerParams();
             $scheme = !empty($server['https']) && $server['https'] !== 'off' ? 'https' : 'http';
             $host = $request->header('host');
@@ -835,7 +841,7 @@ if (!function_exists('abort')) {
      */
     function abort(int $code, $message): ?string
     {
-        if ($response = response()) {
+        if (Context::has('IsInRequestEvent') && $response = response()) {
             $response->withStatus($code)
                 ->withAddedHeader('content-type', 'application/json;charset=UTF-8')
                 ->withHeader('Server', 'Mini')
@@ -907,7 +913,7 @@ if (!function_exists('debug')) {
      */
     function debug($var, ...$moreVars)
     {
-        if (\config('mini.debug') && $swResponse = response()->getSwooleResponse()) {
+        if (\config('mini.debug') && Context::has('IsInRequestEvent') && $swResponse = response()->getSwooleResponse()) {
             Context::set('hasWriteContent', true);
             $cloner = new VarCloner();
             $dumper = new HtmlDumper();
@@ -940,7 +946,7 @@ if (!function_exists('failed')) {
                 'message' => $error_message,
                 'code' => $code,
             ],
-            'method' => request()->getMethod(),
+            'method' => Context::has('IsInRequestEvent') ? request()->getMethod() : null,
             'data' => []
         ];
     }
@@ -962,7 +968,7 @@ if (!function_exists('success')) {
                 'message' => $success_message,
                 'code' => $code,
             ],
-            'method' => request()->getMethod(),
+            'method' => Context::has('IsInRequestEvent') ? request()->getMethod() : null,
             'data' => $data
         ];
     }
@@ -976,8 +982,7 @@ if (!function_exists('write')) {
      */
     function write($content, $stop = false)
     {
-        $swResponse = response()->getSwooleResponse();
-        if ($swResponse) {
+        if (Context::has('IsInRequestEvent') && $swResponse = response()->getSwooleResponse()) {
             if (is_array($content)) {
                 $swResponse->header('content-type', 'application/json;charset=UTF-8', true);
                 $content = json_encode($content, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
@@ -1088,5 +1093,20 @@ if (!function_exists('windows_os')) {
     function windows_os()
     {
         return PHP_OS_FAMILY === 'Windows';
+    }
+}
+
+if (!function_exists('wait')) {
+    /**
+     * @param Closure $closure
+     * @param float|null $timeout
+     * @return mixed
+     */
+    function wait(Closure $closure, ?float $timeout = null)
+    {
+        if (ApplicationContext::hasContainer()) {
+            return ApplicationContext::getContainer()->get(\Mini\Support\Waiter::class)->wait($closure, $timeout);
+        }
+        return (new \Mini\Support\Waiter())->wait($closure, $timeout);
     }
 }

@@ -209,7 +209,7 @@ class Eloquent extends Model
      *
      * @param mixed $id
      * @param array $columns
-     * @return Model|\Mini\Database\Mysql\Eloquent\Collection|static[]|static|null
+     * @return Model|\Mini\Database\Mysql\Eloquent\Collection|static[]|static
      * @static
      */
     public static function find($id, $columns = [])
