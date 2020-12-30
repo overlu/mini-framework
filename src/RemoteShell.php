@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini;
 
-use Mini\Console\Panel;
+use Mini\Support\Str;
 use RuntimeException;
 use Swoole\Coroutine;
 use Swoole\Timer;
@@ -155,8 +155,7 @@ class RemoteShell
     public static function getCoElapsed($cid)
     {
         if (!defined('SWOOLE_VERSION_ID') || SWOOLE_VERSION_ID < 40500) {
-            trigger_error("require swoole-4.5.0 or later.", E_USER_WARNING);
-            return;
+            return "require swoole-4.5.0 or later.";
         }
         return Coroutine::getElapsed($cid);
     }
@@ -164,8 +163,7 @@ class RemoteShell
     public static function getTimerList()
     {
         if (!defined('SWOOLE_VERSION_ID') || SWOOLE_VERSION_ID < 40400) {
-            trigger_error("require swoole-4.4.0 or later.", E_USER_WARNING);
-            return;
+            return "require swoole-4.4.0 or later.";
         }
         return iterator_to_array(Timer::list());
     }
@@ -173,8 +171,7 @@ class RemoteShell
     public static function getTimerInfo($timer_id)
     {
         if (!defined('SWOOLE_VERSION_ID') || SWOOLE_VERSION_ID < 40400) {
-            trigger_error("require swoole-4.4.0 or later.", E_USER_WARNING);
-            return;
+            return "require swoole-4.4.0 or later.";
         }
         return Timer::info($timer_id);
     }
@@ -182,8 +179,7 @@ class RemoteShell
     public static function getTimerStats()
     {
         if (!defined('SWOOLE_VERSION_ID') || SWOOLE_VERSION_ID < 40400) {
-            trigger_error("require swoole-4.4.0 or later.", E_USER_WARNING);
-            return;
+            return "require swoole-4.4.0 or later.";
         }
         return Timer::stats();
     }
@@ -193,14 +189,15 @@ class RemoteShell
         $info = Coroutine::getBackTrace($_cid);
         if (!$info) {
             return "coroutine $_cid not found.";
-        } else {
-            return get_debug_print_backtrace($info);
         }
+
+        return get_debug_print_backtrace($info);
     }
 
     /**
      * 打印一个PHP变量的值
      * @param $var
+     * @return mixed
      */
     public static function printVariant($var)
     {
@@ -210,11 +207,13 @@ class RemoteShell
     /**
      * 执行一段PHP代码
      * @param $code
+     * @return mixed|string
      */
     public static function evalCode($code)
     {
         try {
-            return eval($code);
+            $code = Str::startsWith(trim($code), 'return') ? $code : 'return ' . $code;
+            return eval($code . ' ;');
         } catch (Exception $exception) {
             return $exception->getMessage();
         }
@@ -226,7 +225,7 @@ class RemoteShell
      * @param $reactor_id
      * @param $data
      */
-    public static function onReceive(\Swoole\Server $server, $fd, $reactor_id, $data)
+    public static function onReceive(\Swoole\Server $server, $fd, $reactor_id, $data): void
     {
         $args = explode(" ", $data, 2);
         $cmd = trim($args[0]);
