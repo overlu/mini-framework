@@ -13,9 +13,11 @@ use Mini\Exceptions\InvalidResponseException;
 use Mini\Listener;
 use Mini\Provider\BaseProviderService;
 use Mini\Provider\BaseRequestService;
+use Mini\RemoteShell;
 use Mini\Service\Watch\Runner;
 use Mini\Support\Command;
 use Mini\Support\Coroutine;
+use RuntimeException;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Server;
@@ -35,7 +37,7 @@ abstract class AbstractServer
 
     protected int $worker_num = 1;
 
-    private $events = [
+    private array $events = [
         'shutdown',
         'workerStart',
         'workerStop',
@@ -56,6 +58,7 @@ abstract class AbstractServer
         'open',
         'message'
     ];
+    protected string $key;
 
     /**
      * AbstractServer constructor.
@@ -69,13 +72,16 @@ abstract class AbstractServer
             $this->key = $key;
             $this->config = config('servers.' . $this->key, []);
             if (empty($this->config)) {
-                throw new \Exception('server key: [' . $this->key . '] not exists in config/servers.php');
+                throw new RuntimeException('server key: [' . $this->key . '] not exists in config/servers.php');
             }
             $this->worker_num = $this->config['settings']['worker_num'] ?? swoole_cpu_num();
             $this->initialize();
             $this->setServerConfig();
             $this->eventDispatch();
             \Mini\Server::getInstance()->set($this->server);
+            if (config('debugger.enable_remote_debug', false)) {
+                RemoteShell::listen($this->server, config('debugger.listener.host', '127.0.0.1'), config('debugger.listener.port', 9559));
+            }
             $this->server->start();
         } catch (Throwable $throwable) {
             app('exception')->throw($throwable);
@@ -97,7 +103,7 @@ abstract class AbstractServer
         $this->swooleTableDispatch();
     }
 
-    private function swooleTableDispatch()
+    private function swooleTableDispatch(): void
     {
         $table = new Table(4096, 0.2);
         $table->column('value', Table::TYPE_STRING, 4096);
@@ -197,6 +203,7 @@ abstract class AbstractServer
         try {
             $data = $task->data;
             if (isset($data['type'], $data['params'])) {
+                $response = '';
                 if ($data['type'] === 'events') {
                     $response = app('events')->dispatch(...(array)$data['params']);
                 }
