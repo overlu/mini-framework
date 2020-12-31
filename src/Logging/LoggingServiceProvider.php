@@ -20,8 +20,8 @@ class LoggingServiceProvider implements ServiceProviderInterface
     public function register(?Server $server, ?int $workerId): void
     {
         $config = config('logging');
-        Seaslog::setBasePath($config['default_basepath']);
-        Seaslog::setLogger($config['default_logger']);
+        @Seaslog::setBasePath($config['default_basepath']);
+        @Seaslog::setLogger($config['default_logger']);
     }
 
     /**
