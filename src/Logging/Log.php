@@ -39,7 +39,7 @@ class Log
         if (isset($arguments[0]) && is_array($arguments[0])) {
             $arguments[0] = json_encode($arguments, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
         }
-        if (config('logging.output', false)) {
+        if (env('APP_ENV') !== 'production' && config('logging.output', false)) {
             go(function () use ($name, $arguments) {
                 static::output($name, $arguments);
             });
