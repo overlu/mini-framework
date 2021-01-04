@@ -38,6 +38,7 @@ class Console
     public static function run(): void
     {
         try {
+            \SeasLog::setRequestID(uniqid('', true));
             BaseProviderService::getInstance()->register(null, null);
             BaseProviderService::getInstance()->boot(null, null);
             CommandService::register([...config('console', []), ...static::$systemCommandService]);
