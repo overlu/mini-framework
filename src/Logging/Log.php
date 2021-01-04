@@ -40,7 +40,9 @@ class Log
             $arguments[0] = json_encode($arguments, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
         }
         if (config('logging.output', false)) {
-            static::output($name, $arguments);
+            go(function () use ($name, $arguments) {
+                static::output($name, $arguments);
+            });
         }
         SeasLog::$name(...$arguments);
     }
