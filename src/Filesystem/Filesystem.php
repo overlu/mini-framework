@@ -72,7 +72,7 @@ class Filesystem
      * @param string $path
      * @return string
      */
-    public function sharedGet($path)
+    public function sharedGet($path): string
     {
         $contents = '';
 
@@ -126,6 +126,7 @@ class Filesystem
      * @param string $path
      * @param array $data
      * @return mixed
+     * @throws FileNotFoundException
      */
     public function requireOnce($path, array $data = [])
     {
@@ -551,6 +552,23 @@ class Filesystem
         $directories = [];
 
         foreach (Finder::create()->in($directory)->directories()->depth(0)->sortByName() as $dir) {
+            $directories[] = $dir->getPathname();
+        }
+
+        return $directories;
+    }
+
+    /**
+     * Get all of the directories within a given directory (recursive).
+     *
+     * @param string $directory
+     * @return array
+     */
+    public function allDirectories($directory): array
+    {
+        $directories = [];
+
+        foreach (Finder::create()->in($directory)->directories()->sortByName() as $dir) {
             $directories[] = $dir->getPathname();
         }
 
