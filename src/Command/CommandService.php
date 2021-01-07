@@ -28,22 +28,20 @@ class CommandService
 
     public static function run(): void
     {
-        go(static function () {
-            try {
-                $app = new App([
-                    'desc' => 'mini cli application',
-                ]);
-                foreach (static::$commands as $command => $instance) {
-                    $app->addCommand($command, static function () use ($instance, $app) {
-                        (new $instance)->setApp($app)->run();
-                    }, $instance::$description ?? null);
-                }
-                $app->run();
-            } catch (\Throwable $throwable) {
-                if (!$throwable instanceof ExitException) {
-                    app('exception')->throw($throwable);
-                }
+        try {
+            $app = new App([
+                'desc' => 'mini cli application',
+            ]);
+            foreach (static::$commands as $command => $instance) {
+                $app->addCommand($command, static function () use ($instance, $app) {
+                    (new $instance)->setApp($app)->run();
+                }, $instance::$description ?? null);
             }
-        });
+            $app->run();
+        } catch (\Throwable $throwable) {
+            if (!$throwable instanceof ExitException) {
+                app('exception')->throw($throwable);
+            }
+        }
     }
 }

@@ -32,7 +32,6 @@ class Console
     ];
 
     /**
-     * @throws Exceptions\InvalidResponseException
      * @throws Throwable
      */
     public static function run(): void
