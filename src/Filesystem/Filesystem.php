@@ -518,6 +518,21 @@ class Filesystem
      * @param bool $hidden
      * @return \Symfony\Component\Finder\SplFileInfo[]
      */
+    public function filestoArray($directory, $hidden = false)
+    {
+        return iterator_to_array(
+            Finder::create()->files()->ignoreDotFiles(!$hidden)->in($directory)->depth(0)->sortByName(),
+            false
+        );
+    }
+
+    /**
+     * Get an array of all files in a directory.
+     *
+     * @param string $directory
+     * @param bool $hidden
+     * @return \Symfony\Component\Finder\SplFileInfo[]
+     */
     public function files($directory, $hidden = false)
     {
         return iterator_to_array(
@@ -533,12 +548,52 @@ class Filesystem
      * @param bool $hidden
      * @return \Symfony\Component\Finder\SplFileInfo[]
      */
-    public function allFiles($directory, $hidden = false)
+    public function allFilesToArray($directory, $hidden = false)
     {
         return iterator_to_array(
             Finder::create()->files()->ignoreDotFiles(!$hidden)->in($directory)->sortByName(),
             false
         );
+    }
+
+    /**
+     * Get all of the files from the given directory (recursive).
+     *
+     * @param string $directory
+     * @param bool $hidden
+     * @return \Symfony\Component\Finder\SplFileInfo[]
+     */
+    public function allFiles($directory, $hidden = false)
+    {
+        return Finder::create()->files()->ignoreDotFiles(!$hidden)->in($directory)->sortByName();
+    }
+
+    /**
+     * Get all of the files count from the given directory (recursive).
+     *
+     * @param $directory
+     * @param bool $hidden
+     * @return int
+     */
+    public function allFilesCount($directory, $hidden = false)
+    {
+        return count(Finder::create()->files()->ignoreDotFiles(!$hidden)->in($directory));
+    }
+
+    /**
+     * Get all of the directories within a given directory.
+     *
+     * @param string $directory
+     * @return array
+     */
+    public function directoriesToArray($directory): array
+    {
+        $directories = [];
+        $resources = Finder::create()->in($directory)->directories()->depth(0)->sortByName();
+        foreach ($resources as $dir) {
+            $directories[] = $dir->getPathname();
+        }
+        return $directories;
     }
 
     /**
@@ -550,11 +605,10 @@ class Filesystem
     public function directories($directory): array
     {
         $directories = [];
-
-        foreach (Finder::create()->in($directory)->directories()->depth(0)->sortByName() as $dir) {
+        $resources = Finder::create()->in($directory)->directories()->depth(0)->sortByName();
+        foreach ($resources as $dir) {
             $directories[] = $dir->getPathname();
         }
-
         return $directories;
     }
 
