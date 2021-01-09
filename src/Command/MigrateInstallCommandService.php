@@ -19,10 +19,12 @@ class MigrateInstallCommandService extends BaseCommandService
 
     public function run()
     {
-        $this->repository->setSource($this->getOpt('database'));
+        go(function () {
+            $this->repository->setSource($this->getOpt('database'));
 
-        $this->repository->createRepository();
+            $this->repository->createRepository();
 
-        Command::info('Migration table created successfully.');
+            Command::info('Migration table created successfully.');
+        });
     }
 }

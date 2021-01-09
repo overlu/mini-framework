@@ -17,15 +17,17 @@ class MigrateRollbackCommandService extends BaseCommandService
 
     public function run()
     {
-        if (!$this->confirmToProceed()) {
-            return;
-        }
-        $this->migrator->setConnection($this->getOpt('database'));
-        $this->migrator->rollback(
-            $this->getMigrationPaths(), [
-                'pretend' => $this->getOpt('pretend'),
-                'step' => (int)$this->getOpt('step'),
-            ]
-        );
+        go(function (){
+            if (!$this->confirmToProceed()) {
+                return;
+            }
+            $this->migrator->setConnection($this->getOpt('database'));
+            $this->migrator->rollback(
+                $this->getMigrationPaths(), [
+                    'pretend' => $this->getOpt('pretend'),
+                    'step' => (int)$this->getOpt('step'),
+                ]
+            );
+        });
     }
 }

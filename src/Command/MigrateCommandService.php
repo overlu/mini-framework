@@ -17,14 +17,16 @@ class MigrateCommandService extends BaseCommandService
 
     public function run()
     {
-        if (!$this->confirmToProceed()) {
-            return;
-        }
-        $this->prepareDatabase();
-        $this->migrator->run([$this->getMigrationPaths()], [
-            'pretend' => $this->getOpt('pretend'),
-            'step' => $this->getOpt('step'),
-        ]);
+        go(function (){
+            if (!$this->confirmToProceed()) {
+                return;
+            }
+            $this->prepareDatabase();
+            $this->migrator->run([$this->getMigrationPaths()], [
+                'pretend' => $this->getOpt('pretend'),
+                'step' => $this->getOpt('step'),
+            ]);
+        });
     }
 
     protected function prepareDatabase(): void

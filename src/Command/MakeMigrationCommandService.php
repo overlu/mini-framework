@@ -25,25 +25,28 @@ class MakeMigrationCommandService extends BaseCommandService
      */
     public function run()
     {
-        $argFirst = $this->getArgs()[0] ?? null;
-        if (!$argFirst) {
-            Command::error('no migration file name');
-            return;
-        }
-        $name = Str::snake(trim($this->getArg('name', $argFirst)));
-        $table = $this->app->getOpt('table');
-        $create = $this->app->getOpt('create', false);
+        go(function () {
+            $argFirst = $this->getArgs()[0] ?? null;
+            if (!$argFirst) {
+                Command::error('no migration file name');
+                return;
+            }
+            $name = Str::snake(trim($this->getArg('name', $argFirst)));
+            $table = $this->app->getOpt('table');
+            $create = $this->app->getOpt('create', false);
 
-        if (!$table && is_string($create)) {
-            $table = $create;
-            $create = true;
-        }
+            if (!$table && is_string($create)) {
+                $table = $create;
+                $create = true;
+            }
 
-        if (!$table) {
-            [$table, $create] = TableGuesser::guess($name);
-        }
+            if (!$table) {
+                [$table, $create] = TableGuesser::guess($name);
+            }
 
-        $this->writeMigration($name, $table, $create);
+            $this->writeMigration($name, $table, $create);
+        });
+
 
 //        $this->composer->dumpAutoloads();
     }

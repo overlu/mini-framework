@@ -19,16 +19,18 @@ class MigrateResetCommandService extends BaseCommandService
 
     public function run()
     {
-        if (!$this->confirmToProceed()) {
-            return;
-        }
-        $this->migrator->setConnection($this->getOpt('database'));
-        if (!$this->migrator->repositoryExists()) {
-            Command::line('Migration table not found.');
-            return;
-        }
-        $this->migrator->reset(
-            [$this->getMigrationPaths()], $this->getOpt('pretend')
-        );
+        go(function (){
+            if (!$this->confirmToProceed()) {
+                return;
+            }
+            $this->migrator->setConnection($this->getOpt('database'));
+            if (!$this->migrator->repositoryExists()) {
+                Command::line('Migration table not found.');
+                return;
+            }
+            $this->migrator->reset(
+                [$this->getMigrationPaths()], $this->getOpt('pretend')
+            );
+        });
     }
 }
