@@ -16,6 +16,7 @@ use RuntimeException;
 use SplFileObject;
 use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\Mime\MimeTypes;
 
 /**
@@ -57,7 +58,7 @@ class Filesystem
      *
      * @throws FileNotFoundException
      */
-    public function get($path, $lock = false)
+    public function get($path, $lock = false): string
     {
         if ($this->isFile($path)) {
             return $lock ? $this->sharedGet($path) : file_get_contents($path);
@@ -148,11 +149,13 @@ class Filesystem
      * Get the contents of a file one line at a time.
      *
      * @param string $path
-     * @return \Mini\Support\LazyCollection
+     * @param int $start
+     * @param int|null $end
+     * @return LazyCollection
      *
      * @throws FileNotFoundException
      */
-    public function lines($path)
+    public function lines($path, int $start = 1, ?int $end = null): LazyCollection
     {
         if (!$this->isFile($path)) {
             throw new FileNotFoundException(
@@ -160,12 +163,14 @@ class Filesystem
             );
         }
 
-        return LazyCollection::make(function () use ($path) {
-            $file = new SplFileObject($path);
-
+        $start = $start < 1 ? 1 : $start;
+        return LazyCollection::make(function () use ($path, $start, $end) {
+            $file = new SplFileObject($path, 'rb');
+            $file->seek($start - 1);
             $file->setFlags(SplFileObject::DROP_NEW_LINE);
-
-            while (!$file->eof()) {
+            $i = 0;
+            while ($end === null ? (!$file->eof()) : ($i < $end)) {
+                ++$i;
                 yield $file->fgets();
             }
         });
@@ -225,6 +230,7 @@ class Filesystem
      * @param string $path
      * @param string $data
      * @return int
+     * @throws FileNotFoundException
      */
     public function prepend($path, $data)
     {
@@ -242,7 +248,7 @@ class Filesystem
      * @param string $data
      * @return int
      */
-    public function append($path, $data)
+    public function append($path, $data): int
     {
         return file_put_contents($path, $data, FILE_APPEND);
     }
@@ -319,10 +325,11 @@ class Filesystem
      * @param string $link
      * @return void
      */
-    public function link($target, $link)
+    public function link($target, $link): void
     {
         if (!windows_os()) {
-            return symlink($target, $link);
+            symlink($target, $link);
+            return;
         }
 
         $mode = $this->isDirectory($target) ? 'J' : 'H';
@@ -516,7 +523,7 @@ class Filesystem
      *
      * @param string $directory
      * @param bool $hidden
-     * @return \Symfony\Component\Finder\SplFileInfo[]
+     * @return SplFileInfo[]
      */
     public function filesToArray($directory, $hidden = false): array
     {
@@ -531,9 +538,9 @@ class Filesystem
      *
      * @param string $directory
      * @param bool $hidden
-     * @return \Symfony\Component\Finder\Finder
+     * @return Finder
      */
-    public function files($directory, $hidden = false)
+    public function files($directory, $hidden = false): Finder
     {
         return Finder::create()->files()->ignoreDotFiles(!$hidden)->in($directory)->depth(0)->sortByName();
     }
@@ -543,7 +550,7 @@ class Filesystem
      *
      * @param string $directory
      * @param bool $hidden
-     * @return \Symfony\Component\Finder\SplFileInfo[]
+     * @return SplFileInfo[]
      */
     public function allFilesToArray($directory, $hidden = false): array
     {
@@ -558,9 +565,9 @@ class Filesystem
      *
      * @param string $directory
      * @param bool $hidden
-     * @return \Symfony\Component\Finder\Finder
+     * @return Finder
      */
-    public function allFiles($directory, $hidden = false)
+    public function allFiles($directory, $hidden = false): Finder
     {
         return Finder::create()->files()->ignoreDotFiles(!$hidden)->in($directory)->sortByName();
     }
@@ -597,9 +604,9 @@ class Filesystem
      * Get all of the directories within a given directory.
      *
      * @param $directory
-     * @return \Symfony\Component\Finder\Finder
+     * @return Finder
      */
-    public function directories($directory)
+    public function directories($directory): Finder
     {
         return Finder::create()->in($directory)->directories()->depth(0)->sortByName();
     }
@@ -608,9 +615,9 @@ class Filesystem
      * Get all of the directories within a given directory (recursive).
      *
      * @param string $directory
-     * @return \Symfony\Component\Finder\Finder
+     * @return Finder
      */
-    public function allDirectories($directory)
+    public function allDirectories($directory): Finder
     {
         return Finder::create()->in($directory)->directories()->sortByName();
     }
@@ -734,10 +741,8 @@ class Filesystem
             // If the current items is just a regular file, we will just copy this to the new
             // location and keep looping. If for some reason the copy fails we'll bail out
             // and return false, so the developer is aware that the copy process failed.
-            else {
-                if (!$this->copy($item->getPathname(), $target)) {
-                    return false;
-                }
+            else if (!$this->copy($item->getPathname(), $target)) {
+                return false;
             }
         }
 
@@ -794,15 +799,11 @@ class Filesystem
     {
         $allDirectories = $this->directories($directory);
 
-        if (!empty($allDirectories)) {
-            foreach ($allDirectories as $directoryName) {
-                $this->deleteDirectory($directoryName);
-            }
-
-            return true;
+        foreach ($allDirectories as $directoryName) {
+            $this->deleteDirectory($directoryName);
         }
 
-        return false;
+        return true;
     }
 
     /**
