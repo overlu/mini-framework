@@ -150,12 +150,12 @@ class Filesystem
      *
      * @param string $path
      * @param int $start
-     * @param int|null $end
+     * @param int|null $num
      * @return LazyCollection
      *
      * @throws FileNotFoundException
      */
-    public function lines($path, int $start = 1, ?int $end = null): LazyCollection
+    public function lines(string $path, ?int $num = null, int $start = 1): LazyCollection
     {
         if (!$this->isFile($path)) {
             throw new FileNotFoundException(
@@ -163,14 +163,45 @@ class Filesystem
             );
         }
 
-        $start = $start < 1 ? 1 : $start;
-        return LazyCollection::make(function () use ($path, $start, $end) {
-            $file = new SplFileObject($path, 'rb');
-            $file->seek($start - 1);
-            $file->setFlags(SplFileObject::DROP_NEW_LINE);
+        $start = $start > 1 ? $start : 1;
+        $file = new SplFileObject($path, 'rb');
+        $file->seek($start - 1);
+        $file->setFlags(SplFileObject::DROP_NEW_LINE);
+        return LazyCollection::make(function () use ($file, $num) {
             $i = 0;
-            while ($end === null ? (!$file->eof()) : ($i < $end)) {
+            while ($num === null ? (!$file->eof()) : ($i < $num)) {
                 ++$i;
+                yield $file->current();
+                $file->next();
+            }
+        });
+    }
+
+    public function tails(string $path, int $num = 1): LazyCollection
+    {
+        if (!$this->isFile($path)) {
+            throw new FileNotFoundException(
+                "File does not exist at path {$path}."
+            );
+        }
+
+        $num = $num < 1 ? 1 : $num;
+        return LazyCollection::make(function () use ($path, $num) {
+            $file = new SplFileObject($path, 'rb');
+            $file->setFlags(SplFileObject::DROP_NEW_LINE);
+            $pos = -2;
+            $eof = '';
+            while ($num > 0) {
+                while ($eof !== "\n") {
+                    if (!$file->fseek($pos, SEEK_END)) {
+                        $eof = $file->fgetc();
+                        --$pos;
+                    } else {
+                        break;
+                    }
+                }
+                $eof = '';
+                --$num;
                 yield $file->fgets();
             }
         });
