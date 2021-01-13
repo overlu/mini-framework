@@ -14,7 +14,7 @@ class Crontab
     /**
      * @var string
      */
-    protected $rule;
+    protected string $rule;
 
     /**
      * @var callable
@@ -24,25 +24,25 @@ class Crontab
     /**
      * @var string
      */
-    protected $name;
+    protected string $name;
 
     /**
      * @var int
      */
-    protected $id;
+    protected int $id;
 
     /**
      * @var array
      */
-    protected static $instances = [];
+    protected static array $instances = [];
 
     /**
      * Crontab constructor.
      * @param $rule
      * @param $callback
-     * @param null $name
+     * @param $name
      */
-    public function __construct($rule, $callback, $name = null)
+    public function __construct($rule, $callback, $name)
     {
         $this->rule = $rule;
         $this->callback = $callback;
@@ -55,7 +55,7 @@ class Crontab
     /**
      * @return string
      */
-    public function getRule()
+    public function getRule(): string
     {
         return $this->rule;
     }
@@ -63,7 +63,7 @@ class Crontab
     /**
      * @return callable
      */
-    public function getCallback()
+    public function getCallback(): callable
     {
         return $this->callback;
     }
@@ -71,7 +71,7 @@ class Crontab
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -79,7 +79,7 @@ class Crontab
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -87,7 +87,7 @@ class Crontab
     /**
      * @return bool
      */
-    public function destroy()
+    public function destroy(): bool
     {
         return static::remove($this->id);
     }
@@ -95,7 +95,7 @@ class Crontab
     /**
      * @return array
      */
-    public static function getAll()
+    public static function getAll(): array
     {
         return static::$instances;
     }
@@ -104,7 +104,7 @@ class Crontab
      * @param $id
      * @return bool
      */
-    public static function remove($id)
+    public static function remove($id): bool
     {
         if ($id instanceof Crontab) {
             $id = $id->getId();
@@ -119,7 +119,7 @@ class Crontab
     /**
      * @return int
      */
-    protected static function createId()
+    protected static function createId(): int
     {
         static $id = 0;
         return ++$id;
@@ -128,14 +128,14 @@ class Crontab
     /**
      * tryInit
      */
-    protected static function tryInit()
+    protected static function tryInit(): void
     {
         static $inited = false;
         if ($inited) {
             return;
         }
         $inited = true;
-        $callback = function () use ($parser, &$callback) {
+        $callback = function () use (&$callback) {
             foreach (static::$instances as $crontab) {
                 $rule = $crontab->getRule();
                 $cb = $crontab->getCallback();
