@@ -12,9 +12,9 @@ use Mini\Support\Command;
 
 class TestCommandService extends BaseCommandService
 {
-    public static string $command = 'test';
+    public string $command = 'test';
 
-    public static string $description = 'run mini phpunit test.';
+    public string $description = 'run mini phpunit test.';
 
     /**
      * @return mixed|void

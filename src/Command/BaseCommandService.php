@@ -14,6 +14,10 @@ use Mini\Support\Command;
 
 class BaseCommandService implements CommandInterface
 {
+    public string $command = 'command';
+
+    public string $description = 'command decriptioon';
+
     protected App $app;
 
     /**
@@ -30,6 +34,16 @@ class BaseCommandService implements CommandInterface
     public function run()
     {
         Command::info('command:' . $this->app->getCommand());
+    }
+
+    public function getCommand(): string
+    {
+        return $this->command;
+    }
+
+    public function getCommandDescription(): string
+    {
+        return $this->description;
     }
 
     public function setApp(App $app): self

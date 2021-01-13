@@ -11,13 +11,13 @@ class MigrateRollbackCommandService extends BaseCommandService
 {
     use Migration;
 
-    public static string $command = 'migrate:rollback';
+    public string $command = 'migrate:rollback';
 
-    public static string $description = 'rollback the last database migration.';
+    public string $description = 'rollback the last database migration.';
 
     public function run()
     {
-        go(function (){
+        go(function () {
             if (!$this->confirmToProceed()) {
                 return;
             }

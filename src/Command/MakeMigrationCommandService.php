@@ -15,9 +15,9 @@ class MakeMigrationCommandService extends BaseCommandService
 {
     use Migration;
 
-    public static string $command = 'make:migrate';
+    public string $command = 'make:migrate';
 
-    public static string $description = 'create a new migration file.';
+    public string $description = 'create a new migration file.';
 
     /**
      * @return mixed|void

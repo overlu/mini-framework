@@ -11,9 +11,9 @@ class MigrateCommandService extends BaseCommandService
 {
     use Migration;
 
-    public static string $command = 'migrate';
+    public string $command = 'migrate';
 
-    public static string $description = 'migrate the database.';
+    public string $description = 'migrate the database.';
 
     public function run()
     {

@@ -11,9 +11,9 @@ use Mini\Support\Command;
 
 class HelloMiniCommandService extends BaseCommandService
 {
-    public static string $command = 'hello:mini';
+    public string $command = 'hello:mini';
 
-    public static string $description = 'print hello mini.';
+    public string $description = 'print hello mini.';
 
     public function run()
     {

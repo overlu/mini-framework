@@ -11,9 +11,9 @@ use Mini\Support\Command;
 
 class RouteCommandService extends BaseCommandService
 {
-    public static string $command = 'route:clear';
+    public string $command = 'route:clear';
 
-    public static string $description = 'clear route config cache.';
+    public string $description = 'clear route config cache.';
 
     public function run()
     {

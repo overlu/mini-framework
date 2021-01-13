@@ -13,4 +13,14 @@ interface CommandInterface
      * @return mixed
      */
     public function run();
+
+    /**
+     * @return string
+     */
+    public function getCommand(): string;
+
+    /**
+     * @return string
+     */
+    public function getCommandDescription(): string;
 }

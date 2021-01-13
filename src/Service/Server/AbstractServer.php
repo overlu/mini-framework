@@ -181,6 +181,9 @@ abstract class AbstractServer
         $type = ucfirst($this->type ?: $this->key);
         Command::infoWithTime("🚀 Mini {$type} Server [{$this->worker_num} workers] running：{$this->config['ip']}:{$this->config['port']}...\"");
         Listener::getInstance()->listen('managerStart', $server);
+        if (config('mini.hot_reload') && config('mini.env', 'local') !== 'production') {
+            Runner::start();
+        }
     }
 
     public function onRequest(Request $request, Response $response): void

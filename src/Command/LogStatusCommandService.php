@@ -15,9 +15,9 @@ use Mini\Console\Table;
  */
 class LogStatusCommandService extends BaseCommandService
 {
-    public static string $command = 'log:status';
+    public string $command = 'log:status';
 
-    public static string $description = 'View Log Status';
+    public string $description = 'View Log Status';
 
     public function run()
     {

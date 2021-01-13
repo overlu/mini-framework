@@ -13,6 +13,9 @@ use Swoole\ExitException;
 
 class CommandService
 {
+    /**
+     * @var BaseCommandService[]
+     */
     private static array $commands = [];
 
     /**
@@ -22,7 +25,8 @@ class CommandService
     public static function register($commandService): void
     {
         foreach ((array)$commandService as $service) {
-            static::$commands[$service::$command] = $service;
+            $service = new $service;
+            static::$commands[$service->getCommand()] = $service;
         }
     }
 
@@ -34,8 +38,8 @@ class CommandService
             ]);
             foreach (static::$commands as $command => $instance) {
                 $app->addCommand($command, static function () use ($instance, $app) {
-                    (new $instance)->setApp($app)->run();
-                }, $instance::$description ?? null);
+                    $instance->setApp($app)->run();
+                }, $instance->getCommandDescription());
             }
             $app->run();
         } catch (\Throwable $throwable) {

@@ -11,9 +11,9 @@ class MigrateRefreshCommandService extends BaseCommandService
 {
     use Migration;
 
-    public static string $command = 'migrate:refresh';
+    public string $command = 'migrate:refresh';
 
-    public static string $description = 'reset and re-run all migrations.';
+    public string $description = 'reset and re-run all migrations.';
 
     public function run()
     {

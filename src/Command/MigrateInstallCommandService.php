@@ -13,9 +13,9 @@ class MigrateInstallCommandService extends BaseCommandService
 {
     use Migration;
 
-    public static string $command = 'migrate:install';
+    public string $command = 'migrate:install';
 
-    public static string $description = 'create the migration repository.';
+    public string $description = 'create the migration repository.';
 
     public function run()
     {

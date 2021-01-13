@@ -13,9 +13,9 @@ class MigrateResetCommandService extends BaseCommandService
 {
     use Migration;
 
-    public static string $command = 'migrate:reset';
+    public string $command = 'migrate:reset';
 
-    public static string $description = 'rollback all database migrations.';
+    public string $description = 'rollback all database migrations.';
 
     public function run()
     {

@@ -11,9 +11,9 @@ use Mini\Support\Command;
 
 class StorageLinkCommandService extends BaseCommandService
 {
-    public static string $command = 'storage:link';
+    public string $command = 'storage:link';
 
-    public static string $description = "Create the symbolic links configured for the application. [ --relative : Create the symbolic link using relative paths ]";
+    public string $description = 'Create the symbolic links configured for the application. [ --relative : Create the symbolic link using relative paths ]';
 
     public function run()
     {
