@@ -13,7 +13,7 @@ namespace Mini\Crontab;
  */
 interface CrontabTaskInterface
 {
-    public function handle(): void;
+    public function handle();
 
     public function getCrontabName(): string;
 

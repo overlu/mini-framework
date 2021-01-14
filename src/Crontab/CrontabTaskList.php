@@ -19,7 +19,7 @@ class CrontabTaskList
     private static array $crontabTaskList = [];
 
     /**
-     * 获取所有的任务
+     * Get all crontab tasks
      * @return CrontabTaskInterface[]
      */
     public static function getCrontabTaskList(): array
@@ -28,7 +28,7 @@ class CrontabTaskList
     }
 
     /**
-     * 获取任务
+     * Get crontab task
      * @param string $name
      * @return CrontabTaskInterface|null
      */
@@ -38,7 +38,7 @@ class CrontabTaskList
     }
 
     /**
-     * 新增任务，不会覆盖原有任务
+     * Add crontab task (not override)
      * @param string $name
      * @param CrontabTaskInterface $handle
      */
@@ -48,7 +48,7 @@ class CrontabTaskList
     }
 
     /**
-     * 新增任务，会覆盖原有任务
+     * Set crontab task (override)
      * @param string $name
      * @param CrontabTaskInterface $handle
      */
@@ -58,7 +58,7 @@ class CrontabTaskList
     }
 
     /**
-     * 移除任务
+     * Remove crontab task
      * @param string $name
      */
     public static function removeTask(string $name): void
@@ -69,16 +69,19 @@ class CrontabTaskList
     }
 
     /**
-     * 清空任务
+     * Truncate crontab tasks
      */
     public static function truncate(): void
     {
         self::$crontabTaskList = [];
     }
 
+    /**
+     * Initial crontab tasks
+     */
     public static function initialTaskList(): void
     {
-        $crontabTaskList = config('crontab', []);
+        $crontabTaskList = config('crontab.tasks', []);
         foreach ($crontabTaskList as $crontabTask) {
             if (class_exists($crontabTask)) {
                 $taskObj = new $crontabTask;
@@ -88,5 +91,4 @@ class CrontabTaskList
             }
         }
     }
-
 }

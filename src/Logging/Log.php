@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Logging;
 
+use JsonException;
 use Mini\Console\Cli;
 use SeasLog;
 
@@ -34,6 +35,11 @@ class Log
         'debug' => 'line',
     ];
 
+    /**
+     * @param $name
+     * @param $arguments
+     * @throws JsonException
+     */
     public static function __callStatic($name, $arguments)
     {
         if (isset($arguments[0]) && is_array($arguments[0])) {

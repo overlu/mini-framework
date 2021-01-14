@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\Crontab;
 
+use InvalidArgumentException;
+
 /**
  * Class Parser
  * @package Mini\Crontab
@@ -30,20 +32,20 @@ class Parser
      *
      * @param null|int $start_time
      * @return int[]
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public static function parse($crontab_string, ?int $start_time = null)
+    public static function parse($crontab_string, ?int $start_time = null): array
     {
         if (!self::isValid($crontab_string)) {
-            throw new \InvalidArgumentException('Invalid cron string: ' . $crontab_string);
+            throw new InvalidArgumentException('Invalid cron string: ' . $crontab_string);
         }
-        $start_time = $start_time ? $start_time : time();
+        $start_time = $start_time ?: time();
         $date = self::parseDate($crontab_string);
-        if (in_array((int)date('i', $start_time), $date['minutes'])
-            && in_array((int)date('G', $start_time), $date['hours'])
-            && in_array((int)date('j', $start_time), $date['day'])
-            && in_array((int)date('w', $start_time), $date['week'])
-            && in_array((int)date('n', $start_time), $date['month'])
+        if (in_array((int)date('i', $start_time), $date['minutes'], true)
+            && in_array((int)date('G', $start_time), $date['hours'], true)
+            && in_array((int)date('j', $start_time), $date['day'], true)
+            && in_array((int)date('w', $start_time), $date['week'], true)
+            && in_array((int)date('n', $start_time), $date['month'], true)
         ) {
             $result = [];
             foreach ($date['second'] as $second) {
@@ -54,20 +56,24 @@ class Parser
         return [];
     }
 
+    /**
+     * @param string $crontab_string
+     * @return bool
+     */
     public static function isValid(string $crontab_string): bool
     {
-        if (!preg_match('/^((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)$/i', trim($crontab_string))) {
-            if (!preg_match('/^((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)$/i', trim($crontab_string))) {
-                return false;
-            }
-        }
-        return true;
+        return (preg_match('/^((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)$/i', trim($crontab_string)) && preg_match('/^((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)$/i', trim($crontab_string)));
     }
 
     /**
      * Parse each segment of crontab string.
+     * @param string $string
+     * @param int $min
+     * @param int $max
+     * @param int|null $start
+     * @return array
      */
-    protected static function parseSegment(string $string, int $min, int $max, int $start = null)
+    protected static function parseSegment(string $string, int $min, int $max, int $start = null): array
     {
         if ($start === null || $start < $min) {
             $start = $min;
@@ -89,8 +95,8 @@ class Parser
             $exploded = explode('/', $string);
             if (strpos($exploded[0], '-') !== false) {
                 [$nMin, $nMax] = explode('-', $exploded[0]);
-                $nMin > $min && $min = $nMin;
-                $nMax < $max && $max = $nMax;
+                $nMin > $min && $min = (int)$nMin;
+                $nMax < $max && $max = (int)$nMax;
             }
             $start > $min && $min = $start;
             for ($i = $start; $i <= $max;) {
@@ -105,13 +111,20 @@ class Parser
 
     /**
      * Determire if the $value is between in $min and $max ?
+     * @param int $value
+     * @param int $min
+     * @param int $max
+     * @return bool
      */
     private static function between(int $value, int $min, int $max): bool
     {
         return $value >= $min && $value <= $max;
     }
 
-
+    /**
+     * @param string $crontab_string
+     * @return array
+     */
     private static function parseDate(string $crontab_string): array
     {
         $cron = preg_split('/[\\s]+/i', trim($crontab_string));

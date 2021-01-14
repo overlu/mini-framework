@@ -7,161 +7,110 @@ declare(strict_types=1);
 
 namespace Mini\Crontab;
 
+use Mini\Exceptions\CrontabException;
+use Mini\Logging\Log;
 use Swoole\Timer;
 
 class Crontab
 {
     /**
-     * @var string
+     * crontab initiation status
+     * @var bool
      */
-    protected string $rule;
+    public static bool $isInitialed = false;
 
     /**
-     * @var callable
-     */
-    protected $callback;
-
-    /**
-     * @var string
-     */
-    protected string $name;
-
-    /**
+     * Timer id
      * @var int
      */
-    protected int $id;
+    private static int $timeId = 0;
 
     /**
-     * @var array
+     * run crontab
      */
-    protected static array $instances = [];
-
-    /**
-     * Crontab constructor.
-     * @param $rule
-     * @param $callback
-     * @param $name
-     */
-    public function __construct($rule, $callback, $name)
+    protected static function run(): void
     {
-        $this->rule = $rule;
-        $this->callback = $callback;
-        $this->name = $name;
-        $this->id = static::createId();
-        static::$instances[$this->id] = $this;
-        static::tryInit();
+        $enable_crontab_coroutine = config('crontab.enable_crontab_coroutine', true);
+        Timer::set([
+            'enable_coroutine' => (bool)$enable_crontab_coroutine,
+        ]);
+        self::tick(time() % 60);
     }
 
     /**
-     * @return string
+     * @param int $after
      */
-    public function getRule(): string
+    private static function tick(int $after = 0): void
     {
-        return $this->rule;
-    }
-
-    /**
-     * @return callable
-     */
-    public function getCallback(): callable
-    {
-        return $this->callback;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * @return bool
-     */
-    public function destroy(): bool
-    {
-        return static::remove($this->id);
-    }
-
-    /**
-     * @return array
-     */
-    public static function getAll(): array
-    {
-        return static::$instances;
-    }
-
-    /**
-     * @param $id
-     * @return bool
-     */
-    public static function remove($id): bool
-    {
-        if ($id instanceof Crontab) {
-            $id = $id->getId();
-        }
-        if (!isset(static::$instances[$id])) {
-            return false;
-        }
-        unset(static::$instances[$id]);
-        return true;
-    }
-
-    /**
-     * @return int
-     */
-    protected static function createId(): int
-    {
-        static $id = 0;
-        return ++$id;
-    }
-
-    /**
-     * tryInit
-     */
-    protected static function tryInit(): void
-    {
-        static $inited = false;
-        if ($inited) {
+        if ($after === 0) {
+            self::$timeId = Timer::tick(60000, function () {
+                self::crontabHandle();
+            });
             return;
         }
-        $inited = true;
-        $callback = function () use (&$callback) {
-            foreach (static::$instances as $crontab) {
-                $rule = $crontab->getRule();
-                $cb = $crontab->getCallback();
-                if (!$cb || !$rule) {
-                    continue;
-                }
-                $times = Parser::parse($rule);
-                $now = time();
-                foreach ($times as $time) {
-                    $t = $time - $now;
-                    if ($t <= 0) {
-                        $t = 0.000001;
-                    }
-                    Timer::add($t, $cb, null, false);
-                }
-            }
-            Timer::add(60 - time() % 60, $callback, null, false);
-        };
-
-        $next_time = time() % 60;
-        if ($next_time == 0) {
-            $next_time = 0.00001;
-        } else {
-            $next_time = 60 - $next_time;
-        }
-        Timer::tick($next_time, $callback, null, false);
+        Timer::after((60 - $after) * 1000, function () {
+            self::$timeId = Timer::tick(60000, function () {
+                self::crontabHandle();
+            });
+        });
     }
 
+    /**
+     * stop crontab
+     */
+    public static function stop(): void
+    {
+        if (self::$timeId !== 0) {
+            Timer::clear(self::$timeId);
+        }
+        self::$isInitialed = false;
+    }
+
+    /**
+     * @return bool
+     */
+    private static function crontabHandle(): bool
+    {
+        if (self::$isInitialed) {
+            return false;
+        }
+        self::$isInitialed = true;
+        $crontabTaskList = CrontabTaskList::getCrontabTaskList();
+        $enableCrontabLog = config('crontab.enable_crontab_log', false);
+        foreach ($crontabTaskList as $task) {
+            $times = Parser::parse($task->getRule());
+            $now = time();
+            foreach ($times as $time) {
+                Timer::after(($time > $now ? ($time - $now) : 0.001) * 1000, function () use ($task, $enableCrontabLog) {
+                    try {
+                        if (!$enableCrontabLog) {
+                            $task->handle();
+                            return true;
+                        }
+                        Log::info('[:name] start.', [
+                            'name' => $task->getCrontabName()
+                        ], 'crontab');
+                        $response = $task->handle();
+                        if (is_array($response) || is_object($response)) {
+                            $response = json_encode($response, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+                        }
+                        Log::info('[:name] done. Response: :response', [
+                            'name' => $task->getCrontabName(),
+                            'response' => $response
+                        ], 'crontab');
+                        return true;
+                    } catch (CrontabException $exception) {
+                        Log::error('[:name] failed. :message in :file at line :line', [
+                            'name' => $task->getCrontabName(),
+                            'message' => $exception->getMessage(),
+                            'file' => $exception->getFile(),
+                            'line' => $exception->getLine()
+                        ], 'crontab');
+                        return false;
+                    }
+                });
+            }
+        }
+        return true;
+    }
 }
