@@ -107,9 +107,20 @@ abstract class AbstractServer
 
     private function swooleTableDispatch(): void
     {
-        $table = new Table(4096, 0.2);
-        $table->column('value', Table::TYPE_STRING, 4096);
-        $table->column('expire', Table::TYPE_INT, 4);
+        $table = new Table(
+            config('cache.drivers.swoole.table.size', 4096),
+            config('cache.drivers.swoole.table.conflict_proportion', 0.2)
+        );
+        $table->column(
+            'value',
+            config('cache.drivers.swoole.column.value.type', Table::TYPE_STRING),
+            config('cache.drivers.swoole.column.value.size', 4096)
+        );
+        $table->column(
+            'expire',
+            config('cache.drivers.swoole.column.expire.type', Table::TYPE_STRING),
+            config('cache.drivers.swoole.column.expire.size', 4)
+        );
         $table->create();
         $this->server->table = $table;
     }
