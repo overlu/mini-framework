@@ -24,6 +24,9 @@ class MiniServer
                 $process->start();
             }
         }
-        Process::wait();
+        $count = count($servers);
+        for ($i = 0; $i < $count; $i++) {
+            Process::wait();
+        }
     }
 }

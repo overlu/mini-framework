@@ -15,9 +15,19 @@ interface CrontabTaskInterface
 {
     public function handle();
 
-    public function getCrontabName(): string;
+    public function name(): string;
 
-    public function getCrontabDescription(): string;
+    public function description(): string;
 
-    public function getRule(): string;
+    /**
+     * format: * * * * * / * * * * * *
+     * @return string
+     */
+    public function rule(): string;
+
+    /**
+     * enable: true, disable: false
+     * @return bool
+     */
+    public function status(): bool;
 }

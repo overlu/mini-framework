@@ -20,17 +20,6 @@ class BaseCommandService implements CommandInterface
 
     protected App $app;
 
-    /**
-     * @param null $class
-     * @throws Exception
-     */
-    public static function check($class): void
-    {
-        if (!isset($class::$command)) {
-            throw new \RuntimeException('no static::$command in ' . $class);
-        }
-    }
-
     public function run()
     {
         Command::info('command:' . $this->app->getCommand());

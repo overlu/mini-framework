@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Service\Server;
 
 use Mini\Context;
+use Mini\Crontab\Crontab;
 use Mini\Exceptions\Handler;
 use Mini\Exceptions\InvalidResponseException;
 use Mini\Listener;
@@ -101,6 +102,7 @@ abstract class AbstractServer
         $this->eventOnDispatch();
         $this->startDispatch();
         $this->swooleTableDispatch();
+        $this->crontabDispatch();
     }
 
     private function swooleTableDispatch(): void
@@ -139,6 +141,16 @@ abstract class AbstractServer
             $this->server->on('managerStart', [$this, 'onManagerStart']);
         } else {
             $this->server->on('start', [$this, 'onStart']);
+        }
+    }
+
+    private function crontabDispatch(): void
+    {
+        if (config('crontab.enable_crontab', false)) {
+            $process = new \Swoole\Process(function () {
+                Crontab::run();
+            });
+            $this->server->addProcess($process);
         }
     }
 

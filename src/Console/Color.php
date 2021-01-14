@@ -276,7 +276,8 @@ class Color
     public static function println($messages, string $style = 'info'): void
     {
         $string = is_array($messages) ? implode("\n", $messages) : (string)$messages;
-        echo self::render($string . "\n", $style);
+        echo self::render($string, $style);
+        echo "\n";
     }
 
     /**

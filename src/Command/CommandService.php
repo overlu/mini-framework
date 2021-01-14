@@ -10,6 +10,7 @@ namespace Mini\Command;
 use Mini\Console\App;
 use Mini\Exceptions\Handler;
 use Swoole\ExitException;
+use Swoole\Process;
 
 class CommandService
 {
@@ -41,7 +42,10 @@ class CommandService
                     $instance->setApp($app)->run();
                 }, $instance->getCommandDescription());
             }
-            $app->run();
+            (new Process(function () use ($app) {
+                $app->run();
+            }))->start();
+            Process::wait(!($app->getOpt('d') || $app->getArg('daemonize')));
         } catch (\Throwable $throwable) {
             if (!$throwable instanceof ExitException) {
                 app('exception')->throw($throwable);

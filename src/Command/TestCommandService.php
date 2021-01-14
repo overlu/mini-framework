@@ -22,6 +22,8 @@ class TestCommandService extends BaseCommandService
      */
     public function run()
     {
-        Command::info(Command::exec(BASE_PATH . '/vendor/phpunit/phpunit/phpunit ./tests'));
+        go(function () {
+            Command::info(Command::exec(BASE_PATH . '/vendor/phpunit/phpunit/phpunit ./tests'));
+        });
     }
 }

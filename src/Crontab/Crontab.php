@@ -28,8 +28,9 @@ class Crontab
     /**
      * run crontab
      */
-    protected static function run(): void
+    public static function run()
     {
+        self::checkCrontabRules();
         $enable_crontab_coroutine = config('crontab.enable_crontab_coroutine', true);
         Timer::set([
             'enable_coroutine' => (bool)$enable_crontab_coroutine,
@@ -37,19 +38,26 @@ class Crontab
         self::tick(time() % 60);
     }
 
+    public static function checkCrontabRules()
+    {
+        CrontabTaskList::initialTaskList();
+        $crontabTaskList = CrontabTaskList::getCrontabTaskList();
+        foreach ($crontabTaskList as $crontabTask) {
+            if (!Parser::isValid($crontabRule = $crontabTask->rule())) {
+                throw new \InvalidArgumentException('Invalid crontab rule: [' . $crontabRule . '] at crontab: ' . get_class($crontabTask));
+            }
+        }
+    }
+
     /**
      * @param int $after
      */
     private static function tick(int $after = 0): void
     {
-        if ($after === 0) {
-            self::$timeId = Timer::tick(60000, function () {
-                self::crontabHandle();
-            });
-            return;
-        }
         Timer::after((60 - $after) * 1000, function () {
+            self::crontabHandle();
             self::$timeId = Timer::tick(60000, function () {
+                self::$isInitialed = false;
                 self::crontabHandle();
             });
         });
@@ -78,30 +86,35 @@ class Crontab
         $crontabTaskList = CrontabTaskList::getCrontabTaskList();
         $enableCrontabLog = config('crontab.enable_crontab_log', false);
         foreach ($crontabTaskList as $task) {
-            $times = Parser::parse($task->getRule());
+            if (!$task->status()) {
+                continue;
+            }
+            $times = Parser::parse($task->rule());
             $now = time();
             foreach ($times as $time) {
-                Timer::after(($time > $now ? ($time - $now) : 0.001) * 1000, function () use ($task, $enableCrontabLog) {
+                $time = ($time > $now ? ($time - $now) : 0.001) * 1000;
+                Timer::after((int)$time, function () use ($task, $enableCrontabLog) {
                     try {
                         if (!$enableCrontabLog) {
                             $task->handle();
                             return true;
                         }
-                        Log::info('[:name] start.', [
-                            'name' => $task->getCrontabName()
+                        Log::info('[{name}] start.', [
+                            'name' => $task->name()
                         ], 'crontab');
                         $response = $task->handle();
+                        $response = $response ?? 'null';
                         if (is_array($response) || is_object($response)) {
                             $response = json_encode($response, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
                         }
-                        Log::info('[:name] done. Response: :response', [
-                            'name' => $task->getCrontabName(),
-                            'response' => $response
+                        Log::info('[{name}] done. response: {response}', [
+                            'name' => $task->name(),
+                            'response' => (string)$response
                         ], 'crontab');
                         return true;
                     } catch (CrontabException $exception) {
-                        Log::error('[:name] failed. :message in :file at line :line', [
-                            'name' => $task->getCrontabName(),
+                        Log::error('[{name}] failed. {message} in {file} at line {line}', [
+                            'name' => $task->name(),
                             'message' => $exception->getMessage(),
                             'file' => $exception->getFile(),
                             'line' => $exception->getLine()

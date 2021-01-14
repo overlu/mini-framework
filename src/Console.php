@@ -14,6 +14,8 @@ use Mini\Command\MigrateInstallCommandService;
 use Mini\Command\MigrateRefreshCommandService;
 use Mini\Command\MigrateResetCommandService;
 use Mini\Command\MigrateRollbackCommandService;
+use Mini\Command\RunCrontabCommandService;
+use Mini\Command\StatusCrontabCommandService;
 use Mini\Command\StorageLinkCommandService;
 use Mini\Exceptions\Handler;
 use Mini\Provider\BaseProviderService;
@@ -29,6 +31,8 @@ class Console
         MigrateRefreshCommandService::class,
         MakeMigrationCommandService::class,
         StorageLinkCommandService::class,
+        RunCrontabCommandService::class,
+        StatusCrontabCommandService::class
     ];
 
     /**
@@ -36,6 +40,7 @@ class Console
      */
     public static function run(): void
     {
+        self::initial();
         try {
             \SeasLog::setRequestID(uniqid('', true));
             BaseProviderService::getInstance()->register(null, null);
@@ -45,5 +50,14 @@ class Console
         } catch (Throwable $throwable) {
             app('exception')->throw($throwable);
         }
+    }
+
+    private static function initial()
+    {
+        ini_set('display_errors', config('mini.debug') === true ? 'on' : 'off');
+        ini_set('display_startup_errors', 'on');
+        ini_set('date.timezone', config('mini.timezone', 'UTC'));
+//        error_reporting(env('APP_ENV', 'local') === 'production' ? 0 : E_ALL);
+        error_reporting(E_ALL);
     }
 }

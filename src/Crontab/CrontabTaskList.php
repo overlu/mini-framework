@@ -44,7 +44,7 @@ class CrontabTaskList
      */
     public static function addTask(string $name, CrontabTaskInterface $handle): void
     {
-        self::$crontabTaskList[$name] || self::$crontabTaskList[$name] = $handle;
+        isset(self::$crontabTaskList[$name]) || self::$crontabTaskList[$name] = $handle;
     }
 
     /**
@@ -81,14 +81,16 @@ class CrontabTaskList
      */
     public static function initialTaskList(): void
     {
-        $crontabTaskList = config('crontab.tasks', []);
+        $crontabTaskList = config('crontab.crontab_task_list', []);
         foreach ($crontabTaskList as $crontabTask) {
-            if (class_exists($crontabTask)) {
-                $taskObj = new $crontabTask;
-                if ($taskObj instanceof CrontabTaskInterface) {
-                    self::addTask($crontabTask, $taskObj);
-                }
+            if (!class_exists($crontabTask)) {
+                throw new \InvalidArgumentException('Class ' . $crontabTask . ' not exists.');
             }
+            $taskObj = new $crontabTask;
+            if (!($taskObj instanceof CrontabTaskInterface)) {
+                throw new \InvalidArgumentException('Task ' . $crontabTask . ' should instanceof ' . CrontabTaskInterface::class);
+            }
+            self::addTask($crontabTask, $taskObj);
         }
     }
 }

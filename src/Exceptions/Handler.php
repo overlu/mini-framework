@@ -60,7 +60,7 @@ class Handler implements HandlerInterface
      */
     public function report(Throwable $throwable): void
     {
-        if ($this->checkDontReport($throwable) && !$throwable instanceof ExitException) {
+        if ($this->checkNotDontReport($throwable) && !$throwable instanceof ExitException) {
             Command::line();
             Command::error($this->formatException($throwable));
             Command::line();
@@ -74,7 +74,7 @@ class Handler implements HandlerInterface
      */
     public function render(RequestInterface $request, Throwable $throwable): void
     {
-        if ($this->checkDontReport($throwable)) {
+        if ($this->checkNotDontReport($throwable)) {
             abort(500, $this->formatResponseException($throwable));
             Log::error($this->format($throwable));
         }
@@ -120,7 +120,7 @@ class Handler implements HandlerInterface
     /**
      * @return bool
      */
-    private function checkDontReport(Throwable $throwable): bool
+    private function checkNotDontReport(Throwable $throwable): bool
     {
         foreach ($this->dontReport as $throw) {
             if ($throwable instanceof $throw) {
