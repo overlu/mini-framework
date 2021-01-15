@@ -20,7 +20,7 @@ class Translate
 
     public function __construct()
     {
-        $this->locate = config('app.language', 'en');
+        $this->locate = config('app.locate', config('app.fallback_locale', 'en'));
         $this->translator = new Translator($this->locate);
     }
 

@@ -10,15 +10,11 @@ namespace Mini\Service\Server;
 use JsonException;
 use Mini\Context;
 use Mini\Crontab\Crontab;
-use Mini\Exceptions\Handler;
-use Mini\Exceptions\InvalidResponseException;
 use Mini\Listener;
 use Mini\Provider\BaseProviderService;
-use Mini\Provider\BaseRequestService;
 use Mini\RemoteShell;
 use Mini\Service\Watch\Runner;
 use Mini\Support\Command;
-use Mini\Support\Coroutine;
 use RuntimeException;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
@@ -65,7 +61,6 @@ abstract class AbstractServer
     /**
      * AbstractServer constructor.
      * @param string $key
-     * @throws InvalidResponseException
      * @throws Throwable
      */
     public function __construct($key = '')

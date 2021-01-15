@@ -7,14 +7,12 @@ declare(strict_types=1);
 
 use Mini\Config;
 use Mini\Container\Container;
-use Mini\Container\EntryNotFoundException;
 use Mini\Context;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\Support\Htmlable;
 use Mini\Contracts\View\Factory;
 use Mini\Database\Redis\Pool;
-use Mini\Di;
-use Mini\Exceptions\InvalidResponseException;
+use Mini\Server;
 use Mini\Service\HttpMessage\Cookie\Cookie;
 use Mini\Service\HttpMessage\Stream\SwooleStream;
 use Mini\Support\ApplicationContext;
@@ -26,7 +24,6 @@ use Mini\Support\HigherOrderTapProxy;
 use Mini\Support\Parallel;
 use Mini\Support\Str;
 use Mini\Support\Waiter;
-use Mini\Translate\Translate;
 use Mini\View\View;
 use Psr\Http\Message\ResponseInterface;
 use Swoole\Runtime;
@@ -52,21 +49,11 @@ if (!function_exists('app')) {
      * @param array $parameters
      * @return object|mixed
      */
-    /*function app(string $abstract = '', array $parameters = [])
-    {
-
-    }*/
     function app(?string $abstract = null, array $parameters = [])
     {
-        /*if (is_null($abstract)) {
-            return Di::getInstance();
-        }
-
-        return Di::getInstance()->make($abstract, $parameters);*/
         if (is_null($abstract)) {
             return Container::getInstance();
         }
-
         return Container::getInstance()->make($abstract, $parameters);
     }
 }
@@ -80,8 +67,7 @@ if (!function_exists('retry')) {
      * @param int $sleep
      * @param callable|null $when
      * @return mixed
-     *
-     * @throws \Exception
+     * @throws Exception
      */
     function retry($times, callable $callback, $sleep = 0, $when = null)
     {
@@ -90,18 +76,15 @@ if (!function_exists('retry')) {
         beginning:
         $attempts++;
         $times--;
-
         try {
             return $callback($attempts);
         } catch (Exception $e) {
             if ($times < 1 || ($when && !$when($e))) {
                 throw $e;
             }
-
             if ($sleep) {
                 usleep($sleep * 1000);
             }
-
             goto beginning;
         }
     }
@@ -331,6 +314,9 @@ if (!function_exists('co')) {
 }
 
 if (!function_exists('defer')) {
+    /**
+     * @param callable $callable
+     */
     function defer(callable $callable): void
     {
         Coroutine::defer($callable);
@@ -498,14 +484,25 @@ if (!function_exists('env')) {
 
 if (!function_exists('config')) {
     /**
-     * 获取配置
-     * @param $name
-     * @param null $default
-     * @return mixed|null
+     * 获取/设置配置数据
+     *
+     * 如果key为数组，则为设置配置数据
+     *
+     * @param array|string|null $key
+     * @param mixed $default
+     * @return mixed|Config
      */
-    function config($name, $default = null)
+    function config($key = null, $default = null)
     {
-        return Config::getInstance()->get($name, $default);
+        if (is_null($key)) {
+            return app('config');
+        }
+
+        if (is_array($key)) {
+            return app('config')->set($key);
+        }
+
+        return app('config')->get($key, $default);
     }
 }
 
@@ -521,24 +518,6 @@ if (!function_exists('redis')) {
     }
 }
 
-if (!function_exists('array_plus')) {
-    /**
-     * 数组合并，键相同值相加
-     * @param array $arr1
-     * @param array $arr2
-     * @return array
-     */
-    function array_plus(array $arr1, array $arr2): array
-    {
-        foreach ($arr1 as $key => $val) {
-            if (isset($arr2[$key])) {
-                $arr1[$key] += $arr2[$key];
-            }
-        }
-        return $arr1 + $arr2;
-    }
-}
-
 if (!function_exists('server')) {
     /**
      * 获取server
@@ -546,7 +525,7 @@ if (!function_exists('server')) {
      */
     function server(): \Swoole\Server
     {
-        return \Mini\Server::getInstance()->get();
+        return Server::getInstance()->get();
     }
 }
 
@@ -554,9 +533,7 @@ if (!function_exists('event')) {
     /**
      * Dispatch an event and call the listeners.
      *
-     * @param string|object $event
-     * @param mixed $payload
-     * @param bool $halt
+     * @param array $args
      * @return array|null
      */
     function event(...$args)
@@ -569,9 +546,7 @@ if (!function_exists('task')) {
     /**
      * Dispatch an event and call the listeners.
      *
-     * @param string|object $event
-     * @param mixed $payload
-     * @param bool $halt
+     * @param array $args
      * @return array|null
      */
     function task(...$args)
@@ -588,7 +563,7 @@ if (!function_exists('request')) {
     function request()
     {
         if (!Context::has('IsInRequestEvent')) {
-            throw new Exception("Not In Request Environment.");
+            throw new RuntimeException("Not In Request Environment.");
         }
         return app(Mini\Contracts\HttpMessage\RequestInterface::class);
     }
@@ -598,11 +573,12 @@ if (!function_exists('response')) {
     /**
      * 获取response资源
      * @return Mini\Service\HttpServer\Response | Mini\Service\HttpMessage\Server\Response
+     * @throws Exception
      */
     function response()
     {
         if (!Context::has('IsInRequestEvent')) {
-            throw new Exception("Not In Request Environment.");
+            throw new RuntimeException("Not In Request Environment.");
         }
         return app(Mini\Contracts\HttpMessage\ResponseInterface::class);
     }
@@ -615,6 +591,7 @@ if (!function_exists('url')) {
      * @param array $params
      * @param string $fragment
      * @return string
+     * @throws Exception
      */
     function url(string $path = '', array $params = [], string $fragment = ''): string
     {
@@ -650,24 +627,6 @@ if (!function_exists('http_build_url')) {
         $url .= $urlArr['query'] ? '?' . $urlArr['query'] : '';
         $url .= $urlArr['fragment'] ? '#' . $urlArr['fragment'] : '';
         return $url;
-    }
-}
-
-if (!function_exists('ws_error_format')) {
-    /**
-     * 系统错误信息式化
-     * @param $error_message
-     * @param int $code
-     * @return string
-     * @throws JsonException
-     */
-    function ws_error_format($error_message, $code = 0)
-    {
-        $error_info = [
-            'code' => $code,
-            'message' => $error_message,
-        ];
-        return json_encode($error_info, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
     }
 }
 
@@ -789,11 +748,11 @@ if (!function_exists('abort')) {
     /**
      * @param int $code
      * @param string $message
-     * @throws Exception
+     * @param array $headers
      */
-    function abort(int $code, string $message = ''): void
+    function abort(int $code, string $message = '', array $headers = []): void
     {
-        throw new \Mini\Exceptions\HttpException($code, $message);
+        throw new \Mini\Exceptions\HttpException($code, $message, $headers);
     }
 }
 
