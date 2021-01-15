@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Facades;
 
-
 use RuntimeException;
 
 class Facade
@@ -46,7 +45,7 @@ class Facade
      * Get the registered name of the component.
      * @throws RuntimeException
      */
-    protected static function getFacadeAccessor(): void
+    protected static function getFacadeAccessor()
     {
         throw new RuntimeException('Facade does not implement getFacadeAccessor method.');
     }

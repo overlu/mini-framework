@@ -1,14 +1,19 @@
 <?php
+/**
+ * This file is part of Mini.
+ * @auth lupeng
+ */
+declare(strict_types=1);
 
-namespace Illuminate\Support\Facades;
+namespace Mini\Facades;
 
-use Illuminate\Filesystem\Filesystem;
+use Mini\Filesystem\Filesystem;
 
 /**
- * @method static \Illuminate\Contracts\Filesystem\Filesystem assertExists(string|array $path)
- * @method static \Illuminate\Contracts\Filesystem\Filesystem assertMissing(string|array $path)
- * @method static \Illuminate\Contracts\Filesystem\Filesystem cloud()
- * @method static \Illuminate\Contracts\Filesystem\Filesystem disk(string $name = null)
+ * @method static \Mini\Contracts\Filesystem\Filesystem assertExists(string|array $path)
+ * @method static \Mini\Contracts\Filesystem\Filesystem assertMissing(string|array $path)
+ * @method static \Mini\Contracts\Filesystem\Filesystem cloud()
+ * @method static \Mini\Contracts\Filesystem\Filesystem disk(string $name = null)
  * @method static array allDirectories(string|null $directory = null)
  * @method static array allFiles(string|null $directory = null)
  * @method static array directories(string|null $directory = null, bool $recursive = false)
@@ -18,13 +23,13 @@ use Illuminate\Filesystem\Filesystem;
  * @method static bool delete(string|array $paths)
  * @method static bool deleteDirectory(string $directory)
  * @method static bool exists(string $path)
- * @method static \Illuminate\Filesystem\FilesystemManager extend(string $driver, \Closure $callback)
+ * @method static \Mini\Filesystem\FilesystemManager extend(string $driver, \Closure $callback)
  * @method static bool makeDirectory(string $path)
  * @method static bool move(string $from, string $to)
  * @method static bool prepend(string $path, string $data)
  * @method static bool put(string $path, string|resource $contents, mixed $options = [])
- * @method static string|false putFile(string $path, \Illuminate\Http\File|\Illuminate\Http\UploadedFile|string $file, mixed $options = [])
- * @method static string|false putFileAs(string $path, \Illuminate\Http\File|\Illuminate\Http\UploadedFile|string $file, string $name, mixed $options = [])
+ * @method static string|false putFile(string $path, \Mini\Http\File|\Mini\Http\UploadedFile|string $file, mixed $options = [])
+ * @method static string|false putFileAs(string $path, \Mini\Http\File|\Mini\Http\UploadedFile|string $file, string $name, mixed $options = [])
  * @method static bool setVisibility(string $path, string $visibility)
  * @method static bool writeStream(string $path, resource $resource, array $options = [])
  * @method static int lastModified(string $path)
@@ -35,7 +40,7 @@ use Illuminate\Filesystem\Filesystem;
  * @method static string temporaryUrl(string $path, \DateTimeInterface $expiration, array $options = [])
  * @method static string url(string $path)
  *
- * @see \Illuminate\Filesystem\FilesystemManager
+ * @see \Mini\Filesystem\FilesystemManager
  */
 class Storage extends Facade
 {
@@ -44,7 +49,7 @@ class Storage extends Facade
      *
      * @param  string|null  $disk
      * @param  array  $config
-     * @return \Illuminate\Contracts\Filesystem\Filesystem
+     * @return \Mini\Contracts\Filesystem\Filesystem
      */
     public static function fake($disk = null, array $config = [])
     {
@@ -66,7 +71,7 @@ class Storage extends Facade
      *
      * @param  string|null  $disk
      * @param  array  $config
-     * @return \Illuminate\Contracts\Filesystem\Filesystem
+     * @return \Mini\Contracts\Filesystem\Filesystem
      */
     public static function persistentFake($disk = null, array $config = [])
     {

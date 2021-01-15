@@ -1,6 +1,11 @@
 <?php
+/**
+ * This file is part of Mini.
+ * @auth lupeng
+ */
+declare(strict_types=1);
 
-namespace Illuminate\Support\Facades;
+namespace Mini\Facades;
 
 /**
  * @method static \Symfony\Component\Finder\SplFileInfo[] allFiles(string $directory, bool $hidden = false)
@@ -43,7 +48,7 @@ namespace Illuminate\Support\Facades;
  * @method static void relativeLink(string $target, string $link)
  * @method static void replace(string $path, string $content)
  *
- * @see \Illuminate\Filesystem\Filesystem
+ * @see \Mini\Filesystem\Filesystem
  */
 class File extends Facade
 {

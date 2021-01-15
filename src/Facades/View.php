@@ -1,19 +1,24 @@
 <?php
+/**
+ * This file is part of Mini.
+ * @auth lupeng
+ */
+declare(strict_types=1);
 
-namespace Illuminate\Support\Facades;
+namespace Mini\Facades;
 
 /**
- * @method static \Illuminate\Contracts\View\Factory addNamespace(string $namespace, string|array $hints)
- * @method static \Illuminate\Contracts\View\View first(array $views, \Illuminate\Contracts\Support\Arrayable|array $data = [], array $mergeData = [])
- * @method static \Illuminate\Contracts\View\Factory replaceNamespace(string $namespace, string|array $hints)
- * @method static \Illuminate\Contracts\View\View file(string $path, array $data = [], array $mergeData = [])
- * @method static \Illuminate\Contracts\View\View make(string $view, array $data = [], array $mergeData = [])
+ * @method static \Mini\Contracts\View\Factory addNamespace(string $namespace, string|array $hints)
+ * @method static \Mini\Contracts\View\View first(array $views, \Mini\Contracts\Support\Arrayable|array $data = [], array $mergeData = [])
+ * @method static \Mini\Contracts\View\Factory replaceNamespace(string $namespace, string|array $hints)
+ * @method static \Mini\Contracts\View\View file(string $path, array $data = [], array $mergeData = [])
+ * @method static \Mini\Contracts\View\View make(string $view, array $data = [], array $mergeData = [])
  * @method static array composer(array|string $views, \Closure|string $callback)
  * @method static array creator(array|string $views, \Closure|string $callback)
  * @method static bool exists(string $view)
  * @method static mixed share(array|string $key, $value = null)
  *
- * @see \Illuminate\View\Factory
+ * @see \Mini\View\Factory
  */
 class View extends Facade
 {

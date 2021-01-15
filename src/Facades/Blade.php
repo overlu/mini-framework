@@ -1,6 +1,11 @@
 <?php
+/**
+ * This file is part of Mini.
+ * @auth lupeng
+ */
+declare(strict_types=1);
 
-namespace Illuminate\Support\Facades;
+namespace Mini\Facades;
 
 /**
  * @method static array getClassComponentAliases()
@@ -18,8 +23,8 @@ namespace Illuminate\Support\Facades;
  * @method static void componentNamespace(string $namespace, string $prefix)
  * @method static void directive(string $name, callable $handler)
  * @method static void extend(callable $compiler)
- * @method static void if(string $name, callable $callback)
- * @method static void include(string $path, string|null $alias = null)
+ * @method static void if (string $name, callable $callback)
+ * @method static void include (string $path, string|null $alias = null)
  * @method static void precompiler(callable $precompiler)
  * @method static void setEchoFormat(string $format)
  * @method static void setPath(string $path)
@@ -27,7 +32,7 @@ namespace Illuminate\Support\Facades;
  * @method static void withoutComponentTags()
  * @method static void withoutDoubleEncoding()
  *
- * @see \Illuminate\View\Compilers\BladeCompiler
+ * @see \Mini\View\Compilers\BladeCompiler
  */
 class Blade extends Facade
 {

@@ -1,6 +1,11 @@
 <?php
+/**
+ * This file is part of Mini.
+ * @auth lupeng
+ */
+declare(strict_types=1);
 
-namespace Illuminate\Support\Facades;
+namespace Mini\Facades;
 
 /**
  * @method static array info(string $hashedValue)
@@ -8,7 +13,7 @@ namespace Illuminate\Support\Facades;
  * @method static bool needsRehash(string $hashedValue, array $options = [])
  * @method static string make(string $value, array $options = [])
  *
- * @see \Illuminate\Hashing\HashManager
+ * @see \Mini\Hashing\HashManager
  */
 class Hash extends Facade
 {
