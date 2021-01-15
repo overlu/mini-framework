@@ -32,7 +32,7 @@ class Application extends Container
      * version
      * @var string
      */
-    public static string $version = '2.0.1';
+    public static string $version = '2.1.0';
 
     /**
      * @var array|string[]
