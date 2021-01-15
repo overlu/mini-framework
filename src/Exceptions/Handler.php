@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Exceptions;
 
+use JsonException;
 use Mini\Context;
 use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Logging\Log;
@@ -35,12 +36,14 @@ class Handler implements HandlerInterface
     }
 
     /**
+     * @param Throwable $throwable
      * @throws InvalidResponseException
      * @throws Throwable
+     * @throws JsonException
      */
     public function throw(Throwable $throwable): void
     {
-        if ($throwable instanceof HttpResponseException) {
+        if ($throwable instanceof HttpException) {
             write(failed($throwable->getMessage(), $throwable->getCode() ?? 0));
             return;
         }

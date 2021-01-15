@@ -46,14 +46,13 @@ class ViewServiceProvider implements ServiceProviderInterface
      * Register the view environment.
      *
      * @return void
-     * @throws BindingResolutionException
      */
     public function registerFactory(): void
     {
         $app = app();
         $app->alias(Factory::class, 'view');
         $app->singleton(Factory::class, function () {
-            return new Factory($this->resolver, $this->viewFinder, app('events'));
+            return new Factory(app('view.engine.resolver'), $this->viewFinder, app('events'));
         });
 //        $app->singleton(Factory::class, Factory::class, $this->resolver, $this->viewFinder, app('events'));
     }
@@ -63,7 +62,9 @@ class ViewServiceProvider implements ServiceProviderInterface
      */
     public function registerViewFinder(): void
     {
-        $this->viewFinder = new FileViewFinder(app('files'), config('view.paths'));
+        app()->bind('view.finder', function ($app) {
+            return new FileViewFinder(app('files'), config('view.paths'));
+        });
     }
 
     /**
@@ -71,8 +72,10 @@ class ViewServiceProvider implements ServiceProviderInterface
      */
     public function registerBladeCompiler(): void
     {
-        $this->bladeCompiler = tap(new BladeCompiler(app('files'), config('view.compiled')), static function (BladeCompiler $blade) {
-            $blade->component('dynamic-component', DynamicComponent::class);
+        app()->singleton('blade.compiler', function ($app) {
+            return tap(new BladeCompiler(app('files'), config('view.compiled')), static function ($blade) {
+                $blade->component('dynamic-component', DynamicComponent::class);
+            });
         });
     }
 
@@ -81,11 +84,18 @@ class ViewServiceProvider implements ServiceProviderInterface
      */
     public function registerEngineResolver(): void
     {
-        $this->resolver = new EngineResolver;
+        app()->singleton('view.engine.resolver', function () {
+            $resolver = new EngineResolver;
 
-        foreach (['file', 'php', 'blade'] as $engine) {
-            $this->{'register' . ucfirst($engine) . 'Engine'}();
-        }
+            // Next, we will register the various view engines with the resolver so that the
+            // environment will resolve the engines needed for various views based on the
+            // extension of view file. We call a method for each of the view's engines.
+            foreach (['file', 'php', 'blade'] as $engine) {
+                $this->{'register' . ucfirst($engine) . 'Engine'}($resolver);
+            }
+
+            return $resolver;
+        });
     }
 
     /**
@@ -120,7 +130,7 @@ class ViewServiceProvider implements ServiceProviderInterface
     public function registerBladeEngine(): void
     {
         $this->resolver->register('blade', function () {
-            return new CompilerEngine($this->bladeCompiler, app('files'));
+            return new CompilerEngine(app('blade.compiler'), app('files'));
         });
     }
 

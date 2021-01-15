@@ -13,7 +13,7 @@ class HelloMiniCommandService extends BaseCommandService
 {
     public string $command = 'hello:mini';
 
-    public string $description = 'print hello mini.';
+    public string $description = 'print hello app.';
 
     public function run()
     {

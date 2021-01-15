@@ -913,11 +913,11 @@ if (!function_exists('debug')) {
      */
     function debug($var, ...$moreVars)
     {
-        if (\config('mini.debug') && Context::has('IsInRequestEvent') && $swResponse = response()->getSwooleResponse()) {
+        if (\config('app.debug') && Context::has('IsInRequestEvent') && $swResponse = response()->getSwooleResponse()) {
             Context::set('hasWriteContent', true);
             $cloner = new VarCloner();
             $dumper = new HtmlDumper();
-            $dumper->setTheme(\config('mini.debug_theme', 'dark'));
+            $dumper->setTheme(\config('app.debug_theme', 'dark'));
             $output = fopen('php://memory', 'r+b');
             $dumper->dump($cloner->cloneVar($var), $output);
             foreach ($moreVars as $moreVar) {

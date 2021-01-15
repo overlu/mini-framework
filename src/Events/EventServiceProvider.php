@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Events;
 
-use Mini\Contracts\Queue\Factory as QueueFactoryContract;
 use Mini\Contracts\ServiceProviderInterface;
 use Swoole\Server;
 
@@ -16,7 +15,6 @@ class EventServiceProvider implements ServiceProviderInterface
     /**
      * @param Server|null $server
      * @param int|null $workerId
-     * @throws \Mini\Contracts\Container\BindingResolutionException
      */
     public function register(?Server $server, ?int $workerId): void
     {

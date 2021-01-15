@@ -80,7 +80,7 @@ class Dotenv
                 }
                 $line = trim($line);
                 if (count($parts = explode('=', $line, 2)) === 2) {
-                    list($key, $value) = $parts;
+                    [$key, $value] = $parts;
                     switch (strtolower($value)) {
                         case 'true':
                         case '(true)':

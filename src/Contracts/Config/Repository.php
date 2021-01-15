@@ -15,7 +15,7 @@ interface Repository
      * @param string $key
      * @return bool
      */
-    public function has($key): bool;
+    public function has(string $key): bool;
 
     /**
      * Get the specified configuration value.

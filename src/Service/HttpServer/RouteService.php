@@ -40,7 +40,7 @@ class RouteService
 
     private function __construct()
     {
-        static::$cached = !config('mini.route_cached', true);
+        static::$cached = !config('app.route_cached', true);
         self::$routes = Config::getInstance()->get('routes', []);
     }
 

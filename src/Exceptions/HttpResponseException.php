@@ -7,10 +7,12 @@ declare(strict_types=1);
 
 namespace Mini\Exceptions;
 
+use RuntimeException;
+
 /**
- * Class HttpResponseException
+ * Class HttpException
  * @package Mini\Exceptions
  */
-class HttpResponseException extends \Exception
+class HttpException extends RuntimeException
 {
 }

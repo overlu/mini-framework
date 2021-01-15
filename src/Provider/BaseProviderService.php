@@ -15,16 +15,19 @@ class BaseProviderService
 {
     use Singleton;
 
-    private array $services;
+    /**
+     * @var ServiceProviderInterface[]
+     */
+    private array $serviceProviders;
 
     private function __construct()
     {
-        $this->services = config('app.providers', []);
+        $this->serviceProviders = config('app.providers', []);
     }
 
     public function register(?Server $server, ?int $workerId): void
     {
-        foreach ($this->services as $service) {
+        foreach ($this->serviceProviders as $service) {
             $service = new $service;
             if ($service instanceof ServiceProviderInterface) {
                 $service->register($server, $workerId);
@@ -34,7 +37,7 @@ class BaseProviderService
 
     public function boot(?Server $server, ?int $workerId): void
     {
-        foreach ($this->services as $service) {
+        foreach ($this->serviceProviders as $service) {
             $service = new $service;
             if ($service instanceof ServiceProviderInterface) {
                 $service->boot($server, $workerId);
