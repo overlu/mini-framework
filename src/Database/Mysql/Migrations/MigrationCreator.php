@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Database\Mysql\Migrations;
 
 use Closure;
+use Exception;
 use Mini\Exceptions\FileNotFoundException;
 use Mini\Filesystem\Filesystem;
 use Mini\Support\Str;
@@ -20,21 +21,21 @@ class MigrationCreator
      *
      * @var Filesystem
      */
-    protected $files;
+    protected Filesystem $files;
 
     /**
      * The custom app stubs directory.
      *
      * @var string
      */
-    protected $customStubPath;
+    protected string $customStubPath;
 
     /**
      * The registered post create hooks.
      *
      * @var array
      */
-    protected $postCreate = [];
+    protected array $postCreate = [];
 
     /**
      * Create a new migration creator instance.
@@ -43,7 +44,7 @@ class MigrationCreator
      * @param string $customStubPath
      * @return void
      */
-    public function __construct(Filesystem $files, $customStubPath)
+    public function __construct(Filesystem $files, string $customStubPath)
     {
         $this->files = $files;
         $this->customStubPath = $customStubPath;
@@ -58,9 +59,9 @@ class MigrationCreator
      * @param bool $create
      * @return string
      *
-     * @throws \Exception
+     * @throws Exception
      */
-    public function create($name, $path, $table = null, $create = false)
+    public function create(string $name, string $path, ?string $table = null, bool $create = false): string
     {
         $this->ensureMigrationDoesntAlreadyExist($name, $path);
 
@@ -89,9 +90,9 @@ class MigrationCreator
      * @param string $migrationPath
      * @return void
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    protected function ensureMigrationDoesntAlreadyExist($name, $migrationPath = null)
+    protected function ensureMigrationDoesntAlreadyExist(string $name, ?string $migrationPath = null): void
     {
         if (!empty($migrationPath)) {
             $migrationFiles = $this->files->glob($migrationPath . '/*.php');
@@ -114,7 +115,7 @@ class MigrationCreator
      * @return string
      * @throws FileNotFoundException
      */
-    protected function getStub($table, $create)
+    protected function getStub(?string $table, bool $create): string
     {
         if (is_null($table)) {
             $stub = $this->files->exists($customPath = $this->customStubPath . '/migration.stub')
@@ -141,7 +142,7 @@ class MigrationCreator
      * @param string|null $table
      * @return string
      */
-    protected function populateStub($name, $stub, $table)
+    protected function populateStub(string $name, string $stub, ?string $table): string
     {
         $stub = str_replace(
             ['DummyClass', '{{ class }}', '{{class}}'],
@@ -167,7 +168,7 @@ class MigrationCreator
      * @param string $name
      * @return string
      */
-    protected function getClassName($name)
+    protected function getClassName(string $name): string
     {
         return Str::studly($name);
     }
@@ -179,7 +180,7 @@ class MigrationCreator
      * @param string $path
      * @return string
      */
-    protected function getPath($name, $path)
+    protected function getPath(string $name, string $path): string
     {
         return $path . '/' . $this->getDatePrefix() . '_' . $name . '.php';
     }
@@ -190,7 +191,7 @@ class MigrationCreator
      * @param string|null $table
      * @return void
      */
-    protected function firePostCreateHooks($table)
+    protected function firePostCreateHooks(?string $table): void
     {
         foreach ($this->postCreate as $callback) {
             $callback($table);
@@ -200,10 +201,10 @@ class MigrationCreator
     /**
      * Register a post migration create hook.
      *
-     * @param \Closure $callback
+     * @param Closure $callback
      * @return void
      */
-    public function afterCreate(Closure $callback)
+    public function afterCreate(Closure $callback): void
     {
         $this->postCreate[] = $callback;
     }
@@ -213,7 +214,7 @@ class MigrationCreator
      *
      * @return string
      */
-    protected function getDatePrefix()
+    protected function getDatePrefix(): string
     {
         return date('Y_m_d_His');
     }
@@ -223,7 +224,7 @@ class MigrationCreator
      *
      * @return string
      */
-    public function stubPath()
+    public function stubPath(): string
     {
         return __DIR__ . '/stubs';
     }
@@ -233,7 +234,7 @@ class MigrationCreator
      *
      * @return Filesystem
      */
-    public function getFilesystem()
+    public function getFilesystem(): Filesystem
     {
         return $this->files;
     }

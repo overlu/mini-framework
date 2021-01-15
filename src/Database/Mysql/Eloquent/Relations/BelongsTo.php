@@ -19,50 +19,55 @@ class BelongsTo extends Relation
     /**
      * The child model instance of the relation.
      *
-     * @var \Mini\Database\Mysql\Eloquent\Model
+     * @var Model
      */
-    protected $child;
+    protected ?Model $child;
 
     /**
      * The foreign key of the parent model.
      *
      * @var string
      */
-    protected $foreignKey;
+    protected string $foreignKey;
 
     /**
      * The associated key on the parent model.
      *
      * @var string
      */
-    protected $ownerKey;
+    protected string $ownerKey;
 
     /**
      * The name of the relationship.
      *
      * @var string
      */
-    protected $relationName;
+    protected string $relationName;
 
     /**
      * The count of self joins.
      *
      * @var int
      */
-    protected static $selfJoinCount = 0;
+    protected static int $selfJoinCount = 0;
 
     /**
      * Create a new belongs to relationship instance.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @param \Mini\Database\Mysql\Eloquent\Model $child
+=======
+     * @param Builder $query
+     * @param Model $child
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $foreignKey
      * @param string $ownerKey
      * @param string $relationName
      *
      * @return void
      */
-    public function __construct(Builder $query, Model $child, $foreignKey, $ownerKey, $relationName)
+    public function __construct(Builder $query, Model $child, string $foreignKey, string $ownerKey, string $relationName)
     {
         $this->ownerKey = $ownerKey;
         $this->relationName = $relationName;
@@ -95,7 +100,7 @@ class BelongsTo extends Relation
      *
      * @return void
      */
-    public function addConstraints()
+    public function addConstraints(): void
     {
         if (static::$constraints) {
             // For belongs to relationships, which are essentially the inverse of has one
@@ -113,7 +118,7 @@ class BelongsTo extends Relation
      * @param array $models
      * @return void
      */
-    public function addEagerConstraints(array $models)
+    public function addEagerConstraints(array $models): void
     {
         // We'll grab the primary key name of the related models since it could be set to
         // a non-standard name and not "id". We will then construct the constraint for
@@ -131,7 +136,7 @@ class BelongsTo extends Relation
      * @param array $models
      * @return array
      */
-    protected function getEagerModelKeys(array $models)
+    protected function getEagerModelKeys(array $models): array
     {
         $keys = [];
 
@@ -156,7 +161,7 @@ class BelongsTo extends Relation
      * @param string $relation
      * @return array
      */
-    public function initRelation(array $models, $relation)
+    public function initRelation(array $models, string $relation): array
     {
         foreach ($models as $model) {
             $model->setRelation($relation, $this->getDefaultFor($model));
@@ -169,11 +174,15 @@ class BelongsTo extends Relation
      * Match the eagerly loaded results to their parents.
      *
      * @param array $models
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Collection $results
+=======
+     * @param Collection $results
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $relation
      * @return array
      */
-    public function match(array $models, Collection $results, $relation)
+    public function match(array $models, Collection $results, string $relation): array
     {
         $foreign = $this->foreignKey;
 
@@ -203,10 +212,15 @@ class BelongsTo extends Relation
     /**
      * Associate the model instance to the given parent.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Model|int|string $model
      * @return \Mini\Database\Mysql\Eloquent\Model
+=======
+     * @param Model|int|string $model
+     * @return Model
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function associate($model)
+    public function associate($model): Model
     {
         $ownerKey = $model instanceof Model ? $model->getAttribute($this->ownerKey) : $model;
 
@@ -224,9 +238,9 @@ class BelongsTo extends Relation
     /**
      * Dissociate previously associated model from the given parent.
      *
-     * @return \Mini\Database\Mysql\Eloquent\Model
+     * @return Model
      */
-    public function dissociate()
+    public function dissociate(): Model
     {
         $this->child->setAttribute($this->foreignKey, null);
 
@@ -236,14 +250,21 @@ class BelongsTo extends Relation
     /**
      * Add the constraints for a relationship query.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @param \Mini\Database\Mysql\Eloquent\Builder $parentQuery
      * @param array|mixed $columns
      * @return \Mini\Database\Mysql\Eloquent\Builder
+=======
+     * @param Builder $query
+     * @param Builder $parentQuery
+     * @param array|mixed $columns
+     * @return Builder
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function getRelationExistenceQuery(Builder $query, Builder $parentQuery, $columns = ['*'])
+    public function getRelationExistenceQuery(Builder $query, Builder $parentQuery, $columns = ['*']): Builder
     {
-        if ($parentQuery->getQuery()->from == $query->getQuery()->from) {
+        if ($parentQuery->getQuery()->from === $query->getQuery()->from) {
             return $this->getRelationExistenceQueryForSelfRelation($query, $parentQuery, $columns);
         }
 
@@ -255,12 +276,19 @@ class BelongsTo extends Relation
     /**
      * Add the constraints for a relationship query on the same table.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @param \Mini\Database\Mysql\Eloquent\Builder $parentQuery
      * @param array|mixed $columns
      * @return \Mini\Database\Mysql\Eloquent\Builder
+=======
+     * @param Builder $query
+     * @param Builder $parentQuery
+     * @param array|mixed $columns
+     * @return Builder
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function getRelationExistenceQueryForSelfRelation(Builder $query, Builder $parentQuery, $columns = ['*'])
+    public function getRelationExistenceQueryForSelfRelation(Builder $query, Builder $parentQuery, $columns = ['*']): Builder
     {
         $query->select($columns)->from(
             $query->getModel()->getTable() . ' as ' . $hash = $this->getRelationCountHash()
@@ -278,7 +306,7 @@ class BelongsTo extends Relation
      *
      * @return string
      */
-    public function getRelationCountHash()
+    public function getRelationCountHash(): string
     {
         return 'laravel_reserved_' . static::$selfJoinCount++;
     }
@@ -288,7 +316,7 @@ class BelongsTo extends Relation
      *
      * @return bool
      */
-    protected function relationHasIncrementingId()
+    protected function relationHasIncrementingId(): bool
     {
         return $this->related->getIncrementing() &&
             in_array($this->related->getKeyType(), ['int', 'integer']);
@@ -297,10 +325,15 @@ class BelongsTo extends Relation
     /**
      * Make a new related instance for the given model.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Model $parent
      * @return \Mini\Database\Mysql\Eloquent\Model
+=======
+     * @param Model $parent
+     * @return Model
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function newRelatedInstanceFor(Model $parent)
+    protected function newRelatedInstanceFor(Model $parent): Model
     {
         return $this->related->newInstance();
     }
@@ -308,9 +341,9 @@ class BelongsTo extends Relation
     /**
      * Get the child of the relationship.
      *
-     * @return \Mini\Database\Mysql\Eloquent\Model
+     * @return Model
      */
-    public function getChild()
+    public function getChild(): Model
     {
         return $this->child;
     }
@@ -320,7 +353,7 @@ class BelongsTo extends Relation
      *
      * @return string
      */
-    public function getForeignKeyName()
+    public function getForeignKeyName(): string
     {
         return $this->foreignKey;
     }
@@ -330,7 +363,7 @@ class BelongsTo extends Relation
      *
      * @return string
      */
-    public function getQualifiedForeignKeyName()
+    public function getQualifiedForeignKeyName(): string
     {
         return $this->child->qualifyColumn($this->foreignKey);
     }
@@ -340,7 +373,7 @@ class BelongsTo extends Relation
      *
      * @return string
      */
-    public function getOwnerKeyName()
+    public function getOwnerKeyName(): string
     {
         return $this->ownerKey;
     }
@@ -350,7 +383,7 @@ class BelongsTo extends Relation
      *
      * @return string
      */
-    public function getQualifiedOwnerKeyName()
+    public function getQualifiedOwnerKeyName(): string
     {
         return $this->related->qualifyColumn($this->ownerKey);
     }
@@ -360,7 +393,7 @@ class BelongsTo extends Relation
      *
      * @return string
      */
-    public function getRelationName()
+    public function getRelationName(): string
     {
         return $this->relationName;
     }

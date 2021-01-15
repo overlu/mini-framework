@@ -19,55 +19,60 @@ class MorphTo extends BelongsTo
      *
      * @var string
      */
-    protected $morphType;
+    protected string $morphType;
 
     /**
      * The models whose relations are being eager loaded.
      *
-     * @var \Mini\Database\Mysql\Eloquent\Collection
+     * @var Collection
      */
-    protected $models;
+    protected Collection $models;
 
     /**
      * All of the models keyed by ID.
      *
      * @var array
      */
-    protected $dictionary = [];
+    protected array $dictionary = [];
 
     /**
      * A buffer of dynamic calls to query macros.
      *
      * @var array
      */
-    protected $macroBuffer = [];
+    protected array $macroBuffer = [];
 
     /**
      * A map of relations to load for each individual morph type.
      *
      * @var array
      */
-    protected $morphableEagerLoads = [];
+    protected array $morphableEagerLoads = [];
 
     /**
      * A map of relationship counts to load for each individual morph type.
      *
      * @var array
      */
-    protected $morphableEagerLoadCounts = [];
+    protected array $morphableEagerLoadCounts = [];
 
     /**
      * Create a new morph to relationship instance.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @param \Mini\Database\Mysql\Eloquent\Model $parent
+=======
+     * @param Builder $query
+     * @param Model $parent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $foreignKey
      * @param string $ownerKey
      * @param string $type
      * @param string $relation
      * @return void
      */
-    public function __construct(Builder $query, Model $parent, $foreignKey, $ownerKey, $type, $relation)
+    public function __construct(Builder $query, Model $parent, string $foreignKey, string $ownerKey, string $type, string $relation)
     {
         $this->morphType = $type;
 
@@ -80,7 +85,7 @@ class MorphTo extends BelongsTo
      * @param array $models
      * @return void
      */
-    public function addEagerConstraints(array $models)
+    public function addEagerConstraints(array $models): void
     {
         $this->buildDictionary($this->models = Collection::make($models));
     }
@@ -88,10 +93,14 @@ class MorphTo extends BelongsTo
     /**
      * Build a dictionary with the models.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Collection $models
+=======
+     * @param Collection $models
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
-    protected function buildDictionary(Collection $models)
+    protected function buildDictionary(Collection $models): void
     {
         foreach ($models as $model) {
             if ($model->{$this->morphType}) {
@@ -107,7 +116,7 @@ class MorphTo extends BelongsTo
      *
      * @return mixed
      */
-    public function getEager()
+    public function getEager(): Collection
     {
         foreach (array_keys($this->dictionary) as $type) {
             $this->matchToMorphParents($type, $this->getResultsByType($type));
@@ -120,9 +129,13 @@ class MorphTo extends BelongsTo
      * Get all of the relation results for a type.
      *
      * @param string $type
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Collection
+=======
+     * @return Collection
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function getResultsByType($type)
+    protected function getResultsByType(string $type): Collection
     {
         $instance = $this->createModelByType($type);
 
@@ -151,7 +164,7 @@ class MorphTo extends BelongsTo
      * @param string $type
      * @return array
      */
-    protected function gatherKeysByType($type)
+    protected function gatherKeysByType(string $type): array
     {
         return array_keys($this->dictionary[$type]);
     }
@@ -160,9 +173,13 @@ class MorphTo extends BelongsTo
      * Create a new model instance by type.
      *
      * @param string $type
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Model
+=======
+     * @return Model
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function createModelByType($type)
+    public function createModelByType(string $type): Model
     {
         $class = Model::getActualClassNameForMorph($type);
 
@@ -177,11 +194,15 @@ class MorphTo extends BelongsTo
      * Match the eagerly loaded results to their parents.
      *
      * @param array $models
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Collection $results
+=======
+     * @param Collection $results
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $relation
      * @return array
      */
-    public function match(array $models, Collection $results, $relation)
+    public function match(array $models, Collection $results, string $relation): array
     {
         return $models;
     }
@@ -190,10 +211,14 @@ class MorphTo extends BelongsTo
      * Match the results for a given type to their parents.
      *
      * @param string $type
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Collection $results
+=======
+     * @param Collection $results
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
-    protected function matchToMorphParents($type, Collection $results)
+    protected function matchToMorphParents(string $type, Collection $results): void
     {
         foreach ($results as $result) {
             $ownerKey = !is_null($this->ownerKey) ? $result->{$this->ownerKey} : $result->getKey();
@@ -209,10 +234,15 @@ class MorphTo extends BelongsTo
     /**
      * Associate the model instance to the given parent.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Model $model
      * @return \Mini\Database\Mysql\Eloquent\Model
+=======
+     * @param Model $model
+     * @return Model
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function associate($model)
+    public function associate($model): Model
     {
         $this->parent->setAttribute(
             $this->foreignKey, $model instanceof Model ? $model->getKey() : null
@@ -228,9 +258,9 @@ class MorphTo extends BelongsTo
     /**
      * Dissociate previously associated model from the given parent.
      *
-     * @return \Mini\Database\Mysql\Eloquent\Model
+     * @return Model
      */
-    public function dissociate()
+    public function dissociate(): Model
     {
         $this->parent->setAttribute($this->foreignKey, null);
 
@@ -244,7 +274,7 @@ class MorphTo extends BelongsTo
      *
      * @return void
      */
-    public function touch()
+    public function touch(): void
     {
         if (!is_null($this->child->{$this->foreignKey})) {
             parent::touch();
@@ -254,10 +284,15 @@ class MorphTo extends BelongsTo
     /**
      * Make a new related instance for the given model.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Model $parent
      * @return \Mini\Database\Mysql\Eloquent\Model
+=======
+     * @param Model $parent
+     * @return Model
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function newRelatedInstanceFor(Model $parent)
+    protected function newRelatedInstanceFor(Model $parent): Model
     {
         return $parent->{$this->getRelationName()}()->getRelated()->newInstance();
     }
@@ -267,7 +302,7 @@ class MorphTo extends BelongsTo
      *
      * @return string
      */
-    public function getMorphType()
+    public function getMorphType(): string
     {
         return $this->morphType;
     }
@@ -277,7 +312,7 @@ class MorphTo extends BelongsTo
      *
      * @return array
      */
-    public function getDictionary()
+    public function getDictionary(): array
     {
         return $this->dictionary;
     }
@@ -286,9 +321,13 @@ class MorphTo extends BelongsTo
      * Specify which relations to load for a given morph type.
      *
      * @param array $with
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Relations\MorphTo
+=======
+     * @return MorphTo
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function morphWith(array $with)
+    public function morphWith(array $with): self
     {
         $this->morphableEagerLoads = array_merge(
             $this->morphableEagerLoads, $with
@@ -301,9 +340,13 @@ class MorphTo extends BelongsTo
      * Specify which relationship counts to load for a given morph type.
      *
      * @param array $withCount
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Relations\MorphTo
+=======
+     * @return MorphTo
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function morphWithCount(array $withCount)
+    public function morphWithCount(array $withCount): self
     {
         $this->morphableEagerLoadCounts = array_merge(
             $this->morphableEagerLoadCounts, $withCount
@@ -315,10 +358,15 @@ class MorphTo extends BelongsTo
     /**
      * Replay stored macro calls on the actual related instance.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @return \Mini\Database\Mysql\Eloquent\Builder
+=======
+     * @param Builder $query
+     * @return Builder
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function replayMacros(Builder $query)
+    protected function replayMacros(Builder $query): Builder
     {
         foreach ($this->macroBuffer as $macro) {
             $query->{$macro['method']}(...$macro['parameters']);

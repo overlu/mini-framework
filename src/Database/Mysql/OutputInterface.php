@@ -9,15 +9,15 @@ namespace Mini\Database\Mysql;
 
 interface OutputInterface
 {
-    const VERBOSITY_QUIET = 16;
-    const VERBOSITY_NORMAL = 32;
-    const VERBOSITY_VERBOSE = 64;
-    const VERBOSITY_VERY_VERBOSE = 128;
-    const VERBOSITY_DEBUG = 256;
+    public const VERBOSITY_QUIET = 16;
+    public const VERBOSITY_NORMAL = 32;
+    public const VERBOSITY_VERBOSE = 64;
+    public const VERBOSITY_VERY_VERBOSE = 128;
+    public const VERBOSITY_DEBUG = 256;
 
-    const OUTPUT_NORMAL = 1;
-    const OUTPUT_RAW = 2;
-    const OUTPUT_PLAIN = 4;
+    public const OUTPUT_NORMAL = 1;
+    public const OUTPUT_RAW = 2;
+    public const OUTPUT_PLAIN = 4;
 
     /**
      * Writes a message to the output.
@@ -38,6 +38,7 @@ interface OutputInterface
 
     /**
      * Sets the verbosity of the output.
+     * @param int $level
      */
     public function setVerbosity(int $level);
 
@@ -46,38 +47,39 @@ interface OutputInterface
      *
      * @return int The current level of verbosity (one of the VERBOSITY constants)
      */
-    public function getVerbosity();
+    public function getVerbosity(): int;
 
     /**
      * Returns whether verbosity is quiet (-q).
      *
      * @return bool true if verbosity is set to VERBOSITY_QUIET, false otherwise
      */
-    public function isQuiet();
+    public function isQuiet(): bool;
 
     /**
      * Returns whether verbosity is verbose (-v).
      *
      * @return bool true if verbosity is set to VERBOSITY_VERBOSE, false otherwise
      */
-    public function isVerbose();
+    public function isVerbose(): bool;
 
     /**
      * Returns whether verbosity is very verbose (-vv).
      *
      * @return bool true if verbosity is set to VERBOSITY_VERY_VERBOSE, false otherwise
      */
-    public function isVeryVerbose();
+    public function isVeryVerbose(): bool;
 
     /**
      * Returns whether verbosity is debug (-vvv).
      *
      * @return bool true if verbosity is set to VERBOSITY_DEBUG, false otherwise
      */
-    public function isDebug();
+    public function isDebug(): bool;
 
     /**
      * Sets the decorated flag.
+     * @param bool $decorated
      */
     public function setDecorated(bool $decorated);
 
@@ -86,7 +88,7 @@ interface OutputInterface
      *
      * @return bool true if the output will decorate messages, false otherwise
      */
-    public function isDecorated();
+    public function isDecorated(): bool;
 
     public function setFormatter(OutputFormatterInterface $formatter);
 
@@ -95,5 +97,5 @@ interface OutputInterface
      *
      * @return OutputFormatterInterface
      */
-    public function getFormatter();
+    public function getFormatter(): OutputFormatterInterface;
 }

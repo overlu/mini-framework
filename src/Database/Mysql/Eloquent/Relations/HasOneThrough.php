@@ -32,7 +32,7 @@ class HasOneThrough extends HasManyThrough
      * @param string $relation
      * @return array
      */
-    public function initRelation(array $models, $relation)
+    public function initRelation(array $models, string $relation): array
     {
         foreach ($models as $model) {
             $model->setRelation($relation, $this->getDefaultFor($model));
@@ -45,11 +45,15 @@ class HasOneThrough extends HasManyThrough
      * Match the eagerly loaded results to their parents.
      *
      * @param array $models
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Collection $results
+=======
+     * @param Collection $results
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $relation
      * @return array
      */
-    public function match(array $models, Collection $results, $relation)
+    public function match(array $models, Collection $results, string $relation): array
     {
         $dictionary = $this->buildDictionary($results);
 
@@ -71,10 +75,15 @@ class HasOneThrough extends HasManyThrough
     /**
      * Make a new related instance for the given model.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Model $parent
      * @return \Mini\Database\Mysql\Eloquent\Model
+=======
+     * @param Model|null $parent
+     * @return Model
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function newRelatedInstanceFor(Model $parent)
+    public function newRelatedInstanceFor(?Model $parent = null): Model
     {
         return $this->related->newInstance();
     }

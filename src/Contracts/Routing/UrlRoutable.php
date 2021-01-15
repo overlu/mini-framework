@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php
 /**
  * This file is part of Mini.
@@ -44,3 +45,51 @@ interface UrlRoutable
      */
     public function resolveChildRouteBinding($childType, $value, $field);
 }
+=======
+<?php
+/**
+ * This file is part of Mini.
+ * @auth lupeng
+ */
+declare(strict_types=1);
+
+namespace Mini\Contracts\Routing;
+
+use Mini\Database\Mysql\Eloquent\Model;
+
+interface UrlRoutable
+{
+    /**
+     * Get the value of the model's route key.
+     *
+     * @return mixed
+     */
+    public function getRouteKey();
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName(): string;
+
+    /**
+     * Retrieve the model for a bound value.
+     *
+     * @param mixed $value
+     * @param string|null $field
+     * @return Model|null
+     */
+    public function resolveRouteBinding($value, ?string $field = null): ?Model;
+
+    /**
+     * Retrieve the child model for a bound value.
+     *
+     * @param string $childType
+     * @param mixed $value
+     * @param string|null $field
+     * @return Model|null
+     */
+    public function resolveChildRouteBinding(string $childType, $value, ?string $field): ?Model;
+}
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be

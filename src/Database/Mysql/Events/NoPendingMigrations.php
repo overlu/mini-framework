@@ -14,7 +14,7 @@ class NoPendingMigrations
      *
      * @var string
      */
-    public $method;
+    public string $method;
 
     /**
      * Create a new event instance.
@@ -22,7 +22,7 @@ class NoPendingMigrations
      * @param string $method
      * @return void
      */
-    public function __construct($method)
+    public function __construct(string $method)
     {
         $this->method = $method;
     }

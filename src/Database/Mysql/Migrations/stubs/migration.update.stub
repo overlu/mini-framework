@@ -3,7 +3,11 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+<<<<<<< HEAD
 declare(strict_types=1);
+=======
+ declare(strict_types=1);
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
 
 use Mini\Database\Mysql\Migrations\Migration;
 use Mini\Database\Mysql\Schema\Blueprint;

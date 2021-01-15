@@ -17,19 +17,28 @@ trait HasGlobalScopes
     /**
      * Register a new global scope on the model.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Scope|\Closure|string $scope
      * @param \Closure|null $implementation
+=======
+     * @param Scope|Closure|string $scope
+     * @param Closure|null $implementation
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return mixed
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function addGlobalScope($scope, Closure $implementation = null)
     {
         if (is_string($scope) && !is_null($implementation)) {
             return static::$globalScopes[static::class][$scope] = $implementation;
-        } elseif ($scope instanceof Closure) {
+        }
+
+        if ($scope instanceof Closure) {
             return static::$globalScopes[static::class][spl_object_hash($scope)] = $scope;
-        } elseif ($scope instanceof Scope) {
+        }
+
+        if ($scope instanceof Scope) {
             return static::$globalScopes[static::class][get_class($scope)] = $scope;
         }
 
@@ -39,10 +48,14 @@ trait HasGlobalScopes
     /**
      * Determine if a model has a global scope.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Scope|string $scope
+=======
+     * @param Scope|string $scope
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return bool
      */
-    public static function hasGlobalScope($scope)
+    public static function hasGlobalScope($scope): bool
     {
         return !is_null(static::getGlobalScope($scope));
     }
@@ -50,8 +63,13 @@ trait HasGlobalScopes
     /**
      * Get a global scope registered with the model.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Scope|string $scope
      * @return \Mini\Database\Mysql\Eloquent\Scope|\Closure|null
+=======
+     * @param Scope|string $scope
+     * @return Scope|Closure|null
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
     public static function getGlobalScope($scope)
     {
@@ -69,7 +87,7 @@ trait HasGlobalScopes
      *
      * @return array
      */
-    public function getGlobalScopes()
+    public function getGlobalScopes(): array
     {
         return Arr::get(static::$globalScopes, static::class, []);
     }

@@ -19,7 +19,7 @@ class MorphPivot extends Pivot
      *
      * @var string
      */
-    protected $morphType;
+    protected string $morphType;
 
     /**
      * The value of the polymorphic relation.
@@ -28,15 +28,20 @@ class MorphPivot extends Pivot
      *
      * @var string
      */
-    protected $morphClass;
+    protected string $morphClass;
 
     /**
      * Set the keys for a save update query.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @return \Mini\Database\Mysql\Eloquent\Builder
+=======
+     * @param Builder $query
+     * @return Builder
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function setKeysForSaveQuery(Builder $query)
+    protected function setKeysForSaveQuery(Builder $query): Builder
     {
         $query->where($this->morphType, $this->morphClass);
 
@@ -46,7 +51,8 @@ class MorphPivot extends Pivot
     /**
      * Delete the pivot model record from the database.
      *
-     * @return int
+     * @return int|mixed
+     * @throws \Exception
      */
     public function delete()
     {
@@ -73,7 +79,7 @@ class MorphPivot extends Pivot
      * @param string $morphType
      * @return $this
      */
-    public function setMorphType($morphType)
+    public function setMorphType(string $morphType): self
     {
         $this->morphType = $morphType;
 
@@ -84,9 +90,13 @@ class MorphPivot extends Pivot
      * Set the morph class for the pivot.
      *
      * @param string $morphClass
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Relations\MorphPivot
+=======
+     * @return MorphPivot
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function setMorphClass($morphClass)
+    public function setMorphClass(string $morphClass): self
     {
         $this->morphClass = $morphClass;
 
@@ -116,9 +126,13 @@ class MorphPivot extends Pivot
      * Get a new query to restore one or more models by their queueable IDs.
      *
      * @param array|int $ids
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Builder
+=======
+     * @return Builder
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function newQueryForRestoration($ids)
+    public function newQueryForRestoration($ids): Builder
     {
         if (is_array($ids)) {
             return $this->newQueryForCollectionRestoration($ids);
@@ -140,9 +154,13 @@ class MorphPivot extends Pivot
      * Get a new query to restore multiple models by their queueable IDs.
      *
      * @param array $ids
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Builder
+=======
+     * @return Builder
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function newQueryForCollectionRestoration(array $ids)
+    protected function newQueryForCollectionRestoration(array $ids): Builder
     {
         if (!Str::contains($ids[0], ':')) {
             return parent::newQueryForRestoration($ids);
@@ -153,7 +171,7 @@ class MorphPivot extends Pivot
         foreach ($ids as $id) {
             $segments = explode(':', $id);
 
-            $query->orWhere(function ($query) use ($segments) {
+            $query->orWhere(static function ($query) use ($segments) {
                 return $query->where($segments[0], $segments[1])
                     ->where($segments[2], $segments[3])
                     ->where($segments[4], $segments[5]);

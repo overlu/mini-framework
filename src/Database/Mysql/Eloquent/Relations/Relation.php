@@ -17,7 +17,7 @@ use Mini\Support\Traits\ForwardsCalls;
 use Mini\Support\Traits\Macroable;
 
 /**
- * @mixin \Mini\Database\Mysql\Eloquent\Builder
+ * @mixin Builder
  */
 abstract class Relation
 {
@@ -28,43 +28,48 @@ abstract class Relation
     /**
      * The Eloquent query builder instance.
      *
-     * @var \Mini\Database\Mysql\Eloquent\Builder
+     * @var Builder
      */
-    protected $query;
+    protected Builder $query;
 
     /**
      * The parent model instance.
      *
-     * @var \Mini\Database\Mysql\Eloquent\Model
+     * @var Model
      */
-    protected $parent;
+    protected Model $parent;
 
     /**
      * The related model instance.
      *
-     * @var \Mini\Database\Mysql\Eloquent\Model
+     * @var Model
      */
-    protected $related;
+    protected Model $related;
 
     /**
      * Indicates if the relation is adding constraints.
      *
      * @var bool
      */
-    protected static $constraints = true;
+    protected static bool $constraints = true;
 
     /**
      * An array to map class names to their morph names in database.
      *
      * @var array
      */
-    public static $morphMap = [];
+    public static array $morphMap = [];
 
     /**
      * Create a new relation instance.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @param \Mini\Database\Mysql\Eloquent\Model $parent
+=======
+     * @param Builder $query
+     * @param Model $parent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
     public function __construct(Builder $query, Model $parent)
@@ -103,7 +108,7 @@ abstract class Relation
      *
      * @return void
      */
-    abstract public function addConstraints();
+    abstract public function addConstraints(): void;
 
     /**
      * Set the constraints for an eager load of the relation.
@@ -111,7 +116,7 @@ abstract class Relation
      * @param array $models
      * @return void
      */
-    abstract public function addEagerConstraints(array $models);
+    abstract public function addEagerConstraints(array $models): void;
 
     /**
      * Initialize the relation on a set of models.
@@ -120,17 +125,21 @@ abstract class Relation
      * @param string $relation
      * @return array
      */
-    abstract public function initRelation(array $models, $relation);
+    abstract public function initRelation(array $models, string $relation): array;
 
     /**
      * Match the eagerly loaded results to their parents.
      *
      * @param array $models
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Collection $results
+=======
+     * @param Collection $results
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $relation
      * @return array
      */
-    abstract public function match(array $models, Collection $results, $relation);
+    abstract public function match(array $models, Collection $results, string $relation): array;
 
     /**
      * Get the results of the relationship.
@@ -142,9 +151,9 @@ abstract class Relation
     /**
      * Get the relationship for eager loading.
      *
-     * @return \Mini\Database\Mysql\Eloquent\Collection
+     * @return Collection
      */
-    public function getEager()
+    public function getEager(): Collection
     {
         return $this->get();
     }
@@ -152,10 +161,15 @@ abstract class Relation
     /**
      * Execute the query as a "select" statement.
      *
+<<<<<<< HEAD
      * @param array $columns
      * @return \Mini\Database\Mysql\Eloquent\Collection
+=======
+     * @param array|mixed $columns
+     * @return Collection
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function get($columns = ['*'])
+    public function get(array $columns = ['*']): Collection
     {
         return $this->query->get($columns);
     }
@@ -165,7 +179,7 @@ abstract class Relation
      *
      * @return void
      */
-    public function touch()
+    public function touch(): void
     {
         $model = $this->getRelated();
 
@@ -182,7 +196,7 @@ abstract class Relation
      * @param array $attributes
      * @return int
      */
-    public function rawUpdate(array $attributes = [])
+    public function rawUpdate(array $attributes = []): int
     {
         return $this->query->withoutGlobalScopes()->update($attributes);
     }
@@ -190,11 +204,17 @@ abstract class Relation
     /**
      * Add the constraints for a relationship count query.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @param \Mini\Database\Mysql\Eloquent\Builder $parentQuery
      * @return \Mini\Database\Mysql\Eloquent\Builder
+=======
+     * @param Builder $query
+     * @param Builder $parentQuery
+     * @return Builder
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function getRelationExistenceCountQuery(Builder $query, Builder $parentQuery)
+    public function getRelationExistenceCountQuery(Builder $query, Builder $parentQuery): Builder
     {
         return $this->getRelationExistenceQuery(
             $query, $parentQuery, new Expression('count(*)')
@@ -206,12 +226,19 @@ abstract class Relation
      *
      * Essentially, these queries compare on column names like whereColumn.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @param \Mini\Database\Mysql\Eloquent\Builder $parentQuery
      * @param array|mixed $columns
      * @return \Mini\Database\Mysql\Eloquent\Builder
+=======
+     * @param Builder $query
+     * @param Builder $parentQuery
+     * @param array|mixed $columns
+     * @return Builder
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function getRelationExistenceQuery(Builder $query, Builder $parentQuery, $columns = ['*'])
+    public function getRelationExistenceQuery(Builder $query, Builder $parentQuery, $columns = ['*']): Builder
     {
         return $query->select($columns)->whereColumn(
             $this->getQualifiedParentKeyName(), '=', $this->getExistenceCompareKey()
@@ -225,9 +252,9 @@ abstract class Relation
      * @param string|null $key
      * @return array
      */
-    protected function getKeys(array $models, $key = null)
+    protected function getKeys(array $models, ?string $key = null): array
     {
-        return collect($models)->map(function ($value) use ($key) {
+        return collect($models)->map(static function ($value) use ($key) {
             return $key ? $value->getAttribute($key) : $value->getKey();
         })->values()->unique(null, true)->sort()->all();
     }
@@ -235,9 +262,9 @@ abstract class Relation
     /**
      * Get the underlying query for the relation.
      *
-     * @return \Mini\Database\Mysql\Eloquent\Builder
+     * @return Builder
      */
-    public function getQuery()
+    public function getQuery(): Builder
     {
         return $this->query;
     }
@@ -247,7 +274,7 @@ abstract class Relation
      *
      * @return \Mini\Database\Mysql\Query\Builder
      */
-    public function getBaseQuery()
+    public function getBaseQuery(): \Mini\Database\Mysql\Query\Builder
     {
         return $this->query->getQuery();
     }
@@ -255,9 +282,9 @@ abstract class Relation
     /**
      * Get the parent model of the relation.
      *
-     * @return \Mini\Database\Mysql\Eloquent\Model
+     * @return Model
      */
-    public function getParent()
+    public function getParent(): Model
     {
         return $this->parent;
     }
@@ -267,7 +294,7 @@ abstract class Relation
      *
      * @return string
      */
-    public function getQualifiedParentKeyName()
+    public function getQualifiedParentKeyName(): string
     {
         return $this->parent->getQualifiedKeyName();
     }
@@ -275,9 +302,9 @@ abstract class Relation
     /**
      * Get the related model of the relation.
      *
-     * @return \Mini\Database\Mysql\Eloquent\Model
+     * @return Model
      */
-    public function getRelated()
+    public function getRelated(): Model
     {
         return $this->related;
     }
@@ -287,7 +314,7 @@ abstract class Relation
      *
      * @return string
      */
-    public function createdAt()
+    public function createdAt(): string
     {
         return $this->parent->getCreatedAtColumn();
     }
@@ -297,7 +324,7 @@ abstract class Relation
      *
      * @return string
      */
-    public function updatedAt()
+    public function updatedAt(): string
     {
         return $this->parent->getUpdatedAtColumn();
     }
@@ -307,7 +334,7 @@ abstract class Relation
      *
      * @return string
      */
-    public function relatedUpdatedAt()
+    public function relatedUpdatedAt(): string
     {
         return $this->related->getUpdatedAtColumn();
     }
@@ -315,11 +342,15 @@ abstract class Relation
     /**
      * Get the name of the "where in" method for eager loading.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Model $model
+=======
+     * @param Model $model
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $key
      * @return string
      */
-    protected function whereInMethod(Model $model, $key)
+    protected function whereInMethod(Model $model, string $key): string
     {
         return $model->getKeyName() === last(explode('.', $key))
         && in_array($model->getKeyType(), ['int', 'integer'])
@@ -334,7 +365,7 @@ abstract class Relation
      * @param bool $merge
      * @return array
      */
-    public static function morphMap(array $map = null, $merge = true)
+    public static function morphMap(?array $map = null, bool $merge = true): array
     {
         $map = static::buildMorphMapFromModels($map);
 
@@ -352,13 +383,13 @@ abstract class Relation
      * @param string[]|null $models
      * @return array|null
      */
-    protected static function buildMorphMapFromModels(array $models = null)
+    protected static function buildMorphMapFromModels(?array $models = null): ?array
     {
         if (is_null($models) || Arr::isAssoc($models)) {
             return $models;
         }
 
-        return array_combine(array_map(function ($model) {
+        return array_combine(array_map(static function ($model) {
             return (new $model)->getTable();
         }, $models), $models);
     }
@@ -369,7 +400,7 @@ abstract class Relation
      * @param string $alias
      * @return string|null
      */
-    public static function getMorphedModel($alias)
+    public static function getMorphedModel(string $alias): ?string
     {
         return static::$morphMap[$alias] ?? null;
     }

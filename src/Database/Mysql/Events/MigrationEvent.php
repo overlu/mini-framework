@@ -15,25 +15,29 @@ abstract class MigrationEvent implements MigrationEventContract
     /**
      * An migration instance.
      *
-     * @var \Mini\Database\Mysql\Migrations\Migration
+     * @var Migration
      */
-    public $migration;
+    public Migration $migration;
 
     /**
      * The migration method that was called.
      *
      * @var string
      */
-    public $method;
+    public string $method;
 
     /**
      * Create a new event instance.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Migrations\Migration $migration
+=======
+     * @param Migration $migration
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $method
      * @return void
      */
-    public function __construct(Migration $migration, $method)
+    public function __construct(Migration $migration, string $method)
     {
         $this->method = $method;
         $this->migration = $migration;

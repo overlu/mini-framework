@@ -7,13 +7,15 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql\Connectors;
 
+use PDO;
+
 interface ConnectorInterface
 {
     /**
      * Establish a database connection.
      *
-     * @param  array  $config
-     * @return \PDO
+     * @param array $config
+     * @return PDO
      */
-    public function connect(array $config);
+    public function connect(array $config): PDO;
 }

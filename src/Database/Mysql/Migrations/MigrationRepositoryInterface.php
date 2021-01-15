@@ -14,7 +14,7 @@ interface MigrationRepositoryInterface
      *
      * @return array
      */
-    public function getRan();
+    public function getRan(): array;
 
     /**
      * Get list of migrations.
@@ -22,21 +22,21 @@ interface MigrationRepositoryInterface
      * @param int $steps
      * @return array
      */
-    public function getMigrations($steps);
+    public function getMigrations(int $steps): array;
 
     /**
      * Get the last migration batch.
      *
      * @return array
      */
-    public function getLast();
+    public function getLast(): array;
 
     /**
      * Get the completed migrations with their batch numbers.
      *
      * @return array
      */
-    public function getMigrationBatches();
+    public function getMigrationBatches(): array;
 
     /**
      * Log that a migration was run.
@@ -45,7 +45,7 @@ interface MigrationRepositoryInterface
      * @param int $batch
      * @return void
      */
-    public function log($file, $batch);
+    public function log(string $file, int $batch): void;
 
     /**
      * Remove a migration from the log.
@@ -53,28 +53,28 @@ interface MigrationRepositoryInterface
      * @param object $migration
      * @return void
      */
-    public function delete($migration);
+    public function delete(object $migration): void;
 
     /**
      * Get the next migration batch number.
      *
      * @return int
      */
-    public function getNextBatchNumber();
+    public function getNextBatchNumber(): int;
 
     /**
      * Create the migration repository data store.
      *
      * @return void
      */
-    public function createRepository();
+    public function createRepository(): void;
 
     /**
      * Determine if the migration repository exists.
      *
      * @return bool
      */
-    public function repositoryExists();
+    public function repositoryExists(): bool;
 
     /**
      * Set the information source to gather data.
@@ -82,5 +82,5 @@ interface MigrationRepositoryInterface
      * @param string $name
      * @return void
      */
-    public function setSource($name);
+    public function setSource(string $name): void;
 }

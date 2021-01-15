@@ -7,7 +7,9 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql\Connectors;
 
+use Exception;
 use PDO;
+use Throwable;
 
 class PostgresConnector extends Connector implements ConnectorInterface
 {
@@ -27,9 +29,15 @@ class PostgresConnector extends Connector implements ConnectorInterface
      * Establish a database connection.
      *
      * @param array $config
+<<<<<<< HEAD
      * @return \PDO
+=======
+     * @return PDO
+     * @throws Exception
+     * @throws Throwable
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function connect(array $config)
+    public function connect(array $config): PDO
     {
         // First we'll create the basic DSN and connection instance connecting to the
         // using the configuration option specified by the developer. We will also
@@ -58,11 +66,15 @@ class PostgresConnector extends Connector implements ConnectorInterface
     /**
      * Set the connection character set and collation.
      *
+<<<<<<< HEAD
      * @param \PDO $connection
+=======
+     * @param PDO $connection
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $config
      * @return void
      */
-    protected function configureEncoding($connection, $config)
+    protected function configureEncoding(PDO $connection, array $config): void
     {
         if (!isset($config['charset'])) {
             return;
@@ -74,11 +86,15 @@ class PostgresConnector extends Connector implements ConnectorInterface
     /**
      * Set the timezone on the connection.
      *
+<<<<<<< HEAD
      * @param \PDO $connection
+=======
+     * @param PDO $connection
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $config
      * @return void
      */
-    protected function configureTimezone($connection, array $config)
+    protected function configureTimezone(PDO $connection, array $config): void
     {
         if (isset($config['timezone'])) {
             $timezone = $config['timezone'];
@@ -90,11 +106,15 @@ class PostgresConnector extends Connector implements ConnectorInterface
     /**
      * Set the schema on the connection.
      *
+<<<<<<< HEAD
      * @param \PDO $connection
+=======
+     * @param PDO $connection
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $config
      * @return void
      */
-    protected function configureSchema($connection, $config)
+    protected function configureSchema(PDO $connection, array $config): void
     {
         if (isset($config['schema'])) {
             $schema = $this->formatSchema($config['schema']);
@@ -109,7 +129,7 @@ class PostgresConnector extends Connector implements ConnectorInterface
      * @param array|string $schema
      * @return string
      */
-    protected function formatSchema($schema)
+    protected function formatSchema($schema): string
     {
         if (is_array($schema)) {
             return '"' . implode('", "', $schema) . '"';
@@ -121,11 +141,15 @@ class PostgresConnector extends Connector implements ConnectorInterface
     /**
      * Set the schema on the connection.
      *
+<<<<<<< HEAD
      * @param \PDO $connection
+=======
+     * @param PDO $connection
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $config
      * @return void
      */
-    protected function configureApplicationName($connection, $config)
+    protected function configureApplicationName(PDO $connection, array $config): void
     {
         if (isset($config['application_name'])) {
             $applicationName = $config['application_name'];
@@ -140,7 +164,7 @@ class PostgresConnector extends Connector implements ConnectorInterface
      * @param array $config
      * @return string
      */
-    protected function getDsn(array $config)
+    protected function getDsn(array $config): string
     {
         // First we will create the basic DSN setup as well as the port if it is in
         // in the configuration options. This will give us the basic DSN we will
@@ -168,7 +192,7 @@ class PostgresConnector extends Connector implements ConnectorInterface
      * @param array $config
      * @return string
      */
-    protected function addSslOptions($dsn, array $config)
+    protected function addSslOptions(string $dsn, array $config): string
     {
         foreach (['sslmode', 'sslcert', 'sslkey', 'sslrootcert'] as $option) {
             if (isset($config[$option])) {

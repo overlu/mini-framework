@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql\Eloquent\Relations\Concerns;
 
+use Exception;
 use Mini\Database\Mysql\Eloquent\Builder;
 use Mini\Database\Mysql\Eloquent\Model;
 use Mini\Support\Str;
@@ -16,34 +17,38 @@ trait AsPivot
     /**
      * The parent model of the relationship.
      *
-     * @var \Mini\Database\Mysql\Eloquent\Model
+     * @var Model
      */
-    public $pivotParent;
+    public ?Model $pivotParent;
 
     /**
      * The name of the foreign key column.
      *
      * @var string
      */
-    protected $foreignKey;
+    protected ?string $foreignKey = null;
 
     /**
      * The name of the "other key" column.
      *
      * @var string
      */
-    protected $relatedKey;
+    protected ?string $relatedKey = null;
 
     /**
      * Create a new pivot model instance.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Model $parent
+=======
+     * @param Model $parent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $attributes
      * @param string $table
      * @param bool $exists
      * @return static
      */
-    public static function fromAttributes(Model $parent, $attributes, $table, $exists = false)
+    public static function fromAttributes(Model $parent, ?array $attributes, string $table, bool $exists = false): self
     {
         $instance = new static;
 
@@ -70,13 +75,17 @@ trait AsPivot
     /**
      * Create a new pivot model from raw values returned from a query.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Model $parent
+=======
+     * @param Model $parent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $attributes
      * @param string $table
      * @param bool $exists
      * @return static
      */
-    public static function fromRawAttributes(Model $parent, $attributes, $table, $exists = false)
+    public static function fromRawAttributes(Model $parent, ?array $attributes, string $table, bool $exists = false): self
     {
         $instance = static::fromAttributes($parent, [], $table, $exists);
 
@@ -90,10 +99,15 @@ trait AsPivot
     /**
      * Set the keys for a save update query.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @return \Mini\Database\Mysql\Eloquent\Builder
+=======
+     * @param Builder $query
+     * @return Builder
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function setKeysForSaveQuery(Builder $query)
+    protected function setKeysForSaveQuery(Builder $query): Builder
     {
         if (isset($this->attributes[$this->getKeyName()])) {
             return parent::setKeysForSaveQuery($query);
@@ -111,7 +125,8 @@ trait AsPivot
     /**
      * Delete the pivot model record from the database.
      *
-     * @return int
+     * @return int|mixed
+     * @throws Exception
      */
     public function delete()
     {
@@ -133,9 +148,9 @@ trait AsPivot
     /**
      * Get the query builder for a delete operation on the pivot.
      *
-     * @return \Mini\Database\Mysql\Eloquent\Builder
+     * @return Builder
      */
-    protected function getDeleteQuery()
+    protected function getDeleteQuery(): Builder
     {
         return $this->newQueryWithoutRelationships()->where([
             $this->foreignKey => $this->getOriginal($this->foreignKey, $this->getAttribute($this->foreignKey)),
@@ -148,7 +163,7 @@ trait AsPivot
      *
      * @return string
      */
-    public function getTable()
+    public function getTable(): string
     {
         if (!isset($this->table)) {
             $this->setTable(str_replace(
@@ -164,7 +179,7 @@ trait AsPivot
      *
      * @return string
      */
-    public function getForeignKey()
+    public function getForeignKey(): string
     {
         return $this->foreignKey;
     }
@@ -174,7 +189,7 @@ trait AsPivot
      *
      * @return string
      */
-    public function getRelatedKey()
+    public function getRelatedKey(): string
     {
         return $this->relatedKey;
     }
@@ -184,7 +199,7 @@ trait AsPivot
      *
      * @return string
      */
-    public function getOtherKey()
+    public function getOtherKey(): string
     {
         return $this->getRelatedKey();
     }
@@ -196,7 +211,7 @@ trait AsPivot
      * @param string $relatedKey
      * @return $this
      */
-    public function setPivotKeys($foreignKey, $relatedKey)
+    public function setPivotKeys(string $foreignKey, string $relatedKey): self
     {
         $this->foreignKey = $foreignKey;
 
@@ -211,7 +226,7 @@ trait AsPivot
      * @param array|null $attributes
      * @return bool
      */
-    public function hasTimestampAttributes($attributes = null)
+    public function hasTimestampAttributes(?array $attributes = null): bool
     {
         return array_key_exists($this->getCreatedAtColumn(), $attributes ?? $this->attributes);
     }
@@ -221,7 +236,7 @@ trait AsPivot
      *
      * @return string
      */
-    public function getCreatedAtColumn()
+    public function getCreatedAtColumn(): string
     {
         return $this->pivotParent
             ? $this->pivotParent->getCreatedAtColumn()
@@ -233,7 +248,7 @@ trait AsPivot
      *
      * @return string
      */
-    public function getUpdatedAtColumn()
+    public function getUpdatedAtColumn(): string
     {
         return $this->pivotParent
             ? $this->pivotParent->getUpdatedAtColumn()
@@ -262,9 +277,13 @@ trait AsPivot
      * Get a new query to restore one or more models by their queueable IDs.
      *
      * @param int[]|string[]|string $ids
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Builder
+=======
+     * @return Builder
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function newQueryForRestoration($ids)
+    public function newQueryForRestoration($ids): Builder
     {
         if (is_array($ids)) {
             return $this->newQueryForCollectionRestoration($ids);
@@ -285,9 +304,13 @@ trait AsPivot
      * Get a new query to restore multiple models by their queueable IDs.
      *
      * @param int[]|string[] $ids
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Builder
+=======
+     * @return Builder
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function newQueryForCollectionRestoration(array $ids)
+    protected function newQueryForCollectionRestoration(array $ids): Builder
     {
         if (!Str::contains($ids[0], ':')) {
             return parent::newQueryForRestoration($ids);
@@ -298,7 +321,7 @@ trait AsPivot
         foreach ($ids as $id) {
             $segments = explode(':', $id);
 
-            $query->orWhere(function ($query) use ($segments) {
+            $query->orWhere(static function ($query) use ($segments) {
                 return $query->where($segments[0], $segments[1])
                     ->where($segments[2], $segments[3]);
             });
@@ -312,7 +335,7 @@ trait AsPivot
      *
      * @return $this
      */
-    public function unsetRelations()
+    public function unsetRelations(): self
     {
         $this->pivotParent = null;
         $this->relations = [];

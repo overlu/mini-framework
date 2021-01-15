@@ -20,63 +20,63 @@ class FactoryBuilder
      *
      * @var array
      */
-    protected $definitions;
+    protected array $definitions;
 
     /**
      * The model being built.
      *
      * @var string
      */
-    protected $class;
+    protected string $class;
 
     /**
      * The database connection on which the model instance should be persisted.
      *
      * @var string
      */
-    protected $connection;
+    protected string $connection;
 
     /**
      * The model states.
      *
      * @var array
      */
-    protected $states;
+    protected array $states;
 
     /**
      * The model after making callbacks.
      *
      * @var array
      */
-    protected $afterMaking = [];
+    protected array $afterMaking = [];
 
     /**
      * The model after creating callbacks.
      *
      * @var array
      */
-    protected $afterCreating = [];
+    protected array $afterCreating = [];
 
     /**
      * The states to apply.
      *
      * @var array
      */
-    protected $activeStates = [];
+    protected array $activeStates = [];
 
     /**
      * The Faker instance for the builder.
      *
      * @var \Faker\Generator
      */
-    protected $faker;
+    protected Faker $faker;
 
     /**
      * The number of models to build.
      *
      * @var int|null
      */
-    protected $amount = null;
+    protected ?int $amount = null;
 
     /**
      * Create an new builder instance.
@@ -106,7 +106,7 @@ class FactoryBuilder
      * @param int $amount
      * @return $this
      */
-    public function times($amount)
+    public function times(int $amount): self
     {
         $this->amount = $amount;
 
@@ -119,7 +119,7 @@ class FactoryBuilder
      * @param string $state
      * @return $this
      */
-    public function state($state)
+    public function state(string $state): self
     {
         return $this->states([$state]);
     }
@@ -130,7 +130,7 @@ class FactoryBuilder
      * @param array|mixed $states
      * @return $this
      */
-    public function states($states)
+    public function states($states): self
     {
         $this->activeStates = is_array($states) ? $states : func_get_args();
 
@@ -143,7 +143,7 @@ class FactoryBuilder
      * @param string $name
      * @return $this
      */
-    public function connection($name)
+    public function connection(string $name): self
     {
         $this->connection = $name;
 
@@ -156,7 +156,7 @@ class FactoryBuilder
      * @param array $attributes
      * @return \Closure
      */
-    public function lazy(array $attributes = [])
+    public function lazy(array $attributes = []): callable
     {
         return function () use ($attributes) {
             return $this->create($attributes);
@@ -167,7 +167,11 @@ class FactoryBuilder
      * Create a collection of models and persist them to the database.
      *
      * @param array $attributes
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Collection|\Mini\Database\Mysql\Eloquent\Model|mixed
+=======
+     * @return Collection|Model|mixed
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
     public function create(array $attributes = [])
     {
@@ -190,7 +194,11 @@ class FactoryBuilder
      * Create a collection of models and persist them to the database.
      *
      * @param iterable $records
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Collection|mixed
+=======
+     * @return Collection|mixed
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
     public function createMany(iterable $records)
     {
@@ -205,7 +213,7 @@ class FactoryBuilder
      * @param \Mini\Support\Collection $results
      * @return void
      */
-    protected function store($results)
+    protected function store($results): void
     {
         $results->each(function ($model) {
             if (!isset($this->connection)) {
@@ -220,7 +228,11 @@ class FactoryBuilder
      * Create a collection of models.
      *
      * @param array $attributes
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Collection|\Mini\Database\Mysql\Eloquent\Model|mixed
+=======
+     * @return Collection|Model|mixed
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
     public function make(array $attributes = [])
     {
@@ -292,9 +304,13 @@ class FactoryBuilder
      * Make an instance of the model with the given attributes.
      *
      * @param array $attributes
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Model
+=======
+     * @return Model
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function makeInstance(array $attributes = [])
+    protected function makeInstance(array $attributes = []): Model
     {
         return Model::unguarded(function () use ($attributes) {
             $instance = new $this->class(
@@ -318,7 +334,7 @@ class FactoryBuilder
      *
      * @throws \InvalidArgumentException
      */
-    protected function applyStates(array $definition, array $attributes = [])
+    protected function applyStates(array $definition, array $attributes = []): array
     {
         foreach ($this->activeStates as $state) {
             if (!isset($this->states[$this->class][$state])) {
@@ -345,7 +361,7 @@ class FactoryBuilder
      * @param array $attributes
      * @return array
      */
-    protected function stateAttributes($state, array $attributes)
+    protected function stateAttributes(string $state, array $attributes): array
     {
         $stateAttributes = $this->states[$this->class][$state];
 
@@ -362,7 +378,7 @@ class FactoryBuilder
      * @param array $attributes
      * @return array
      */
-    protected function expandAttributes(array $attributes)
+    protected function expandAttributes(array $attributes): array
     {
         foreach ($attributes as &$attribute) {
             if (is_callable($attribute) && !is_string($attribute) && !is_array($attribute)) {
@@ -387,7 +403,7 @@ class FactoryBuilder
      * @param \Mini\Support\Collection $models
      * @return void
      */
-    public function callAfterMaking($models)
+    public function callAfterMaking($models): void
     {
         $this->callAfter($this->afterMaking, $models);
     }
@@ -398,7 +414,7 @@ class FactoryBuilder
      * @param \Mini\Support\Collection $models
      * @return void
      */
-    public function callAfterCreating($models)
+    public function callAfterCreating($models): void
     {
         $this->callAfter($this->afterCreating, $models);
     }
@@ -410,7 +426,7 @@ class FactoryBuilder
      * @param \Mini\Support\Collection $models
      * @return void
      */
-    protected function callAfter(array $afterCallbacks, $models)
+    protected function callAfter(array $afterCallbacks, $models): void
     {
         $states = array_merge(['default'], $this->activeStates);
 
@@ -425,11 +441,15 @@ class FactoryBuilder
      * Call after callbacks for each model and state.
      *
      * @param array $afterCallbacks
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Model $model
+=======
+     * @param Model $model
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $state
      * @return void
      */
-    protected function callAfterCallbacks(array $afterCallbacks, $model, $state)
+    protected function callAfterCallbacks(array $afterCallbacks, Model $model, string $state): void
     {
         if (!isset($afterCallbacks[$this->class][$state])) {
             return;
@@ -446,7 +466,7 @@ class FactoryBuilder
      * @param string $state
      * @return bool
      */
-    protected function stateHasAfterCallback($state)
+    protected function stateHasAfterCallback(string $state): bool
     {
         return isset($this->afterMaking[$this->class][$state]) ||
             isset($this->afterCreating[$this->class][$state]);

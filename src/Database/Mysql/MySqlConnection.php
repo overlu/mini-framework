@@ -18,7 +18,7 @@ class MySqlConnection extends Connection
     /**
      * Get the default query grammar instance.
      *
-     * @return \Mini\Database\Mysql\Query\Grammars\MySqlGrammar
+     * @return QueryGrammar|mixed
      */
     protected function getDefaultQueryGrammar()
     {
@@ -28,9 +28,9 @@ class MySqlConnection extends Connection
     /**
      * Get a schema builder instance for the connection.
      *
-     * @return \Mini\Database\Mysql\Schema\MySqlBuilder
+     * @return MySqlBuilder
      */
-    public function getSchemaBuilder()
+    public function getSchemaBuilder(): MySqlBuilder
     {
         if (is_null($this->schemaGrammar)) {
             $this->useDefaultSchemaGrammar();
@@ -42,7 +42,7 @@ class MySqlConnection extends Connection
     /**
      * Get the default schema grammar instance.
      *
-     * @return \Mini\Database\Mysql\Schema\Grammars\MySqlGrammar
+     * @return SchemaGrammar|mixed
      */
     protected function getDefaultSchemaGrammar()
     {
@@ -52,7 +52,7 @@ class MySqlConnection extends Connection
     /**
      * Get the default post processor instance.
      *
-     * @return \Mini\Database\Mysql\Query\Processors\MySqlProcessor
+     * @return MySqlProcessor|mixed
      */
     protected function getDefaultPostProcessor()
     {
@@ -62,9 +62,9 @@ class MySqlConnection extends Connection
     /**
      * Get the Doctrine DBAL driver.
      *
-     * @return \Doctrine\DBAL\Driver\PDOMySql\Driver
+     * @return DoctrineDriver
      */
-    protected function getDoctrineDriver()
+    protected function getDoctrineDriver(): DoctrineDriver
     {
         return new DoctrineDriver;
     }

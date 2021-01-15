@@ -14,7 +14,7 @@ class SqlServerBuilder extends Builder
      *
      * @return void
      */
-    public function dropAllTables()
+    public function dropAllTables(): void
     {
         $this->connection->statement($this->grammar->compileDropAllForeignKeys());
 
@@ -26,7 +26,7 @@ class SqlServerBuilder extends Builder
      *
      * @return void
      */
-    public function dropAllViews()
+    public function dropAllViews(): void
     {
         $this->connection->statement($this->grammar->compileDropAllViews());
     }

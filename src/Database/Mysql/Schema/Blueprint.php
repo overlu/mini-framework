@@ -13,6 +13,7 @@ use Mini\Database\Mysql\Connection;
 use Mini\Database\Mysql\Query\Expression;
 use Mini\Database\Mysql\Schema\Grammars\Grammar;
 use Mini\Database\Mysql\SQLiteConnection;
+use Mini\Support\Collection;
 use Mini\Support\Fluent;
 use Mini\Support\Traits\Macroable;
 
@@ -25,66 +26,70 @@ class Blueprint
      *
      * @var string
      */
-    protected $table;
+    protected string $table;
 
     /**
      * The prefix of the table.
      *
      * @var string
      */
-    protected $prefix;
+    protected string $prefix;
 
     /**
      * The columns that should be added to the table.
      *
-     * @var \Mini\Database\Mysql\Schema\ColumnDefinition[]
+     * @var ColumnDefinition[]
      */
-    protected $columns = [];
+    protected array $columns = [];
 
     /**
      * The commands that should be run for the table.
      *
-     * @var \Mini\Support\Fluent[]
+     * @var Fluent[]
      */
-    protected $commands = [];
+    protected array $commands = [];
 
     /**
      * The storage engine that should be used for the table.
      *
      * @var string
      */
-    public $engine;
+    public string $engine;
 
     /**
      * The default character set that should be used for the table.
      *
      * @var string
      */
-    public $charset;
+    public string $charset;
 
     /**
      * The collation that should be used for the table.
      *
      * @var string
      */
-    public $collation;
+    public string $collation;
 
     /**
      * Whether to make the table temporary.
      *
      * @var bool
      */
-    public $temporary = false;
+    public bool $temporary = false;
 
     /**
      * Create a new schema blueprint.
      *
      * @param string $table
+<<<<<<< HEAD
      * @param \Closure|null $callback
+=======
+     * @param Closure|null $callback
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $prefix
      * @return void
      */
-    public function __construct($table, Closure $callback = null, $prefix = '')
+    public function __construct(string $table, Closure $callback = null, string $prefix = '')
     {
         $this->table = $table;
         $this->prefix = $prefix;
@@ -97,11 +102,16 @@ class Blueprint
     /**
      * Execute the blueprint against the database.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Connection $connection
      * @param \Mini\Database\Mysql\Schema\Grammars\Grammar $grammar
+=======
+     * @param Connection $connection
+     * @param Grammar $grammar
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
-    public function build(Connection $connection, Grammar $grammar)
+    public function build(Connection $connection, Grammar $grammar): void
     {
         foreach ($this->toSql($connection, $grammar) as $statement) {
             $connection->statement($statement);
@@ -111,11 +121,16 @@ class Blueprint
     /**
      * Get the raw SQL statements for the blueprint.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Connection $connection
      * @param \Mini\Database\Mysql\Schema\Grammars\Grammar $grammar
+=======
+     * @param Connection $connection
+     * @param Grammar $grammar
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return array
      */
-    public function toSql(Connection $connection, Grammar $grammar)
+    public function toSql(Connection $connection, Grammar $grammar): array
     {
         $this->addImpliedCommands($grammar);
 
@@ -142,12 +157,16 @@ class Blueprint
     /**
      * Ensure the commands on the blueprint are valid for the connection type.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Connection $connection
+=======
+     * @param Connection $connection
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      *
-     * @throws \BadMethodCallException
+     * @throws BadMethodCallException
      */
-    protected function ensureCommandsAreValid(Connection $connection)
+    protected function ensureCommandsAreValid(Connection $connection): void
     {
         if ($connection instanceof SQLiteConnection) {
             if ($this->commandsNamed(['dropColumn', 'renameColumn'])->count() > 1) {
@@ -168,28 +187,44 @@ class Blueprint
      * Get all of the commands matching the given names.
      *
      * @param array $names
+<<<<<<< HEAD
      * @return \Mini\Support\Collection
+=======
+     * @return Collection
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function commandsNamed(array $names)
+    protected function commandsNamed(array $names): Collection
     {
-        return collect($this->commands)->filter(function ($command) use ($names) {
-            return in_array($command->name, $names);
+        return collect($this->commands)->filter(static function ($command) use ($names) {
+            return in_array($command->name, $names, true);
         });
     }
 
     /**
      * Add the commands that are implied by the blueprint's state.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Schema\Grammars\Grammar $grammar
+=======
+     * @param Grammar $grammar
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
-    protected function addImpliedCommands(Grammar $grammar)
+    protected function addImpliedCommands(Grammar $grammar): void
     {
+<<<<<<< HEAD
         if (count($this->getAddedColumns()) > 0 && !$this->creating()) {
             array_unshift($this->commands, $this->createCommand('add'));
         }
 
         if (count($this->getChangedColumns()) > 0 && !$this->creating()) {
+=======
+        if (!$this->creating() && count($this->getAddedColumns()) > 0) {
+            array_unshift($this->commands, $this->createCommand('add'));
+        }
+
+        if (!$this->creating() && count($this->getChangedColumns()) > 0) {
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
             array_unshift($this->commands, $this->createCommand('change'));
         }
 
@@ -203,7 +238,7 @@ class Blueprint
      *
      * @return void
      */
-    protected function addFluentIndexes()
+    protected function addFluentIndexes(): void
     {
         foreach ($this->columns as $column) {
             foreach (['primary', 'unique', 'index', 'spatialIndex'] as $index) {
@@ -217,15 +252,16 @@ class Blueprint
                     continue 2;
                 }
 
-                // If the index has been specified on the given column, and it has a string
-                // value, we'll go ahead and call the index method and pass the name for
-                // the index since the developer specified the explicit name for this.
-                elseif (isset($column->{$index})) {
+                if (isset($column->{$index})) {
                     $this->{$index}($column->name, $column->{$index});
                     $column->{$index} = false;
 
                     continue 2;
                 }
+
+                // If the index has been specified on the given column, and it has a string
+                // value, we'll go ahead and call the index method and pass the name for
+                // the index since the developer specified the explicit name for this.
             }
         }
     }
@@ -233,10 +269,14 @@ class Blueprint
     /**
      * Add the fluent commands specified on any columns.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Schema\Grammars\Grammar $grammar
+=======
+     * @param Grammar $grammar
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
-    public function addFluentCommands(Grammar $grammar)
+    public function addFluentCommands(Grammar $grammar): void
     {
         foreach ($this->columns as $column) {
             foreach ($grammar->getFluentCommands() as $commandName) {
@@ -260,9 +300,9 @@ class Blueprint
      *
      * @return bool
      */
-    protected function creating()
+    protected function creating(): bool
     {
-        return collect($this->commands)->contains(function ($command) {
+        return collect($this->commands)->contains(static function ($command) {
             return $command->name === 'create';
         });
     }
@@ -270,9 +310,9 @@ class Blueprint
     /**
      * Indicate that the table needs to be created.
      *
-     * @return \Mini\Support\Fluent
+     * @return Fluent
      */
-    public function create()
+    public function create(): Fluent
     {
         return $this->addCommand('create');
     }
@@ -282,7 +322,7 @@ class Blueprint
      *
      * @return void
      */
-    public function temporary()
+    public function temporary(): void
     {
         $this->temporary = true;
     }
@@ -290,9 +330,9 @@ class Blueprint
     /**
      * Indicate that the table should be dropped.
      *
-     * @return \Mini\Support\Fluent
+     * @return Fluent
      */
-    public function drop()
+    public function drop(): Fluent
     {
         return $this->addCommand('drop');
     }
@@ -300,9 +340,9 @@ class Blueprint
     /**
      * Indicate that the table should be dropped if it exists.
      *
-     * @return \Mini\Support\Fluent
+     * @return Fluent
      */
-    public function dropIfExists()
+    public function dropIfExists(): Fluent
     {
         return $this->addCommand('dropIfExists');
     }
@@ -311,9 +351,13 @@ class Blueprint
      * Indicate that the given columns should be dropped.
      *
      * @param array|mixed $columns
+<<<<<<< HEAD
      * @return \Mini\Support\Fluent
+=======
+     * @return Fluent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function dropColumn($columns)
+    public function dropColumn($columns): Fluent
     {
         $columns = is_array($columns) ? $columns : func_get_args();
 
@@ -325,9 +369,13 @@ class Blueprint
      *
      * @param string $from
      * @param string $to
+<<<<<<< HEAD
      * @return \Mini\Support\Fluent
+=======
+     * @return Fluent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function renameColumn($from, $to)
+    public function renameColumn(string $from, string $to): Fluent
     {
         return $this->addCommand('renameColumn', compact('from', 'to'));
     }
@@ -336,9 +384,13 @@ class Blueprint
      * Indicate that the given primary key should be dropped.
      *
      * @param string|array|null $index
+<<<<<<< HEAD
      * @return \Mini\Support\Fluent
+=======
+     * @return Fluent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function dropPrimary($index = null)
+    public function dropPrimary($index = null): Fluent
     {
         return $this->dropIndexCommand('dropPrimary', 'primary', $index);
     }
@@ -347,9 +399,13 @@ class Blueprint
      * Indicate that the given unique key should be dropped.
      *
      * @param string|array $index
+<<<<<<< HEAD
      * @return \Mini\Support\Fluent
+=======
+     * @return Fluent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function dropUnique($index)
+    public function dropUnique($index): Fluent
     {
         return $this->dropIndexCommand('dropUnique', 'unique', $index);
     }
@@ -358,9 +414,13 @@ class Blueprint
      * Indicate that the given index should be dropped.
      *
      * @param string|array $index
+<<<<<<< HEAD
      * @return \Mini\Support\Fluent
+=======
+     * @return Fluent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function dropIndex($index)
+    public function dropIndex($index): Fluent
     {
         return $this->dropIndexCommand('dropIndex', 'index', $index);
     }
@@ -369,9 +429,13 @@ class Blueprint
      * Indicate that the given spatial index should be dropped.
      *
      * @param string|array $index
+<<<<<<< HEAD
      * @return \Mini\Support\Fluent
+=======
+     * @return Fluent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function dropSpatialIndex($index)
+    public function dropSpatialIndex($index): Fluent
     {
         return $this->dropIndexCommand('dropSpatialIndex', 'spatialIndex', $index);
     }
@@ -380,9 +444,13 @@ class Blueprint
      * Indicate that the given foreign key should be dropped.
      *
      * @param string|array $index
+<<<<<<< HEAD
      * @return \Mini\Support\Fluent
+=======
+     * @return Fluent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function dropForeign($index)
+    public function dropForeign($index): Fluent
     {
         return $this->dropIndexCommand('dropForeign', 'foreign', $index);
     }
@@ -392,9 +460,13 @@ class Blueprint
      *
      * @param string $from
      * @param string $to
+<<<<<<< HEAD
      * @return \Mini\Support\Fluent
+=======
+     * @return Fluent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function renameIndex($from, $to)
+    public function renameIndex(string $from, string $to): Fluent
     {
         return $this->addCommand('renameIndex', compact('from', 'to'));
     }
@@ -404,7 +476,7 @@ class Blueprint
      *
      * @return void
      */
-    public function dropTimestamps()
+    public function dropTimestamps(): void
     {
         $this->dropColumn('created_at', 'updated_at');
     }
@@ -414,7 +486,7 @@ class Blueprint
      *
      * @return void
      */
-    public function dropTimestampsTz()
+    public function dropTimestampsTz(): void
     {
         $this->dropTimestamps();
     }
@@ -425,7 +497,7 @@ class Blueprint
      * @param string $column
      * @return void
      */
-    public function dropSoftDeletes($column = 'deleted_at')
+    public function dropSoftDeletes(string $column = 'deleted_at'): void
     {
         $this->dropColumn($column);
     }
@@ -436,7 +508,7 @@ class Blueprint
      * @param string $column
      * @return void
      */
-    public function dropSoftDeletesTz($column = 'deleted_at')
+    public function dropSoftDeletesTz(string $column = 'deleted_at'): void
     {
         $this->dropSoftDeletes($column);
     }
@@ -446,7 +518,7 @@ class Blueprint
      *
      * @return void
      */
-    public function dropRememberToken()
+    public function dropRememberToken(): void
     {
         $this->dropColumn('remember_token');
     }
@@ -458,7 +530,7 @@ class Blueprint
      * @param string|null $indexName
      * @return void
      */
-    public function dropMorphs($name, $indexName = null)
+    public function dropMorphs(string $name, ?string $indexName = null): void
     {
         $this->dropIndex($indexName ?: $this->createIndexName('index', ["{$name}_type", "{$name}_id"]));
 
@@ -469,9 +541,13 @@ class Blueprint
      * Rename the table to a given name.
      *
      * @param string $to
+<<<<<<< HEAD
      * @return \Mini\Support\Fluent
+=======
+     * @return Fluent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function rename($to)
+    public function rename(string $to): Fluent
     {
         return $this->addCommand('rename', compact('to'));
     }
@@ -482,9 +558,13 @@ class Blueprint
      * @param string|array $columns
      * @param string|null $name
      * @param string|null $algorithm
+<<<<<<< HEAD
      * @return \Mini\Support\Fluent
+=======
+     * @return Fluent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function primary($columns, $name = null, $algorithm = null)
+    public function primary($columns, ?string $name = null, ?string $algorithm = null): Fluent
     {
         return $this->indexCommand('primary', $columns, $name, $algorithm);
     }
@@ -495,9 +575,13 @@ class Blueprint
      * @param string|array $columns
      * @param string|null $name
      * @param string|null $algorithm
+<<<<<<< HEAD
      * @return \Mini\Support\Fluent
+=======
+     * @return Fluent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function unique($columns, $name = null, $algorithm = null)
+    public function unique($columns, ?string $name = null, ?string $algorithm = null): Fluent
     {
         return $this->indexCommand('unique', $columns, $name, $algorithm);
     }
@@ -508,9 +592,13 @@ class Blueprint
      * @param string|array $columns
      * @param string|null $name
      * @param string|null $algorithm
+<<<<<<< HEAD
      * @return \Mini\Support\Fluent
+=======
+     * @return Fluent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function index($columns, $name = null, $algorithm = null)
+    public function index($columns, ?string $name = null, ?string $algorithm = null): Fluent
     {
         return $this->indexCommand('index', $columns, $name, $algorithm);
     }
@@ -520,9 +608,13 @@ class Blueprint
      *
      * @param string|array $columns
      * @param string|null $name
+<<<<<<< HEAD
      * @return \Mini\Support\Fluent
+=======
+     * @return Fluent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function spatialIndex($columns, $name = null)
+    public function spatialIndex($columns, ?string $name = null): Fluent
     {
         return $this->indexCommand('spatialIndex', $columns, $name);
     }
@@ -532,9 +624,13 @@ class Blueprint
      *
      * @param string $expression
      * @param string $name
+<<<<<<< HEAD
      * @return \Mini\Support\Fluent
+=======
+     * @return Fluent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function rawIndex($expression, $name)
+    public function rawIndex($expression, string $name): Fluent
     {
         return $this->index([new Expression($expression)], $name);
     }
@@ -544,9 +640,13 @@ class Blueprint
      *
      * @param string|array $columns
      * @param string|null $name
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ForeignKeyDefinition
+=======
+     * @return ForeignKeyDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function foreign($columns, $name = null)
+    public function foreign($columns, ?string $name = null): ForeignKeyDefinition
     {
         $command = new ForeignKeyDefinition(
             $this->indexCommand('foreign', $columns, $name)->getAttributes()
@@ -561,9 +661,13 @@ class Blueprint
      * Create a new auto-incrementing big integer (8-byte) column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function id($column = 'id')
+    public function id(string $column = 'id'): ColumnDefinition
     {
         return $this->bigIncrements($column);
     }
@@ -572,9 +676,13 @@ class Blueprint
      * Create a new auto-incrementing integer (4-byte) column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function increments($column)
+    public function increments(string $column): ColumnDefinition
     {
         return $this->unsignedInteger($column, true);
     }
@@ -583,9 +691,13 @@ class Blueprint
      * Create a new auto-incrementing integer (4-byte) column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function integerIncrements($column)
+    public function integerIncrements(string $column): ColumnDefinition
     {
         return $this->unsignedInteger($column, true);
     }
@@ -594,9 +706,13 @@ class Blueprint
      * Create a new auto-incrementing tiny integer (1-byte) column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function tinyIncrements($column)
+    public function tinyIncrements(string $column): ColumnDefinition
     {
         return $this->unsignedTinyInteger($column, true);
     }
@@ -605,9 +721,13 @@ class Blueprint
      * Create a new auto-incrementing small integer (2-byte) column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function smallIncrements($column)
+    public function smallIncrements(string $column): ColumnDefinition
     {
         return $this->unsignedSmallInteger($column, true);
     }
@@ -616,9 +736,13 @@ class Blueprint
      * Create a new auto-incrementing medium integer (3-byte) column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function mediumIncrements($column)
+    public function mediumIncrements(string $column): ColumnDefinition
     {
         return $this->unsignedMediumInteger($column, true);
     }
@@ -627,9 +751,13 @@ class Blueprint
      * Create a new auto-incrementing big integer (8-byte) column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function bigIncrements($column)
+    public function bigIncrements(string $column): ColumnDefinition
     {
         return $this->unsignedBigInteger($column, true);
     }
@@ -639,9 +767,13 @@ class Blueprint
      *
      * @param string $column
      * @param int|null $length
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function char($column, $length = null)
+    public function char(string $column, ?int $length = null): ColumnDefinition
     {
         $length = $length ?: Builder::$defaultStringLength;
 
@@ -653,9 +785,13 @@ class Blueprint
      *
      * @param string $column
      * @param int|null $length
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function string($column, $length = null)
+    public function string(string $column, ?int $length = null): ColumnDefinition
     {
         $length = $length ?: Builder::$defaultStringLength;
 
@@ -666,9 +802,13 @@ class Blueprint
      * Create a new text column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function text($column)
+    public function text(string $column): ColumnDefinition
     {
         return $this->addColumn('text', $column);
     }
@@ -677,9 +817,13 @@ class Blueprint
      * Create a new medium text column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function mediumText($column)
+    public function mediumText(string $column): ColumnDefinition
     {
         return $this->addColumn('mediumText', $column);
     }
@@ -688,9 +832,13 @@ class Blueprint
      * Create a new long text column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function longText($column)
+    public function longText(string $column): ColumnDefinition
     {
         return $this->addColumn('longText', $column);
     }
@@ -701,9 +849,13 @@ class Blueprint
      * @param string $column
      * @param bool $autoIncrement
      * @param bool $unsigned
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function integer($column, $autoIncrement = false, $unsigned = false)
+    public function integer(string $column, bool $autoIncrement = false, bool $unsigned = false): ColumnDefinition
     {
         return $this->addColumn('integer', $column, compact('autoIncrement', 'unsigned'));
     }
@@ -714,9 +866,13 @@ class Blueprint
      * @param string $column
      * @param bool $autoIncrement
      * @param bool $unsigned
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function tinyInteger($column, $autoIncrement = false, $unsigned = false)
+    public function tinyInteger(string $column, bool $autoIncrement = false, bool $unsigned = false): ColumnDefinition
     {
         return $this->addColumn('tinyInteger', $column, compact('autoIncrement', 'unsigned'));
     }
@@ -727,9 +883,13 @@ class Blueprint
      * @param string $column
      * @param bool $autoIncrement
      * @param bool $unsigned
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function smallInteger($column, $autoIncrement = false, $unsigned = false)
+    public function smallInteger(string $column, bool $autoIncrement = false, bool $unsigned = false): ColumnDefinition
     {
         return $this->addColumn('smallInteger', $column, compact('autoIncrement', 'unsigned'));
     }
@@ -740,9 +900,13 @@ class Blueprint
      * @param string $column
      * @param bool $autoIncrement
      * @param bool $unsigned
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function mediumInteger($column, $autoIncrement = false, $unsigned = false)
+    public function mediumInteger(string $column, bool $autoIncrement = false, bool $unsigned = false): ColumnDefinition
     {
         return $this->addColumn('mediumInteger', $column, compact('autoIncrement', 'unsigned'));
     }
@@ -753,9 +917,13 @@ class Blueprint
      * @param string $column
      * @param bool $autoIncrement
      * @param bool $unsigned
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function bigInteger($column, $autoIncrement = false, $unsigned = false)
+    public function bigInteger(string $column, bool $autoIncrement = false, bool $unsigned = false): ColumnDefinition
     {
         return $this->addColumn('bigInteger', $column, compact('autoIncrement', 'unsigned'));
     }
@@ -765,9 +933,13 @@ class Blueprint
      *
      * @param string $column
      * @param bool $autoIncrement
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function unsignedInteger($column, $autoIncrement = false)
+    public function unsignedInteger(string $column, bool $autoIncrement = false): ColumnDefinition
     {
         return $this->integer($column, $autoIncrement, true);
     }
@@ -777,9 +949,13 @@ class Blueprint
      *
      * @param string $column
      * @param bool $autoIncrement
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function unsignedTinyInteger($column, $autoIncrement = false)
+    public function unsignedTinyInteger(string $column, bool $autoIncrement = false): ColumnDefinition
     {
         return $this->tinyInteger($column, $autoIncrement, true);
     }
@@ -789,9 +965,13 @@ class Blueprint
      *
      * @param string $column
      * @param bool $autoIncrement
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function unsignedSmallInteger($column, $autoIncrement = false)
+    public function unsignedSmallInteger(string $column, bool $autoIncrement = false): ColumnDefinition
     {
         return $this->smallInteger($column, $autoIncrement, true);
     }
@@ -801,9 +981,13 @@ class Blueprint
      *
      * @param string $column
      * @param bool $autoIncrement
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function unsignedMediumInteger($column, $autoIncrement = false)
+    public function unsignedMediumInteger(string $column, bool $autoIncrement = false): ColumnDefinition
     {
         return $this->mediumInteger($column, $autoIncrement, true);
     }
@@ -813,9 +997,13 @@ class Blueprint
      *
      * @param string $column
      * @param bool $autoIncrement
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function unsignedBigInteger($column, $autoIncrement = false)
+    public function unsignedBigInteger(string $column, bool $autoIncrement = false): ColumnDefinition
     {
         return $this->bigInteger($column, $autoIncrement, true);
     }
@@ -824,9 +1012,13 @@ class Blueprint
      * Create a new unsigned big integer (8-byte) column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ForeignIdColumnDefinition
+=======
+     * @return ForeignIdColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function foreignId($column)
+    public function foreignId(string $column): ForeignIdColumnDefinition
     {
         $this->columns[] = $column = new ForeignIdColumnDefinition($this, [
             'type' => 'bigInteger',
@@ -845,9 +1037,13 @@ class Blueprint
      * @param int $total
      * @param int $places
      * @param bool $unsigned
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function float($column, $total = 8, $places = 2, $unsigned = false)
+    public function float(string $column, int $total = 8, int $places = 2, bool $unsigned = false): ColumnDefinition
     {
         return $this->addColumn('float', $column, compact('total', 'places', 'unsigned'));
     }
@@ -859,9 +1055,13 @@ class Blueprint
      * @param int|null $total
      * @param int|null $places
      * @param bool $unsigned
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function double($column, $total = null, $places = null, $unsigned = false)
+    public function double(string $column, ?int $total = null, ?int $places = null, bool $unsigned = false): ColumnDefinition
     {
         return $this->addColumn('double', $column, compact('total', 'places', 'unsigned'));
     }
@@ -873,9 +1073,13 @@ class Blueprint
      * @param int $total
      * @param int $places
      * @param bool $unsigned
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function decimal($column, $total = 8, $places = 2, $unsigned = false)
+    public function decimal(string $column, int $total = 8, int $places = 2, bool $unsigned = false): ColumnDefinition
     {
         return $this->addColumn('decimal', $column, compact('total', 'places', 'unsigned'));
     }
@@ -886,9 +1090,13 @@ class Blueprint
      * @param string $column
      * @param int $total
      * @param int $places
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function unsignedFloat($column, $total = 8, $places = 2)
+    public function unsignedFloat(string $column, int $total = 8, int $places = 2): ColumnDefinition
     {
         return $this->float($column, $total, $places, true);
     }
@@ -899,9 +1107,13 @@ class Blueprint
      * @param string $column
      * @param int $total
      * @param int $places
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function unsignedDouble($column, $total = null, $places = null)
+    public function unsignedDouble(string $column, ?int $total = null, ?int $places = null): ColumnDefinition
     {
         return $this->double($column, $total, $places, true);
     }
@@ -912,9 +1124,13 @@ class Blueprint
      * @param string $column
      * @param int $total
      * @param int $places
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function unsignedDecimal($column, $total = 8, $places = 2)
+    public function unsignedDecimal(string $column, int $total = 8, int $places = 2): ColumnDefinition
     {
         return $this->decimal($column, $total, $places, true);
     }
@@ -923,9 +1139,13 @@ class Blueprint
      * Create a new boolean column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function boolean($column)
+    public function boolean(string $column): ColumnDefinition
     {
         return $this->addColumn('boolean', $column);
     }
@@ -935,9 +1155,13 @@ class Blueprint
      *
      * @param string $column
      * @param array $allowed
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function enum($column, array $allowed)
+    public function enum(string $column, array $allowed): ColumnDefinition
     {
         return $this->addColumn('enum', $column, compact('allowed'));
     }
@@ -947,9 +1171,13 @@ class Blueprint
      *
      * @param string $column
      * @param array $allowed
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function set($column, array $allowed)
+    public function set(string $column, array $allowed): ColumnDefinition
     {
         return $this->addColumn('set', $column, compact('allowed'));
     }
@@ -958,9 +1186,13 @@ class Blueprint
      * Create a new json column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function json($column)
+    public function json(string $column): ColumnDefinition
     {
         return $this->addColumn('json', $column);
     }
@@ -969,9 +1201,13 @@ class Blueprint
      * Create a new jsonb column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function jsonb($column)
+    public function jsonb(string $column): ColumnDefinition
     {
         return $this->addColumn('jsonb', $column);
     }
@@ -980,9 +1216,13 @@ class Blueprint
      * Create a new date column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function date($column)
+    public function date(string $column): ColumnDefinition
     {
         return $this->addColumn('date', $column);
     }
@@ -992,9 +1232,13 @@ class Blueprint
      *
      * @param string $column
      * @param int $precision
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function dateTime($column, $precision = 0)
+    public function dateTime(string $column, int $precision = 0): ColumnDefinition
     {
         return $this->addColumn('dateTime', $column, compact('precision'));
     }
@@ -1004,9 +1248,13 @@ class Blueprint
      *
      * @param string $column
      * @param int $precision
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function dateTimeTz($column, $precision = 0)
+    public function dateTimeTz(string $column, int $precision = 0): ColumnDefinition
     {
         return $this->addColumn('dateTimeTz', $column, compact('precision'));
     }
@@ -1016,9 +1264,13 @@ class Blueprint
      *
      * @param string $column
      * @param int $precision
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function time($column, $precision = 0)
+    public function time(string $column, int $precision = 0): ColumnDefinition
     {
         return $this->addColumn('time', $column, compact('precision'));
     }
@@ -1028,9 +1280,13 @@ class Blueprint
      *
      * @param string $column
      * @param int $precision
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function timeTz($column, $precision = 0)
+    public function timeTz(string $column, int $precision = 0): ColumnDefinition
     {
         return $this->addColumn('timeTz', $column, compact('precision'));
     }
@@ -1040,9 +1296,13 @@ class Blueprint
      *
      * @param string $column
      * @param int $precision
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function timestamp($column, $precision = 0)
+    public function timestamp(string $column, int $precision = 0): ColumnDefinition
     {
         return $this->addColumn('timestamp', $column, compact('precision'));
     }
@@ -1052,9 +1312,13 @@ class Blueprint
      *
      * @param string $column
      * @param int $precision
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function timestampTz($column, $precision = 0)
+    public function timestampTz(string $column, int $precision = 0): ColumnDefinition
     {
         return $this->addColumn('timestampTz', $column, compact('precision'));
     }
@@ -1065,7 +1329,7 @@ class Blueprint
      * @param int $precision
      * @return void
      */
-    public function timestamps($precision = 0)
+    public function timestamps(int $precision = 0): void
     {
         $this->timestamp('created_at', $precision)->nullable();
 
@@ -1080,7 +1344,7 @@ class Blueprint
      * @param int $precision
      * @return void
      */
-    public function nullableTimestamps($precision = 0)
+    public function nullableTimestamps(int $precision = 0): void
     {
         $this->timestamps($precision);
     }
@@ -1091,7 +1355,7 @@ class Blueprint
      * @param int $precision
      * @return void
      */
-    public function timestampsTz($precision = 0)
+    public function timestampsTz(int $precision = 0): void
     {
         $this->timestampTz('created_at', $precision)->nullable();
 
@@ -1103,9 +1367,13 @@ class Blueprint
      *
      * @param string $column
      * @param int $precision
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function softDeletes($column = 'deleted_at', $precision = 0)
+    public function softDeletes(string $column = 'deleted_at', int $precision = 0): ColumnDefinition
     {
         return $this->timestamp($column, $precision)->nullable();
     }
@@ -1115,9 +1383,13 @@ class Blueprint
      *
      * @param string $column
      * @param int $precision
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function softDeletesTz($column = 'deleted_at', $precision = 0)
+    public function softDeletesTz(string $column = 'deleted_at', int $precision = 0): ColumnDefinition
     {
         return $this->timestampTz($column, $precision)->nullable();
     }
@@ -1126,9 +1398,13 @@ class Blueprint
      * Create a new year column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function year($column)
+    public function year(string $column): ColumnDefinition
     {
         return $this->addColumn('year', $column);
     }
@@ -1137,9 +1413,13 @@ class Blueprint
      * Create a new binary column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function binary($column)
+    public function binary(string $column): ColumnDefinition
     {
         return $this->addColumn('binary', $column);
     }
@@ -1148,9 +1428,13 @@ class Blueprint
      * Create a new uuid column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function uuid($column)
+    public function uuid(string $column): ColumnDefinition
     {
         return $this->addColumn('uuid', $column);
     }
@@ -1159,9 +1443,13 @@ class Blueprint
      * Create a new UUID column on the table with a foreign key constraint.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ForeignIdColumnDefinition
+=======
+     * @return ForeignIdColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function foreignUuid($column)
+    public function foreignUuid(string $column): ForeignIdColumnDefinition
     {
         return $this->columns[] = new ForeignIdColumnDefinition($this, [
             'type' => 'uuid',
@@ -1173,9 +1461,13 @@ class Blueprint
      * Create a new IP address column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function ipAddress($column)
+    public function ipAddress(string $column): ColumnDefinition
     {
         return $this->addColumn('ipAddress', $column);
     }
@@ -1184,9 +1476,13 @@ class Blueprint
      * Create a new MAC address column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function macAddress($column)
+    public function macAddress(string $column): ColumnDefinition
     {
         return $this->addColumn('macAddress', $column);
     }
@@ -1195,9 +1491,13 @@ class Blueprint
      * Create a new geometry column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function geometry($column)
+    public function geometry(string $column): ColumnDefinition
     {
         return $this->addColumn('geometry', $column);
     }
@@ -1207,9 +1507,13 @@ class Blueprint
      *
      * @param string $column
      * @param int|null $srid
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function point($column, $srid = null)
+    public function point(string $column, ?int $srid = null): ColumnDefinition
     {
         return $this->addColumn('point', $column, compact('srid'));
     }
@@ -1218,9 +1522,13 @@ class Blueprint
      * Create a new linestring column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function lineString($column)
+    public function lineString(string $column): ColumnDefinition
     {
         return $this->addColumn('linestring', $column);
     }
@@ -1229,9 +1537,13 @@ class Blueprint
      * Create a new polygon column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function polygon($column)
+    public function polygon(string $column): ColumnDefinition
     {
         return $this->addColumn('polygon', $column);
     }
@@ -1240,9 +1552,13 @@ class Blueprint
      * Create a new geometrycollection column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function geometryCollection($column)
+    public function geometryCollection(string $column): ColumnDefinition
     {
         return $this->addColumn('geometrycollection', $column);
     }
@@ -1251,9 +1567,13 @@ class Blueprint
      * Create a new multipoint column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function multiPoint($column)
+    public function multiPoint(string $column): ColumnDefinition
     {
         return $this->addColumn('multipoint', $column);
     }
@@ -1262,9 +1582,13 @@ class Blueprint
      * Create a new multilinestring column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function multiLineString($column)
+    public function multiLineString(string $column): ColumnDefinition
     {
         return $this->addColumn('multilinestring', $column);
     }
@@ -1273,9 +1597,13 @@ class Blueprint
      * Create a new multipolygon column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function multiPolygon($column)
+    public function multiPolygon(string $column): ColumnDefinition
     {
         return $this->addColumn('multipolygon', $column);
     }
@@ -1284,9 +1612,13 @@ class Blueprint
      * Create a new multipolygon column on the table.
      *
      * @param string $column
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function multiPolygonZ($column)
+    public function multiPolygonZ(string $column): ColumnDefinition
     {
         return $this->addColumn('multipolygonz', $column);
     }
@@ -1296,9 +1628,13 @@ class Blueprint
      *
      * @param string $column
      * @param string $expression
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function computed($column, $expression)
+    public function computed(string $column, string $expression): ColumnDefinition
     {
         return $this->addColumn('computed', $column, compact('expression'));
     }
@@ -1310,7 +1646,7 @@ class Blueprint
      * @param string|null $indexName
      * @return void
      */
-    public function morphs($name, $indexName = null)
+    public function morphs(string $name, ?string $indexName = null): void
     {
         $this->string("{$name}_type");
 
@@ -1326,7 +1662,7 @@ class Blueprint
      * @param string|null $indexName
      * @return void
      */
-    public function nullableMorphs($name, $indexName = null)
+    public function nullableMorphs(string $name, ?string $indexName = null): void
     {
         $this->string("{$name}_type")->nullable();
 
@@ -1342,7 +1678,7 @@ class Blueprint
      * @param string|null $indexName
      * @return void
      */
-    public function uuidMorphs($name, $indexName = null)
+    public function uuidMorphs(string $name, ?string $indexName = null): void
     {
         $this->string("{$name}_type");
 
@@ -1358,7 +1694,7 @@ class Blueprint
      * @param string|null $indexName
      * @return void
      */
-    public function nullableUuidMorphs($name, $indexName = null)
+    public function nullableUuidMorphs(string $name, ?string $indexName = null): void
     {
         $this->string("{$name}_type")->nullable();
 
@@ -1370,9 +1706,9 @@ class Blueprint
     /**
      * Adds the `remember_token` column to the table.
      *
-     * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+     * @return ColumnDefinition
      */
-    public function rememberToken()
+    public function rememberToken(): ColumnDefinition
     {
         return $this->string('remember_token', 100)->nullable();
     }
@@ -1384,9 +1720,13 @@ class Blueprint
      * @param string|array $columns
      * @param string $index
      * @param string|null $algorithm
+<<<<<<< HEAD
      * @return \Mini\Support\Fluent
+=======
+     * @return Fluent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function indexCommand($type, $columns, $index, $algorithm = null)
+    protected function indexCommand(string $type, $columns, string $index, ?string $algorithm = null): Fluent
     {
         $columns = (array)$columns;
 
@@ -1406,9 +1746,13 @@ class Blueprint
      * @param string $command
      * @param string $type
      * @param string|array $index
+<<<<<<< HEAD
      * @return \Mini\Support\Fluent
+=======
+     * @return Fluent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function dropIndexCommand($command, $type, $index)
+    protected function dropIndexCommand(string $command, string $type, $index): Fluent
     {
         $columns = [];
 
@@ -1429,7 +1773,7 @@ class Blueprint
      * @param array $columns
      * @return string
      */
-    protected function createIndexName($type, array $columns)
+    protected function createIndexName(string $type, array $columns): string
     {
         $index = strtolower($this->prefix . $this->table . '_' . implode('_', $columns) . '_' . $type);
 
@@ -1442,9 +1786,13 @@ class Blueprint
      * @param string $type
      * @param string $name
      * @param array $parameters
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Schema\ColumnDefinition
+=======
+     * @return ColumnDefinition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function addColumn($type, $name, array $parameters = [])
+    public function addColumn(string $type, string $name, array $parameters = []): ColumnDefinition
     {
         $this->columns[] = $column = new ColumnDefinition(
             array_merge(compact('type', 'name'), $parameters)
@@ -1459,10 +1807,10 @@ class Blueprint
      * @param string $name
      * @return $this
      */
-    public function removeColumn($name)
+    public function removeColumn(string $name): self
     {
-        $this->columns = array_values(array_filter($this->columns, function ($c) use ($name) {
-            return $c['name'] != $name;
+        $this->columns = array_values(array_filter($this->columns, static function ($c) use ($name) {
+            return $c['name'] !== $name;
         }));
 
         return $this;
@@ -1473,9 +1821,13 @@ class Blueprint
      *
      * @param string $name
      * @param array $parameters
+<<<<<<< HEAD
      * @return \Mini\Support\Fluent
+=======
+     * @return Fluent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function addCommand($name, array $parameters = [])
+    protected function addCommand(string $name, array $parameters = []): Fluent
     {
         $this->commands[] = $command = $this->createCommand($name, $parameters);
 
@@ -1487,9 +1839,13 @@ class Blueprint
      *
      * @param string $name
      * @param array $parameters
+<<<<<<< HEAD
      * @return \Mini\Support\Fluent
+=======
+     * @return Fluent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function createCommand($name, array $parameters = [])
+    protected function createCommand(string $name, array $parameters = []): Fluent
     {
         return new Fluent(array_merge(compact('name'), $parameters));
     }
@@ -1499,7 +1855,7 @@ class Blueprint
      *
      * @return string
      */
-    public function getTable()
+    public function getTable(): string
     {
         return $this->table;
     }
@@ -1507,9 +1863,9 @@ class Blueprint
     /**
      * Get the columns on the blueprint.
      *
-     * @return \Mini\Database\Mysql\Schema\ColumnDefinition[]
+     * @return ColumnDefinition[]
      */
-    public function getColumns()
+    public function getColumns(): array
     {
         return $this->columns;
     }
@@ -1517,9 +1873,9 @@ class Blueprint
     /**
      * Get the commands on the blueprint.
      *
-     * @return \Mini\Support\Fluent[]
+     * @return Fluent[]
      */
-    public function getCommands()
+    public function getCommands(): array
     {
         return $this->commands;
     }
@@ -1527,11 +1883,15 @@ class Blueprint
     /**
      * Get the columns on the blueprint that should be added.
      *
-     * @return \Mini\Database\Mysql\Schema\ColumnDefinition[]
+     * @return ColumnDefinition[]
      */
-    public function getAddedColumns()
+    public function getAddedColumns(): array
     {
+<<<<<<< HEAD
         return array_filter($this->columns, function ($column) {
+=======
+        return array_filter($this->columns, static function ($column) {
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
             return !$column->change;
         });
     }
@@ -1539,11 +1899,15 @@ class Blueprint
     /**
      * Get the columns on the blueprint that should be changed.
      *
-     * @return \Mini\Database\Mysql\Schema\ColumnDefinition[]
+     * @return ColumnDefinition[]
      */
-    public function getChangedColumns()
+    public function getChangedColumns(): array
     {
+<<<<<<< HEAD
         return array_filter($this->columns, function ($column) {
+=======
+        return array_filter($this->columns, static function ($column) {
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
             return (bool)$column->change;
         });
     }

@@ -7,6 +7,10 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql\Eloquent\Relations;
 
+use Generator;
+use Mini\Contracts\Container\BindingResolutionException;
+use Mini\Contracts\Pagination\LengthAwarePaginator;
+use Mini\Contracts\Pagination\Paginator;
 use Mini\Contracts\Support\Arrayable;
 use Mini\Database\Mysql\Eloquent\Builder;
 use Mini\Database\Mysql\Eloquent\Collection;
@@ -19,65 +23,71 @@ class HasManyThrough extends Relation
     /**
      * The "through" parent model instance.
      *
-     * @var \Mini\Database\Mysql\Eloquent\Model
+     * @var Model
      */
-    protected $throughParent;
+    protected Model $throughParent;
 
     /**
      * The far parent model instance.
      *
-     * @var \Mini\Database\Mysql\Eloquent\Model
+     * @var Model
      */
-    protected $farParent;
+    protected Model $farParent;
 
     /**
      * The near key on the relationship.
      *
      * @var string
      */
-    protected $firstKey;
+    protected string $firstKey;
 
     /**
      * The far key on the relationship.
      *
      * @var string
      */
-    protected $secondKey;
+    protected string $secondKey;
 
     /**
      * The local key on the relationship.
      *
      * @var string
      */
-    protected $localKey;
+    protected string $localKey;
 
     /**
      * The local key on the intermediary model.
      *
      * @var string
      */
-    protected $secondLocalKey;
+    protected string $secondLocalKey;
 
     /**
      * The count of self joins.
      *
      * @var int
      */
-    protected static $selfJoinCount = 0;
+    protected static int $selfJoinCount = 0;
 
     /**
      * Create a new has many through relationship instance.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @param \Mini\Database\Mysql\Eloquent\Model $farParent
      * @param \Mini\Database\Mysql\Eloquent\Model $throughParent
+=======
+     * @param Builder $query
+     * @param Model $farParent
+     * @param Model $throughParent
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $firstKey
      * @param string $secondKey
      * @param string $localKey
      * @param string $secondLocalKey
      * @return void
      */
-    public function __construct(Builder $query, Model $farParent, Model $throughParent, $firstKey, $secondKey, $localKey, $secondLocalKey)
+    public function __construct(Builder $query, Model $farParent, Model $throughParent, string $firstKey, string $secondKey, string $localKey, string $secondLocalKey)
     {
         $this->localKey = $localKey;
         $this->firstKey = $firstKey;
@@ -94,7 +104,7 @@ class HasManyThrough extends Relation
      *
      * @return void
      */
-    public function addConstraints()
+    public function addConstraints(): void
     {
         $localValue = $this->farParent[$this->localKey];
 
@@ -108,10 +118,14 @@ class HasManyThrough extends Relation
     /**
      * Set the join clause on the query.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder|null $query
+=======
+     * @param Builder|null $query
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
-    protected function performJoin(Builder $query = null)
+    protected function performJoin(?Builder $query = null): void
     {
         $query = $query ?: $this->query;
 
@@ -131,7 +145,7 @@ class HasManyThrough extends Relation
      *
      * @return string
      */
-    public function getQualifiedParentKeyName()
+    public function getQualifiedParentKeyName(): string
     {
         return $this->parent->qualifyColumn($this->secondLocalKey);
     }
@@ -141,9 +155,9 @@ class HasManyThrough extends Relation
      *
      * @return bool
      */
-    public function throughParentSoftDeletes()
+    public function throughParentSoftDeletes(): bool
     {
-        return in_array(SoftDeletes::class, class_uses_recursive($this->throughParent));
+        return in_array(SoftDeletes::class, class_uses_recursive($this->throughParent), true);
     }
 
     /**
@@ -151,7 +165,7 @@ class HasManyThrough extends Relation
      *
      * @return $this
      */
-    public function withTrashedParents()
+    public function withTrashedParents(): self
     {
         $this->query->withoutGlobalScope('SoftDeletableHasManyThrough');
 
@@ -164,7 +178,7 @@ class HasManyThrough extends Relation
      * @param array $models
      * @return void
      */
-    public function addEagerConstraints(array $models)
+    public function addEagerConstraints(array $models): void
     {
         $whereIn = $this->whereInMethod($this->farParent, $this->localKey);
 
@@ -180,7 +194,7 @@ class HasManyThrough extends Relation
      * @param string $relation
      * @return array
      */
-    public function initRelation(array $models, $relation)
+    public function initRelation(array $models, string $relation): array
     {
         foreach ($models as $model) {
             $model->setRelation($relation, $this->related->newCollection());
@@ -193,11 +207,15 @@ class HasManyThrough extends Relation
      * Match the eagerly loaded results to their parents.
      *
      * @param array $models
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Collection $results
+=======
+     * @param Collection $results
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $relation
      * @return array
      */
-    public function match(array $models, Collection $results, $relation)
+    public function match(array $models, Collection $results, string $relation): array
     {
         $dictionary = $this->buildDictionary($results);
 
@@ -218,10 +236,14 @@ class HasManyThrough extends Relation
     /**
      * Build model dictionary keyed by the relation's foreign key.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Collection $results
+=======
+     * @param Collection $results
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return array
      */
-    protected function buildDictionary(Collection $results)
+    protected function buildDictionary(Collection $results): array
     {
         $dictionary = [];
 
@@ -239,9 +261,13 @@ class HasManyThrough extends Relation
      * Get the first related model record matching the attributes or instantiate it.
      *
      * @param array $attributes
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Model
+=======
+     * @return Model
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function firstOrNew(array $attributes)
+    public function firstOrNew(array $attributes = []): Model
     {
         if (is_null($instance = $this->where($attributes)->first())) {
             $instance = $this->related->newInstance($attributes);
@@ -255,9 +281,13 @@ class HasManyThrough extends Relation
      *
      * @param array $attributes
      * @param array $values
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Model
+=======
+     * @return Model
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function updateOrCreate(array $attributes, array $values = [])
+    public function updateOrCreate(array $attributes = [], array $values = []): Model
     {
         $instance = $this->firstOrNew($attributes);
 
@@ -273,9 +303,13 @@ class HasManyThrough extends Relation
      * @param mixed $operator
      * @param mixed $value
      * @param string $boolean
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Model|static
+=======
+     * @return Model|static
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function firstWhere($column, $operator = null, $value = null, $boolean = 'and')
+    public function firstWhere($column, $operator = null, $value = null, string $boolean = 'and')
     {
         return $this->where($column, $operator, $value, $boolean)->first();
     }
@@ -286,7 +320,7 @@ class HasManyThrough extends Relation
      * @param array $columns
      * @return mixed
      */
-    public function first($columns = ['*'])
+    public function first(array $columns = ['*'])
     {
         $results = $this->take(1)->get($columns);
 
@@ -297,11 +331,15 @@ class HasManyThrough extends Relation
      * Execute the query and get the first result or throw an exception.
      *
      * @param array $columns
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Model|static
+=======
+     * @return Model|static
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      *
-     * @throws \Mini\Database\Mysql\Eloquent\ModelNotFoundException
+     * @throws ModelNotFoundException
      */
-    public function firstOrFail($columns = ['*'])
+    public function firstOrFail(array $columns = ['*'])
     {
         if (!is_null($model = $this->first($columns))) {
             return $model;
@@ -315,9 +353,13 @@ class HasManyThrough extends Relation
      *
      * @param mixed $id
      * @param array $columns
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Model|\Mini\Database\Mysql\Eloquent\Collection|null
+=======
+     * @return Model|Collection|null
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function find($id, $columns = ['*'])
+    public function find($id, array $columns = ['*'])
     {
         if (is_array($id) || $id instanceof Arrayable) {
             return $this->findMany($id, $columns);
@@ -331,11 +373,17 @@ class HasManyThrough extends Relation
     /**
      * Find multiple related models by their primary keys.
      *
+<<<<<<< HEAD
      * @param \Mini\Contracts\Support\Arrayable|array $ids
      * @param array $columns
      * @return \Mini\Database\Mysql\Eloquent\Collection
+=======
+     * @param Arrayable|array $ids
+     * @param array $columns
+     * @return Collection
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function findMany($ids, $columns = ['*'])
+    public function findMany($ids, array $columns = ['*']): Collection
     {
         $ids = $ids instanceof Arrayable ? $ids->toArray() : $ids;
 
@@ -353,11 +401,15 @@ class HasManyThrough extends Relation
      *
      * @param mixed $id
      * @param array $columns
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Model|\Mini\Database\Mysql\Eloquent\Collection
+=======
+     * @return Model|Collection
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      *
-     * @throws \Mini\Database\Mysql\Eloquent\ModelNotFoundException
+     * @throws ModelNotFoundException
      */
-    public function findOrFail($id, $columns = ['*'])
+    public function findOrFail($id, array $columns = ['*'])
     {
         $result = $this->find($id, $columns);
 
@@ -390,9 +442,13 @@ class HasManyThrough extends Relation
      * Execute the query as a "select" statement.
      *
      * @param array $columns
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Collection
+=======
+     * @return Collection
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function get($columns = ['*'])
+    public function get(array $columns = ['*']): Collection
     {
         $builder = $this->prepareQueryBuilder($columns);
 
@@ -415,9 +471,14 @@ class HasManyThrough extends Relation
      * @param array $columns
      * @param string $pageName
      * @param int $page
+<<<<<<< HEAD
      * @return \Mini\Contracts\Pagination\LengthAwarePaginator
+=======
+     * @return LengthAwarePaginator
+     * @throws BindingResolutionException
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function paginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null)
+    public function paginate(?int $perPage = null, array $columns = ['*'], string $pageName = 'page', ?int $page = null): LengthAwarePaginator
     {
         $this->query->addSelect($this->shouldSelect($columns));
 
@@ -431,9 +492,14 @@ class HasManyThrough extends Relation
      * @param array $columns
      * @param string $pageName
      * @param int|null $page
+<<<<<<< HEAD
      * @return \Mini\Contracts\Pagination\Paginator
+=======
+     * @return Paginator
+     * @throws BindingResolutionException
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function simplePaginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null)
+    public function simplePaginate(?int $perPage = null, array $columns = ['*'], string $pageName = 'page', ?int $page = null): Paginator
     {
         $this->query->addSelect($this->shouldSelect($columns));
 
@@ -446,9 +512,13 @@ class HasManyThrough extends Relation
      * @param array $columns
      * @return array
      */
-    protected function shouldSelect(array $columns = ['*'])
+    protected function shouldSelect(array $columns = ['*']): array
     {
+<<<<<<< HEAD
         if ($columns == ['*']) {
+=======
+        if ($columns === ['*']) {
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
             $columns = [$this->related->getTable() . '.*'];
         }
 
@@ -462,7 +532,7 @@ class HasManyThrough extends Relation
      * @param callable $callback
      * @return bool
      */
-    public function chunk($count, callable $callback)
+    public function chunk(int $count, callable $callback): bool
     {
         return $this->prepareQueryBuilder()->chunk($count, $callback);
     }
@@ -476,7 +546,7 @@ class HasManyThrough extends Relation
      * @param string|null $alias
      * @return bool
      */
-    public function chunkById($count, callable $callback, $column = null, $alias = null)
+    public function chunkById(int $count, callable $callback, ?string $column = null, ?string $alias = null): bool
     {
         $column = $column ?? $this->getRelated()->getQualifiedKeyName();
 
@@ -488,7 +558,7 @@ class HasManyThrough extends Relation
     /**
      * Get a generator for the given query.
      *
-     * @return \Generator
+     * @return Generator|mixed
      */
     public function cursor()
     {
@@ -502,9 +572,9 @@ class HasManyThrough extends Relation
      * @param int $count
      * @return bool
      */
-    public function each(callable $callback, $count = 1000)
+    public function each(callable $callback, int $count = 1000): bool
     {
-        return $this->chunk($count, function ($results) use ($callback) {
+        return $this->chunk($count, static function ($results) use ($callback) {
             foreach ($results as $key => $value) {
                 if ($callback($value, $key) === false) {
                     return false;
@@ -517,9 +587,13 @@ class HasManyThrough extends Relation
      * Prepare the query builder for query execution.
      *
      * @param array $columns
+<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Builder
+=======
+     * @return Builder
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function prepareQueryBuilder($columns = ['*'])
+    protected function prepareQueryBuilder(array $columns = ['*']): Builder
     {
         $builder = $this->query->applyScopes();
 
@@ -531,12 +605,19 @@ class HasManyThrough extends Relation
     /**
      * Add the constraints for a relationship query.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @param \Mini\Database\Mysql\Eloquent\Builder $parentQuery
      * @param array|mixed $columns
      * @return \Mini\Database\Mysql\Eloquent\Builder
+=======
+     * @param Builder $query
+     * @param Builder $parentQuery
+     * @param array|mixed $columns
+     * @return Builder
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function getRelationExistenceQuery(Builder $query, Builder $parentQuery, $columns = ['*'])
+    public function getRelationExistenceQuery(Builder $query, Builder $parentQuery, $columns = ['*']): Builder
     {
         if ($parentQuery->getQuery()->from === $query->getQuery()->from) {
             return $this->getRelationExistenceQueryForSelfRelation($query, $parentQuery, $columns);
@@ -556,12 +637,19 @@ class HasManyThrough extends Relation
     /**
      * Add the constraints for a relationship query on the same table.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @param \Mini\Database\Mysql\Eloquent\Builder $parentQuery
      * @param array|mixed $columns
      * @return \Mini\Database\Mysql\Eloquent\Builder
+=======
+     * @param Builder $query
+     * @param Builder $parentQuery
+     * @param array|mixed $columns
+     * @return Builder
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function getRelationExistenceQueryForSelfRelation(Builder $query, Builder $parentQuery, $columns = ['*'])
+    public function getRelationExistenceQueryForSelfRelation(Builder $query, Builder $parentQuery, array $columns = ['*']): Builder
     {
         $query->from($query->getModel()->getTable() . ' as ' . $hash = $this->getRelationCountHash());
 
@@ -581,12 +669,19 @@ class HasManyThrough extends Relation
     /**
      * Add the constraints for a relationship query on the same table as the through parent.
      *
+<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @param \Mini\Database\Mysql\Eloquent\Builder $parentQuery
      * @param array|mixed $columns
      * @return \Mini\Database\Mysql\Eloquent\Builder
+=======
+     * @param Builder $query
+     * @param Builder $parentQuery
+     * @param array|mixed $columns
+     * @return Builder
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function getRelationExistenceQueryForThroughSelfRelation(Builder $query, Builder $parentQuery, $columns = ['*'])
+    public function getRelationExistenceQueryForThroughSelfRelation(Builder $query, Builder $parentQuery, array $columns = ['*']): Builder
     {
         $table = $this->throughParent->getTable() . ' as ' . $hash = $this->getRelationCountHash();
 
@@ -606,7 +701,7 @@ class HasManyThrough extends Relation
      *
      * @return string
      */
-    public function getRelationCountHash()
+    public function getRelationCountHash(): string
     {
         return 'laravel_reserved_' . static::$selfJoinCount++;
     }
@@ -616,7 +711,7 @@ class HasManyThrough extends Relation
      *
      * @return string
      */
-    public function getQualifiedFarKeyName()
+    public function getQualifiedFarKeyName(): string
     {
         return $this->getQualifiedForeignKeyName();
     }
@@ -626,7 +721,7 @@ class HasManyThrough extends Relation
      *
      * @return string
      */
-    public function getFirstKeyName()
+    public function getFirstKeyName(): string
     {
         return $this->firstKey;
     }
@@ -636,7 +731,7 @@ class HasManyThrough extends Relation
      *
      * @return string
      */
-    public function getQualifiedFirstKeyName()
+    public function getQualifiedFirstKeyName(): string
     {
         return $this->throughParent->qualifyColumn($this->firstKey);
     }
@@ -646,7 +741,7 @@ class HasManyThrough extends Relation
      *
      * @return string
      */
-    public function getForeignKeyName()
+    public function getForeignKeyName(): string
     {
         return $this->secondKey;
     }
@@ -656,7 +751,7 @@ class HasManyThrough extends Relation
      *
      * @return string
      */
-    public function getQualifiedForeignKeyName()
+    public function getQualifiedForeignKeyName(): string
     {
         return $this->related->qualifyColumn($this->secondKey);
     }
@@ -666,7 +761,7 @@ class HasManyThrough extends Relation
      *
      * @return string
      */
-    public function getLocalKeyName()
+    public function getLocalKeyName(): string
     {
         return $this->localKey;
     }
@@ -676,7 +771,7 @@ class HasManyThrough extends Relation
      *
      * @return string
      */
-    public function getQualifiedLocalKeyName()
+    public function getQualifiedLocalKeyName(): string
     {
         return $this->farParent->qualifyColumn($this->localKey);
     }
@@ -686,7 +781,7 @@ class HasManyThrough extends Relation
      *
      * @return string
      */
-    public function getSecondLocalKeyName()
+    public function getSecondLocalKeyName(): string
     {
         return $this->secondLocalKey;
     }

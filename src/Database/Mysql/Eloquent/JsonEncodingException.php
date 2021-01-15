@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql\Eloquent;
 
+use Mini\Http\Resources\Json\JsonResource;
 use RuntimeException;
 
 class JsonEncodingException extends RuntimeException
@@ -18,7 +19,7 @@ class JsonEncodingException extends RuntimeException
      * @param string $message
      * @return static
      */
-    public static function forModel($model, $message)
+    public static function forModel($model, string $message)
     {
         return new static('Error encoding model [' . get_class($model) . '] with ID [' . $model->getKey() . '] to JSON: ' . $message);
     }
@@ -26,11 +27,15 @@ class JsonEncodingException extends RuntimeException
     /**
      * Create a new JSON encoding exception for the resource.
      *
+<<<<<<< HEAD
      * @param \Mini\Http\Resources\Json\JsonResource $resource
+=======
+     * @param JsonResource $resource
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $message
      * @return static
      */
-    public static function forResource($resource, $message)
+    public static function forResource($resource, string $message)
     {
         $model = $resource->resource;
 
@@ -45,7 +50,7 @@ class JsonEncodingException extends RuntimeException
      * @param string $message
      * @return static
      */
-    public static function forAttribute($model, $key, $message)
+    public static function forAttribute($model, $key, string $message)
     {
         $class = get_class($model);
 

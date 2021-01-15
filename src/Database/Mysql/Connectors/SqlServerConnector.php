@@ -7,8 +7,10 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql\Connectors;
 
+use Exception;
 use Mini\Support\Arr;
 use PDO;
+use Throwable;
 
 class SqlServerConnector extends Connector implements ConnectorInterface
 {
@@ -28,9 +30,15 @@ class SqlServerConnector extends Connector implements ConnectorInterface
      * Establish a database connection.
      *
      * @param array $config
+<<<<<<< HEAD
      * @return \PDO
+=======
+     * @return PDO
+     * @throws Exception
+     * @throws Throwable
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function connect(array $config)
+    public function connect(array $config): PDO
     {
         $options = $this->getOptions($config);
 
@@ -43,7 +51,7 @@ class SqlServerConnector extends Connector implements ConnectorInterface
      * @param array $config
      * @return string
      */
-    protected function getDsn(array $config)
+    protected function getDsn(array $config): ?string
     {
         // First we will create the basic DSN setup as well as the port if it is in
         // in the configuration options. This will give us the basic DSN we will
@@ -52,7 +60,7 @@ class SqlServerConnector extends Connector implements ConnectorInterface
             return $this->getOdbcDsn($config);
         }
 
-        if (in_array('sqlsrv', $this->getAvailableDrivers())) {
+        if (in_array('sqlsrv', $this->getAvailableDrivers(), true)) {
             return $this->getSqlSrvDsn($config);
         } else {
             return $this->getDblibDsn($config);
@@ -65,9 +73,13 @@ class SqlServerConnector extends Connector implements ConnectorInterface
      * @param array $config
      * @return bool
      */
-    protected function prefersOdbc(array $config)
+    protected function prefersOdbc(array $config): bool
     {
+<<<<<<< HEAD
         return in_array('odbc', $this->getAvailableDrivers()) &&
+=======
+        return in_array('odbc', $this->getAvailableDrivers(), true) &&
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
             ($config['odbc'] ?? null) === true;
     }
 
@@ -77,7 +89,7 @@ class SqlServerConnector extends Connector implements ConnectorInterface
      * @param array $config
      * @return string
      */
-    protected function getDblibDsn(array $config)
+    protected function getDblibDsn(array $config): string
     {
         return $this->buildConnectString('dblib', array_merge([
             'host' => $this->buildHostString($config, ':'),
@@ -91,7 +103,7 @@ class SqlServerConnector extends Connector implements ConnectorInterface
      * @param array $config
      * @return string
      */
-    protected function getOdbcDsn(array $config)
+    protected function getOdbcDsn(array $config): string
     {
         return isset($config['odbc_datasource_name'])
             ? 'odbc:' . $config['odbc_datasource_name'] : '';
@@ -103,7 +115,7 @@ class SqlServerConnector extends Connector implements ConnectorInterface
      * @param array $config
      * @return string
      */
-    protected function getSqlSrvDsn(array $config)
+    protected function getSqlSrvDsn(array $config): string
     {
         $arguments = [
             'Server' => $this->buildHostString($config, ','),
@@ -171,9 +183,13 @@ class SqlServerConnector extends Connector implements ConnectorInterface
      * @param array $arguments
      * @return string
      */
-    protected function buildConnectString($driver, array $arguments)
+    protected function buildConnectString(string $driver, array $arguments): string
     {
+<<<<<<< HEAD
         return $driver . ':' . implode(';', array_map(function ($key) use ($arguments) {
+=======
+        return $driver . ':' . implode(';', array_map(static function ($key) use ($arguments) {
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
                 return sprintf('%s=%s', $key, $arguments[$key]);
             }, array_keys($arguments)));
     }
@@ -185,7 +201,7 @@ class SqlServerConnector extends Connector implements ConnectorInterface
      * @param string $separator
      * @return string
      */
-    protected function buildHostString(array $config, $separator)
+    protected function buildHostString(array $config, string $separator): string
     {
         if (empty($config['port'])) {
             return $config['host'];
@@ -199,7 +215,7 @@ class SqlServerConnector extends Connector implements ConnectorInterface
      *
      * @return array
      */
-    protected function getAvailableDrivers()
+    protected function getAvailableDrivers(): array
     {
         return PDO::getAvailableDrivers();
     }

@@ -30,7 +30,7 @@ trait HidesAttributes
      *
      * @return array
      */
-    public function getHidden()
+    public function getHidden(): array
     {
         return $this->hidden;
     }
@@ -41,7 +41,7 @@ trait HidesAttributes
      * @param array $hidden
      * @return $this
      */
-    public function setHidden(array $hidden)
+    public function setHidden(array $hidden): self
     {
         $this->hidden = $hidden;
 
@@ -53,7 +53,7 @@ trait HidesAttributes
      *
      * @return array
      */
-    public function getVisible()
+    public function getVisible(): array
     {
         return $this->visible;
     }
@@ -64,7 +64,7 @@ trait HidesAttributes
      * @param array $visible
      * @return $this
      */
-    public function setVisible(array $visible)
+    public function setVisible(array $visible): self
     {
         $this->visible = $visible;
 
@@ -77,7 +77,7 @@ trait HidesAttributes
      * @param array|string|null $attributes
      * @return $this
      */
-    public function makeVisible($attributes)
+    public function makeVisible($attributes): self
     {
         $attributes = is_array($attributes) ? $attributes : func_get_args();
 
@@ -97,7 +97,7 @@ trait HidesAttributes
      * @param array|string|null $attributes
      * @return $this
      */
-    public function makeVisibleIf($condition, $attributes)
+    public function makeVisibleIf($condition, $attributes): self
     {
         $condition = $condition instanceof Closure ? $condition($this) : $condition;
 
@@ -110,7 +110,7 @@ trait HidesAttributes
      * @param array|string|null $attributes
      * @return $this
      */
-    public function makeHidden($attributes)
+    public function makeHidden($attributes): self
     {
         $this->hidden = array_merge(
             $this->hidden, is_array($attributes) ? $attributes : func_get_args()
@@ -122,11 +122,15 @@ trait HidesAttributes
     /**
      * Make the given, typically visible, attributes hidden if the given truth test passes.
      *
+<<<<<<< HEAD
      * @param bool|Closure $truthTest
+=======
+     * @param bool|Closure $condition
+>>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array|string|null $attributes
      * @return $this
      */
-    public function makeHiddenIf($condition, $attributes)
+    public function makeHiddenIf($condition, $attributes): self
     {
         $condition = $condition instanceof Closure ? $condition($this) : $condition;
 
