@@ -35,7 +35,7 @@ class HttpServer extends AbstractServer
      * @var RouteService
      */
     protected RouteService $route;
-    
+
     protected string $type = 'Http';
 
     public function initialize(): void
@@ -97,7 +97,7 @@ class HttpServer extends AbstractServer
      */
     protected function initialProvider(): void
     {
-        $map = ConfigProvider::_invoke() + Config::getInstance()->get('app.bind', []);
+        $map = ConfigProvider::_invoke() + config('app.bind', []);
         $app = app();
         foreach ($map as $key => $value) {
             $app->bind($key, $value);
@@ -108,6 +108,7 @@ class HttpServer extends AbstractServer
      * @param $request
      * @param $response
      * @return array
+     * @throws Throwable
      */
     protected function initRequestAndResponse($request, $response): array
     {
@@ -119,7 +120,7 @@ class HttpServer extends AbstractServer
 
     /**
      * @param $response
-     * @return \Mini\Service\HttpServer\Response | \Mini\Service\HttpMessage\Server\Response
+     * @return \Psr\Http\Message\ResponseInterface
      * @throws Throwable
      */
     protected function transferToResponse($response): \Psr\Http\Message\ResponseInterface
@@ -161,7 +162,7 @@ class HttpServer extends AbstractServer
     }
 
     /**
-     * @return mixed|null
+     * @return mixed
      */
     public function response()
     {

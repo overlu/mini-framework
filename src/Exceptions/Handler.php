@@ -7,11 +7,13 @@ declare(strict_types=1);
 
 namespace Mini\Exceptions;
 
+use Exception;
 use JsonException;
 use Mini\Context;
 use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Logging\Log;
 use Mini\Support\Command;
+use Seaslog;
 use Swoole\ExitException;
 use Throwable;
 
@@ -29,6 +31,11 @@ class Handler implements HandlerInterface
 
     protected Throwable $throwable;
 
+    protected array $exceptionHeaders = [
+        'content-type' => 'application/json;charset=UTF-8',
+        'server' => 'mini',
+    ];
+
     public function __construct()
     {
         $this->environment = env('APP_ENV', 'production');
@@ -44,10 +51,8 @@ class Handler implements HandlerInterface
     public function throw(Throwable $throwable): void
     {
         if ($throwable instanceof HttpException) {
-            write(failed($throwable->getMessage(), $throwable->getCode() ?? 0));
-            return;
-        }
-        if ($this->environment !== 'production') {
+            $this->sendException($throwable);
+        } else if ($this->environment !== 'production') {
             if (Context::has('IsInRequestEvent')) {
                 $this->render(request(), $throwable);
             }
@@ -55,6 +60,7 @@ class Handler implements HandlerInterface
         } else {
             abort(500, 'The server is busy, please try again later.');
         }
+
     }
 
     /**
@@ -121,6 +127,7 @@ class Handler implements HandlerInterface
     }
 
     /**
+     * @param Throwable $throwable
      * @return bool
      */
     private function checkNotDontReport(Throwable $throwable): bool
@@ -131,5 +138,33 @@ class Handler implements HandlerInterface
             }
         }
         return true;
+    }
+
+    /**
+     * @param Throwable $throwable
+     * @throws JsonException
+     * @throws Exception
+     */
+    protected function sendException(Throwable $throwable): void
+    {
+        if (Context::has('IsInRequestEvent') && $swResponse = response()->getSwooleResponse()) {
+            $code = method_exists($throwable, 'getStatusCode') ? $throwable->getStatusCode() : $throwable->getCode();
+            $content = [
+                'message' => $throwable->getMessage(),
+                'code' => $throwable->$code
+            ];
+            $swResponse->status($code);
+            $headers = array_merge(
+                [
+                    'mini-request-id' => Seaslog::getRequestID()
+                ],
+                $this->exceptionHeaders,
+                method_exists($throwable, 'getHeaders') ? $throwable->getHeaders() : []
+            );
+            foreach ($headers as $header => $value) {
+                $swResponse->setHeader($header, $value, true);
+            }
+            $swResponse->end(json_encode($content, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE));
+        }
     }
 }

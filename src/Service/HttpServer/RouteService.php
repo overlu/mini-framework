@@ -133,7 +133,7 @@ class RouteService
                 return $this->defaultRouter($uri);
                 break;
             case Dispatcher::METHOD_NOT_ALLOWED:
-                return to405();
+                return abort(405);
                 break;
             case Dispatcher::FOUND:
                 $handler = $routeInfo[1];
@@ -274,6 +274,6 @@ class RouteService
                 return (new $className('index'))->index(\request(), \response());
             }
         }
-        return to404();
+        return abort(404);
     }
 }

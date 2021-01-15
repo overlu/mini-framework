@@ -11,6 +11,7 @@ use Closure;
 use Mini\Console\Panel;
 use Mini\Container\Container;
 use Mini\Contracts\ServiceProviderInterface;
+use Mini\Exceptions\HttpException;
 use Mini\Service\Server\CustomServer;
 use Mini\Service\Server\HelpServer;
 use Mini\Service\Server\HttpServer;
@@ -560,15 +561,11 @@ EOL;
      * Register a service provider with the application.
      *
      * @param ServiceProviderInterface|string $provider
-     * @param bool $force
      * @return ServiceProviderInterface
      * @throws Contracts\Container\BindingResolutionException
      */
-    public function register($provider, $force = false)
+    public function register($provider)
     {
-        if (($registered = $this->getProvider($provider)) && !$force) {
-            return $registered;
-        }
 
         // If the given "provider" is a string, we will resolve it, passing in the
         // application instance automatically for the developer. This is simply
@@ -577,7 +574,7 @@ EOL;
             $provider = $this->resolveProvider($provider);
         }
 
-        $provider->register();
+        $provider->register(null, null);
 
         // If there are bindings / singletons set as properties on the provider we
         // will spin through them and register them with the application, which
@@ -814,19 +811,15 @@ EOL;
     /**
      * Boot the given service provider.
      *
-     * @param ServiceProvider $provider
+     * @param ServiceProviderInterface $provider
      * @return void
      * @throws Contracts\Container\BindingResolutionException
      */
-    protected function bootProvider(ServiceProvider $provider): void
+    protected function bootProvider(ServiceProviderInterface $provider): void
     {
-        $provider->callBootingCallbacks();
-
         if (method_exists($provider, 'boot')) {
             $this->call([$provider, 'boot']);
         }
-
-        $provider->callBootedCallbacks();
     }
 
     /**
@@ -869,147 +862,6 @@ EOL;
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function handle(SymfonyRequest $request, int $type = self::MASTER_REQUEST, bool $catch = true)
-    {
-        return $this[HttpKernelContract::class]->handle(Request::createFromBase($request));
-    }
-
-    /**
-     * Determine if middleware has been disabled for the application.
-     *
-     * @return bool
-     * @throws Contracts\Container\BindingResolutionException
-     */
-    public function shouldSkipMiddleware(): bool
-    {
-        return $this->bound('middleware.disable') &&
-            $this->make('middleware.disable') === true;
-    }
-
-    /**
-     * Get the path to the cached services.php file.
-     *
-     * @return string
-     */
-    public function getCachedServicesPath(): string
-    {
-        return $this->normalizeCachePath('APP_SERVICES_CACHE', 'cache/services.php');
-    }
-
-    /**
-     * Get the path to the cached packages.php file.
-     *
-     * @return string
-     */
-    public function getCachedPackagesPath(): string
-    {
-        return $this->normalizeCachePath('APP_PACKAGES_CACHE', 'cache/packages.php');
-    }
-
-    /**
-     * Determine if the application configuration is cached.
-     *
-     * @return bool
-     */
-    public function configurationIsCached(): bool
-    {
-        return is_file($this->getCachedConfigPath());
-    }
-
-    /**
-     * Get the path to the configuration cache file.
-     *
-     * @return string
-     */
-    public function getCachedConfigPath(): string
-    {
-        return $this->normalizeCachePath('APP_CONFIG_CACHE', 'cache/config.php');
-    }
-
-    /**
-     * Determine if the application routes are cached.
-     *
-     * @return bool
-     */
-    public function routesAreCached(): bool
-    {
-        return $this['files']->exists($this->getCachedRoutesPath());
-    }
-
-    /**
-     * Get the path to the routes cache file.
-     *
-     * @return string
-     */
-    public function getCachedRoutesPath(): string
-    {
-        return $this->normalizeCachePath('APP_ROUTES_CACHE', 'cache/routes-v7.php');
-    }
-
-    /**
-     * Determine if the application events are cached.
-     *
-     * @return bool
-     */
-    public function eventsAreCached(): bool
-    {
-        return $this['files']->exists($this->getCachedEventsPath());
-    }
-
-    /**
-     * Get the path to the events cache file.
-     *
-     * @return string
-     */
-    public function getCachedEventsPath(): string
-    {
-        return $this->normalizeCachePath('APP_EVENTS_CACHE', 'cache/events.php');
-    }
-
-    /**
-     * Normalize a relative or absolute path to a cache file.
-     *
-     * @param string $key
-     * @param string $default
-     * @return string
-     */
-    protected function normalizeCachePath($key, $default): string
-    {
-        if (is_null($env = Env::get($key))) {
-            return $this->bootstrapPath($default);
-        }
-
-        return Str::startsWith($env, $this->absoluteCachePathPrefixes)
-            ? $env
-            : $this->basePath($env);
-    }
-
-    /**
-     * Add new prefix to list of absolute path prefixes.
-     *
-     * @param string $prefix
-     * @return $this
-     */
-    public function addAbsoluteCachePathPrefix($prefix): self
-    {
-        $this->absoluteCachePathPrefixes[] = $prefix;
-
-        return $this;
-    }
-
-    /**
-     * Determine if the application is currently down for maintenance.
-     *
-     * @return bool
-     */
-    public function isDownForMaintenance(): bool
-    {
-        return is_file($this->storagePath() . '/framework/down');
-    }
-
-    /**
      * Throw an HttpException with the given data.
      *
      * @param $code
@@ -1019,13 +871,6 @@ EOL;
      */
     public function abort($code, string $message = '', array $headers = []): void
     {
-        $errors = [
-            '404' => 'Not found.',
-            '429' => 'Too many requests.',
-            '405' => 'Method not allowed.',
-            '500' => ''
-        ];
-
         throw new HttpException($code, $message, null, $headers);
     }
 

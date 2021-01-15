@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Service\Server;
 
+use JsonException;
 use Mini\Context;
 use Mini\Crontab\Crontab;
 use Mini\Exceptions\Handler;
@@ -244,8 +245,28 @@ abstract class AbstractServer
         }
     }
 
+    /**
+     * @param Server $server
+     * @param int $task_id
+     * @param $data
+     * @throws Throwable
+     */
     public function onFinish(Server $server, int $task_id, $data): void
     {
         Listener::getInstance()->listen('finish', $server, $task_id, $data);
+    }
+
+    /**
+     * @param $error_message
+     * @param int $code
+     * @return false|string
+     * @throws JsonException
+     */
+    protected function error($error_message, $code = 0)
+    {
+        return json_encode([
+            'code' => $code,
+            'message' => $error_message,
+        ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
     }
 }

@@ -25,6 +25,7 @@ use Mini\Support\Dotenv;
 use Mini\Support\HigherOrderTapProxy;
 use Mini\Support\Parallel;
 use Mini\Support\Str;
+use Mini\Support\Waiter;
 use Mini\Translate\Translate;
 use Mini\View\View;
 use Psr\Http\Message\ResponseInterface;
@@ -652,47 +653,21 @@ if (!function_exists('http_build_url')) {
     }
 }
 
-if (!function_exists('http_error_format')) {
-    /**
-     * 系统错误信息式化
-     * @param $error_message
-     * @param int $code
-     * @return string
-     */
-    function http_error_format($error_message, $code = 0)
-    {
-        $error_info = [
-            'requestId' => \SeasLog::getRequestID(),
-            'status' => [
-                'success' => false,
-                'message' => $error_message,
-                'code' => $code,
-            ],
-            'method' => request()->getMethod(),
-            'data' => []
-        ];
-        return json_encode($error_info, JSON_UNESCAPED_UNICODE);
-    }
-}
-
 if (!function_exists('ws_error_format')) {
     /**
      * 系统错误信息式化
      * @param $error_message
      * @param int $code
      * @return string
+     * @throws JsonException
      */
     function ws_error_format($error_message, $code = 0)
     {
         $error_info = [
-            'status' => [
-                'success' => false,
-                'message' => $error_message,
-                'code' => $code,
-            ],
-            'data' => []
+            'code' => $code,
+            'message' => $error_message,
         ];
-        return json_encode($error_info, JSON_UNESCAPED_UNICODE);
+        return json_encode($error_info, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
     }
 }
 
@@ -806,51 +781,19 @@ if (!function_exists('array_plus')) {
                 $arr1[$key] += $arr2[$key];
             }
         }
-        return $arr1 + $arr2;
-    }
-}
-
-if (!function_exists('to404')) {
-    /**
-     * @return string|null
-     * @throws InvalidResponseException|JsonException
-     */
-    function to404(): ?string
-    {
-        return abort(404, 'Whoops, not found.');
-    }
-}
-
-if (!function_exists('to405')) {
-    /**
-     * @return string|null
-     * @throws InvalidResponseException|JsonException
-     */
-    function to405(): ?string
-    {
-        return abort(405, 'Whoops, method not allowed.');
+        return array_merge($arr2, $arr1);
     }
 }
 
 if (!function_exists('abort')) {
     /**
      * @param int $code
-     * @param mixed $message
-     * @return string|null
-     * @throws InvalidResponseException
+     * @param string $message
+     * @throws Exception
      */
-    function abort(int $code, $message): ?string
+    function abort(int $code, string $message = ''): void
     {
-        if (Context::has('IsInRequestEvent') && $response = response()) {
-            $response->withStatus($code)
-                ->withAddedHeader('content-type', 'application/json;charset=UTF-8')
-                ->withHeader('Server', 'Mini')
-                ->withHeader('mini-request-id', \Seaslog::getRequestID())
-                ->raw(http_error_format($message, $code))
-                ->send(true);
-            return '#%Mini::abort%#';
-        }
-        return null;
+        throw new \Mini\Exceptions\HttpException($code, $message);
     }
 }
 
@@ -878,7 +821,6 @@ if (!function_exists('view')) {
      * @param array $data
      * @param array $mergeData
      * @return View|Factory
-     * @throws BindingResolutionException
      */
     function view($view = null, $data = [], $mergeData = [])
     {
@@ -910,6 +852,7 @@ if (!function_exists('debug')) {
     /**
      * @param $var
      * @param array $moreVars
+     * @throws Exception
      */
     function debug($var, ...$moreVars)
     {
@@ -931,96 +874,6 @@ if (!function_exists('debug')) {
     }
 }
 
-if (!function_exists('failed')) {
-    /**
-     * @param string $error_message
-     * @param int $code
-     * @return array
-     */
-    function failed($error_message = 'failed', $code = 0): array
-    {
-        return [
-            'requestId' => \SeasLog::getRequestID(),
-            'status' => [
-                'success' => false,
-                'message' => $error_message,
-                'code' => $code,
-            ],
-            'method' => Context::has('IsInRequestEvent') ? request()->getMethod() : null,
-            'data' => []
-        ];
-    }
-}
-
-if (!function_exists('success')) {
-    /**
-     * @param array $data
-     * @param string $success_message
-     * @param int $code
-     * @return array
-     */
-    function success(string $success_message = 'succeed', array $data = [], $code = 200): array
-    {
-        return [
-            'requestId' => \SeasLog::getRequestID(),
-            'status' => [
-                'success' => true,
-                'message' => $success_message,
-                'code' => $code,
-            ],
-            'method' => Context::has('IsInRequestEvent') ? request()->getMethod() : null,
-            'data' => $data
-        ];
-    }
-}
-
-if (!function_exists('write')) {
-    /**
-     * @param $content
-     * @param bool $stop
-     * @throws JsonException
-     */
-    function write($content, $stop = false)
-    {
-        if (Context::has('IsInRequestEvent') && $swResponse = response()->getSwooleResponse()) {
-            if (is_array($content)) {
-                $swResponse->header('content-type', 'application/json;charset=UTF-8', true);
-                $content = json_encode($content, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
-            }
-            $swResponse->header('Server', 'Mini', true);
-            $swResponse->header('mini-request-id', \Seaslog::getRequestID(), true);
-            $swResponse->write($content);
-            if ($stop) {
-                $swResponse->close();
-            }
-        }
-    }
-}
-
-if (!function_exists('writeSucceed')) {
-    /**
-     * @param $message
-     * @param bool $stop
-     * @throws JsonException
-     */
-    function writeSucceed($message, $stop = false)
-    {
-        write(success($message), $stop);
-    }
-}
-
-if (!function_exists('writeFailed')) {
-    /**
-     * @param $content
-     * @param bool $stop
-     * @throws JsonException
-     */
-    function writeFailed($content, $stop = false)
-    {
-        write(failed($content), $stop);
-    }
-}
-
 if (!function_exists('__')) {
     /**
      * translate，参数为空不会解析
@@ -1029,7 +882,6 @@ if (!function_exists('__')) {
      * @param string|null $domain
      * @param string|null $locale
      * @return string
-     * @throws EntryNotFoundException
      */
     function __(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
     {
@@ -1062,10 +914,11 @@ if (!function_exists('cookie')) {
      * @param bool $secure
      * @param bool $httpOnly
      * @return Cookie
+     * @throws JsonException
      */
     function cookie(string $name, $value, int $minutes = 0, string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = true)
     {
-        $value = is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value;
+        $value = is_array($value) ? json_encode($value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE) : $value;
         return new Mini\Service\HttpMessage\Cookie\Cookie($name, $value, $minutes, $path, $domain, $secure, $httpOnly);
     }
 }
@@ -1077,6 +930,7 @@ if (!function_exists('redirect')) {
      * @param int $status
      * @param string $schema
      * @return ResponseInterface
+     * @throws Exception
      */
     function redirect(string $toUrl, int $status = 302, string $schema = 'http')
     {
@@ -1101,12 +955,13 @@ if (!function_exists('wait')) {
      * @param Closure $closure
      * @param float|null $timeout
      * @return mixed
+     * @throws Throwable
      */
     function wait(Closure $closure, ?float $timeout = null)
     {
         if (ApplicationContext::hasContainer()) {
-            return ApplicationContext::getContainer()->get(\Mini\Support\Waiter::class)->wait($closure, $timeout);
+            return ApplicationContext::getContainer()->get(Waiter::class)->wait($closure, $timeout);
         }
-        return (new \Mini\Support\Waiter())->wait($closure, $timeout);
+        return (new Waiter())->wait($closure, $timeout);
     }
 }
