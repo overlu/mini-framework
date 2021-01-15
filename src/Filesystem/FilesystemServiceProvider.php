@@ -15,6 +15,8 @@ class FilesystemServiceProvider implements ServiceProviderInterface
     /**
      * Register the service provider.
      *
+     * @param Server|null $server
+     * @param int|null $workerId
      * @return void
      */
     public function register(?Server $server, ?int $workerId): void
@@ -29,7 +31,7 @@ class FilesystemServiceProvider implements ServiceProviderInterface
      *
      * @return void
      */
-    protected function registerNativeFilesystem()
+    protected function registerNativeFilesystem(): void
     {
         app()->singleton('files', function () {
             return new Filesystem;
@@ -41,7 +43,7 @@ class FilesystemServiceProvider implements ServiceProviderInterface
      *
      * @return void
      */
-    protected function registerFlysystem()
+    protected function registerFlysystem(): void
     {
         $this->registerManager();
 
@@ -59,7 +61,7 @@ class FilesystemServiceProvider implements ServiceProviderInterface
      *
      * @return void
      */
-    protected function registerManager()
+    protected function registerManager(): void
     {
         app()->singleton('filesystem', function ($app) {
             return new FilesystemManager($app);
@@ -71,7 +73,7 @@ class FilesystemServiceProvider implements ServiceProviderInterface
      *
      * @return string
      */
-    protected function getDefaultDriver()
+    protected function getDefaultDriver(): string
     {
         return config('filesystems.default');
     }
@@ -81,7 +83,7 @@ class FilesystemServiceProvider implements ServiceProviderInterface
      *
      * @return string
      */
-    protected function getCloudDriver()
+    protected function getCloudDriver(): string
     {
         return config('filesystems.cloud');
     }

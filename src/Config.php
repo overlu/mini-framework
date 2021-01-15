@@ -7,45 +7,31 @@ declare(strict_types=1);
 
 namespace Mini;
 
-class Config
+use ArrayAccess;
+use Exception;
+use Mini\Config\LoadConfiguration;
+use Mini\Config\Repository;
+use Mini\Contracts\Config\Repository as ConfigContract;
+use Symfony\Component\Finder\Finder;
+
+/**
+ * Class Config
+ * @package Mini
+ */
+class Config implements ArrayAccess, ConfigContract
 {
-    use Singleton;
+    use Singleton, LoadConfiguration, Repository;
 
-    private static array $config = [];
-
-    private function __construct()
-    {
-    }
+    protected array $repository = [];
 
     /**
-     * @param $keys
-     * @param null $default
-     * @return null|mixed
+     * Config constructor.
+     * @throws Exception
      */
-    public function get($keys, $default = null)
+    private function __construct()
     {
-        $keys = explode('.', $keys);
-        if (empty($keys)) {
-            return null;
-        }
-
-        $file = array_shift($keys);
-
-        if (empty(self::$config[$file])) {
-            if (!is_file($config_file = CONFIG_PATH . $file . '.php')) {
-                return null;
-            }
-            self::$config[$file] = include $config_file;
-        }
-        $config = self::$config[$file];
-        while ($keys) {
-            $key = array_shift($keys);
-            if (!isset($config[$key])) {
-                $config = $default;
-                break;
-            }
-            $config = $config[$key];
-        }
-        return $config;
+        $this->bootstrap();
     }
+
+
 }

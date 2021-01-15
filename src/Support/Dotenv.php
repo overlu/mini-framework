@@ -16,33 +16,25 @@ class Dotenv
     /**
      * @var string
      */
-    protected ?string $path;
+    protected string $environmentFile;
     /**
      * @var bool
      */
     private bool $override = false;
 
-    private array $env = [];
+    private array $environmentVariables = [];
 
     /**
      * Dotenv constructor.
      * @param $path
      */
-    private function __construct($path = null)
+    private function __construct($path = '')
     {
-        $this->path = $path ?: BASE_PATH . '/.env';
-        if (!is_file($this->path)) {
-            file_put_contents($this->path, '');
+        $this->environmentFile = $path ?: BASE_PATH . '/.env';
+        if (!is_file($this->environmentFile)) {
+            file_put_contents($this->environmentFile, '');
         }
-    }
-
-    /**
-     * 强制覆盖
-     * @return void
-     */
-    public function setOverride(): void
-    {
-        $this->override = true;
+        $this->parseEnvFile();
     }
 
     /**
@@ -52,25 +44,24 @@ class Dotenv
      */
     public function getValue(string $key, $default = null)
     {
-        if (!$this->override && isset($this->env[$key])) {
-            return $this->env[$key];
-        }
-        $data = $this->parseEnvFile();
-        return $data[$key] ?? $default;
-    }
-
-    public function getAllValues(): array
-    {
-        return $this->env ?: $this->parseEnvFile();
+        return $this->environmentVariables[$key] ?? $default;
     }
 
     /**
      * @return array
      */
-    public function parseEnvFile(): array
+    public function getAllValues(): array
     {
-        if (is_file($this->path)) {
-            $lines = file($this->path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        return $this->environmentVariables;
+    }
+
+    /**
+     * @return array
+     */
+    protected function parseEnvFile(): array
+    {
+        if (is_file($this->environmentFile)) {
+            $lines = file($this->environmentFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             foreach ($lines as $line) {
                 if ($line === '' || $line[0] === '#') {
                     continue;
@@ -81,45 +72,11 @@ class Dotenv
                 $line = trim($line);
                 if (count($parts = explode('=', $line, 2)) === 2) {
                     [$key, $value] = $parts;
-                    switch (strtolower($value)) {
-                        case 'true':
-                        case '(true)':
-                            $value = true;
-                            break;
-                        case 'false':
-                        case '(false)':
-                            $value = false;
-                            break;
-                        case 'empty':
-                        case '(empty)':
-                            $value = '';
-                            break;
-                        case 'null':
-                        case '(null)':
-                            $value = null;
-                            break;
-                        default:
-                            if (str_contains($value, '${')) {
-                                preg_match_all('#\${([\w.]+)}#', $value, $matches);
-                                foreach ((array)$matches[1] as $match) {
-                                    if (isset($this->env[$match])) {
-                                        $value = strtr($value, ['${' . $match . '}' => $this->env[$match]]);
-                                    }
-                                }
-                            } elseif (str_contains($value, '$')) {
-                                preg_match_all('#\$([A-Z_\d]+)#', $value, $matches);
-                                foreach ((array)$matches[1] as $match) {
-                                    if (isset($this->env[$match])) {
-                                        $value = strtr($value, ['$' . $match => $this->env[$match]]);
-                                    }
-                                }
-                            }
-                    }
-                    $this->env[$key] = $value;
+                    $environmentVariables[$key] = $this->praseEnvironmentVariable($value);
                 }
             }
         }
-        return $this->env;
+        return $this->environmentVariables;
     }
 
 
@@ -129,19 +86,19 @@ class Dotenv
      */
     public function setValue(string $key, $value = null): void
     {
-        if (isset($this->env[$key])) {
-            if (is_bool($this->env[$key])) {
-                $old = $this->env[$key] ? 'true' : 'false';
-            } elseif ($this->env[$key] === null) {
+        if (isset($this->environmentVariables[$key])) {
+            if (is_bool($this->environmentVariables[$key])) {
+                $old = $this->environmentVariables[$key] ? 'true' : 'false';
+            } elseif ($this->environmentVariables[$key] === null) {
                 $old = 'null';
             } else {
-                $old = $this->env[$key];
+                $old = $this->environmentVariables[$key];
             }
-            file_put_contents($this->path, str_replace("$key=" . $old, "$key=" . $value, file_get_contents($this->path)));
+            file_put_contents($this->environmentFile, str_replace("$key=" . $old, "$key=" . $value, file_get_contents($this->environmentFile)));
         } else {
-            file_put_contents($this->path, "$key=" . $value . PHP_EOL, FILE_APPEND);
+            file_put_contents($this->environmentFile, "$key=" . $value . PHP_EOL, FILE_APPEND);
         }
-        $this->env[$key] = $value;
+        $this->environmentVariables[$key] = $value;
     }
 
     /**
@@ -150,7 +107,7 @@ class Dotenv
     public function setValues(array $data): void
     {
         if (!$this->isLastLineEmpty()) {
-            file_put_contents($this->path, PHP_EOL, FILE_APPEND);
+            file_put_contents($this->environmentFile, PHP_EOL, FILE_APPEND);
         }
         foreach ($data as $key => $value) {
             $this->setValue($key, $value);
@@ -162,8 +119,51 @@ class Dotenv
      */
     private function isLastLineEmpty(): bool
     {
-        $data = file($this->path);
+        $data = file($this->environmentFile);
         $num = count($data);
         return ($data[$num - 1] === PHP_EOL);
+    }
+
+    /**
+     * @param $value
+     * @return bool|mixed|string|null
+     */
+    protected function praseEnvironmentVariable($value)
+    {
+        switch (strtolower($value)) {
+            case 'true':
+            case '(true)':
+                $value = true;
+                break;
+            case 'false':
+            case '(false)':
+                $value = false;
+                break;
+            case 'empty':
+            case '(empty)':
+                $value = '';
+                break;
+            case 'null':
+            case '(null)':
+                $value = null;
+                break;
+            default:
+                if (str_contains($value, '${')) {
+                    preg_match_all('#\${([\w.]+)}#', $value, $matches);
+                    foreach ((array)$matches[1] as $match) {
+                        if (isset($this->environmentVariables[$match])) {
+                            $value = strtr($value, ['${' . $match . '}' => $this->environmentVariables[$match]]);
+                        }
+                    }
+                } elseif (str_contains($value, '$')) {
+                    preg_match_all('#\$([A-Z_\d]+)#', $value, $matches);
+                    foreach ((array)$matches[1] as $match) {
+                        if (isset($this->environmentVariables[$match])) {
+                            $value = strtr($value, ['$' . $match => $this->environmentVariables[$match]]);
+                        }
+                    }
+                }
+        }
+        return $value;
     }
 }

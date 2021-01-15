@@ -12,9 +12,9 @@ use Mini\Contracts\HttpMessage\ResponseInterface;
 use Mini\Service\HttpServer\Request;
 use Mini\Service\HttpServer\Response;
 
-class ConfigProvider
+class BindsProvider
 {
-    public static function _invoke(): array
+    public static function binds(): array
     {
         return [
             RequestInterface::class => Request::class,

@@ -476,7 +476,7 @@ if (!function_exists('env')) {
      * @param null|mixed $default
      * @return array|bool|false|mixed|string|void
      */
-    function env($key, $default = null)
+    function env(string $key, $default = null)
     {
         return Dotenv::getInstance()->getValue($key, $default);
     }
@@ -488,21 +488,18 @@ if (!function_exists('config')) {
      *
      * 如果key为数组，则为设置配置数据
      *
-     * @param array|string|null $key
+     * @param array|string $key
      * @param mixed $default
-     * @return mixed|Config
+     * @return mixed|void
      */
-    function config($key = null, $default = null)
+    function config($key, $default = null)
     {
-        if (is_null($key)) {
-            return app('config');
-        }
-
         if (is_array($key)) {
-            return app('config')->set($key);
+            Config::getInstance()->set($key);
+            return;
         }
 
-        return app('config')->get($key, $default);
+        return Config::getInstance()->get($key, $default);
     }
 }
 

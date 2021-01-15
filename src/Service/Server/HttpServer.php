@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Mini\Service\Server;
 
 use Mini\Config;
-use Mini\ConfigProvider;
+use Mini\BindsProvider;
 use Mini\Context;
 use Mini\Contracts\Support\Sendable;
 use Mini\Di;
@@ -70,9 +70,6 @@ class HttpServer extends AbstractServer
             [$psr7Request, $psr7Response] = $this->initRequestAndResponse($request, $response);
             BaseRequestService::getInstance()->before();
             $resp = $this->route->dispatch($request);
-            if ($resp === '#%Mini::abort%#') {
-                return;
-            }
             if (!$resp instanceof \Psr\Http\Message\ResponseInterface) {
                 $resp = $this->transferToResponse($resp);
             }
@@ -89,7 +86,6 @@ class HttpServer extends AbstractServer
         } catch (Throwable $throwable) {
             app('exception')->throw($throwable);
         }
-        return;
     }
 
     /**
@@ -97,7 +93,7 @@ class HttpServer extends AbstractServer
      */
     protected function initialProvider(): void
     {
-        $map = ConfigProvider::_invoke() + config('app.bind', []);
+        $map = BindsProvider::binds() + config('app.bind', []);
         $app = app();
         foreach ($map as $key => $value) {
             $app->bind($key, $value);

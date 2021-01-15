@@ -11,7 +11,7 @@ use Exception;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Mini\Config;
-use Mini\ConfigProvider;
+use Mini\BindsProvider;
 use Mini\Di;
 use ReflectionException;
 use ReflectionFunction;
@@ -41,7 +41,7 @@ class RouteService
     private function __construct()
     {
         static::$cached = !config('app.route_cached', true);
-        self::$routes = Config::getInstance()->get('routes', []);
+        self::$routes = config('routes', []);
     }
 
     /**
@@ -131,9 +131,8 @@ class RouteService
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
                 return $this->defaultRouter($uri);
-                break;
             case Dispatcher::METHOD_NOT_ALLOWED:
-                return abort(405);
+                abort(405);
                 break;
             case Dispatcher::FOUND:
                 $handler = $routeInfo[1];
@@ -174,7 +173,7 @@ class RouteService
      * @return mixed
      * @throws Throwable
      */
-    public function dispatchWs(Request $request)
+    public function dispatchWs(Request $request): array
     {
         $method = $request->server['request_method'] ?? 'GET';
         $uri = $request->server['request_uri'] ?? '/';
@@ -182,10 +181,8 @@ class RouteService
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
                 return ['error' => 'method not found.', 'code' => 404];
-                break;
             case Dispatcher::METHOD_NOT_ALLOWED:
                 return ['error' => 'method not allowed, please change method to GET', 'code' => 405];
-                break;
             case Dispatcher::FOUND:
                 $handler = $routeInfo[1];
                 if (is_string($handler)) {
@@ -254,7 +251,7 @@ class RouteService
      */
     protected function getConfigProvider($key)
     {
-        $map = ConfigProvider::_invoke() + Config::getInstance()->get('app.bind', []);
+        $map = BindsProvider::binds() + config('app.bind', []);
         $value = $map[$key] ?? $key;
         app()->bind($key, $value);
         return app()->make($key);
@@ -274,6 +271,6 @@ class RouteService
                 return (new $className('index'))->index(\request(), \response());
             }
         }
-        return abort(404);
+        abort(404);
     }
 }

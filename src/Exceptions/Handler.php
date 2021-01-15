@@ -58,7 +58,7 @@ class Handler implements HandlerInterface
             }
             $this->report($throwable);
         } else {
-            abort(500, 'The server is busy, please try again later.');
+            abort(500);
         }
 
     }

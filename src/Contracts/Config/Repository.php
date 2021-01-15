@@ -49,7 +49,7 @@ interface Repository
      * @param mixed $value
      * @return void
      */
-    public function prepend($key, $value): void;
+    public function prepend(string $key, $value): void;
 
     /**
      * Push a value onto an array configuration value.
@@ -58,5 +58,5 @@ interface Repository
      * @param mixed $value
      * @return void
      */
-    public function push($key, $value): void;
+    public function push(string $key, $value): void;
 }

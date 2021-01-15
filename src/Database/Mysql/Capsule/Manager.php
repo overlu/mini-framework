@@ -40,7 +40,7 @@ class Manager
      */
     public function __construct(?Container $container = null)
     {
-        $config = Config::getInstance()->get('database', []);
+        $config = config('database', []);
         if (!empty($config)) {
             $this->pool_config = $config;
         }
