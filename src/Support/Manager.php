@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Support;
 
 use Closure;
+use Mini\Config;
 use Mini\Contracts\Config\Repository;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\Container\Container;
@@ -63,7 +64,7 @@ abstract class Manager
     {
         $this->app = $container;
         $this->container = $container;
-        $this->config = $container->make('config');
+        $this->config = Config::getInstance();
     }
 
     /**

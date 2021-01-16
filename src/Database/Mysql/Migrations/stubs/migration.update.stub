@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 use Mini\Database\Mysql\Migrations\Migration;
 use Mini\Database\Mysql\Schema\Blueprint;
-use Mini\Database\Mysql\Capsule\Manager;
+use Mini\Facades\Schema;
 
 class {{ class }} extends Migration
 {
@@ -18,7 +18,7 @@ class {{ class }} extends Migration
      */
     public function up(): void
     {
-        Manager::schema()->table('{{ table }}', static function (Blueprint $table) {
+        Schema::table('{{ table }}', static function (Blueprint $table) {
             //
         });
     }
@@ -30,7 +30,7 @@ class {{ class }} extends Migration
      */
     public function down(): void
     {
-        Manager::schema()->table('{{ table }}', static function (Blueprint $table) {
+        Schema::table('{{ table }}', static function (Blueprint $table) {
             //
         });
     }

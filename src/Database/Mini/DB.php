@@ -34,9 +34,10 @@ class DB
     /**
      * @param string $connection_key
      */
-    public function connection(string $connection_key = ''): void
+    public function connection(string $connection_key = '')
     {
         $this->connection = $this->pool->getConnection($connection_key ?: $this->key);
+        return $this;
     }
 
     /**

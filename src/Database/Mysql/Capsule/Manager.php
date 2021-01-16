@@ -41,7 +41,7 @@ class Manager
         if (!empty($config)) {
             $this->pool_config = $config;
         }
-        $this->setupContainer($container ?: new Container);
+        $this->setupContainer($container ?: Container::getInstance());
 
         // Once we have the container setup, we will setup the default configuration
         // options in the container "config" binding. This will make the database

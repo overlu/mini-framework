@@ -480,7 +480,7 @@ if (!function_exists('env')) {
      */
     function env(string $key, $default = null)
     {
-        return Dotenv::getInstance()->getValue($key, $default);
+        return Dotenv::getInstance()->get($key, $default);
     }
 }
 
@@ -564,7 +564,7 @@ if (!function_exists('request')) {
         if (!Context::has('IsInRequestEvent')) {
             throw new RuntimeException("Not In Request Environment.");
         }
-        return app(Mini\Contracts\HttpMessage\RequestInterface::class);
+        return app(\Mini\Contracts\HttpMessage\RequestInterface::class);
     }
 }
 
@@ -579,7 +579,7 @@ if (!function_exists('response')) {
         if (!Context::has('IsInRequestEvent')) {
             throw new RuntimeException("Not In Request Environment.");
         }
-        return app(Mini\Contracts\HttpMessage\ResponseInterface::class);
+        return app(\Mini\Contracts\HttpMessage\ResponseInterface::class);
     }
 }
 

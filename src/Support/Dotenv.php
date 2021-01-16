@@ -42,15 +42,24 @@ class Dotenv
      * @param null $default
      * @return mixed|null
      */
-    public function getValue(string $key, $default = null)
+    public function get(string $key, $default = null)
     {
         return $this->environmentVariables[$key] ?? $default;
     }
 
     /**
+     * @param string $key
+     * @return bool
+     */
+    public function has(string $key): bool
+    {
+        return isset($this->environmentVariables[$key]);
+    }
+
+    /**
      * @return array
      */
-    public function getAllValues(): array
+    public function all(): array
     {
         return $this->environmentVariables;
     }
@@ -84,7 +93,7 @@ class Dotenv
      * @param string $key
      * @param null $value
      */
-    public function setValue(string $key, $value = null): void
+    public function set(string $key, $value = null): void
     {
         if (isset($this->environmentVariables[$key])) {
             if (is_bool($this->environmentVariables[$key])) {
@@ -104,13 +113,13 @@ class Dotenv
     /**
      * @param array $data
      */
-    public function setValues(array $data): void
+    public function setMany(array $data): void
     {
         if (!$this->isLastLineEmpty()) {
             file_put_contents($this->environmentFile, PHP_EOL, FILE_APPEND);
         }
         foreach ($data as $key => $value) {
-            $this->setValue($key, $value);
+            $this->set($key, $value);
         }
     }
 

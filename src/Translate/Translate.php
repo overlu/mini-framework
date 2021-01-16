@@ -40,41 +40,58 @@ class Translate
     }
 
     /**
-     * @param string|null $id
+     * @param string|null $key
      * @param array $parameters
      * @param string|null $domain
      * @param string|null $locale
      * @return string
      */
-    public function get(?string $id = null, array $parameters = [], ?string $domain = null, ?string $locale = null): string
+    public function get(?string $key = null, array $parameters = [], ?string $domain = null, ?string $locale = null): string
     {
-        return empty($parameters) ? (Arr::get($this->translation[$locale ?: $this->locate], $id) ?? $id) : $this->trans($id, $parameters, $domain, $locale);
+        return empty($parameters) ? (Arr::get($this->translation[$locale ?: $this->locate], $key) ?? $key) : $this->trans($key, $parameters, $domain, $locale);
     }
 
     /**
-     * @param string|null $id
+     * @param string|null $key
      * @param string|null $default
-     * @param null $locale
+     * @param string|null $locale
      * @return string
      */
-    public function getOrDefault(?string $id, ?string $default = null, $locale = null): string
+    public function getOrDefault(?string $key, ?string $default = null, ?string $locale = null): string
     {
-        return Arr::get($this->translation[$locale ?: $this->locate], $id) ?? ($default ?: $id);
+        return Arr::get($this->translation[$locale ?: $this->locate], $key) ?? ($default ?: $key);
     }
 
     /**
-     * @param string|null $id
+     * @param string $key
+     * @return bool
+     */
+    public function has(string $key): bool
+    {
+        return Arr::has($this->translation[$locale ?: $this->locate], $key);
+    }
+
+    /**
+     * @param string|null $key
      * @param array $parameters
      * @param string|null $domain
      * @param string|null $locale
      * @return string
      */
-    public function trans(?string $id = null, array $parameters = [], ?string $domain = null, ?string $locale = null): string
+    public function trans(?string $key = null, array $parameters = [], ?string $domain = null, ?string $locale = null): string
     {
         foreach ($parameters as $key => $parameter) {
             $parameters[':' . $key] = $parameter;
             unset($parameters[$key]);
         }
-        return $this->translator->trans($id, $parameters, $domain, $locale);
+        return $this->translator->trans($key, $parameters, $domain, $locale);
+    }
+
+    /**
+     * @return mixed|string|void
+     */
+    public function getLocale()
+    {
+        return $this->locate;
     }
 }

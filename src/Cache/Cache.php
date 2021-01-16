@@ -31,17 +31,15 @@ class Cache
 {
     use Singleton;
 
-    protected array $mapping = [
-        'file' => FileCacheCacheDriver::class,
-        'redis' => RedisCacheCacheDriver::class,
-        'swoole' => SwooleCacheCacheDriver::class
-    ];
-
     /**
      * 缓存驱动
      * @var AbstractCacheDriver[]
      */
-    protected array $drivers = [];
+    protected array $drivers = [
+        'file' => FileCacheCacheDriver::class,
+        'redis' => RedisCacheCacheDriver::class,
+        'swoole' => SwooleCacheCacheDriver::class
+    ];
 
     /**
      * @var mixed
@@ -51,7 +49,7 @@ class Cache
     private function __construct()
     {
         $driver = config('cache.default', 'file');
-        $driverClass = config('cache.drivers.' . $driver . '.driver', $this->mapping[$driver] ?? FileCacheCacheDriver::class);
+        $driverClass = config('cache.drivers.' . $driver . '.driver', $this->drivers[$driver] ?? FileCacheCacheDriver::class);
         $this->default = new $driverClass;
     }
 
@@ -80,6 +78,19 @@ class Cache
     public function getDriver(string $driverName = null): AbstractCacheDriver
     {
         return $driverName ? new $this->drivers[$driverName] : $this->default;
+    }
+
+    /**
+     * @param string $driverName
+     * @return AbstractCacheDriver
+     * @throws CacheException
+     */
+    public function driver(string $driverName)
+    {
+        if (!array_key_exists($driverName, $this->drivers)) {
+            throw new CacheException("{$driverName} not exists.");
+        }
+        return $this->getDriver($driverName);
     }
 
     /**

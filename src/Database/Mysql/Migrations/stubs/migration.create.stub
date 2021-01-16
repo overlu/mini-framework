@@ -1,13 +1,13 @@
 <?php
 /**
  * This file is part of Mini.
- * @auth lupeng
+ * @auth {auth}
  */
 declare(strict_types=1);
 
 use Mini\Database\Mysql\Migrations\Migration;
 use Mini\Database\Mysql\Schema\Blueprint;
-use Mini\Database\Mysql\Capsule\Manager;
+use Mini\Facades\Schema;
 
 class {{ class }} extends Migration
 {
@@ -18,7 +18,7 @@ class {{ class }} extends Migration
      */
     public function up(): void
     {
-        Manager::schema()->create('{{ table }}', static function (Blueprint $table) {
+        Schema::create('{{ table }}', static function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });
@@ -31,6 +31,6 @@ class {{ class }} extends Migration
      */
     public function down(): void
     {
-        Manager::schema()->dropIfExists('{{ table }}');
+        Schema::dropIfExists('{{ table }}');
     }
 }

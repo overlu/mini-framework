@@ -32,7 +32,7 @@ class DatabaseBoot
     public function __construct(array $config)
     {
         Model::clearBootedModels();
-
+        $app = app();
         $capsule = new Manager();
 //        $capsule->setEventDispatcher(new Dispatcher(new Container));
         $capsule->setEventDispatcher(app('events'));
@@ -42,5 +42,9 @@ class DatabaseBoot
         }
         $capsule->setAsGlobal();
         $capsule->bootEloquent();
+
+        $app->singleton('db', function () use ($capsule) {
+            return $capsule->getDatabaseManager();
+        });
     }
 }
