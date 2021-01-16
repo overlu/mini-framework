@@ -18,7 +18,7 @@ class PostgresGrammar extends Grammar
      *
      * @var array
      */
-    protected array $operators = [
+    protected $operators = [
         '=', '<', '>', '<=', '>=', '<>', '!=',
         'like', 'not like', 'between', 'ilike', 'not ilike',
         '~', '&', '|', '#', '<<', '>>', '<<=', '>>=',
@@ -29,15 +29,11 @@ class PostgresGrammar extends Grammar
     /**
      * {@inheritdoc}
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $where
      * @return string
      */
-    protected function whereBasic(Builder $query, array $where): array
+    protected function whereBasic(Builder $query, $where)
     {
         if (Str::contains(strtolower($where['operator']), 'like')) {
             return sprintf(
@@ -54,15 +50,11 @@ class PostgresGrammar extends Grammar
     /**
      * Compile a "where date" clause.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $where
      * @return string
      */
-    protected function whereDate(Builder $query, array $where): string
+    protected function whereDate(Builder $query, $where)
     {
         $value = $this->parameter($where['value']);
 
@@ -72,15 +64,11 @@ class PostgresGrammar extends Grammar
     /**
      * Compile a "where time" clause.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $where
      * @return string
      */
-    protected function whereTime(Builder $query, array $where): string
+    protected function whereTime(Builder $query, $where)
     {
         $value = $this->parameter($where['value']);
 
@@ -91,15 +79,11 @@ class PostgresGrammar extends Grammar
      * Compile a date based where clause.
      *
      * @param string $type
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $where
      * @return string
      */
-    protected function dateBasedWhere(string $type, Builder $query, array $where): string
+    protected function dateBasedWhere($type, Builder $query, $where)
     {
         $value = $this->parameter($where['value']);
 
@@ -109,15 +93,11 @@ class PostgresGrammar extends Grammar
     /**
      * Compile the "select *" portion of the query.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $columns
      * @return string|null
      */
-    protected function compileColumns(Builder $query, array $columns): ?string
+    protected function compileColumns(Builder $query, $columns)
     {
         // If the query is actually performing an aggregating select, we will let that
         // compiler handle the building of the select clauses, as it will need some
@@ -144,7 +124,7 @@ class PostgresGrammar extends Grammar
      * @param string $value
      * @return string
      */
-    protected function compileJsonContains(string $column, string $value): string
+    protected function compileJsonContains($column, $value)
     {
         $column = str_replace('->>', '->', $this->wrap($column));
 
@@ -159,7 +139,7 @@ class PostgresGrammar extends Grammar
      * @param string $value
      * @return string
      */
-    protected function compileJsonLength(string $column, string $operator, string $value): string
+    protected function compileJsonLength($column, $operator, $value)
     {
         $column = str_replace('->>', '->', $this->wrap($column));
 
@@ -169,15 +149,11 @@ class PostgresGrammar extends Grammar
     /**
      * Compile the lock into SQL.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param bool|string $value
      * @return string
      */
-    protected function compileLock(Builder $query, $value): string
+    protected function compileLock(Builder $query, $value)
     {
         if (!is_string($value)) {
             return $value ? 'for update' : 'for share';
@@ -189,15 +165,11 @@ class PostgresGrammar extends Grammar
     /**
      * Compile an insert ignore statement into SQL.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $values
      * @return string
      */
-    public function compileInsertOrIgnore(Builder $query, array $values): string
+    public function compileInsertOrIgnore(Builder $query, array $values)
     {
         return $this->compileInsert($query, $values) . ' on conflict do nothing';
     }
@@ -205,16 +177,12 @@ class PostgresGrammar extends Grammar
     /**
      * Compile an insert and get ID statement into SQL.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $values
      * @param string $sequence
      * @return string
      */
-    public function compileInsertGetId(Builder $query, array $values, string $sequence): string
+    public function compileInsertGetId(Builder $query, $values, $sequence)
     {
         return $this->compileInsert($query, $values) . ' returning ' . $this->wrap($sequence ?: 'id');
     }
@@ -222,15 +190,11 @@ class PostgresGrammar extends Grammar
     /**
      * Compile an update statement into SQL.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $values
      * @return string
      */
-    public function compileUpdate(Builder $query, array $values): string
+    public function compileUpdate(Builder $query, array $values)
     {
         if (isset($query->joins) || isset($query->limit)) {
             return $this->compileUpdateWithJoinsOrLimit($query, $values);
@@ -242,15 +206,11 @@ class PostgresGrammar extends Grammar
     /**
      * Compile the columns for an update statement.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $values
      * @return string
      */
-    protected function compileUpdateColumns(Builder $query, array $values): string
+    protected function compileUpdateColumns(Builder $query, array $values)
     {
         return collect($values)->map(function ($value, $key) {
             $column = last(explode('.', $key));
@@ -270,7 +230,7 @@ class PostgresGrammar extends Grammar
      * @param mixed $value
      * @return string
      */
-    protected function compileJsonUpdateColumn(string $key, $value): string
+    protected function compileJsonUpdateColumn($key, $value)
     {
         $segments = explode('->', $key);
 
@@ -284,15 +244,11 @@ class PostgresGrammar extends Grammar
     /**
      * Compile an update statement with joins or limit into SQL.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $values
      * @return string
      */
-    protected function compileUpdateWithJoinsOrLimit(Builder $query, array $values): string
+    protected function compileUpdateWithJoinsOrLimit(Builder $query, array $values)
     {
         $table = $this->wrapTable($query->from);
 
@@ -312,15 +268,11 @@ class PostgresGrammar extends Grammar
      * @param array $values
      * @return array
      */
-    public function prepareBindingsForUpdate(array $bindings, array $values): array
+    public function prepareBindingsForUpdate(array $bindings, array $values)
     {
         $values = collect($values)->map(function ($value, $column) {
             return is_array($value) || ($this->isJsonSelector($column) && !$this->isExpression($value))
-<<<<<<< HEAD
                 ? json_encode($value)
-=======
-                ? json_encode($value, JSON_UNESCAPED_UNICODE)
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
                 : $value;
         })->all();
 
@@ -334,14 +286,10 @@ class PostgresGrammar extends Grammar
     /**
      * Compile a delete statement into SQL.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return string
      */
-    public function compileDelete(Builder $query): string
+    public function compileDelete(Builder $query)
     {
         if (isset($query->joins) || isset($query->limit)) {
             return $this->compileDeleteWithJoinsOrLimit($query);
@@ -353,14 +301,10 @@ class PostgresGrammar extends Grammar
     /**
      * Compile a delete statement with joins or limit into SQL.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return string
      */
-    protected function compileDeleteWithJoinsOrLimit(Builder $query): string
+    protected function compileDeleteWithJoinsOrLimit(Builder $query)
     {
         $table = $this->wrapTable($query->from);
 
@@ -374,14 +318,10 @@ class PostgresGrammar extends Grammar
     /**
      * Compile a truncate table statement into SQL.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return array
      */
-    public function compileTruncate(Builder $query): array
+    public function compileTruncate(Builder $query)
     {
         return ['truncate ' . $this->wrapTable($query->from) . ' restart identity cascade' => []];
     }
@@ -392,7 +332,7 @@ class PostgresGrammar extends Grammar
      * @param string $value
      * @return string
      */
-    protected function wrapJsonSelector(string $value): string
+    protected function wrapJsonSelector($value)
     {
         $path = explode('->', $value);
 
@@ -415,7 +355,7 @@ class PostgresGrammar extends Grammar
      * @param string $value
      * @return string
      */
-    protected function wrapJsonBooleanSelector(string $value): string
+    protected function wrapJsonBooleanSelector($value)
     {
         $selector = str_replace(
             '->>', '->',
@@ -431,7 +371,7 @@ class PostgresGrammar extends Grammar
      * @param string $value
      * @return string
      */
-    protected function wrapJsonBooleanValue(string $value): string
+    protected function wrapJsonBooleanValue($value)
     {
         return "'" . $value . "'::jsonb";
     }
@@ -442,9 +382,9 @@ class PostgresGrammar extends Grammar
      * @param array $path
      * @return array
      */
-    protected function wrapJsonPathAttributes(array $path): array
+    protected function wrapJsonPathAttributes($path)
     {
-        return array_map(static function ($attribute) {
+        return array_map(function ($attribute) {
             return filter_var($attribute, FILTER_VALIDATE_INT) !== false
                 ? $attribute
                 : "'$attribute'";

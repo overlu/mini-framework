@@ -8,39 +8,25 @@ declare(strict_types=1);
 namespace Mini\Database\Mysql;
 
 use Closure;
-use Generator;
-use Mini\Database\Mysql\Query\Builder;
-use Mini\Database\Mysql\Query\Expression;
-use Throwable;
 
 interface ConnectionInterface
 {
     /**
      * Begin a fluent query against a database table.
      *
-<<<<<<< HEAD
      * @param \Closure|\Mini\Database\Mysql\Query\Builder|string $table
      * @param string|null $as
      * @return \Mini\Database\Mysql\Query\Builder
-=======
-     * @param Closure|Builder|string $table
-     * @param string|null $as
-     * @return Builder
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function table($table, ?string $as = null): Builder;
+    public function table($table, $as = null);
 
     /**
      * Get a new raw query expression.
      *
      * @param mixed $value
-<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Query\Expression
-=======
-     * @return Expression
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function raw($value): Expression;
+    public function raw($value);
 
     /**
      * Run a select statement and return a single result.
@@ -50,7 +36,7 @@ interface ConnectionInterface
      * @param bool $useReadPdo
      * @return mixed
      */
-    public function selectOne(string $query, array $bindings = [], bool $useReadPdo = true);
+    public function selectOne($query, $bindings = [], $useReadPdo = true);
 
     /**
      * Run a select statement against the database.
@@ -60,7 +46,7 @@ interface ConnectionInterface
      * @param bool $useReadPdo
      * @return array
      */
-    public function select(string $query, array $bindings = [], bool $useReadPdo = true): array;
+    public function select($query, $bindings = [], $useReadPdo = true);
 
     /**
      * Run a select statement against the database and returns a generator.
@@ -68,13 +54,9 @@ interface ConnectionInterface
      * @param string $query
      * @param array $bindings
      * @param bool $useReadPdo
-<<<<<<< HEAD
      * @return \Generator
-=======
-     * @return Generator
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function cursor(string $query, array $bindings = [], bool $useReadPdo = true): Generator;
+    public function cursor($query, $bindings = [], $useReadPdo = true);
 
     /**
      * Run an insert statement against the database.
@@ -83,7 +65,7 @@ interface ConnectionInterface
      * @param array $bindings
      * @return bool
      */
-    public function insert(string $query, array $bindings = []): bool;
+    public function insert($query, $bindings = []);
 
     /**
      * Run an update statement against the database.
@@ -92,7 +74,7 @@ interface ConnectionInterface
      * @param array $bindings
      * @return int
      */
-    public function update(string $query, array $bindings = []): int;
+    public function update($query, $bindings = []);
 
     /**
      * Run a delete statement against the database.
@@ -101,7 +83,7 @@ interface ConnectionInterface
      * @param array $bindings
      * @return int
      */
-    public function delete(string $query, array $bindings = []): int;
+    public function delete($query, $bindings = []);
 
     /**
      * Execute an SQL statement and return the boolean result.
@@ -110,7 +92,7 @@ interface ConnectionInterface
      * @param array $bindings
      * @return bool
      */
-    public function statement(string $query, array $bindings = []): bool;
+    public function statement($query, $bindings = []);
 
     /**
      * Run an SQL statement and get the number of rows affected.
@@ -119,7 +101,7 @@ interface ConnectionInterface
      * @param array $bindings
      * @return int
      */
-    public function affectingStatement(string $query, array $bindings = []): int;
+    public function affectingStatement($query, $bindings = []);
 
     /**
      * Run a raw, unprepared query against the PDO connection.
@@ -127,7 +109,7 @@ interface ConnectionInterface
      * @param string $query
      * @return bool
      */
-    public function unprepared(string $query): bool;
+    public function unprepared($query);
 
     /**
      * Prepare the query bindings for execution.
@@ -135,60 +117,52 @@ interface ConnectionInterface
      * @param array $bindings
      * @return array
      */
-    public function prepareBindings(array $bindings): array;
+    public function prepareBindings(array $bindings);
 
     /**
      * Execute a Closure within a transaction.
      *
-<<<<<<< HEAD
      * @param \Closure $callback
-=======
-     * @param Closure $callback
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param int $attempts
      * @return mixed
      *
-     * @throws Throwable
+     * @throws \Throwable
      */
-    public function transaction(Closure $callback, int $attempts = 1);
+    public function transaction(Closure $callback, $attempts = 1);
 
     /**
      * Start a new database transaction.
      *
      * @return void
      */
-    public function beginTransaction(): void;
+    public function beginTransaction();
 
     /**
      * Commit the active database transaction.
      *
      * @return void
      */
-    public function commit(): void;
+    public function commit();
 
     /**
      * Rollback the active database transaction.
      *
      * @return void
      */
-    public function rollBack(): void;
+    public function rollBack();
 
     /**
      * Get the number of active transactions.
      *
      * @return int
      */
-    public function transactionLevel(): int;
+    public function transactionLevel();
 
     /**
      * Execute the given callback in "dry run" mode.
      *
-<<<<<<< HEAD
      * @param \Closure $callback
-=======
-     * @param Closure $callback
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return array
      */
-    public function pretend(Closure $callback): array;
+    public function pretend(Closure $callback);
 }

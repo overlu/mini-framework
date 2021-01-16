@@ -8,36 +8,32 @@ declare(strict_types=1);
 namespace Mini\Database\Mysql\Eloquent;
 
 /**
- * @mixin Builder
+ * @mixin \Mini\Database\Mysql\Eloquent\Builder
  */
 class HigherOrderBuilderProxy
 {
     /**
      * The collection being operated on.
      *
-     * @var Builder
+     * @var \Mini\Database\Mysql\Eloquent\Builder
      */
-    protected Builder $builder;
+    protected $builder;
 
     /**
      * The method being proxied.
      *
      * @var string
      */
-    protected string $method;
+    protected $method;
 
     /**
      * Create a new proxy instance.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $builder
-=======
-     * @param Builder $builder
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $method
      * @return void
      */
-    public function __construct(Builder $builder, string $method)
+    public function __construct(Builder $builder, $method)
     {
         $this->method = $method;
         $this->builder = $builder;
@@ -52,9 +48,8 @@ class HigherOrderBuilderProxy
      */
     public function __call($method, $parameters)
     {
-        return $this->builder->{$this->method}(
-            static function ($value) use ($method, $parameters) {
-                return $value->{$method}(...$parameters);
-            });
+        return $this->builder->{$this->method}(function ($value) use ($method, $parameters) {
+            return $value->{$method}(...$parameters);
+        });
     }
 }

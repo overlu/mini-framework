@@ -29,8 +29,6 @@ class Handler implements HandlerInterface
 
     protected array $dontReport = [];
 
-    protected Throwable $throwable;
-
     protected array $exceptionHeaders = [
         'content-type' => 'application/json;charset=UTF-8',
         'server' => 'mini',
@@ -52,15 +50,12 @@ class Handler implements HandlerInterface
     {
         if ($throwable instanceof HttpException) {
             $this->sendException($throwable);
-        } else if ($this->environment !== 'production') {
-            if (Context::has('IsInRequestEvent')) {
-                $this->render(request(), $throwable);
-            }
-            $this->report($throwable);
-        } else {
-            abort(500);
+            return;
         }
-
+        if (Context::has('IsInRequestEvent')) {
+            $this->render(request(), $throwable);
+        }
+        $this->report($throwable);
     }
 
     /**
@@ -70,8 +65,9 @@ class Handler implements HandlerInterface
     public function report(Throwable $throwable): void
     {
         if ($this->checkNotDontReport($throwable) && !$throwable instanceof ExitException) {
+            Log::error($this->format($throwable));
             Command::line();
-            Command::error($this->formatException($throwable));
+            Command::error($this->environment !== 'production' ? $this->formatException($throwable) : 'server is busy.');
             Command::line();
         }
     }
@@ -84,8 +80,8 @@ class Handler implements HandlerInterface
     public function render(RequestInterface $request, Throwable $throwable): void
     {
         if ($this->checkNotDontReport($throwable)) {
-            abort(500, $this->formatResponseException($throwable));
-            Log::error($this->format($throwable));
+//            abort(500, $this->formatResponseException($throwable));
+            $this->sendException($throwable);
         }
     }
 
@@ -98,7 +94,7 @@ class Handler implements HandlerInterface
         if ($this->debug) {
             return $throwable;
         }
-        return "Whoops, something error";
+        return "whoops, something error";
     }
 
     /**
@@ -110,7 +106,7 @@ class Handler implements HandlerInterface
         if ($this->debug) {
             return $this->format($throwable);
         }
-        return 'Whoops, something error.';
+        return 'whoops, something error.';
     }
 
     /**
@@ -121,6 +117,7 @@ class Handler implements HandlerInterface
     {
         return [
             'exception' => get_class($throwable),
+            'exception code' => $throwable->getCode(),
             'exception message' => $throwable->getMessage() . ' in ' . $throwable->getFile() . ':' . $throwable->getLine(),
             'exception trace detail' => $throwable->getTrace()
         ];
@@ -148,11 +145,16 @@ class Handler implements HandlerInterface
     protected function sendException(Throwable $throwable): void
     {
         if (Context::has('IsInRequestEvent') && $swResponse = response()->getSwooleResponse()) {
-            $code = method_exists($throwable, 'getStatusCode') ? $throwable->getStatusCode() : $throwable->getCode();
-            $content = [
-                'message' => $throwable->getMessage(),
-                'code' => $throwable->$code
-            ];
+            if($throwable instanceof HttpExceptionInterface){
+                $code = $throwable->getStatusCode();
+                $content = [
+                    'code' => $code,
+                    'message' => $throwable->getResponseMessage(),
+                ];
+            }else{
+                $content = $this->formatResponseException($throwable);
+                $code = 500;
+            }
             $swResponse->status($code);
             $headers = array_merge(
                 [
@@ -167,4 +169,6 @@ class Handler implements HandlerInterface
             $swResponse->end(json_encode($content, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE));
         }
     }
+
+
 }

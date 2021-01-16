@@ -17,31 +17,26 @@ abstract class MorphOneOrMany extends HasOneOrMany
      *
      * @var string
      */
-    protected string $morphType;
+    protected $morphType;
 
     /**
      * The class name of the parent model.
      *
      * @var string
      */
-    protected string $morphClass;
+    protected $morphClass;
 
     /**
      * Create a new morph one or many relationship instance.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @param \Mini\Database\Mysql\Eloquent\Model $parent
-=======
-     * @param Builder $query
-     * @param Model $parent
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $type
      * @param string $id
      * @param string $localKey
      * @return void
      */
-    public function __construct(Builder $query, Model $parent, string $type, string $id, string $localKey)
+    public function __construct(Builder $query, Model $parent, $type, $id, $localKey)
     {
         $this->morphType = $type;
 
@@ -55,7 +50,7 @@ abstract class MorphOneOrMany extends HasOneOrMany
      *
      * @return void
      */
-    public function addConstraints(): void
+    public function addConstraints()
     {
         if (static::$constraints) {
             parent::addConstraints();
@@ -70,7 +65,7 @@ abstract class MorphOneOrMany extends HasOneOrMany
      * @param array $models
      * @return void
      */
-    public function addEagerConstraints(array $models): void
+    public function addEagerConstraints(array $models)
     {
         parent::addEagerConstraints($models);
 
@@ -80,14 +75,10 @@ abstract class MorphOneOrMany extends HasOneOrMany
     /**
      * Set the foreign ID and type for creating a related model.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Model $model
-=======
-     * @param Model $model
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
-    protected function setForeignAttributesForCreate(Model $model): void
+    protected function setForeignAttributesForCreate(Model $model)
     {
         $model->{$this->getForeignKeyName()} = $this->getParentKey();
 
@@ -97,19 +88,12 @@ abstract class MorphOneOrMany extends HasOneOrMany
     /**
      * Get the relationship query.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @param \Mini\Database\Mysql\Eloquent\Builder $parentQuery
      * @param array|mixed $columns
      * @return \Mini\Database\Mysql\Eloquent\Builder
-=======
-     * @param Builder $query
-     * @param Builder $parentQuery
-     * @param array|mixed $columns
-     * @return Builder
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function getRelationExistenceQuery(Builder $query, Builder $parentQuery, $columns = ['*']): Builder
+    public function getRelationExistenceQuery(Builder $query, Builder $parentQuery, $columns = ['*'])
     {
         return parent::getRelationExistenceQuery($query, $parentQuery, $columns)->where(
             $query->qualifyColumn($this->getMorphType()), $this->morphClass
@@ -121,7 +105,7 @@ abstract class MorphOneOrMany extends HasOneOrMany
      *
      * @return string
      */
-    public function getQualifiedMorphType(): string
+    public function getQualifiedMorphType()
     {
         return $this->morphType;
     }
@@ -131,7 +115,7 @@ abstract class MorphOneOrMany extends HasOneOrMany
      *
      * @return string
      */
-    public function getMorphType(): string
+    public function getMorphType()
     {
         return last(explode('.', $this->morphType));
     }
@@ -141,7 +125,7 @@ abstract class MorphOneOrMany extends HasOneOrMany
      *
      * @return string
      */
-    public function getMorphClass(): string
+    public function getMorphClass()
     {
         return $this->morphClass;
     }

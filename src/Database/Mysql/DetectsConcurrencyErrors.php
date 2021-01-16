@@ -16,14 +16,10 @@ trait DetectsConcurrencyErrors
     /**
      * Determine if the given exception was caused by a concurrency error such as a deadlock or serialization failure.
      *
-<<<<<<< HEAD
      * @param \Throwable $e
-=======
-     * @param Throwable $e
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return bool
      */
-    protected function causedByConcurrencyError(Throwable $e): bool
+    protected function causedByConcurrencyError(Throwable $e)
     {
         if ($e instanceof PDOException && $e->getCode() === '40001') {
             return true;

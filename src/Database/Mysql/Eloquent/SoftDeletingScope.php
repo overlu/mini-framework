@@ -14,21 +14,16 @@ class SoftDeletingScope implements Scope
      *
      * @var array
      */
-    protected array $extensions = ['Restore', 'WithTrashed', 'WithoutTrashed', 'OnlyTrashed'];
+    protected $extensions = ['Restore', 'WithTrashed', 'WithoutTrashed', 'OnlyTrashed'];
 
     /**
      * Apply the scope to a given Eloquent query builder.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $builder
      * @param \Mini\Database\Mysql\Eloquent\Model $model
-=======
-     * @param Builder $builder
-     * @param Model $model
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
-    public function apply(Builder $builder, Model $model): void
+    public function apply(Builder $builder, Model $model)
     {
         $builder->whereNull($model->getQualifiedDeletedAtColumn());
     }
@@ -36,14 +31,10 @@ class SoftDeletingScope implements Scope
     /**
      * Extend the query builder with the needed functions.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $builder
-=======
-     * @param Builder $builder
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
-    public function extend(Builder $builder): void
+    public function extend(Builder $builder)
     {
         foreach ($this->extensions as $extension) {
             $this->{"add{$extension}"}($builder);
@@ -61,14 +52,10 @@ class SoftDeletingScope implements Scope
     /**
      * Get the "deleted at" column for the builder.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $builder
-=======
-     * @param Builder $builder
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return string
      */
-    protected function getDeletedAtColumn(Builder $builder): string
+    protected function getDeletedAtColumn(Builder $builder)
     {
         if (count((array)$builder->getQuery()->joins) > 0) {
             return $builder->getModel()->getQualifiedDeletedAtColumn();
@@ -80,14 +67,10 @@ class SoftDeletingScope implements Scope
     /**
      * Add the restore extension to the builder.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $builder
-=======
-     * @param Builder $builder
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
-    protected function addRestore(Builder $builder): void
+    protected function addRestore(Builder $builder)
     {
         $builder->macro('restore', function (Builder $builder) {
             $builder->withTrashed();
@@ -99,14 +82,10 @@ class SoftDeletingScope implements Scope
     /**
      * Add the with-trashed extension to the builder.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $builder
-=======
-     * @param Builder $builder
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
-    protected function addWithTrashed(Builder $builder): void
+    protected function addWithTrashed(Builder $builder)
     {
         $builder->macro('withTrashed', function (Builder $builder, $withTrashed = true) {
             if (!$withTrashed) {
@@ -120,14 +99,10 @@ class SoftDeletingScope implements Scope
     /**
      * Add the without-trashed extension to the builder.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $builder
-=======
-     * @param Builder $builder
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
-    protected function addWithoutTrashed(Builder $builder): void
+    protected function addWithoutTrashed(Builder $builder)
     {
         $builder->macro('withoutTrashed', function (Builder $builder) {
             $model = $builder->getModel();
@@ -143,14 +118,10 @@ class SoftDeletingScope implements Scope
     /**
      * Add the only-trashed extension to the builder.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $builder
-=======
-     * @param Builder $builder
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
-    protected function addOnlyTrashed(Builder $builder): void
+    protected function addOnlyTrashed(Builder $builder)
     {
         $builder->macro('onlyTrashed', function (Builder $builder) {
             $model = $builder->getModel();

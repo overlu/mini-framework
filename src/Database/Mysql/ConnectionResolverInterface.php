@@ -13,20 +13,16 @@ interface ConnectionResolverInterface
      * Get a database connection instance.
      *
      * @param string|null $name
-<<<<<<< HEAD
      * @return \Mini\Database\Mysql\ConnectionInterface
-=======
-     * @return ConnectionInterface
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function connection(?string $name = null): ConnectionInterface;
+    public function connection($name = null);
 
     /**
      * Get the default connection name.
      *
      * @return string
      */
-    public function getDefaultConnection(): string;
+    public function getDefaultConnection();
 
     /**
      * Set the default connection name.
@@ -34,5 +30,5 @@ interface ConnectionResolverInterface
      * @param string $name
      * @return void
      */
-    public function setDefaultConnection(string $name): void;
+    public function setDefaultConnection($name);
 }

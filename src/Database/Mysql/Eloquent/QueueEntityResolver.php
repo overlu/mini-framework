@@ -19,9 +19,9 @@ class QueueEntityResolver implements EntityResolverContract
      * @param mixed $id
      * @return mixed
      *
-     * @throws EntityNotFoundException
+     * @throws \Mini\Contracts\Queue\EntityNotFoundException
      */
-    public function resolve(string $type, $id)
+    public function resolve($type, $id)
     {
         $instance = (new $type)->find($id);
 

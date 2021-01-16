@@ -24,7 +24,7 @@ class ForeignKeyDefinition extends Fluent
      *
      * @return $this
      */
-    public function cascadeOnDelete(): self
+    public function cascadeOnDelete()
     {
         return $this->onDelete('cascade');
     }

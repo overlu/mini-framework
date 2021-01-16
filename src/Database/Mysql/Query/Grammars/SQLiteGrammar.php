@@ -18,7 +18,7 @@ class SQLiteGrammar extends Grammar
      *
      * @var array
      */
-    protected array $operators = [
+    protected $operators = [
         '=', '<', '>', '<=', '>=', '<>', '!=',
         'like', 'not like', 'ilike',
         '&', '|', '<<', '>>',
@@ -27,15 +27,11 @@ class SQLiteGrammar extends Grammar
     /**
      * Compile the lock into SQL.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param bool|string $value
      * @return string
      */
-    protected function compileLock(Builder $query, $value): string
+    protected function compileLock(Builder $query, $value)
     {
         return '';
     }
@@ -46,7 +42,7 @@ class SQLiteGrammar extends Grammar
      * @param string $sql
      * @return string
      */
-    protected function wrapUnion(string $sql): string
+    protected function wrapUnion($sql)
     {
         return 'select * from (' . $sql . ')';
     }
@@ -54,15 +50,11 @@ class SQLiteGrammar extends Grammar
     /**
      * Compile a "where date" clause.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $where
      * @return string
      */
-    protected function whereDate(Builder $query, array $where): string
+    protected function whereDate(Builder $query, $where)
     {
         return $this->dateBasedWhere('%Y-%m-%d', $query, $where);
     }
@@ -70,15 +62,11 @@ class SQLiteGrammar extends Grammar
     /**
      * Compile a "where day" clause.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $where
      * @return string
      */
-    protected function whereDay(Builder $query, array $where): string
+    protected function whereDay(Builder $query, $where)
     {
         return $this->dateBasedWhere('%d', $query, $where);
     }
@@ -86,15 +74,11 @@ class SQLiteGrammar extends Grammar
     /**
      * Compile a "where month" clause.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $where
      * @return string
      */
-    protected function whereMonth(Builder $query, array $where): string
+    protected function whereMonth(Builder $query, $where)
     {
         return $this->dateBasedWhere('%m', $query, $where);
     }
@@ -102,15 +86,11 @@ class SQLiteGrammar extends Grammar
     /**
      * Compile a "where year" clause.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $where
      * @return string
      */
-    protected function whereYear(Builder $query, array $where): string
+    protected function whereYear(Builder $query, $where)
     {
         return $this->dateBasedWhere('%Y', $query, $where);
     }
@@ -118,15 +98,11 @@ class SQLiteGrammar extends Grammar
     /**
      * Compile a "where time" clause.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $where
      * @return string
      */
-    protected function whereTime(Builder $query, array $where): string
+    protected function whereTime(Builder $query, $where)
     {
         return $this->dateBasedWhere('%H:%M:%S', $query, $where);
     }
@@ -135,15 +111,11 @@ class SQLiteGrammar extends Grammar
      * Compile a date based where clause.
      *
      * @param string $type
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $where
      * @return string
      */
-    protected function dateBasedWhere(string $type, Builder $query, array $where): string
+    protected function dateBasedWhere($type, Builder $query, $where)
     {
         $value = $this->parameter($where['value']);
 
@@ -158,7 +130,7 @@ class SQLiteGrammar extends Grammar
      * @param string $value
      * @return string
      */
-    protected function compileJsonLength(string $column, string $operator, string $value): string
+    protected function compileJsonLength($column, $operator, $value)
     {
         [$field, $path] = $this->wrapJsonFieldAndPath($column);
 
@@ -168,15 +140,11 @@ class SQLiteGrammar extends Grammar
     /**
      * Compile an update statement into SQL.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $values
      * @return string
      */
-    public function compileUpdate(Builder $query, array $values): string
+    public function compileUpdate(Builder $query, array $values)
     {
         if (isset($query->joins) || isset($query->limit)) {
             return $this->compileUpdateWithJoinsOrLimit($query, $values);
@@ -188,15 +156,11 @@ class SQLiteGrammar extends Grammar
     /**
      * Compile an insert ignore statement into SQL.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $values
      * @return string
      */
-    public function compileInsertOrIgnore(Builder $query, array $values): string
+    public function compileInsertOrIgnore(Builder $query, array $values)
     {
         return Str::replaceFirst('insert', 'insert or ignore', $this->compileInsert($query, $values));
     }
@@ -204,15 +168,11 @@ class SQLiteGrammar extends Grammar
     /**
      * Compile the columns for an update statement.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $values
      * @return string
      */
-    protected function compileUpdateColumns(Builder $query, array $values): string
+    protected function compileUpdateColumns(Builder $query, array $values)
     {
         $jsonGroups = $this->groupJsonColumnsForUpdate($values);
 
@@ -233,7 +193,7 @@ class SQLiteGrammar extends Grammar
      * @param array $values
      * @return array
      */
-    protected function groupJsonColumnsForUpdate(array $values): array
+    protected function groupJsonColumnsForUpdate(array $values)
     {
         $groups = [];
 
@@ -253,7 +213,7 @@ class SQLiteGrammar extends Grammar
      * @param mixed $value
      * @return string
      */
-    protected function compileJsonPatch(string $column, $value): string
+    protected function compileJsonPatch($column, $value)
     {
         return "json_patch(ifnull({$this->wrap($column)}, json('{}')), json({$this->parameter($value)}))";
     }
@@ -261,15 +221,11 @@ class SQLiteGrammar extends Grammar
     /**
      * Compile an update statement with joins or limit into SQL.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $values
      * @return string
      */
-    protected function compileUpdateWithJoinsOrLimit(Builder $query, array $values): string
+    protected function compileUpdateWithJoinsOrLimit(Builder $query, array $values)
     {
         $table = $this->wrapTable($query->from);
 
@@ -289,14 +245,14 @@ class SQLiteGrammar extends Grammar
      * @param array $values
      * @return array
      */
-    public function prepareBindingsForUpdate(array $bindings, array $values): array
+    public function prepareBindingsForUpdate(array $bindings, array $values)
     {
         $groups = $this->groupJsonColumnsForUpdate($values);
 
         $values = collect($values)->reject(function ($value, $key) {
             return $this->isJsonSelector($key);
-        })->merge($groups)->map(static function ($value) {
-            return is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value;
+        })->merge($groups)->map(function ($value) {
+            return is_array($value) ? json_encode($value) : $value;
         })->all();
 
         $cleanBindings = Arr::except($bindings, 'select');
@@ -309,14 +265,10 @@ class SQLiteGrammar extends Grammar
     /**
      * Compile a delete statement into SQL.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return string
      */
-    public function compileDelete(Builder $query): string
+    public function compileDelete(Builder $query)
     {
         if (isset($query->joins) || isset($query->limit)) {
             return $this->compileDeleteWithJoinsOrLimit($query);
@@ -328,14 +280,10 @@ class SQLiteGrammar extends Grammar
     /**
      * Compile a delete statement with joins or limit into SQL.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return string
      */
-    protected function compileDeleteWithJoinsOrLimit(Builder $query): string
+    protected function compileDeleteWithJoinsOrLimit(Builder $query)
     {
         $table = $this->wrapTable($query->from);
 
@@ -349,14 +297,10 @@ class SQLiteGrammar extends Grammar
     /**
      * Compile a truncate table statement into SQL.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return array
      */
-    public function compileTruncate(Builder $query): array
+    public function compileTruncate(Builder $query)
     {
         return [
             'delete from sqlite_sequence where name = ?' => [$query->from],
@@ -370,7 +314,7 @@ class SQLiteGrammar extends Grammar
      * @param string $value
      * @return string
      */
-    protected function wrapJsonSelector(string $value): string
+    protected function wrapJsonSelector($value)
     {
         [$field, $path] = $this->wrapJsonFieldAndPath($value);
 

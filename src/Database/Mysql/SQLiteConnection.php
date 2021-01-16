@@ -7,30 +7,24 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql;
 
-use Closure;
 use Doctrine\DBAL\Driver\PDOSqlite\Driver as DoctrineDriver;
 use Mini\Database\Mysql\Query\Grammars\SQLiteGrammar as QueryGrammar;
 use Mini\Database\Mysql\Query\Processors\SQLiteProcessor;
 use Mini\Database\Mysql\Schema\Grammars\SQLiteGrammar as SchemaGrammar;
 use Mini\Database\Mysql\Schema\SQLiteBuilder;
-use PDO;
 
 class SQLiteConnection extends Connection
 {
     /**
      * Create a new database connection instance.
      *
-<<<<<<< HEAD
      * @param \PDO|\Closure $pdo
-=======
-     * @param PDO|Closure $pdo
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $database
      * @param string $tablePrefix
      * @param array $config
      * @return void
      */
-    public function __construct($pdo, string $database = '', string $tablePrefix = '', array $config = [])
+    public function __construct($pdo, $database = '', $tablePrefix = '', array $config = [])
     {
         parent::__construct($pdo, $database, $tablePrefix, $config);
 
@@ -48,7 +42,7 @@ class SQLiteConnection extends Connection
     /**
      * Get the default query grammar instance.
      *
-     * @return QueryGrammar|mixed
+     * @return \Mini\Database\Mysql\Query\Grammars\SQLiteGrammar
      */
     protected function getDefaultQueryGrammar()
     {
@@ -58,7 +52,7 @@ class SQLiteConnection extends Connection
     /**
      * Get a schema builder instance for the connection.
      *
-     * @return SQLiteBuilder|mixed
+     * @return \Mini\Database\Mysql\Schema\SQLiteBuilder
      */
     public function getSchemaBuilder()
     {
@@ -72,7 +66,7 @@ class SQLiteConnection extends Connection
     /**
      * Get the default schema grammar instance.
      *
-     * @return SchemaGrammar|mixed
+     * @return \Mini\Database\Mysql\Schema\Grammars\SQLiteGrammar
      */
     protected function getDefaultSchemaGrammar()
     {
@@ -82,7 +76,7 @@ class SQLiteConnection extends Connection
     /**
      * Get the default post processor instance.
      *
-     * @return SQLiteProcessor|mixed
+     * @return \Mini\Database\Mysql\Query\Processors\SQLiteProcessor
      */
     protected function getDefaultPostProcessor()
     {
@@ -92,9 +86,9 @@ class SQLiteConnection extends Connection
     /**
      * Get the Doctrine DBAL driver.
      *
-     * @return DoctrineDriver
+     * @return \Doctrine\DBAL\Driver\PDOSqlite\Driver
      */
-    protected function getDoctrineDriver(): DoctrineDriver
+    protected function getDoctrineDriver()
     {
         return new DoctrineDriver;
     }
@@ -104,7 +98,7 @@ class SQLiteConnection extends Connection
      *
      * @return bool|null
      */
-    protected function getForeignKeyConstraintsConfigurationValue(): ?bool
+    protected function getForeignKeyConstraintsConfigurationValue()
     {
         return $this->getConfig('foreign_key_constraints');
     }

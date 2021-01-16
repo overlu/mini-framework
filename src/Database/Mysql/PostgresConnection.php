@@ -13,22 +13,17 @@ use Mini\Database\Mysql\Query\Processors\PostgresProcessor;
 use Mini\Database\Mysql\Schema\Grammars\PostgresGrammar as SchemaGrammar;
 use Mini\Database\Mysql\Schema\PostgresBuilder;
 use PDO;
-use PDOStatement;
 
 class PostgresConnection extends Connection
 {
     /**
      * Bind values to their parameters in the given statement.
      *
-<<<<<<< HEAD
      * @param \PDOStatement $statement
-=======
-     * @param PDOStatement $statement
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $bindings
      * @return void
      */
-    public function bindValues(PDOStatement $statement, array $bindings): void
+    public function bindValues($statement, $bindings)
     {
         foreach ($bindings as $key => $value) {
             if (is_int($value)) {
@@ -50,7 +45,7 @@ class PostgresConnection extends Connection
     /**
      * Get the default query grammar instance.
      *
-     * @return QueryGrammar|mixed
+     * @return \Mini\Database\Mysql\Query\Grammars\PostgresGrammar
      */
     protected function getDefaultQueryGrammar()
     {
@@ -60,7 +55,7 @@ class PostgresConnection extends Connection
     /**
      * Get a schema builder instance for the connection.
      *
-     * @return PostgresBuilder|mixed
+     * @return \Mini\Database\Mysql\Schema\PostgresBuilder
      */
     public function getSchemaBuilder()
     {
@@ -74,7 +69,7 @@ class PostgresConnection extends Connection
     /**
      * Get the default schema grammar instance.
      *
-     * @return SchemaGrammar|mixed
+     * @return \Mini\Database\Mysql\Schema\Grammars\PostgresGrammar
      */
     protected function getDefaultSchemaGrammar()
     {
@@ -84,7 +79,7 @@ class PostgresConnection extends Connection
     /**
      * Get the default post processor instance.
      *
-     * @return PostgresProcessor|mixed
+     * @return \Mini\Database\Mysql\Query\Processors\PostgresProcessor
      */
     protected function getDefaultPostProcessor()
     {
@@ -94,9 +89,9 @@ class PostgresConnection extends Connection
     /**
      * Get the Doctrine DBAL driver.
      *
-     * @return DoctrineDriver
+     * @return \Doctrine\DBAL\Driver\PDOPgSql\Driver
      */
-    protected function getDoctrineDriver(): DoctrineDriver
+    protected function getDoctrineDriver()
     {
         return new DoctrineDriver;
     }

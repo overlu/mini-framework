@@ -8,9 +8,9 @@ declare(strict_types=1);
 namespace Mini\Database\Mysql\Eloquent;
 
 /**
- * @method static static|Builder|\Mini\Database\Mysql\Query\Builder withTrashed()
- * @method static static|Builder|\Mini\Database\Mysql\Query\Builder onlyTrashed()
- * @method static static|Builder|\Mini\Database\Mysql\Query\Builder withoutTrashed()
+ * @method static static|\Mini\Database\Mysql\Eloquent\Builder|\Mini\Database\Mysql\Query\Builder withTrashed()
+ * @method static static|\Mini\Database\Mysql\Eloquent\Builder|\Mini\Database\Mysql\Query\Builder onlyTrashed()
+ * @method static static|\Mini\Database\Mysql\Eloquent\Builder|\Mini\Database\Mysql\Query\Builder withoutTrashed()
  */
 trait SoftDeletes
 {
@@ -26,7 +26,7 @@ trait SoftDeletes
      *
      * @return void
      */
-    public static function bootSoftDeletes(): void
+    public static function bootSoftDeletes()
     {
         static::addGlobalScope(new SoftDeletingScope);
     }
@@ -36,7 +36,7 @@ trait SoftDeletes
      *
      * @return void
      */
-    public function initializeSoftDeletes(): void
+    public function initializeSoftDeletes()
     {
         $this->dates[] = $this->getDeletedAtColumn();
     }
@@ -44,7 +44,7 @@ trait SoftDeletes
     /**
      * Force a hard delete on a soft deleted model.
      *
-     * @return bool|null|mixed
+     * @return bool|null
      */
     public function forceDelete()
     {
@@ -80,7 +80,7 @@ trait SoftDeletes
      *
      * @return void
      */
-    protected function runSoftDelete(): void
+    protected function runSoftDelete()
     {
         $query = $this->setKeysForSaveQuery($this->newModelQuery());
 
@@ -104,7 +104,7 @@ trait SoftDeletes
     /**
      * Restore a soft-deleted model instance.
      *
-     * @return bool|null|mixed
+     * @return bool|null
      */
     public function restore()
     {
@@ -134,7 +134,7 @@ trait SoftDeletes
      *
      * @return bool
      */
-    public function trashed(): bool
+    public function trashed()
     {
         return !is_null($this->{$this->getDeletedAtColumn()});
     }
@@ -145,7 +145,7 @@ trait SoftDeletes
      * @param \Closure|string $callback
      * @return void
      */
-    public static function restoring($callback): void
+    public static function restoring($callback)
     {
         static::registerModelEvent('restoring', $callback);
     }
@@ -156,7 +156,7 @@ trait SoftDeletes
      * @param \Closure|string $callback
      * @return void
      */
-    public static function restored($callback): void
+    public static function restored($callback)
     {
         static::registerModelEvent('restored', $callback);
     }
@@ -167,7 +167,7 @@ trait SoftDeletes
      * @param \Closure|string $callback
      * @return void
      */
-    public static function forceDeleted($callback): void
+    public static function forceDeleted($callback)
     {
         static::registerModelEvent('forceDeleted', $callback);
     }
@@ -177,7 +177,7 @@ trait SoftDeletes
      *
      * @return bool
      */
-    public function isForceDeleting(): bool
+    public function isForceDeleting()
     {
         return $this->forceDeleting;
     }
@@ -187,7 +187,7 @@ trait SoftDeletes
      *
      * @return string
      */
-    public function getDeletedAtColumn(): string
+    public function getDeletedAtColumn()
     {
         return defined('static::DELETED_AT') ? static::DELETED_AT : 'deleted_at';
     }
@@ -197,7 +197,7 @@ trait SoftDeletes
      *
      * @return string
      */
-    public function getQualifiedDeletedAtColumn(): string
+    public function getQualifiedDeletedAtColumn()
     {
         return $this->qualifyColumn($this->getDeletedAtColumn());
     }

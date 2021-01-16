@@ -31,6 +31,5 @@ class TranslateServiceProvider implements ServiceProviderInterface
         $app = app();
         $app->alias(Translate::class, 'translate');
         $app->singleton(Translate::class, Translate::class);
-        $app->make('translate')->initialize();
     }
 }

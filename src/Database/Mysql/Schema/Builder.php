@@ -8,11 +8,9 @@ declare(strict_types=1);
 namespace Mini\Database\Mysql\Schema;
 
 use Closure;
-use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Types\Type;
 use Mini\Database\Mysql\Connection;
 use LogicException;
-use Mini\Database\Mysql\Schema\Grammars\Grammar;
 use RuntimeException;
 
 class Builder
@@ -20,39 +18,35 @@ class Builder
     /**
      * The database connection instance.
      *
-     * @var Connection
+     * @var \Mini\Database\Mysql\Connection
      */
-    protected Connection $connection;
+    protected $connection;
 
     /**
      * The schema grammar instance.
      *
-     * @var Grammar
+     * @var \Mini\Database\Mysql\Schema\Grammars\Grammar
      */
-    protected Grammars\Grammar $grammar;
+    protected $grammar;
 
     /**
      * The Blueprint resolver callback.
      *
-     * @var Closure
+     * @var \Closure
      */
-    protected Closure $resolver;
+    protected $resolver;
 
     /**
      * The default string length for migrations.
      *
      * @var int
      */
-    public static int $defaultStringLength = 255;
+    public static $defaultStringLength = 255;
 
     /**
      * Create a new database Schema manager.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Connection $connection
-=======
-     * @param Connection $connection
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
     public function __construct(Connection $connection)
@@ -67,7 +61,7 @@ class Builder
      * @param int $length
      * @return void
      */
-    public static function defaultStringLength(int $length): void
+    public static function defaultStringLength($length)
     {
         static::$defaultStringLength = $length;
     }
@@ -78,7 +72,7 @@ class Builder
      * @param string $table
      * @return bool
      */
-    public function hasTable(string $table): bool
+    public function hasTable($table)
     {
         $table = $this->connection->getTablePrefix() . $table;
 
@@ -94,9 +88,11 @@ class Builder
      * @param string $column
      * @return bool
      */
-    public function hasColumn(string $table, string $column): bool
+    public function hasColumn($table, $column)
     {
-        return in_array(strtolower($column), array_map('strtolower', $this->getColumnListing($table)), true);
+        return in_array(
+            strtolower($column), array_map('strtolower', $this->getColumnListing($table))
+        );
     }
 
     /**
@@ -106,16 +102,12 @@ class Builder
      * @param array $columns
      * @return bool
      */
-    public function hasColumns(string $table, array $columns): bool
+    public function hasColumns($table, array $columns)
     {
         $tableColumns = array_map('strtolower', $this->getColumnListing($table));
 
         foreach ($columns as $column) {
-<<<<<<< HEAD
             if (!in_array(strtolower($column), $tableColumns)) {
-=======
-            if (!in_array(strtolower($column), $tableColumns, true)) {
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
                 return false;
             }
         }
@@ -130,7 +122,7 @@ class Builder
      * @param string $column
      * @return string
      */
-    public function getColumnType(string $table, string $column): string
+    public function getColumnType($table, $column)
     {
         $table = $this->connection->getTablePrefix() . $table;
 
@@ -143,7 +135,7 @@ class Builder
      * @param string $table
      * @return array
      */
-    public function getColumnListing(string $table): array
+    public function getColumnListing($table)
     {
         $results = $this->connection->selectFromWriteConnection($this->grammar->compileColumnListing(
             $this->connection->getTablePrefix() . $table
@@ -156,14 +148,10 @@ class Builder
      * Modify a table on the schema.
      *
      * @param string $table
-<<<<<<< HEAD
      * @param \Closure $callback
-=======
-     * @param Closure $callback
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
-    public function table(string $table, Closure $callback): void
+    public function table($table, Closure $callback)
     {
         $this->build($this->createBlueprint($table, $callback));
     }
@@ -172,16 +160,12 @@ class Builder
      * Create a new table on the schema.
      *
      * @param string $table
-<<<<<<< HEAD
      * @param \Closure $callback
-=======
-     * @param Closure $callback
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
-    public function create(string $table, Closure $callback): void
+    public function create($table, Closure $callback)
     {
-        $this->build(tap($this->createBlueprint($table), static function ($blueprint) use ($callback) {
+        $this->build(tap($this->createBlueprint($table), function ($blueprint) use ($callback) {
             $blueprint->create();
 
             $callback($blueprint);
@@ -194,9 +178,9 @@ class Builder
      * @param string $table
      * @return void
      */
-    public function drop(string $table): void
+    public function drop($table)
     {
-        $this->build(tap($this->createBlueprint($table), static function ($blueprint) {
+        $this->build(tap($this->createBlueprint($table), function ($blueprint) {
             $blueprint->drop();
         }));
     }
@@ -207,9 +191,9 @@ class Builder
      * @param string $table
      * @return void
      */
-    public function dropIfExists($table): void
+    public function dropIfExists($table)
     {
-        $this->build(tap($this->createBlueprint($table), static function ($blueprint) {
+        $this->build(tap($this->createBlueprint($table), function ($blueprint) {
             $blueprint->dropIfExists();
         }));
     }
@@ -219,9 +203,9 @@ class Builder
      *
      * @return void
      *
-     * @throws LogicException
+     * @throws \LogicException
      */
-    public function dropAllTables(): void
+    public function dropAllTables()
     {
         throw new LogicException('This database driver does not support dropping all tables.');
     }
@@ -231,9 +215,9 @@ class Builder
      *
      * @return void
      *
-     * @throws LogicException
+     * @throws \LogicException
      */
-    public function dropAllViews(): void
+    public function dropAllViews()
     {
         throw new LogicException('This database driver does not support dropping all views.');
     }
@@ -243,9 +227,9 @@ class Builder
      *
      * @return void
      *
-     * @throws LogicException
+     * @throws \LogicException
      */
-    public function dropAllTypes(): void
+    public function dropAllTypes()
     {
         throw new LogicException('This database driver does not support dropping all types.');
     }
@@ -253,9 +237,9 @@ class Builder
     /**
      * Get all of the table names for the database.
      *
-     * @return void|mixed
+     * @return void
      *
-     * @throws LogicException
+     * @throws \LogicException
      */
     public function getAllTables()
     {
@@ -269,9 +253,9 @@ class Builder
      * @param string $to
      * @return void
      */
-    public function rename(string $from, string $to): void
+    public function rename($from, $to)
     {
-        $this->build(tap($this->createBlueprint($from), static function ($blueprint) use ($to) {
+        $this->build(tap($this->createBlueprint($from), function ($blueprint) use ($to) {
             $blueprint->rename($to);
         }));
     }
@@ -281,7 +265,7 @@ class Builder
      *
      * @return bool
      */
-    public function enableForeignKeyConstraints(): bool
+    public function enableForeignKeyConstraints()
     {
         return $this->connection->statement(
             $this->grammar->compileEnableForeignKeyConstraints()
@@ -293,7 +277,7 @@ class Builder
      *
      * @return bool
      */
-    public function disableForeignKeyConstraints(): bool
+    public function disableForeignKeyConstraints()
     {
         return $this->connection->statement(
             $this->grammar->compileDisableForeignKeyConstraints()
@@ -303,14 +287,10 @@ class Builder
     /**
      * Execute the blueprint to build / modify the table.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Schema\Blueprint $blueprint
-=======
-     * @param Blueprint $blueprint
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
-    protected function build(Blueprint $blueprint): void
+    protected function build(Blueprint $blueprint)
     {
         $blueprint->build($this->connection, $this->grammar);
     }
@@ -319,15 +299,10 @@ class Builder
      * Create a new command set with a Closure.
      *
      * @param string $table
-<<<<<<< HEAD
      * @param \Closure|null $callback
      * @return \Mini\Database\Mysql\Schema\Blueprint
-=======
-     * @param Closure|null $callback
-     * @return Blueprint
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function createBlueprint(string $table, ?Closure $callback = null): Blueprint
+    protected function createBlueprint($table, Closure $callback = null)
     {
         $prefix = $this->connection->getConfig('prefix_indexes')
             ? $this->connection->getConfig('prefix')
@@ -348,10 +323,10 @@ class Builder
      * @param string $type
      * @return void
      *
-     * @throws DBALException
-     * @throws RuntimeException
+     * @throws \Doctrine\DBAL\DBALException
+     * @throws \RuntimeException
      */
-    public function registerCustomDoctrineType(string $class, string $name, string $type): void
+    public function registerCustomDoctrineType($class, $name, $type)
     {
         if (!$this->connection->isDoctrineAvailable()) {
             throw new RuntimeException(
@@ -372,9 +347,9 @@ class Builder
     /**
      * Get the database connection instance.
      *
-     * @return Connection
+     * @return \Mini\Database\Mysql\Connection
      */
-    public function getConnection(): Connection
+    public function getConnection()
     {
         return $this->connection;
     }
@@ -382,14 +357,10 @@ class Builder
     /**
      * Set the database connection instance.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Connection $connection
-=======
-     * @param Connection $connection
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return $this
      */
-    public function setConnection(Connection $connection): self
+    public function setConnection(Connection $connection)
     {
         $this->connection = $connection;
 
@@ -399,14 +370,10 @@ class Builder
     /**
      * Set the Schema Blueprint resolver callback.
      *
-<<<<<<< HEAD
      * @param \Closure $resolver
-=======
-     * @param Closure $resolver
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
-    public function blueprintResolver(Closure $resolver): void
+    public function blueprintResolver(Closure $resolver)
     {
         $this->resolver = $resolver;
     }

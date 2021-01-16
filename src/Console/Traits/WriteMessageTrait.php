@@ -260,7 +260,7 @@ trait WriteMessageTrait
      * @param array $opts
      *
      * @return string If flush = False, will return all buffer text.
-     * @see send()
+     * @see write()
      */
     public static function stopBuffer($flush = true, $nl = false, $quit = false, array $opts = []): string
     {
@@ -287,7 +287,7 @@ trait WriteMessageTrait
      * @param bool $quit
      * @param array $opts
      *
-     * @see send()
+     * @see write()
      */
     public static function flushBuffer($nl = false, $quit = false, array $opts = []): void
     {

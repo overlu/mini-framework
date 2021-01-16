@@ -67,8 +67,7 @@ trait LoadConfiguration
      */
     protected function getNestedDirectory(SplFileInfo $file): string
     {
-        $directory = $file->getPath();
-
+        $directory = rtrim($file->getPath(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         if ($nested = trim(str_replace(CONFIG_PATH, '', $directory), DIRECTORY_SEPARATOR)) {
             $nested = str_replace(DIRECTORY_SEPARATOR, '.', $nested) . '.';
         }

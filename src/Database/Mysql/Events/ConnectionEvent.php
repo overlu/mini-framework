@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql\Events;
 
-use Mini\Database\Mysql\Connection;
-
 abstract class ConnectionEvent
 {
     /**
@@ -16,26 +14,22 @@ abstract class ConnectionEvent
      *
      * @var string
      */
-    public ?string $connectionName;
+    public $connectionName;
 
     /**
      * The database connection instance.
      *
-     * @var Connection
+     * @var \Mini\Database\Mysql\Connection
      */
-    public Connection $connection;
+    public $connection;
 
     /**
      * Create a new event instance.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Connection $connection
-=======
-     * @param Connection $connection
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
-    public function __construct(Connection $connection)
+    public function __construct($connection)
     {
         $this->connection = $connection;
         $this->connectionName = $connection->getName();

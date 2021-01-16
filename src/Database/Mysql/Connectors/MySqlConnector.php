@@ -7,9 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql\Connectors;
 
-use Exception;
 use PDO;
-use Throwable;
 
 class MySqlConnector extends Connector implements ConnectorInterface
 {
@@ -17,15 +15,9 @@ class MySqlConnector extends Connector implements ConnectorInterface
      * Establish a database connection.
      *
      * @param array $config
-<<<<<<< HEAD
      * @return \PDO
-=======
-     * @return PDO
-     * @throws Exception
-     * @throws Throwable
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function connect(array $config): PDO
+    public function connect(array $config)
     {
         $dsn = $this->getDsn($config);
 
@@ -55,22 +47,14 @@ class MySqlConnector extends Connector implements ConnectorInterface
     /**
      * Set the connection character set and collation.
      *
-<<<<<<< HEAD
      * @param \PDO $connection
-=======
-     * @param PDO $connection
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $config
      * @return void
      */
-    protected function configureEncoding(PDO $connection, array $config): void
+    protected function configureEncoding($connection, array $config)
     {
         if (!isset($config['charset'])) {
-<<<<<<< HEAD
             return $connection;
-=======
-            return;
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
         }
 
         $connection->prepare(
@@ -84,7 +68,7 @@ class MySqlConnector extends Connector implements ConnectorInterface
      * @param array $config
      * @return string
      */
-    protected function getCollation(array $config): string
+    protected function getCollation(array $config)
     {
         return isset($config['collation']) ? " collate '{$config['collation']}'" : '';
     }
@@ -92,15 +76,11 @@ class MySqlConnector extends Connector implements ConnectorInterface
     /**
      * Set the timezone on the connection.
      *
-<<<<<<< HEAD
      * @param \PDO $connection
-=======
-     * @param PDO $connection
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $config
      * @return void
      */
-    protected function configureTimezone(PDO $connection, array $config): void
+    protected function configureTimezone($connection, array $config)
     {
         if (isset($config['timezone'])) {
             $connection->prepare('set time_zone="' . $config['timezone'] . '"')->execute();
@@ -115,7 +95,7 @@ class MySqlConnector extends Connector implements ConnectorInterface
      * @param array $config
      * @return string
      */
-    protected function getDsn(array $config): string
+    protected function getDsn(array $config)
     {
         return $this->hasSocket($config)
             ? $this->getSocketDsn($config)
@@ -128,7 +108,7 @@ class MySqlConnector extends Connector implements ConnectorInterface
      * @param array $config
      * @return bool
      */
-    protected function hasSocket(array $config): bool
+    protected function hasSocket(array $config)
     {
         return isset($config['unix_socket']) && !empty($config['unix_socket']);
     }
@@ -139,7 +119,7 @@ class MySqlConnector extends Connector implements ConnectorInterface
      * @param array $config
      * @return string
      */
-    protected function getSocketDsn(array $config): string
+    protected function getSocketDsn(array $config)
     {
         return "mysql:unix_socket={$config['unix_socket']};dbname={$config['database']}";
     }
@@ -150,7 +130,7 @@ class MySqlConnector extends Connector implements ConnectorInterface
      * @param array $config
      * @return string
      */
-    protected function getHostDsn(array $config): string
+    protected function getHostDsn(array $config)
     {
         extract($config, EXTR_SKIP);
 
@@ -162,15 +142,11 @@ class MySqlConnector extends Connector implements ConnectorInterface
     /**
      * Set the modes for the connection.
      *
-<<<<<<< HEAD
      * @param \PDO $connection
-=======
-     * @param PDO $connection
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $config
      * @return void
      */
-    protected function setModes(PDO $connection, array $config): void
+    protected function setModes(PDO $connection, array $config)
     {
         if (isset($config['modes'])) {
             $this->setCustomModes($connection, $config);
@@ -186,15 +162,11 @@ class MySqlConnector extends Connector implements ConnectorInterface
     /**
      * Set the custom modes on the connection.
      *
-<<<<<<< HEAD
      * @param \PDO $connection
-=======
-     * @param PDO $connection
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $config
      * @return void
      */
-    protected function setCustomModes(PDO $connection, array $config): void
+    protected function setCustomModes(PDO $connection, array $config)
     {
         $modes = implode(',', $config['modes']);
 
@@ -204,15 +176,11 @@ class MySqlConnector extends Connector implements ConnectorInterface
     /**
      * Get the query to enable strict mode.
      *
-<<<<<<< HEAD
      * @param \PDO $connection
-=======
-     * @param PDO $connection
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $config
      * @return string
      */
-    protected function strictMode(PDO $connection, array $config): string
+    protected function strictMode(PDO $connection, $config)
     {
         $version = $config['version'] ?? $connection->getAttribute(PDO::ATTR_SERVER_VERSION);
 

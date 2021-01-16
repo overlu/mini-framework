@@ -7,45 +7,39 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql\Migrations;
 
-use Mini\Database\Mysql\ConnectionInterface;
 use Mini\Database\Mysql\ConnectionResolverInterface as Resolver;
-use Mini\Database\Mysql\Query\Builder;
 
 class DatabaseMigrationRepository implements MigrationRepositoryInterface
 {
     /**
      * The database connection resolver instance.
      *
-     * @var Resolver
+     * @var \Mini\Database\Mysql\ConnectionResolverInterface
      */
-    protected Resolver $resolver;
+    protected $resolver;
 
     /**
      * The name of the migration table.
      *
      * @var string
      */
-    protected string $table;
+    protected $table;
 
     /**
      * The name of the database connection to use.
      *
      * @var string
      */
-    protected string $connection;
+    protected $connection;
 
     /**
      * Create a new database migration repository instance.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\ConnectionResolverInterface $resolver
-=======
-     * @param Resolver $resolver
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $table
      * @return void
      */
-    public function __construct(Resolver $resolver, string $table)
+    public function __construct(Resolver $resolver, $table)
     {
         $this->table = $table;
         $this->resolver = $resolver;
@@ -56,7 +50,7 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
      *
      * @return array
      */
-    public function getRan(): array
+    public function getRan()
     {
         return $this->table()
             ->orderBy('batch', 'asc')
@@ -70,7 +64,7 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
      * @param int $steps
      * @return array
      */
-    public function getMigrations(int $steps): array
+    public function getMigrations($steps)
     {
         $query = $this->table()->where('batch', '>=', '1');
 
@@ -84,7 +78,7 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
      *
      * @return array
      */
-    public function getLast(): array
+    public function getLast()
     {
         $query = $this->table()->where('batch', $this->getLastBatchNumber());
 
@@ -96,7 +90,7 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
      *
      * @return array
      */
-    public function getMigrationBatches(): array
+    public function getMigrationBatches()
     {
         return $this->table()
             ->orderBy('batch', 'asc')
@@ -111,7 +105,7 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
      * @param int $batch
      * @return void
      */
-    public function log(string $file, int $batch): void
+    public function log($file, $batch)
     {
         $record = ['migration' => $file, 'batch' => $batch];
 
@@ -124,7 +118,7 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
      * @param object $migration
      * @return void
      */
-    public function delete(object $migration): void
+    public function delete($migration)
     {
         $this->table()->where('migration', $migration->migration)->delete();
     }
@@ -134,7 +128,7 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
      *
      * @return int
      */
-    public function getNextBatchNumber(): int
+    public function getNextBatchNumber()
     {
         return $this->getLastBatchNumber() + 1;
     }
@@ -144,7 +138,7 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
      *
      * @return int
      */
-    public function getLastBatchNumber(): int
+    public function getLastBatchNumber()
     {
         return $this->table()->max('batch');
     }
@@ -154,11 +148,11 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
      *
      * @return void
      */
-    public function createRepository(): void
+    public function createRepository()
     {
         $schema = $this->getConnection()->getSchemaBuilder();
 
-        $schema->create($this->table, static function ($table) {
+        $schema->create($this->table, function ($table) {
             // The migrations table is responsible for keeping track of which of the
             // migrations have actually run for the application. We'll create the
             // table to hold the migration file's path as well as the batch ID.
@@ -173,7 +167,7 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
      *
      * @return bool
      */
-    public function repositoryExists(): bool
+    public function repositoryExists()
     {
         $schema = $this->getConnection()->getSchemaBuilder();
 
@@ -183,9 +177,9 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
     /**
      * Get a query builder for the migration table.
      *
-     * @return Builder
+     * @return \Mini\Database\Mysql\Query\Builder
      */
-    protected function table(): Builder
+    protected function table()
     {
         return $this->getConnection()->table($this->table)->useWritePdo();
     }
@@ -193,9 +187,9 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
     /**
      * Get the connection resolver instance.
      *
-     * @return Resolver
+     * @return \Mini\Database\Mysql\ConnectionResolverInterface
      */
-    public function getConnectionResolver(): Resolver
+    public function getConnectionResolver()
     {
         return $this->resolver;
     }
@@ -203,9 +197,9 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
     /**
      * Resolve the database connection instance.
      *
-     * @return ConnectionInterface
+     * @return \Mini\Database\Mysql\ConnectionInterface
      */
-    public function getConnection(): ConnectionInterface
+    public function getConnection()
     {
         return $this->resolver->connection($this->connection);
     }
@@ -216,7 +210,7 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
      * @param string $name
      * @return void
      */
-    public function setSource(string $name): void
+    public function setSource($name)
     {
         $this->connection = $name;
     }

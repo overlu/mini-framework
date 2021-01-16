@@ -8,9 +8,6 @@ declare(strict_types=1);
 namespace Mini\Database\Mysql\Query;
 
 use Closure;
-use Mini\Database\Mysql\ConnectionInterface;
-use Mini\Database\Mysql\Query\Grammars\Grammar;
-use Mini\Database\Mysql\Query\Processors\Processor;
 
 class JoinClause extends Builder
 {
@@ -19,56 +16,52 @@ class JoinClause extends Builder
      *
      * @var string
      */
-    public string $type;
+    public $type;
 
     /**
      * The table the join clause is joining to.
      *
      * @var string
      */
-    public string $table;
+    public $table;
 
     /**
      * The connection of the parent query builder.
      *
-     * @var ConnectionInterface
+     * @var \Mini\Database\Mysql\ConnectionInterface
      */
-    protected ConnectionInterface $parentConnection;
+    protected $parentConnection;
 
     /**
      * The grammar of the parent query builder.
      *
-     * @var Grammar
+     * @var \Mini\Database\Mysql\Query\Grammars\Grammar
      */
-    protected Grammar $parentGrammar;
+    protected $parentGrammar;
 
     /**
      * The processor of the parent query builder.
      *
-     * @var Processor
+     * @var \Mini\Database\Mysql\Query\Processors\Processor
      */
-    protected Processor $parentProcessor;
+    protected $parentProcessor;
 
     /**
      * The class name of the parent query builder.
      *
      * @var string
      */
-    protected string $parentClass;
+    protected $parentClass;
 
     /**
      * Create a new join clause instance.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $parentQuery
-=======
-     * @param Builder $parentQuery
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $type
      * @param string $table
      * @return void
      */
-    public function __construct(Builder $parentQuery, string $type, string $table)
+    public function __construct(Builder $parentQuery, $type, $table)
     {
         $this->type = $type;
         $this->table = $table;
@@ -94,11 +87,7 @@ class JoinClause extends Builder
      *
      * on `contacts`.`user_id` = `users`.`id` and `contacts`.`info_id` = `info`.`id`
      *
-<<<<<<< HEAD
      * @param \Closure|string $first
-=======
-     * @param Closure|string $first
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string|null $operator
      * @param string|null $second
      * @param string $boolean
@@ -106,7 +95,7 @@ class JoinClause extends Builder
      *
      * @throws \InvalidArgumentException
      */
-    public function on($first, ?string $operator = null, ?string $second = null, string $boolean = 'and'): self
+    public function on($first, $operator = null, $second = null, $boolean = 'and')
     {
         if ($first instanceof Closure) {
             return $this->whereNested($first, $boolean);
@@ -118,19 +107,12 @@ class JoinClause extends Builder
     /**
      * Add an "or on" clause to the join.
      *
-<<<<<<< HEAD
      * @param \Closure|string $first
      * @param string|null $operator
      * @param string|null $second
      * @return \Mini\Database\Mysql\Query\JoinClause
-=======
-     * @param Closure|string $first
-     * @param string|null $operator
-     * @param string|null $second
-     * @return JoinClause
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function orOn($first, ?string $operator = null, ?string $second = null): self
+    public function orOn($first, $operator = null, $second = null)
     {
         return $this->on($first, $operator, $second, 'or');
     }
@@ -138,9 +120,9 @@ class JoinClause extends Builder
     /**
      * Get a new instance of the join clause builder.
      *
-     * @return JoinClause
+     * @return \Mini\Database\Mysql\Query\JoinClause
      */
-    public function newQuery(): self
+    public function newQuery()
     {
         return new static($this->newParentQuery(), $this->type, $this->table);
     }
@@ -148,9 +130,9 @@ class JoinClause extends Builder
     /**
      * Create a new query instance for sub-query.
      *
-     * @return Builder
+     * @return \Mini\Database\Mysql\Query\Builder
      */
-    protected function forSubQuery(): Builder
+    protected function forSubQuery()
     {
         return $this->newParentQuery()->newQuery();
     }
@@ -158,9 +140,9 @@ class JoinClause extends Builder
     /**
      * Create a new parent query instance.
      *
-     * @return Builder
+     * @return \Mini\Database\Mysql\Query\Builder
      */
-    protected function newParentQuery(): Builder
+    protected function newParentQuery()
     {
         $class = $this->parentClass;
 

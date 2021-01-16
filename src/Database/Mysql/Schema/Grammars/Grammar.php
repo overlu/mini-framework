@@ -23,30 +23,24 @@ abstract class Grammar extends BaseGrammar
      *
      * @var bool
      */
-    protected bool $transactions = false;
+    protected $transactions = false;
 
     /**
      * The commands to be executed outside of create or alter command.
      *
      * @var array
      */
-    protected array $fluentCommands = [];
+    protected $fluentCommands = [];
 
     /**
      * Compile a rename column command.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Schema\Blueprint $blueprint
      * @param \Mini\Support\Fluent $command
      * @param \Mini\Database\Mysql\Connection $connection
-=======
-     * @param Blueprint $blueprint
-     * @param Fluent $command
-     * @param Connection $connection
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return array
      */
-    public function compileRenameColumn(Blueprint $blueprint, Fluent $command, Connection $connection): array
+    public function compileRenameColumn(Blueprint $blueprint, Fluent $command, Connection $connection)
     {
         return RenameColumn::compile($this, $blueprint, $command, $connection);
     }
@@ -54,20 +48,14 @@ abstract class Grammar extends BaseGrammar
     /**
      * Compile a change column command into a series of SQL statements.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Schema\Blueprint $blueprint
      * @param \Mini\Support\Fluent $command
      * @param \Mini\Database\Mysql\Connection $connection
-=======
-     * @param Blueprint $blueprint
-     * @param Fluent $command
-     * @param Connection $connection
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return array
      *
-     * @throws RuntimeException
+     * @throws \RuntimeException
      */
-    public function compileChange(Blueprint $blueprint, Fluent $command, Connection $connection): array
+    public function compileChange(Blueprint $blueprint, Fluent $command, Connection $connection)
     {
         return ChangeColumn::compile($this, $blueprint, $command, $connection);
     }
@@ -75,16 +63,11 @@ abstract class Grammar extends BaseGrammar
     /**
      * Compile a foreign key command.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Schema\Blueprint $blueprint
      * @param \Mini\Support\Fluent $command
-=======
-     * @param Blueprint $blueprint
-     * @param Fluent $command
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return string
      */
-    public function compileForeign(Blueprint $blueprint, Fluent $command): string
+    public function compileForeign(Blueprint $blueprint, Fluent $command)
     {
         // We need to prepare several of the elements of the foreign key definition
         // before we can create the SQL, such as wrapping the tables and convert
@@ -120,14 +103,10 @@ abstract class Grammar extends BaseGrammar
     /**
      * Compile the blueprint's column definitions.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Schema\Blueprint $blueprint
-=======
-     * @param Blueprint $blueprint
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return array
      */
-    protected function getColumns(Blueprint $blueprint): array
+    protected function getColumns(Blueprint $blueprint)
     {
         $columns = [];
 
@@ -146,14 +125,10 @@ abstract class Grammar extends BaseGrammar
     /**
      * Get the SQL for the column data type.
      *
-<<<<<<< HEAD
      * @param \Mini\Support\Fluent $column
-=======
-     * @param Fluent $column
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return string
      */
-    protected function getType(Fluent $column): string
+    protected function getType(Fluent $column)
     {
         return $this->{'type' . ucfirst($column->type)}($column);
     }
@@ -161,14 +136,10 @@ abstract class Grammar extends BaseGrammar
     /**
      * Create the column definition for a generated, computed column type.
      *
-<<<<<<< HEAD
      * @param \Mini\Support\Fluent $column
      * @return void
-=======
-     * @param Fluent $column
-     * @return mixed
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      *
+     * @throws \RuntimeException
      */
     protected function typeComputed(Fluent $column)
     {
@@ -179,16 +150,11 @@ abstract class Grammar extends BaseGrammar
      * Add the column modifiers to the definition.
      *
      * @param string $sql
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Schema\Blueprint $blueprint
      * @param \Mini\Support\Fluent $column
-=======
-     * @param Blueprint $blueprint
-     * @param Fluent $column
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return string
      */
-    protected function addModifiers($sql, Blueprint $blueprint, Fluent $column): string
+    protected function addModifiers($sql, Blueprint $blueprint, Fluent $column)
     {
         foreach ($this->modifiers as $modifier) {
             if (method_exists($this, $method = "modify{$modifier}")) {
@@ -202,41 +168,30 @@ abstract class Grammar extends BaseGrammar
     /**
      * Get the primary key command if it exists on the blueprint.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Schema\Blueprint $blueprint
      * @param string $name
      * @return \Mini\Support\Fluent|null
-=======
-     * @param Blueprint $blueprint
-     * @param string $name
-     * @return Fluent|null
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function getCommandByName(Blueprint $blueprint, $name): ?Fluent
+    protected function getCommandByName(Blueprint $blueprint, $name)
     {
         $commands = $this->getCommandsByName($blueprint, $name);
 
         if (count($commands) > 0) {
             return reset($commands);
         }
-        return null;
     }
 
     /**
      * Get all of the commands with a given name.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Schema\Blueprint $blueprint
-=======
-     * @param Blueprint $blueprint
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $name
      * @return array
      */
-    protected function getCommandsByName(Blueprint $blueprint, string $name): array
+    protected function getCommandsByName(Blueprint $blueprint, $name)
     {
-        return array_filter($blueprint->getCommands(), static function ($value) use ($name) {
-            return $value->name === $name;
+        return array_filter($blueprint->getCommands(), function ($value) use ($name) {
+            return $value->name == $name;
         });
     }
 
@@ -247,13 +202,9 @@ abstract class Grammar extends BaseGrammar
      * @param array $values
      * @return array
      */
-    public function prefixArray(string $prefix, array $values): array
+    public function prefixArray($prefix, array $values)
     {
-<<<<<<< HEAD
         return array_map(function ($value) use ($prefix) {
-=======
-        return array_map(static function ($value) use ($prefix) {
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
             return $prefix . ' ' . $value;
         }, $values);
     }
@@ -264,7 +215,7 @@ abstract class Grammar extends BaseGrammar
      * @param mixed $table
      * @return string
      */
-    public function wrapTable($table): string
+    public function wrapTable($table)
     {
         return parent::wrapTable(
             $table instanceof Blueprint ? $table->getTable() : $table
@@ -274,15 +225,11 @@ abstract class Grammar extends BaseGrammar
     /**
      * Wrap a value in keyword identifiers.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Expression|string $value
-=======
-     * @param Expression|string $value
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param bool $prefixAlias
      * @return string
      */
-    public function wrap($value, bool $prefixAlias = false): string
+    public function wrap($value, $prefixAlias = false)
     {
         return parent::wrap(
             $value instanceof Fluent ? $value->name : $value, $prefixAlias
@@ -295,10 +242,10 @@ abstract class Grammar extends BaseGrammar
      * @param mixed $value
      * @return string
      */
-    protected function getDefaultValue($value): string
+    protected function getDefaultValue($value)
     {
         if ($value instanceof Expression) {
-            return (string)$value;
+            return $value;
         }
 
         return is_bool($value)
@@ -309,17 +256,11 @@ abstract class Grammar extends BaseGrammar
     /**
      * Create an empty Doctrine DBAL TableDiff from the Blueprint.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Schema\Blueprint $blueprint
      * @param \Doctrine\DBAL\Schema\AbstractSchemaManager $schema
      * @return \Doctrine\DBAL\Schema\TableDiff
-=======
-     * @param Blueprint $blueprint
-     * @param SchemaManager $schema
-     * @return TableDiff
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function getDoctrineTableDiff(Blueprint $blueprint, SchemaManager $schema): TableDiff
+    public function getDoctrineTableDiff(Blueprint $blueprint, SchemaManager $schema)
     {
         $table = $this->getTablePrefix() . $blueprint->getTable();
 
@@ -333,7 +274,7 @@ abstract class Grammar extends BaseGrammar
      *
      * @return array
      */
-    public function getFluentCommands(): array
+    public function getFluentCommands()
     {
         return $this->fluentCommands;
     }
@@ -343,7 +284,7 @@ abstract class Grammar extends BaseGrammar
      *
      * @return bool
      */
-    public function supportsSchemaTransactions(): bool
+    public function supportsSchemaTransactions()
     {
         return $this->transactions;
     }

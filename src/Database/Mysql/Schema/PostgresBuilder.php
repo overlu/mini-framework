@@ -15,7 +15,7 @@ class PostgresBuilder extends Builder
      * @param string $table
      * @return bool
      */
-    public function hasTable(string $table): bool
+    public function hasTable($table)
     {
         [$schema, $table] = $this->parseSchemaAndTable($table);
 
@@ -31,7 +31,7 @@ class PostgresBuilder extends Builder
      *
      * @return void
      */
-    public function dropAllTables(): void
+    public function dropAllTables()
     {
         $tables = [];
 
@@ -42,11 +42,7 @@ class PostgresBuilder extends Builder
 
             $table = reset($row);
 
-<<<<<<< HEAD
             if (!in_array($table, $excludedTables)) {
-=======
-            if (!in_array($table, $excludedTables, true)) {
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
                 $tables[] = $table;
             }
         }
@@ -65,7 +61,7 @@ class PostgresBuilder extends Builder
      *
      * @return void
      */
-    public function dropAllViews(): void
+    public function dropAllViews()
     {
         $views = [];
 
@@ -89,7 +85,7 @@ class PostgresBuilder extends Builder
      *
      * @return void
      */
-    public function dropAllTypes(): void
+    public function dropAllTypes()
     {
         $types = [];
 
@@ -113,7 +109,7 @@ class PostgresBuilder extends Builder
      *
      * @return array
      */
-    public function getAllTables(): array
+    public function getAllTables()
     {
         return $this->connection->select(
             $this->grammar->compileGetAllTables((array)$this->connection->getConfig('schema'))
@@ -125,7 +121,7 @@ class PostgresBuilder extends Builder
      *
      * @return array
      */
-    public function getAllViews(): array
+    public function getAllViews()
     {
         return $this->connection->select(
             $this->grammar->compileGetAllViews((array)$this->connection->getConfig('schema'))
@@ -137,7 +133,7 @@ class PostgresBuilder extends Builder
      *
      * @return array
      */
-    public function getAllTypes(): array
+    public function getAllTypes()
     {
         return $this->connection->select(
             $this->grammar->compileGetAllTypes()
@@ -150,7 +146,7 @@ class PostgresBuilder extends Builder
      * @param string $table
      * @return array
      */
-    public function getColumnListing(string $table): array
+    public function getColumnListing($table)
     {
         [$schema, $table] = $this->parseSchemaAndTable($table);
 
@@ -169,12 +165,12 @@ class PostgresBuilder extends Builder
      * @param string $table
      * @return array
      */
-    protected function parseSchemaAndTable(string $table): array
+    protected function parseSchemaAndTable($table)
     {
         $table = explode('.', $table);
 
         if (is_array($schema = $this->connection->getConfig('schema'))) {
-            if (in_array($table[0], $schema, true)) {
+            if (in_array($table[0], $schema)) {
                 return [array_shift($table), implode('.', $table)];
             }
 

@@ -18,28 +18,24 @@ class QueryException extends PDOException
      *
      * @var string
      */
-    protected string $sql;
+    protected $sql;
 
     /**
      * The bindings for the query.
      *
      * @var array
      */
-    protected array $bindings;
+    protected $bindings;
 
     /**
      * Create a new query exception instance.
      *
      * @param string $sql
      * @param array $bindings
-<<<<<<< HEAD
      * @param \Throwable $previous
-=======
-     * @param Throwable $previous
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
-    public function __construct(string $sql, array $bindings, Throwable $previous)
+    public function __construct($sql, array $bindings, Throwable $previous)
     {
         parent::__construct('', 0, $previous);
 
@@ -58,14 +54,10 @@ class QueryException extends PDOException
      *
      * @param string $sql
      * @param array $bindings
-<<<<<<< HEAD
      * @param \Throwable $previous
-=======
-     * @param Throwable $previous
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return string
      */
-    protected function formatMessage(string $sql, array $bindings, Throwable $previous): string
+    protected function formatMessage($sql, $bindings, Throwable $previous)
     {
         return $previous->getMessage() . ' (SQL: ' . Str::replaceArray('?', $bindings, $sql) . ')';
     }
@@ -75,7 +67,7 @@ class QueryException extends PDOException
      *
      * @return string
      */
-    public function getSql(): string
+    public function getSql()
     {
         return $this->sql;
     }
@@ -85,7 +77,7 @@ class QueryException extends PDOException
      *
      * @return array
      */
-    public function getBindings(): array
+    public function getBindings()
     {
         return $this->bindings;
     }

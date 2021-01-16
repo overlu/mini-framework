@@ -20,17 +20,13 @@ class SqlServerConnection extends Connection
     /**
      * Execute a Closure within a transaction.
      *
-<<<<<<< HEAD
      * @param \Closure $callback
-=======
-     * @param Closure $callback
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param int $attempts
      * @return mixed
      *
-     * @throws Throwable
+     * @throws \Throwable
      */
-    public function transaction(Closure $callback, int $attempts = 1)
+    public function transaction(Closure $callback, $attempts = 1)
     {
         for ($a = 1; $a <= $attempts; $a++) {
             if ($this->getDriverName() === 'sqlsrv') {
@@ -64,7 +60,7 @@ class SqlServerConnection extends Connection
     /**
      * Get the default query grammar instance.
      *
-     * @return QueryGrammar|mixed
+     * @return \Mini\Database\Mysql\Query\Grammars\SqlServerGrammar
      */
     protected function getDefaultQueryGrammar()
     {
@@ -74,7 +70,7 @@ class SqlServerConnection extends Connection
     /**
      * Get a schema builder instance for the connection.
      *
-     * @return SqlServerBuilder|mixed
+     * @return \Mini\Database\Mysql\Schema\SqlServerBuilder
      */
     public function getSchemaBuilder()
     {
@@ -88,7 +84,7 @@ class SqlServerConnection extends Connection
     /**
      * Get the default schema grammar instance.
      *
-     * @return SchemaGrammar|mixed
+     * @return \Mini\Database\Mysql\Schema\Grammars\SqlServerGrammar
      */
     protected function getDefaultSchemaGrammar()
     {
@@ -98,7 +94,7 @@ class SqlServerConnection extends Connection
     /**
      * Get the default post processor instance.
      *
-     * @return SqlServerProcessor|mixed
+     * @return \Mini\Database\Mysql\Query\Processors\SqlServerProcessor
      */
     protected function getDefaultPostProcessor()
     {
@@ -108,9 +104,9 @@ class SqlServerConnection extends Connection
     /**
      * Get the Doctrine DBAL driver.
      *
-     * @return DoctrineDriver
+     * @return \Doctrine\DBAL\Driver\PDOSqlsrv\Driver
      */
-    protected function getDoctrineDriver(): DoctrineDriver
+    protected function getDoctrineDriver()
     {
         return new DoctrineDriver;
     }

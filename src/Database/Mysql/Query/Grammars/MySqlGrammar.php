@@ -17,23 +17,17 @@ class MySqlGrammar extends Grammar
      *
      * @var array
      */
-    protected array $operators = ['sounds like'];
+    protected $operators = ['sounds like'];
 
     /**
      * Add a "where null" clause to the query.
      *
-<<<<<<< HEAD
      * @param string|array $columns
      * @param string $boolean
      * @param bool $not
      * @return $this
-=======
-     * @param Builder $query
-     * @param array $where
-     * @return string
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function whereNull(Builder $query, array $where): string
+    protected function whereNull(Builder $query, $where)
     {
         if ($this->isJsonSelector($where['column'])) {
             [$field, $path] = $this->wrapJsonFieldAndPath($where['column']);
@@ -47,17 +41,11 @@ class MySqlGrammar extends Grammar
     /**
      * Add a "where not null" clause to the query.
      *
-<<<<<<< HEAD
      * @param string|array $columns
      * @param string $boolean
      * @return $this
-=======
-     * @param Builder $query
-     * @param array $where
-     * @return string
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function whereNotNull(Builder $query, array $where): string
+    protected function whereNotNull(Builder $query, $where)
     {
         if ($this->isJsonSelector($where['column'])) {
             [$field, $path] = $this->wrapJsonFieldAndPath($where['column']);
@@ -71,15 +59,11 @@ class MySqlGrammar extends Grammar
     /**
      * Compile an insert ignore statement into SQL.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $values
      * @return string
      */
-    public function compileInsertOrIgnore(Builder $query, array $values): string
+    public function compileInsertOrIgnore(Builder $query, array $values)
     {
         return Str::replaceFirst('insert', 'insert ignore', $this->compileInsert($query, $values));
     }
@@ -91,7 +75,7 @@ class MySqlGrammar extends Grammar
      * @param string $value
      * @return string
      */
-    protected function compileJsonContains(string $column, string $value): string
+    protected function compileJsonContains($column, $value)
     {
         [$field, $path] = $this->wrapJsonFieldAndPath($column);
 
@@ -106,7 +90,7 @@ class MySqlGrammar extends Grammar
      * @param string $value
      * @return string
      */
-    protected function compileJsonLength(string $column, string $operator, string $value): string
+    protected function compileJsonLength($column, $operator, $value)
     {
         [$field, $path] = $this->wrapJsonFieldAndPath($column);
 
@@ -119,7 +103,7 @@ class MySqlGrammar extends Grammar
      * @param string $seed
      * @return string
      */
-    public function compileRandom(string $seed): string
+    public function compileRandom($seed)
     {
         return 'RAND(' . $seed . ')';
     }
@@ -127,15 +111,11 @@ class MySqlGrammar extends Grammar
     /**
      * Compile the lock into SQL.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param bool|string $value
      * @return string
      */
-    protected function compileLock(Builder $query, $value): string
+    protected function compileLock(Builder $query, $value)
     {
         if (!is_string($value)) {
             return $value ? 'for update' : 'lock in share mode';
@@ -147,15 +127,11 @@ class MySqlGrammar extends Grammar
     /**
      * Compile an insert statement into SQL.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $values
      * @return string
      */
-    public function compileInsert(Builder $query, array $values): string
+    public function compileInsert(Builder $query, array $values)
     {
         if (empty($values)) {
             $values = [[]];
@@ -167,15 +143,11 @@ class MySqlGrammar extends Grammar
     /**
      * Compile the columns for an update statement.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param array $values
      * @return string
      */
-    protected function compileUpdateColumns(Builder $query, array $values): string
+    protected function compileUpdateColumns(Builder $query, array $values)
     {
         return collect($values)->map(function ($value, $key) {
             if ($this->isJsonSelector($key)) {
@@ -193,7 +165,7 @@ class MySqlGrammar extends Grammar
      * @param mixed $value
      * @return string
      */
-    protected function compileJsonUpdateColumn(string $key, $value): string
+    protected function compileJsonUpdateColumn($key, $value)
     {
         if (is_bool($value)) {
             $value = $value ? 'true' : 'false';
@@ -211,17 +183,13 @@ class MySqlGrammar extends Grammar
     /**
      * Compile an update statement without joins into SQL.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $table
      * @param string $columns
      * @param string $where
      * @return string
      */
-    protected function compileUpdateWithoutJoins(Builder $query, string $table, string $columns, string $where): string
+    protected function compileUpdateWithoutJoins(Builder $query, $table, $columns, $where)
     {
         $sql = parent::compileUpdateWithoutJoins($query, $table, $columns, $where);
 
@@ -245,12 +213,12 @@ class MySqlGrammar extends Grammar
      * @param array $values
      * @return array
      */
-    public function prepareBindingsForUpdate(array $bindings, array $values): array
+    public function prepareBindingsForUpdate(array $bindings, array $values)
     {
         $values = collect($values)->reject(function ($value, $column) {
             return $this->isJsonSelector($column) && is_bool($value);
-        })->map(static function ($value) {
-            return is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value;
+        })->map(function ($value) {
+            return is_array($value) ? json_encode($value) : $value;
         })->all();
 
         return parent::prepareBindingsForUpdate($bindings, $values);
@@ -259,16 +227,12 @@ class MySqlGrammar extends Grammar
     /**
      * Compile a delete query that does not use joins.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Query\Builder $query
-=======
-     * @param Builder $query
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $table
      * @param string $where
      * @return string
      */
-    protected function compileDeleteWithoutJoins(Builder $query, string $table, string $where): string
+    protected function compileDeleteWithoutJoins(Builder $query, $table, $where)
     {
         $sql = parent::compileDeleteWithoutJoins($query, $table, $where);
 
@@ -292,7 +256,7 @@ class MySqlGrammar extends Grammar
      * @param string $value
      * @return string
      */
-    protected function wrapValue(string $value): string
+    protected function wrapValue($value)
     {
         return $value === '*' ? $value : '`' . str_replace('`', '``', $value) . '`';
     }
@@ -303,7 +267,7 @@ class MySqlGrammar extends Grammar
      * @param string $value
      * @return string
      */
-    protected function wrapJsonSelector(string $value): string
+    protected function wrapJsonSelector($value)
     {
         [$field, $path] = $this->wrapJsonFieldAndPath($value);
 
@@ -316,7 +280,7 @@ class MySqlGrammar extends Grammar
      * @param string $value
      * @return string
      */
-    protected function wrapJsonBooleanSelector(string $value): string
+    protected function wrapJsonBooleanSelector($value)
     {
         [$field, $path] = $this->wrapJsonFieldAndPath($value);
 

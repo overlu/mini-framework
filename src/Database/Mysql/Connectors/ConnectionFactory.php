@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql\Connectors;
 
-use Closure;
-use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\Container\Container;
 use Mini\Database\Mysql\Connection;
 use Mini\Database\Mysql\MySqlConnection;
@@ -17,7 +15,6 @@ use Mini\Database\Mysql\SQLiteConnection;
 use Mini\Database\Mysql\SqlServerConnection;
 use Mini\Support\Arr;
 use InvalidArgumentException;
-use PDO;
 use PDOException;
 
 class ConnectionFactory
@@ -25,18 +22,14 @@ class ConnectionFactory
     /**
      * The IoC container instance.
      *
-     * @var Container
+     * @var \Mini\Contracts\Container\Container
      */
-    protected Container $container;
+    protected $container;
 
     /**
      * Create a new connection factory instance.
      *
-<<<<<<< HEAD
      * @param \Mini\Contracts\Container\Container $container
-=======
-     * @param Container $container
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return void
      */
     public function __construct(Container $container)
@@ -49,13 +42,9 @@ class ConnectionFactory
      *
      * @param array $config
      * @param string|null $name
-<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Connection
-=======
-     * @return Connection
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function make(array $config, ?string $name = null): Connection
+    public function make(array $config, $name = null)
     {
         $config = $this->parseConfig($config, $name);
 
@@ -73,7 +62,7 @@ class ConnectionFactory
      * @param string $name
      * @return array
      */
-    protected function parseConfig(array $config, string $name): array
+    protected function parseConfig(array $config, $name)
     {
         return Arr::add(Arr::add($config, 'prefix', ''), 'name', $name);
     }
@@ -82,13 +71,9 @@ class ConnectionFactory
      * Create a single database connection instance.
      *
      * @param array $config
-<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Connection
-=======
-     * @return Connection
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function createSingleConnection(array $config): Connection
+    protected function createSingleConnection(array $config)
     {
         $pdo = $this->createPdoResolver($config);
 
@@ -101,13 +86,9 @@ class ConnectionFactory
      * Create a read / write database connection instance.
      *
      * @param array $config
-<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Connection
-=======
-     * @return Connection
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function createReadWriteConnection(array $config): Connection
+    protected function createReadWriteConnection(array $config)
     {
         $connection = $this->createSingleConnection($this->getWriteConfig($config));
 
@@ -118,13 +99,9 @@ class ConnectionFactory
      * Create a new PDO instance for reading.
      *
      * @param array $config
-<<<<<<< HEAD
      * @return \Closure
-=======
-     * @return Closure
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function createReadPdo(array $config): callable
+    protected function createReadPdo(array $config)
     {
         return $this->createPdoResolver($this->getReadConfig($config));
     }
@@ -135,7 +112,7 @@ class ConnectionFactory
      * @param array $config
      * @return array
      */
-    protected function getReadConfig(array $config): array
+    protected function getReadConfig(array $config)
     {
         return $this->mergeReadWriteConfig(
             $config, $this->getReadWriteConfig($config, 'read')
@@ -148,7 +125,7 @@ class ConnectionFactory
      * @param array $config
      * @return array
      */
-    protected function getWriteConfig(array $config): array
+    protected function getWriteConfig(array $config)
     {
         return $this->mergeReadWriteConfig(
             $config, $this->getReadWriteConfig($config, 'write')
@@ -162,7 +139,7 @@ class ConnectionFactory
      * @param string $type
      * @return array
      */
-    protected function getReadWriteConfig(array $config, string $type): array
+    protected function getReadWriteConfig(array $config, $type)
     {
         return isset($config[$type][0])
             ? Arr::random($config[$type])
@@ -176,7 +153,7 @@ class ConnectionFactory
      * @param array $merge
      * @return array
      */
-    protected function mergeReadWriteConfig(array $config, array $merge): array
+    protected function mergeReadWriteConfig(array $config, array $merge)
     {
         return Arr::except(array_merge($config, $merge), ['read', 'write']);
     }
@@ -185,13 +162,9 @@ class ConnectionFactory
      * Create a new Closure that resolves to a PDO instance.
      *
      * @param array $config
-<<<<<<< HEAD
      * @return \Closure
-=======
-     * @return Closure
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function createPdoResolver(array $config): callable
+    protected function createPdoResolver(array $config)
     {
         return array_key_exists('host', $config)
             ? $this->createPdoResolverWithHosts($config)
@@ -202,15 +175,11 @@ class ConnectionFactory
      * Create a new Closure that resolves to a PDO instance with a specific host or an array of hosts.
      *
      * @param array $config
-<<<<<<< HEAD
      * @return \Closure
-=======
-     * @return Closure
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      *
-     * @throws PDOException
+     * @throws \PDOException
      */
-    protected function createPdoResolverWithHosts(array $config): callable
+    protected function createPdoResolverWithHosts(array $config)
     {
         return function () use ($config) {
             foreach (Arr::shuffle($hosts = $this->parseHosts($config)) as $key => $host) {
@@ -233,9 +202,9 @@ class ConnectionFactory
      * @param array $config
      * @return array
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
-    protected function parseHosts(array $config): array
+    protected function parseHosts(array $config)
     {
         $hosts = Arr::wrap($config['host']);
 
@@ -250,13 +219,9 @@ class ConnectionFactory
      * Create a new Closure that resolves to a PDO instance where there is no configured host.
      *
      * @param array $config
-<<<<<<< HEAD
      * @return \Closure
-=======
-     * @return Closure
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected function createPdoResolverWithoutHosts(array $config): callable
+    protected function createPdoResolverWithoutHosts(array $config)
     {
         return function () use ($config) {
             return $this->createConnector($config)->connect($config);
@@ -267,16 +232,11 @@ class ConnectionFactory
      * Create a connector instance based on the configuration.
      *
      * @param array $config
-<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Connectors\ConnectorInterface
-=======
-     * @return ConnectorInterface
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      *
-     * @throws InvalidArgumentException
-     * @throws BindingResolutionException
+     * @throws \InvalidArgumentException
      */
-    public function createConnector(array $config): ConnectorInterface
+    public function createConnector(array $config)
     {
         if (!isset($config['driver'])) {
             throw new InvalidArgumentException('A driver must be specified.');
@@ -304,23 +264,15 @@ class ConnectionFactory
      * Create a new connection instance.
      *
      * @param string $driver
-<<<<<<< HEAD
      * @param \PDO|\Closure $connection
      * @param string $database
      * @param string $prefix
      * @param array $config
      * @return \Mini\Database\Mysql\Connection
-=======
-     * @param PDO|Closure $connection
-     * @param string $database
-     * @param string $prefix
-     * @param array $config
-     * @return Connection
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
-    protected function createConnection(string $driver, $connection, string $database, string $prefix = '', array $config = []): Connection
+    protected function createConnection($driver, $connection, $database, $prefix = '', array $config = [])
     {
         if ($resolver = Connection::getResolver($driver)) {
             return $resolver($connection, $database, $prefix, $config);

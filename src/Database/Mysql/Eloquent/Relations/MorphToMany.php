@@ -10,7 +10,6 @@ namespace Mini\Database\Mysql\Eloquent\Relations;
 use Mini\Database\Mysql\Eloquent\Builder;
 use Mini\Database\Mysql\Eloquent\Model;
 use Mini\Support\Arr;
-use Mini\Support\Collection;
 
 class MorphToMany extends BelongsToMany
 {
@@ -19,14 +18,14 @@ class MorphToMany extends BelongsToMany
      *
      * @var string
      */
-    protected string $morphType;
+    protected $morphType;
 
     /**
      * The class name of the morph type constraint.
      *
      * @var string
      */
-    protected string $morphClass;
+    protected $morphClass;
 
     /**
      * Indicates if we are connecting the inverse of the relation.
@@ -35,18 +34,13 @@ class MorphToMany extends BelongsToMany
      *
      * @var bool
      */
-    protected bool $inverse;
+    protected $inverse;
 
     /**
      * Create a new morph to many relationship instance.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @param \Mini\Database\Mysql\Eloquent\Model $parent
-=======
-     * @param Builder $query
-     * @param Model $parent
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @param string $name
      * @param string $table
      * @param string $foreignPivotKey
@@ -57,8 +51,8 @@ class MorphToMany extends BelongsToMany
      * @param bool $inverse
      * @return void
      */
-    public function __construct(Builder $query, Model $parent, string $name, string $table, string $foreignPivotKey,
-                                string $relatedPivotKey, string $parentKey, string $relatedKey, ?string $relationName = null, bool $inverse = false)
+    public function __construct(Builder $query, Model $parent, $name, $table, $foreignPivotKey,
+                                $relatedPivotKey, $parentKey, $relatedKey, $relationName = null, $inverse = false)
     {
         $this->inverse = $inverse;
         $this->morphType = $name . '_type';
@@ -75,7 +69,7 @@ class MorphToMany extends BelongsToMany
      *
      * @return $this
      */
-    protected function addWhereConstraints(): self
+    protected function addWhereConstraints()
     {
         parent::addWhereConstraints();
 
@@ -90,7 +84,7 @@ class MorphToMany extends BelongsToMany
      * @param array $models
      * @return void
      */
-    public function addEagerConstraints(array $models): void
+    public function addEagerConstraints(array $models)
     {
         parent::addEagerConstraints($models);
 
@@ -104,7 +98,7 @@ class MorphToMany extends BelongsToMany
      * @param bool $timed
      * @return array
      */
-    protected function baseAttachRecord(int $id, bool $timed): array
+    protected function baseAttachRecord($id, $timed)
     {
         return Arr::add(
             parent::baseAttachRecord($id, $timed), $this->morphType, $this->morphClass
@@ -114,19 +108,12 @@ class MorphToMany extends BelongsToMany
     /**
      * Add the constraints for a relationship count query.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Eloquent\Builder $query
      * @param \Mini\Database\Mysql\Eloquent\Builder $parentQuery
      * @param array|mixed $columns
      * @return \Mini\Database\Mysql\Eloquent\Builder
-=======
-     * @param Builder $query
-     * @param Builder $parentQuery
-     * @param array|mixed $columns
-     * @return Builder
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function getRelationExistenceQuery(Builder $query, Builder $parentQuery, $columns = ['*']): Builder
+    public function getRelationExistenceQuery(Builder $query, Builder $parentQuery, $columns = ['*'])
     {
         return parent::getRelationExistenceQuery($query, $parentQuery, $columns)->where(
             $this->table . '.' . $this->morphType, $this->morphClass
@@ -136,9 +123,9 @@ class MorphToMany extends BelongsToMany
     /**
      * Get the pivot models that are currently attached.
      *
-     * @return Collection
+     * @return \Mini\Support\Collection
      */
-    protected function getCurrentlyAttachedPivots(): Collection
+    protected function getCurrentlyAttachedPivots()
     {
         return parent::getCurrentlyAttachedPivots()->map(function ($record) {
             return $record instanceof MorphPivot
@@ -153,7 +140,7 @@ class MorphToMany extends BelongsToMany
      *
      * @return \Mini\Database\Mysql\Query\Builder
      */
-    public function newPivotQuery(): \Mini\Database\Mysql\Query\Builder
+    public function newPivotQuery()
     {
         return parent::newPivotQuery()->where($this->morphType, $this->morphClass);
     }
@@ -163,13 +150,9 @@ class MorphToMany extends BelongsToMany
      *
      * @param array $attributes
      * @param bool $exists
-<<<<<<< HEAD
      * @return \Mini\Database\Mysql\Eloquent\Relations\Pivot
-=======
-     * @return Pivot
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    public function newPivot(array $attributes = [], $exists = false): Pivot
+    public function newPivot(array $attributes = [], $exists = false)
     {
         $using = $this->using;
 
@@ -190,7 +173,7 @@ class MorphToMany extends BelongsToMany
      *
      * @return array
      */
-    protected function aliasedPivotColumns(): array
+    protected function aliasedPivotColumns()
     {
         $defaults = [$this->foreignPivotKey, $this->relatedPivotKey, $this->morphType];
 
@@ -204,7 +187,7 @@ class MorphToMany extends BelongsToMany
      *
      * @return string
      */
-    public function getMorphType(): string
+    public function getMorphType()
     {
         return $this->morphType;
     }
@@ -214,7 +197,7 @@ class MorphToMany extends BelongsToMany
      *
      * @return string
      */
-    public function getMorphClass(): string
+    public function getMorphClass()
     {
         return $this->morphClass;
     }
@@ -224,7 +207,7 @@ class MorphToMany extends BelongsToMany
      *
      * @return bool
      */
-    public function getInverse(): bool
+    public function getInverse()
     {
         return $this->inverse;
     }

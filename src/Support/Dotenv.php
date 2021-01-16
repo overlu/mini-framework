@@ -72,7 +72,7 @@ class Dotenv
                 $line = trim($line);
                 if (count($parts = explode('=', $line, 2)) === 2) {
                     [$key, $value] = $parts;
-                    $environmentVariables[$key] = $this->praseEnvironmentVariable($value);
+                    $this->environmentVariables[$key] = $this->praseEnvironmentVariable($value);
                 }
             }
         }

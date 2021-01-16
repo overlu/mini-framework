@@ -14,21 +14,21 @@ abstract class Migration
      *
      * @var string|null
      */
-    protected ?string $connection;
+    protected $connection;
 
     /**
      * Enables, if supported, wrapping the migration within a transaction.
      *
      * @var bool
      */
-    public bool $withinTransaction = true;
+    public $withinTransaction = true;
 
     /**
      * Get the migration connection name.
      *
      * @return string|null
      */
-    public function getConnection(): ?string
+    public function getConnection()
     {
         return $this->connection;
     }

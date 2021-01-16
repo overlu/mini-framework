@@ -12,6 +12,7 @@ use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\Support\Htmlable;
 use Mini\Contracts\View\Factory;
 use Mini\Database\Redis\Pool;
+use Mini\Events\Dispatcher;
 use Mini\Server;
 use Mini\Service\HttpMessage\Cookie\Cookie;
 use Mini\Service\HttpMessage\Stream\SwooleStream;
@@ -24,6 +25,7 @@ use Mini\Support\HigherOrderTapProxy;
 use Mini\Support\Parallel;
 use Mini\Support\Str;
 use Mini\Support\Waiter;
+use Mini\Translate\Translate;
 use Mini\View\View;
 use Psr\Http\Message\ResponseInterface;
 use Swoole\Runtime;
@@ -47,7 +49,7 @@ if (!function_exists('app')) {
     /**
      * @param string|null $abstract
      * @param array $parameters
-     * @return object|mixed
+     * @return object|mixed|Container
      */
     function app(?string $abstract = null, array $parameters = [])
     {
@@ -535,7 +537,7 @@ if (!function_exists('event')) {
      */
     function event(...$args)
     {
-        return app('events')->dispatch(...$args);
+        return app(Dispatcher::class)->dispatch(...$args);
     }
 }
 
@@ -548,7 +550,7 @@ if (!function_exists('task')) {
      */
     function task(...$args)
     {
-        return app('events')->task(...$args);
+        return app(Dispatcher::class)->task(...$args);
     }
 }
 
@@ -744,10 +746,10 @@ if (!function_exists('array_plus')) {
 if (!function_exists('abort')) {
     /**
      * @param int $code
-     * @param string $message
+     * @param string|array $message
      * @param array $headers
      */
-    function abort(int $code, string $message = '', array $headers = []): void
+    function abort(int $code, $message = '', array $headers = []): void
     {
         throw new \Mini\Exceptions\HttpException($code, $message, $headers);
     }
@@ -780,7 +782,7 @@ if (!function_exists('view')) {
      */
     function view($view = null, $data = [], $mergeData = [])
     {
-        $factory = app('view');
+        $factory = app(\Mini\View\Factory::class);
         if (func_num_args() === 0) {
             return $factory;
         }
@@ -841,7 +843,7 @@ if (!function_exists('__')) {
      */
     function __(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
     {
-        return app('translate')->get($id, $parameters, $domain, $locale);
+        return app(Translate::class)->get($id, $parameters, $domain, $locale);
     }
 }
 
@@ -856,7 +858,7 @@ if (!function_exists('trans')) {
      */
     function trans(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
     {
-        return app('translate')->trans($id, $parameters, $domain, $locale);
+        return app(Translate::class)->trans($id, $parameters, $domain, $locale);
     }
 }
 

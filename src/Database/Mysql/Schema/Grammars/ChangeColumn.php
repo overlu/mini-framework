@@ -8,10 +8,8 @@ declare(strict_types=1);
 namespace Mini\Database\Mysql\Schema\Grammars;
 
 use Doctrine\DBAL\Schema\AbstractSchemaManager as SchemaManager;
-use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\DBAL\Schema\Table;
-use Doctrine\DBAL\Schema\TableDiff;
 use Doctrine\DBAL\Types\Type;
 use Mini\Database\Mysql\Connection;
 use Mini\Database\Mysql\Schema\Blueprint;
@@ -23,22 +21,15 @@ class ChangeColumn
     /**
      * Compile a change column command into a series of SQL statements.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Schema\Grammars\Grammar $grammar
      * @param \Mini\Database\Mysql\Schema\Blueprint $blueprint
      * @param \Mini\Support\Fluent $command
      * @param \Mini\Database\Mysql\Connection $connection
-=======
-     * @param Grammar $grammar
-     * @param Blueprint $blueprint
-     * @param Fluent $command
-     * @param Connection $connection
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return array
      *
-     * @throws RuntimeException
+     * @throws \RuntimeException
      */
-    public static function compile(Grammar $grammar, Blueprint $blueprint, Fluent $command, Connection $connection): array
+    public static function compile($grammar, Blueprint $blueprint, Fluent $command, Connection $connection)
     {
         if (!$connection->isDoctrineAvailable()) {
             throw new RuntimeException(sprintf(
@@ -65,17 +56,10 @@ class ChangeColumn
     /**
      * Get the Doctrine table difference for the given changes.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Schema\Grammars\Grammar $grammar
      * @param \Mini\Database\Mysql\Schema\Blueprint $blueprint
      * @param \Doctrine\DBAL\Schema\AbstractSchemaManager $schema
      * @return \Doctrine\DBAL\Schema\TableDiff|bool
-=======
-     * @param Grammar $grammar
-     * @param Blueprint $blueprint
-     * @param SchemaManager $schema
-     * @return TableDiff|bool
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
     protected static function getChangedDiff($grammar, Blueprint $blueprint, SchemaManager $schema)
     {
@@ -89,17 +73,11 @@ class ChangeColumn
     /**
      * Get a copy of the given Doctrine table after making the column changes.
      *
-<<<<<<< HEAD
      * @param \Mini\Database\Mysql\Schema\Blueprint $blueprint
      * @param \Doctrine\DBAL\Schema\Table $table
      * @return \Doctrine\DBAL\Schema\Table
-=======
-     * @param Blueprint $blueprint
-     * @param Table $table
-     * @return Table
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected static function getTableWithColumnChanges(Blueprint $blueprint, Table $table): Table
+    protected static function getTableWithColumnChanges(Blueprint $blueprint, Table $table)
     {
         $table = clone $table;
 
@@ -127,17 +105,11 @@ class ChangeColumn
     /**
      * Get the Doctrine column instance for a column change.
      *
-<<<<<<< HEAD
      * @param \Doctrine\DBAL\Schema\Table $table
      * @param \Mini\Support\Fluent $fluent
      * @return \Doctrine\DBAL\Schema\Column
-=======
-     * @param Table $table
-     * @param Fluent $fluent
-     * @return Column
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected static function getDoctrineColumn(Table $table, Fluent $fluent): Column
+    protected static function getDoctrineColumn(Table $table, Fluent $fluent)
     {
         return $table->changeColumn(
             $fluent['name'], static::getDoctrineColumnChangeOptions($fluent)
@@ -147,14 +119,10 @@ class ChangeColumn
     /**
      * Get the Doctrine column change options.
      *
-<<<<<<< HEAD
      * @param \Mini\Support\Fluent $fluent
-=======
-     * @param Fluent $fluent
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      * @return array
      */
-    protected static function getDoctrineColumnChangeOptions(Fluent $fluent): array
+    protected static function getDoctrineColumnChangeOptions(Fluent $fluent)
     {
         $options = ['type' => static::getDoctrineColumnType($fluent['type'])];
 
@@ -176,13 +144,9 @@ class ChangeColumn
      * Get the doctrine column type.
      *
      * @param string $type
-<<<<<<< HEAD
      * @return \Doctrine\DBAL\Types\Type
-=======
-     * @return Type
->>>>>>> 4750aa4bbb44323ff0e45e46f537d3183c82b9be
      */
-    protected static function getDoctrineColumnType(string $type): Type
+    protected static function getDoctrineColumnType($type)
     {
         $type = strtolower($type);
 
@@ -214,7 +178,7 @@ class ChangeColumn
      * @param string $type
      * @return int
      */
-    protected static function calculateDoctrineTextLength(string $type): ?int
+    protected static function calculateDoctrineTextLength($type)
     {
         switch ($type) {
             case 'mediumText':
@@ -232,7 +196,7 @@ class ChangeColumn
      * @param string $type
      * @return bool
      */
-    protected static function doesntNeedCharacterOptions(string $type): bool
+    protected static function doesntNeedCharacterOptions($type)
     {
         return in_array($type, [
             'bigInteger',
@@ -257,12 +221,12 @@ class ChangeColumn
      * @param string $attribute
      * @return string|null
      */
-    protected static function mapFluentOptionToDoctrine(string $attribute): ?string
+    protected static function mapFluentOptionToDoctrine($attribute)
     {
         switch ($attribute) {
             case 'type':
             case 'name':
-                return null;
+                return;
             case 'nullable':
                 return 'notnull';
             case 'total':
@@ -281,7 +245,7 @@ class ChangeColumn
      * @param mixed $value
      * @return mixed
      */
-    protected static function mapFluentValueToDoctrine(string $option, $value)
+    protected static function mapFluentValueToDoctrine($option, $value)
     {
         return $option === 'notnull' ? !$value : $value;
     }

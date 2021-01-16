@@ -15,7 +15,7 @@ class MySqlBuilder extends Builder
      * @param string $table
      * @return bool
      */
-    public function hasTable(string $table): bool
+    public function hasTable($table)
     {
         $table = $this->connection->getTablePrefix() . $table;
 
@@ -30,7 +30,7 @@ class MySqlBuilder extends Builder
      * @param string $table
      * @return array
      */
-    public function getColumnListing(string $table): array
+    public function getColumnListing($table)
     {
         $table = $this->connection->getTablePrefix() . $table;
 
@@ -46,7 +46,7 @@ class MySqlBuilder extends Builder
      *
      * @return void
      */
-    public function dropAllTables(): void
+    public function dropAllTables()
     {
         $tables = [];
 
@@ -74,7 +74,7 @@ class MySqlBuilder extends Builder
      *
      * @return void
      */
-    public function dropAllViews(): void
+    public function dropAllViews()
     {
         $views = [];
 
@@ -98,7 +98,7 @@ class MySqlBuilder extends Builder
      *
      * @return array
      */
-    public function getAllTables(): array
+    public function getAllTables()
     {
         return $this->connection->select(
             $this->grammar->compileGetAllTables()
@@ -110,7 +110,7 @@ class MySqlBuilder extends Builder
      *
      * @return array
      */
-    public function getAllViews(): array
+    public function getAllViews()
     {
         return $this->connection->select(
             $this->grammar->compileGetAllViews()

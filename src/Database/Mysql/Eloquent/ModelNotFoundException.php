@@ -17,7 +17,7 @@ class ModelNotFoundException extends RuntimeException
      *
      * @var string
      */
-    protected string $model;
+    protected $model;
 
     /**
      * The affected model IDs.
@@ -33,7 +33,7 @@ class ModelNotFoundException extends RuntimeException
      * @param int|array $ids
      * @return $this
      */
-    public function setModel(string $model, $ids = []): self
+    public function setModel($model, $ids = [])
     {
         $this->model = $model;
         $this->ids = Arr::wrap($ids);
@@ -54,7 +54,7 @@ class ModelNotFoundException extends RuntimeException
      *
      * @return string
      */
-    public function getModel(): string
+    public function getModel()
     {
         return $this->model;
     }
