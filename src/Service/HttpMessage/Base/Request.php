@@ -38,7 +38,7 @@ class Request implements RequestInterface
     /**
      * @var string
      */
-    protected string $requestTarget;
+    protected ?string $requestTarget = null;
 
     /**
      * @param string $method HTTP method
@@ -53,8 +53,9 @@ class Request implements RequestInterface
         array $headers = [],
         $body = null,
         string $version = '1.1'
-    ) {
-        if (! $uri instanceof UriInterface) {
+    )
+    {
+        if (!$uri instanceof UriInterface) {
             $uri = new Uri($uri);
         }
 
@@ -63,7 +64,7 @@ class Request implements RequestInterface
         $this->setHeaders($headers);
         $this->protocol = $version;
 
-        if (! $this->hasHeader('Host')) {
+        if (!$this->hasHeader('Host')) {
             $this->updateHostFromUri();
         }
 
@@ -148,14 +149,14 @@ class Request implements RequestInterface
      * changed request method.
      *
      * @param string $method case-sensitive method
-     * @throws InvalidArgumentException for invalid HTTP methods
      * @return static
+     * @throws InvalidArgumentException for invalid HTTP methods
      */
     public function withMethod($method)
     {
         $method = strtoupper($method);
         $methods = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'HEAD'];
-        if (! in_array($method, $methods)) {
+        if (!in_array($method, $methods)) {
             throw new InvalidArgumentException('Invalid Method');
         }
         $new = clone $this;
@@ -211,7 +212,7 @@ class Request implements RequestInterface
         $new = clone $this;
         $new->uri = $uri;
 
-        if (! $preserveHost) {
+        if (!$preserveHost) {
             $new->updateHostFromUri();
         }
 

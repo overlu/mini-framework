@@ -257,7 +257,7 @@ class Request implements RequestInterface
     {
         $query = $this->getQueryString();
 
-        return $this->url() . '?' . $query;
+        return $this->url() . ($query ? '?' . $query : '');
     }
 
     /**
@@ -268,11 +268,9 @@ class Request implements RequestInterface
      *
      * @return null|string A normalized query string for the Request
      */
-    public function getQueryString(): ?string
+    public function getQueryString(): string
     {
-        $qs = static::normalizeQueryString($this->getServerParams()['query_string'] ?? '');
-
-        return $qs === '' ? null : $qs;
+        return $this->normalizeQueryString($this->getServerParams()['query_string'] ?? '');
     }
 
     /**
@@ -286,7 +284,7 @@ class Request implements RequestInterface
      */
     public function normalizeQueryString(string $qs): string
     {
-        if ($qs == '') {
+        if (empty($qs)) {
             return '';
         }
 
@@ -352,6 +350,11 @@ class Request implements RequestInterface
         return Arr::get($this->getUploadedFiles(), $key, $default);
     }
 
+    /**
+     * @param string|null $key
+     * @param null $default
+     * @return array|mixed|null
+     */
     public function route(?string $key = null, $default = null)
     {
         $routes = $this->getRequest()->getSwooleRequest()->routes ?? [];
@@ -371,96 +374,167 @@ class Request implements RequestInterface
         return false;
     }
 
+    /**
+     * @return string
+     */
     public function getProtocolVersion()
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param string $version
+     * @return Request
+     */
     public function withProtocolVersion($version)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @return array
+     */
     public function getHeaders(): array
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param string $name
+     * @return bool
+     */
     public function hasHeader($name)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param string $name
+     * @return string[]
+     */
     public function getHeader($name)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param string $name
+     * @return string
+     */
     public function getHeaderLine($name)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param string $name
+     * @param string|string[] $value
+     * @return Request
+     */
     public function withHeader($name, $value)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param string $name
+     * @param string|string[] $value
+     * @return Request
+     */
     public function withAddedHeader($name, $value)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param string $name
+     * @return Request
+     */
     public function withoutHeader($name)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @return StreamInterface
+     */
     public function getBody()
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param StreamInterface $body
+     * @return Request
+     */
     public function withBody(StreamInterface $body)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @return string
+     */
     public function getRequestTarget()
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param mixed $requestTarget
+     * @return Request
+     */
     public function withRequestTarget($requestTarget)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @return string
+     */
     public function getMethod(): string
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param string $method
+     * @return Request
+     */
     public function withMethod($method)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @return UriInterface
+     */
     public function getUri(): UriInterface
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param UriInterface $uri
+     * @param false $preserveHost
+     * @return Request
+     */
     public function withUri(UriInterface $uri, $preserveHost = false)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @return array
+     */
     public function getServerParams()
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @return array|mixed|string
+     */
     public function getClientIP()
     {
         $ip = $this->server('remote_addr');
@@ -470,66 +544,114 @@ class Request implements RequestInterface
         return $ip ?: '127.0.0.1';
     }
 
+    /**
+     * @return array|mixed|string
+     */
     public function ip()
     {
         return $this->getClientIp();
     }
 
+    /**
+     * @return array
+     */
     public function getCookieParams()
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param array $cookies
+     * @return Request
+     */
     public function withCookieParams(array $cookies)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @return array
+     */
     public function getQueryParams()
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param array $query
+     * @return Request
+     */
     public function withQueryParams(array $query)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @return array
+     */
     public function getUploadedFiles()
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param array $uploadedFiles
+     * @return Request
+     */
     public function withUploadedFiles(array $uploadedFiles)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @return array|object|null
+     */
     public function getParsedBody()
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param array|object|null $data
+     * @return Request
+     */
     public function withParsedBody($data)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @return array
+     */
     public function getAttributes()
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param string $name
+     * @param null $default
+     * @return mixed
+     */
     public function getAttribute($name, $default = null)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @return Request
+     */
     public function withAttribute($name, $value)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param string $name
+     * @return Request
+     */
     public function withoutAttribute($name)
     {
         return $this->call(__FUNCTION__, func_get_args());
@@ -643,7 +765,7 @@ class Request implements RequestInterface
     {
         $request = $this->getRequest();
         if (!method_exists($request, $name)) {
-            throw new RuntimeException('Method not exist.');
+            throw new RuntimeException('Method [' . $name . '] not exist.');
         }
         return $request->{$name}(...$arguments);
     }
@@ -652,7 +774,7 @@ class Request implements RequestInterface
     {
         $request = $this->getRequest();
         if (!method_exists($request, $name)) {
-            throw new \RuntimeException('Method [' . $name . '] not exist.');
+            throw new RuntimeException('Method [' . $name . '] not exist.');
         }
         return $request->{$name}(...$arguments);
     }

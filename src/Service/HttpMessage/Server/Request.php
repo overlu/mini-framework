@@ -441,6 +441,9 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
         return $this->hasHeader('X-Requested-With') == 'XMLHttpRequest';
     }
 
+    /**
+     * @return \Swoole\Http\Request
+     */
     public function getSwooleRequest(): \Swoole\Http\Request
     {
         return $this->swooleRequest;
