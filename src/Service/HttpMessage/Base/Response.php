@@ -322,7 +322,7 @@ class Response implements ResponseInterface
      * @param string|null $location
      * @return bool
      */
-    public function isRedirect(string $location = null): bool
+    public function isRedirect(?string $location = null): bool
     {
         return in_array($this->statusCode, [
             201,

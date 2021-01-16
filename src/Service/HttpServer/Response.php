@@ -444,6 +444,10 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
         return $this->getResponse()->getReasonPhrase();
     }
 
+    /**
+     * @param bool $withContent
+     * @return mixed
+     */
     public function send(bool $withContent = true)
     {
         return $this->getResponse()->send($withContent);
