@@ -63,6 +63,8 @@ use Mini\Context;
  * @method static \Mini\Contracts\HttpMessage\RequestInterface withServerParams(array $serverParams)
  * @method static string getClientIP()
  * @method static string ip()
+ * @method static string getScheme()
+ * @method static bool isSecure()
  * @method static array getCookieParams()
  * @method static \Mini\Contracts\HttpMessage\RequestInterface withCookieParams(array $cookies)
  * @method static array getQueryParams()

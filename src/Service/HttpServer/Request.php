@@ -553,6 +553,23 @@ class Request implements RequestInterface
     }
 
     /**
+     * @return bool
+     */
+    public function isSecure(): bool
+    {
+        $https = $this->getServerParams()['https'];
+        return !empty($https) && 'off' !== strtolower($https);
+    }
+
+    /**
+     * @return string
+     */
+    public function getScheme(): string
+    {
+        return $this->isSecure() ? 'https' : 'http';
+    }
+
+    /**
      * @return array
      */
     public function getCookieParams()
