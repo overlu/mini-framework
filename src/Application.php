@@ -32,7 +32,7 @@ class Application extends Container
      * version
      * @var string
      */
-    public static string $version = '2.1.2';
+    public static string $version = '2.1.3';
 
     /**
      * @var array|string[]
@@ -96,12 +96,10 @@ EOL;
         }
     }
 
-    private static function initial(): void
+    public static function initial(): void
     {
         ini_set('display_errors', config('app.debug') === true ? 'on' : 'off');
         ini_set('display_startup_errors', 'on');
         ini_set('date.timezone', config('app.timezone', 'UTC'));
-//        error_reporting(env('APP_ENV', 'local') === 'production' ? 0 : E_ALL);
-        error_reporting(E_ALL);
     }
 }

@@ -80,7 +80,6 @@ class Handler implements HandlerInterface
     public function render(RequestInterface $request, Throwable $throwable): void
     {
         if ($this->checkNotDontReport($throwable)) {
-//            abort(500, $this->formatResponseException($throwable));
             $this->sendException($throwable);
         }
     }
@@ -145,13 +144,13 @@ class Handler implements HandlerInterface
     protected function sendException(Throwable $throwable): void
     {
         if (Context::has('IsInRequestEvent') && $swResponse = response()->getSwooleResponse()) {
-            if($throwable instanceof HttpExceptionInterface){
+            if ($throwable instanceof HttpExceptionInterface) {
                 $code = $throwable->getStatusCode();
                 $content = [
                     'code' => $code,
                     'message' => $throwable->getResponseMessage(),
                 ];
-            }else{
+            } else {
                 $content = $this->formatResponseException($throwable);
                 $code = 500;
             }

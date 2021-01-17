@@ -7,187 +7,100 @@ declare(strict_types=1);
 
 namespace Mini\Service\HttpServer;
 
-use Mini\Support\InteractsWithTime;
-use Mini\Support\Str;
-use Mini\Support\Traits\Macroable;
+use Mini\Context;
 use Mini\Contracts\Routing\UrlGenerator as UrlGeneratorContract;
+use Mini\Service\HttpMessage\Uri\Uri;
 
 class UrlGenerator implements UrlGeneratorContract
 {
-    use InteractsWithTime, Macroable;
-
-    /**
-     * @var Request
-     */
-    protected $request;
-
-    public function __construct()
-    {
-        $this->requesr = request();
-    }
-
     /**
      * Get the full URL for the current request.
      *
-     * @return string
      */
-    public function full()
+    public function full(): Uri
     {
-        return $this->request->fullUrl();
+        return request()->getUri();
     }
 
     /**
      * Get the current URL for the request.
-     *
-     * @return string
+     * @return Uri
      */
-    public function current()
+    public function current(): Uri
     {
-        return $this->to($this->request->getPathInfo());
+        return request()->getUri()->withQuery('')->withFragment('');
+    }
+
+    /**
+     * Get the path URL for the request.
+     *
+     * @return Uri
+     */
+    public function path(string $path = ''): Uri
+    {
+        return request()->getUri()->withQuery($path)->withFragment('');
     }
 
     /**
      * Get the URL for the previous request.
      *
-     * @param mixed $fallback
-     * @return string
+     * @return Uri
      */
-    public function previous($fallback = false)
+    public function previous(): Uri
     {
-        $referrer = $this->request->header('referer');
-
-        $url = $referrer ? $this->to($referrer) : '/';
-
-        if ($url) {
-            return $url;
-        } elseif ($fallback) {
-            return $this->to($fallback);
-        }
-
-        return $this->to('/');
+        return new Uri(request()->header('referer', ''));
     }
 
     /**
-     * Generate an absolute URL to the given path.
+     * Determine if the given path is a valid URL.
      *
      * @param string $path
-     * @param mixed $extra
-     * @param bool|null $secure
-     * @return string
+     * @return bool
      */
-    public function to($path, $extra = [], $secure = null)
+    public function isValidUrl(string $path): bool
     {
-        // First we will check if the URL is already a valid URL. If it is we will not
-        // try to generate a new one but will simply return the URL as is, which is
-        // convenient since developers do not always have to check if it's valid.
-        if ($this->isValidUrl($path)) {
-            return $path;
+        if (!preg_match('~^(#|//|https?://|(mailto|tel|sms):)~', $path)) {
+            return filter_var($path, FILTER_VALIDATE_URL) !== false;
         }
 
-        $tail = implode('/', array_map(
-                'rawurlencode', (array)$this->formatParameters($extra))
-        );
-
-        // Once we have the scheme we will compile the "tail" by collapsing the values
-        // into a single string delimited by slashes. This just makes it convenient
-        // for passing the array of parameters to this URL as a list of segments.
-        $root = $this->formatRoot($this->formatScheme($secure));
-
-        [$path, $query] = $this->extractQueryString($path);
-
-        return $this->format(
-                $root, '/' . trim($path . '/' . $tail, '/')
-            ) . $query;
+        return true;
     }
 
     /**
      * Generate a secure, absolute URL to the given path.
      *
      * @param string $path
-     * @param array $parameters
-     * @return string
+     * @return Uri
      */
-    public function secure($path, $parameters = [])
+    public function secure(string $path = ''): Uri
     {
-        return $this->to($path, $parameters, true);
+        return new Uri(str_ireplace('http://', 'https://', $path !== '' ? $path : (string)$this->full()));
     }
 
     /**
-     * Generate the URL to an application asset.
+     * Generate a url
      *
      * @param string $path
-     * @param bool|null $secure
-     * @return string
+     * @param array $params
+     * @param string $fragment
+     * @return Uri
      */
-    public function asset($path, $secure = null)
+    public function make(string $path = '', array $params = [], string $fragment = ''): Uri
     {
-        if ($this->isValidUrl($path)) {
-            return $path;
+        if (Context::has('IsInRequestEvent') && $request = request()) {
+            $url = $request->getUri()->withQuery('')->withFragment('');
+        } else {
+            $url = new Uri(rtrim(env('APP_URL'), 'http://localhost/'));
         }
-
-        // Once we get the root URL, we will check to see if it contains an index.php
-        // file in the paths. If it does, we will remove it since it is not needed
-        // for asset paths, but only for routes to endpoints in the application.
-        $root = $this->assetRoot ?: $this->formatRoot($this->formatScheme($secure));
-
-        return $this->removeIndex($root) . '/' . trim($path, '/');
-    }
-
-    /**
-     * Generate the URL to a secure asset.
-     *
-     * @param string $path
-     * @return string
-     */
-    public function secureAsset($path)
-    {
-        return $this->asset($path, true);
-    }
-
-    /**
-     * Generate the URL to an asset from a custom root domain such as CDN, etc.
-     *
-     * @param string $root
-     * @param string $path
-     * @param bool|null $secure
-     * @return string
-     */
-    public function assetFrom($root, $path, $secure = null)
-    {
-        // Once we get the root URL, we will check to see if it contains an index.php
-        // file in the paths. If it does, we will remove it since it is not needed
-        // for asset paths, but only for routes to endpoints in the application.
-        $root = $this->formatRoot($this->formatScheme($secure), $root);
-
-        return $this->removeIndex($root) . '/' . trim($path, '/');
-    }
-
-    /**
-     * Remove the index.php file from a path.
-     *
-     * @param string $root
-     * @return string
-     */
-    protected function removeIndex(string $root, string $i = 'index.php')
-    {
-        return Str::contains($root, $i) ? str_replace('/' . $i, '', $root) : $root;
-    }
-
-    /**
-     * Get the default scheme for a raw URL.
-     *
-     * @param bool|null $secure
-     * @return string
-     */
-    public function formatScheme($secure = null)
-    {
-        if (!is_null($secure)) {
-            return $secure ? 'https://' : 'http://';
+        if ($path !== '') {
+            $url = $url->withPath($path);
         }
-
-        if (is_null($this->cachedScheme)) {
-            $this->cachedScheme = $this->forceScheme ?: $this->request->getScheme() . '://';
+        if (!empty($params)) {
+            $url = $url->withQuerys($params);
         }
-        return $this->cachedScheme;
+        if ($fragment !== '') {
+            $url = $url->withFragment($fragment);
+        }
+        return $url;
     }
 }

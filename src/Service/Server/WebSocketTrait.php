@@ -102,7 +102,7 @@ trait WebSocketTrait
         }
 
         if (is_object($response)) {
-            return json_encode((array)$response, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+            return method_exists($response, '__toString') ? (string)$response : json_encode((array)$response, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
         }
 
         return (string)$response;

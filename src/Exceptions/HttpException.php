@@ -23,13 +23,13 @@ class HttpException extends RuntimeException implements HttpExceptionInterface
 
     /**
      * HttpException constructor.
-     * @param int $statusCode
+     * @param $statusCode
      * @param string|array $message
      * @param array $headers
      * @param int|null $code
      * @param Throwable|null $previous
      */
-    public function __construct(int $statusCode, $message = '', array $headers = [], ?int $code = 0, Throwable $previous = null)
+    public function __construct($message = '', $statusCode = 0, array $headers = [], ?int $code = 0, Throwable $previous = null)
     {
         $this->headers = $headers;
         $this->statusCode = $statusCode;
@@ -37,16 +37,25 @@ class HttpException extends RuntimeException implements HttpExceptionInterface
         parent::__construct('something error', $code, $previous);
     }
 
+    /**
+     * @return int|mixed
+     */
     public function getStatusCode()
     {
         return $this->statusCode;
     }
 
+    /**
+     * @return array
+     */
     public function getHeaders(): array
     {
         return $this->headers;
     }
 
+    /**
+     * @return array|string
+     */
     public function getResponseMessage()
     {
         return $this->responseMessage;

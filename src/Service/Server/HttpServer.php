@@ -10,6 +10,7 @@ namespace Mini\Service\Server;
 use Mini\Config;
 use Mini\BindsProvider;
 use Mini\Context;
+use Mini\Contracts\Support\Htmlable;
 use Mini\Contracts\Support\Sendable;
 use Mini\Di;
 use Mini\Exceptions\Handler;
@@ -20,7 +21,6 @@ use Mini\Service\HttpMessage\Stream\SwooleStream;
 use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\Support\Jsonable;
 use Mini\Service\HttpServer\RouteService;
-use Mini\View\View;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Http\Server;
@@ -84,6 +84,7 @@ class HttpServer extends AbstractServer
                 $resp->send(true);
             }
         } catch (Throwable $throwable) {
+            Context::destroy('IsInRequestEvent');
             app('exception')->throw($throwable);
         }
     }
@@ -121,10 +122,10 @@ class HttpServer extends AbstractServer
      */
     protected function transferToResponse($response): \Psr\Http\Message\ResponseInterface
     {
-        if ($response instanceof View) {
+        if ($response instanceof Htmlable) {
             return $this->response()
                 ->withAddedHeader('content-type', 'text/html;charset=UTF-8')
-                ->withBody(new SwooleStream($response->render()));
+                ->withBody(new SwooleStream($response->toHtml()));
         }
         if (is_string($response)) {
             return $this->response()
@@ -149,9 +150,13 @@ class HttpServer extends AbstractServer
         }
 
         if (is_object($response)) {
-            return $this->response()
-                ->withAddedHeader('content-type', 'application/json;charset=UTF-8')
-                ->withBody(new SwooleStream(json_encode((array)$response, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)));
+            return method_exists($response, '__toString')
+                ? $this->response()
+                    ->withAddedHeader('content-type', 'text/plain;charset=UTF-8')
+                    ->withBody(new SwooleStream((string)$response))
+                : $this->response()
+                    ->withAddedHeader('content-type', 'application/json;charset=UTF-8')
+                    ->withBody(new SwooleStream(json_encode((array)$response, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)));
         }
 
         return $this->response()->withAddedHeader('content-type', 'text/plain;charset=UTF-8')->withBody(new SwooleStream((string)$response));

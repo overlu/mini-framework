@@ -16,6 +16,7 @@ use Mini\Events\Dispatcher;
 use Mini\Server;
 use Mini\Service\HttpMessage\Cookie\Cookie;
 use Mini\Service\HttpMessage\Stream\SwooleStream;
+use Mini\Service\HttpMessage\Uri\Uri;
 use Mini\Support\ApplicationContext;
 use Mini\Support\Arr;
 use Mini\Support\Collection;
@@ -589,43 +590,22 @@ if (!function_exists('url')) {
      * @param string $path
      * @param array $params
      * @param string $fragment
-     * @return string
-     * @throws Exception
+     * @return Uri
      */
-    function url(string $path = '', array $params = [], string $fragment = ''): string
+    function url(string $path = '', array $params = [], string $fragment = ''): Uri
     {
-        if (Context::has('IsInRequestEvent') && $request = request()) {
-            $server = $request->getServerParams();
-            $scheme = !empty($server['https']) && $server['https'] !== 'off' ? 'https' : 'http';
-            $host = $request->header('host');
-            $appUrl = rtrim($scheme . '://' . $host, '/');
-        } else {
-            $appUrl = rtrim(env('APP_URL'), '/');
-        }
-        $arr = parse_url($appUrl);
-        $arr['query'] = !empty($params) ? http_build_query($params) : '';
-        $arr['scheme'] = $arr['scheme'] ?? 'http';
-        $arr['path'] = $path;
-        $arr['fragment'] = $fragment;
-        $arr['port'] = $arr['port'] ?? 80;
-        return http_build_url($arr);
+        return \Mini\Facades\Url::make($path, $params, $fragment);
     }
 }
 
-if (!function_exists('http_build_url')) {
+if (!function_exists('html')) {
     /**
-     * build url
-     * @param array $urlArr
-     * @return string
+     * @param $string
+     * @return \Mini\Support\HtmlString
      */
-    function http_build_url(array $urlArr): string
+    function html($string)
     {
-        $url = $urlArr['scheme'] . '://' . $urlArr['host'];
-        $url .= (!$urlArr['port'] || $urlArr['port'] === 80) ? '' : ':' . $urlArr['port'];
-        $url .= $urlArr['path'] ? '/' . trim($urlArr['path'], '/') : '';
-        $url .= $urlArr['query'] ? '?' . $urlArr['query'] : '';
-        $url .= $urlArr['fragment'] ? '#' . $urlArr['fragment'] : '';
-        return $url;
+        return new \Mini\Support\HtmlString($string);
     }
 }
 
@@ -751,7 +731,7 @@ if (!function_exists('abort')) {
      */
     function abort(int $code, $message = '', array $headers = []): void
     {
-        throw new \Mini\Exceptions\HttpException($code, $message, $headers);
+        throw new \Mini\Exceptions\HttpException($message, $code, $headers);
     }
 }
 

@@ -65,7 +65,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      * @param \Swoole\Http\Request $swooleRequest
      * @return Request
      */
-    public static function loadFromSwooleRequest(\Swoole\Http\Request $swooleRequest)
+    public static function loadFromSwooleRequest(\Swoole\Http\Request $swooleRequest): Request
     {
         $server = $swooleRequest->server;
         $method = $server['request_method'] ?? 'GET';
@@ -91,7 +91,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      *
      * @return array
      */
-    public function getServerParams()
+    public function getServerParams(): array
     {
         return $this->serverParams;
     }
@@ -102,7 +102,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      * @param array $serverParams
      * @return static
      */
-    public function withServerParams(array $serverParams)
+    public function withServerParams(array $serverParams): Request
     {
         $clone = clone $this;
         $clone->serverParams = $serverParams;
@@ -134,7 +134,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      * @param array $cookies array of key/value pairs representing cookies
      * @return static
      */
-    public function withCookieParams(array $cookies)
+    public function withCookieParams(array $cookies): Request
     {
         $clone = clone $this;
         $clone->cookieParams = $cookies;
@@ -162,7 +162,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      *
      * @return static
      */
-    public function addQueryParam(string $name, $value)
+    public function addQueryParam(string $name, $value): Request
     {
         $clone = clone $this;
         $clone->queryParams[$name] = $value;
@@ -189,7 +189,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      *                     $_GET
      * @return static
      */
-    public function withQueryParams(array $query)
+    public function withQueryParams(array $query): Request
     {
         $clone = clone $this;
         $clone->queryParams = $query;
@@ -206,7 +206,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      * @return array an array tree of UploadedFileInterface instances; an empty
      *               array MUST be returned if no data is present
      */
-    public function getUploadedFiles()
+    public function getUploadedFiles(): array
     {
         return $this->uploadedFiles;
     }
@@ -221,7 +221,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      * @return static
      * @throws \InvalidArgumentException if an invalid structure is provided
      */
-    public function withUploadedFiles(array $uploadedFiles)
+    public function withUploadedFiles(array $uploadedFiles): Request
     {
         $clone = clone $this;
         $clone->uploadedFiles = $uploadedFiles;
@@ -254,7 +254,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      *
      * @return static
      */
-    public function addParserBody(string $name, $value)
+    public function addParserBody(string $name, $value): Request
     {
         if (is_array($this->parsedBody)) {
             $clone = clone $this;
@@ -298,7 +298,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      * @throws \InvalidArgumentException if an unsupported argument type is
      *                                   provided
      */
-    public function withParsedBody($data)
+    public function withParsedBody($data): Request
     {
         $clone = clone $this;
         $clone->parsedBody = $data;
@@ -312,7 +312,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      *
      * @return static
      */
-    public function withBodyParams($data)
+    public function withBodyParams($data): Request
     {
         $clone = clone $this;
         $clone->bodyParams = $data;
@@ -329,7 +329,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      *
      * @return array attributes derived from the request
      */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
@@ -365,7 +365,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      * @return static
      * @see getAttributes()
      */
-    public function withAttribute($name, $value)
+    public function withAttribute($name, $value): Request
     {
         $clone = clone $this;
         $clone->attributes[$name] = $value;
@@ -384,7 +384,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      * @return static
      * @see getAttributes()
      */
-    public function withoutAttribute($name)
+    public function withoutAttribute($name): Request
     {
         if (array_key_exists($name, $this->attributes) === false) {
             return $this;
@@ -401,7 +401,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      *
      * @return string
      */
-    public function url()
+    public function url(): string
     {
         return rtrim(preg_replace('/\?.*/', '', $this->getUri()), '/');
     }
@@ -412,7 +412,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
     public function fullUrl(): string
     {
         $query = $this->getUri()->getQuery();
-        $question = $this->getUri()->getHost() . $this->getUri()->getPath() == '/' ? '/?' : '?';
+        $question = $this->getUri()->getHost() . $this->getUri()->getPath() === '/' ? '/?' : '?';
         return $query ? $this->url() . $question . $query : $this->url();
     }
 
@@ -421,7 +421,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      *
      * @return bool
      */
-    public function isAjax()
+    public function isAjax(): bool
     {
         return $this->isXmlHttpRequest();
     }
@@ -436,9 +436,9 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      *
      * @return bool true if the request is an XMLHttpRequest, false otherwise
      */
-    public function isXmlHttpRequest()
+    public function isXmlHttpRequest(): bool
     {
-        return $this->hasHeader('X-Requested-With') == 'XMLHttpRequest';
+        return strtoupper($this->hasHeader('X-Requested-With')) === 'XMLHttpRequest';
     }
 
     /**
@@ -453,13 +453,13 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      * @param \Swoole\Http\Request $swooleRequest
      * @return $this
      */
-    public function setSwooleRequest(\Swoole\Http\Request $swooleRequest)
+    public function setSwooleRequest(\Swoole\Http\Request $swooleRequest): Request
     {
         $this->swooleRequest = $swooleRequest;
         return $this;
     }
 
-    protected static function normalizeParsedBody(array $data = [], ?RequestInterface $request = null)
+    protected static function normalizeParsedBody(array $data = [], ?RequestInterface $request = null): array
     {
         if (!$request) {
             return $data;
@@ -480,7 +480,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      * @return array
      * @throws \InvalidArgumentException for unrecognized values
      */
-    private static function normalizeFiles(array $files)
+    private static function normalizeFiles(array $files): array
     {
         $normalized = [];
 
@@ -506,7 +506,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      * delegate to normalizeNestedFileSpec() and return that return value.
      *
      * @param array $value $_FILES struct
-     * @return array|UploadedFileInterface
+     * @return UploadedFileInterface[]|UploadedFileInterface
      */
     private static function createUploadedFileFromSpec(array $value)
     {
@@ -525,19 +525,18 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      * @param array $files
      * @return UploadedFileInterface[]
      */
-    private static function normalizeNestedFileSpec(array $files = [])
+    private static function normalizeNestedFileSpec(array $files = []): array
     {
         $normalizedFiles = [];
 
         foreach (array_keys($files['tmp_name']) as $key) {
-            $spec = [
+            $normalizedFiles[$key] = self::createUploadedFileFromSpec([
                 'tmp_name' => $files['tmp_name'][$key],
                 'size' => $files['size'][$key],
                 'error' => $files['error'][$key],
                 'name' => $files['name'][$key],
                 'type' => $files['type'][$key],
-            ];
-            $normalizedFiles[$key] = self::createUploadedFileFromSpec($spec);
+            ]);
         }
 
         return $normalizedFiles;
@@ -548,7 +547,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      * @param \Swoole\Http\Request $swooleRequest
      * @return UriInterface
      */
-    private static function getUriFromGlobals(\Swoole\Http\Request $swooleRequest)
+    private static function getUriFromGlobals(\Swoole\Http\Request $swooleRequest): UriInterface
     {
         $server = $swooleRequest->server;
         $header = $swooleRequest->header;
@@ -571,7 +570,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
             $hasPort = true;
             if (\strpos($header['host'], ':')) {
                 [$host, $port] = explode(':', $header['host'], 2);
-                if ($port != $uri->getDefaultPort()) {
+                if ((int)$port !== $uri->getDefaultPort()) {
                     $uri = $uri->withPort($port);
                 }
             } else {

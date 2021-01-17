@@ -36,7 +36,7 @@ class Request implements RequestInterface
     protected string $method;
 
     /**
-     * @var string
+     * @var ?string
      */
     protected ?string $requestTarget = null;
 
@@ -86,17 +86,17 @@ class Request implements RequestInterface
      *
      * @return string
      */
-    public function getRequestTarget()
+    public function getRequestTarget(): string
     {
         if ($this->requestTarget !== null) {
             return $this->requestTarget;
         }
 
         $target = $this->uri->getPath();
-        if ($target == '') {
+        if ($target === '') {
             $target = '/';
         }
-        if ($this->uri->getQuery() != '') {
+        if ($this->uri->getQuery() !== '') {
             $target .= '?' . $this->uri->getQuery();
         }
 
@@ -118,7 +118,7 @@ class Request implements RequestInterface
      * @param mixed $requestTarget
      * @return static
      */
-    public function withRequestTarget($requestTarget)
+    public function withRequestTarget($requestTarget): Request
     {
         if (preg_match('#\s#', $requestTarget)) {
             throw new InvalidArgumentException('Invalid request target provided; cannot contain whitespace');
@@ -134,7 +134,7 @@ class Request implements RequestInterface
      *
      * @return string returns the request method
      */
-    public function getMethod()
+    public function getMethod(): string
     {
         return $this->method;
     }
@@ -152,7 +152,7 @@ class Request implements RequestInterface
      * @return static
      * @throws InvalidArgumentException for invalid HTTP methods
      */
-    public function withMethod($method)
+    public function withMethod($method): Request
     {
         $method = strtoupper($method);
         $methods = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'HEAD'];
@@ -224,7 +224,7 @@ class Request implements RequestInterface
      *
      * @see http://tools.ietf.org/html/rfc7230#section-5.4
      */
-    private function updateHostFromUri()
+    private function updateHostFromUri(): void
     {
         $host = $this->uri->getHost();
 
