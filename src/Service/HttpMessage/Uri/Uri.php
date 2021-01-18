@@ -213,7 +213,7 @@ class Uri implements UriInterface
      */
     public function getPort(): ?int
     {
-        return $this->port;
+        return (int)$this->port;
     }
 
     /**

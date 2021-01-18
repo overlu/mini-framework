@@ -16,6 +16,7 @@ use Mini\Service\HttpServer\UrlGenerator;
  * @method static \Mini\Service\HttpMessage\Uri\Uri previous()
  * @method static \Mini\Service\HttpMessage\Uri\Uri secure(string $path = '')
  * @method static \Mini\Service\HttpMessage\Uri\Uri make(string $path = '', array $params = [], string $fragment = '')
+ * @method static \Psr\Http\Message\ResponseInterface redirect(string $toUrl, int $status = 302, string $schema = 'http')
  *
  * @see UrlGenerator
  */

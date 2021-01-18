@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Service\HttpServer;
 
 use BadMethodCallException;
+use Mini\Container\Container;
 use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Contracts\Support\Sendable;
 use Mini\Exceptions\EncodingException;
@@ -17,7 +18,7 @@ use Mini\Service\HttpMessage\Cookie\Cookie;
 use Mini\Service\HttpMessage\Stream\SwooleFileStream;
 use Mini\Service\HttpMessage\Stream\SwooleStream;
 use Mini\Contracts\HttpMessage\ResponseInterface;
-use Mini\Support\ApplicationContext;
+use Mini\Service\HttpMessage\Uri\Uri;
 use Mini\Support\ClearStatCache;
 use Mini\Context;
 use Mini\Contracts\Support\Arrayable;
@@ -124,27 +125,24 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
 
     /**
      * Redirect to a url with a status.
-     * @param string $toUrl
+     * @param string|Uri $toUrl
      * @param int $status
      * @param string $schema
      * @return PsrResponseInterface
      */
     public function redirect(
-        string $toUrl,
+        $toUrl,
         int $status = 302,
         string $schema = 'http'
     ): PsrResponseInterface
     {
+        $toUrl = (string)$toUrl;
         $toUrl = value(static function () use ($toUrl, $schema) {
-            if (!ApplicationContext::hasContainer() || Str::startsWith($toUrl, ['http://', 'https://'])) {
+            if (Str::startsWith($toUrl, ['http://', 'https://'])) {
                 return $toUrl;
             }
-            /** @var RequestInterface $request */
-            $request = ApplicationContext::getContainer()->get(RequestInterface::class);
-            $uri = $request->getUri();
-            $host = $uri->getAuthority();
             // Build the url by $schema and host.
-            return $schema . '://' . $host . (Str::startsWith($toUrl, '/') ? $toUrl : '/' . $toUrl);
+            return $schema . '://' . request()->getUri()->getAuthority() . (Str::startsWith($toUrl, '/') ? $toUrl : '/' . $toUrl);
         });
         return $this->getResponse()->withStatus($status)->withAddedHeader('Location', $toUrl);
     }
@@ -169,12 +167,7 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
         $filename = $name ?: $file->getBasename();
         $etag = $this->createEtag($file);
         $contentType = value(static function () use ($file) {
-            $mineType = null;
-            if (ApplicationContext::hasContainer()) {
-                $guesser = ApplicationContext::getContainer()->get(MimeTypeExtensionGuesser::class);
-                $mineType = $guesser->guessMimeType($file->getExtension());
-            }
-            return $mineType ?? 'application/octet-stream';
+            return Container::getInstance()->get(MimeTypeExtensionGuesser::class)->guessMimeType($file->getExtension()) ?? 'application/octet-stream';
         });
 
         // Determine if ETag the client expects matches calculated ETag

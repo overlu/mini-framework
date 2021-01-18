@@ -17,7 +17,6 @@ use Mini\Server;
 use Mini\Service\HttpMessage\Cookie\Cookie;
 use Mini\Service\HttpMessage\Stream\SwooleStream;
 use Mini\Service\HttpMessage\Uri\Uri;
-use Mini\Support\ApplicationContext;
 use Mini\Support\Arr;
 use Mini\Support\Collection;
 use Mini\Support\Coroutine;
@@ -421,23 +420,13 @@ if (!function_exists('parallel')) {
 
 if (!function_exists('make')) {
     /**
-     * Create a object instance, if the DI container exist in ApplicationContext,
-     * then the object will be create by DI container via `make()` method, if not,
-     * the object will create by `new` keyword.
      * @param string $name
      * @param array $parameters
      * @return mixed
      */
     function make(string $name, array $parameters = [])
     {
-        if (ApplicationContext::hasContainer()) {
-            $container = ApplicationContext::getContainer();
-            if (method_exists($container, 'make')) {
-                return $container->make($name, $parameters);
-            }
-        }
-        $parameters = array_values($parameters);
-        return new $name(...$parameters);
+        return Container::getInstance()->make($name, $parameters);
     }
 }
 
@@ -864,13 +853,13 @@ if (!function_exists('cookie')) {
 if (!function_exists('redirect')) {
     /**
      * 跳转
-     * @param string $toUrl
+     * @param string|Uri $toUrl
      * @param int $status
      * @param string $schema
      * @return ResponseInterface
      * @throws Exception
      */
-    function redirect(string $toUrl, int $status = 302, string $schema = 'http')
+    function redirect($toUrl, int $status = 302, string $schema = 'http')
     {
         return response()->redirect($toUrl, $status, $schema);
     }
@@ -897,9 +886,6 @@ if (!function_exists('wait')) {
      */
     function wait(Closure $closure, ?float $timeout = null)
     {
-        if (ApplicationContext::hasContainer()) {
-            return ApplicationContext::getContainer()->get(Waiter::class)->wait($closure, $timeout);
-        }
-        return (new Waiter())->wait($closure, $timeout);
+        return Container::getInstance()->get(Waiter::class)->wait($closure, $timeout);
     }
 }

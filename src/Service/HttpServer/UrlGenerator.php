@@ -10,6 +10,7 @@ namespace Mini\Service\HttpServer;
 use Mini\Context;
 use Mini\Contracts\Routing\UrlGenerator as UrlGeneratorContract;
 use Mini\Service\HttpMessage\Uri\Uri;
+use Psr\Http\Message\ResponseInterface;
 
 class UrlGenerator implements UrlGeneratorContract
 {
@@ -102,5 +103,17 @@ class UrlGenerator implements UrlGeneratorContract
             $url = $url->withFragment($fragment);
         }
         return $url;
+    }
+
+    /**
+     * @param string|Uri $toUrl
+     * @param int $status
+     * @param string $schema
+     * @return ResponseInterface
+     * @throws \Exception
+     */
+    public function redirect($toUrl, int $status = 302, string $schema = 'http'): ResponseInterface
+    {
+        return response()->redirect($toUrl, $status, $schema);
     }
 }
