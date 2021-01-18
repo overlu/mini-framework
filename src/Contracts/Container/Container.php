@@ -19,7 +19,7 @@ interface Container extends ContainerInterface
      * @param string $abstract
      * @return bool
      */
-    public function bound($abstract);
+    public function bound(string $abstract): bool;
 
     /**
      * Alias a type to a different name.
@@ -30,7 +30,7 @@ interface Container extends ContainerInterface
      *
      * @throws LogicException
      */
-    public function alias($abstract, $alias);
+    public function alias(string $abstract, string $alias): void;
 
     /**
      * Assign a set of tags to a given binding.
@@ -47,7 +47,7 @@ interface Container extends ContainerInterface
      * @param string $tag
      * @return iterable
      */
-    public function tagged($tag);
+    public function tagged(string $tag): iterable;
 
     /**
      * Register a binding with the container.
@@ -57,7 +57,7 @@ interface Container extends ContainerInterface
      * @param bool $shared
      * @return void
      */
-    public function bind($abstract, $concrete = null, $shared = false);
+    public function bind(string $abstract, $concrete = null, bool $shared = false): void;
 
     /**
      * Register a binding if it hasn't already been registered.
@@ -67,7 +67,7 @@ interface Container extends ContainerInterface
      * @param bool $shared
      * @return void
      */
-    public function bindIf($abstract, $concrete = null, $shared = false);
+    public function bindIf(string $abstract, $concrete = null, bool $shared = false): void;
 
     /**
      * Register a shared binding in the container.
@@ -76,7 +76,7 @@ interface Container extends ContainerInterface
      * @param \Closure|string|null $concrete
      * @return void
      */
-    public function singleton($abstract, $concrete = null);
+    public function singleton(string $abstract, $concrete = null): void;
 
     /**
      * Register a shared binding if it hasn't already been registered.
@@ -85,18 +85,18 @@ interface Container extends ContainerInterface
      * @param \Closure|string|null $concrete
      * @return void
      */
-    public function singletonIf($abstract, $concrete = null);
+    public function singletonIf(string $abstract, $concrete = null): void;
 
     /**
      * "Extend" an abstract type in the container.
      *
      * @param string $abstract
-     * @param \Closure $closure
+     * @param Closure $closure
      * @return void
      *
      * @throws \InvalidArgumentException
      */
-    public function extend($abstract, Closure $closure);
+    public function extend(string $abstract, Closure $closure): void;
 
     /**
      * Register an existing instance as shared in the container.
@@ -105,7 +105,7 @@ interface Container extends ContainerInterface
      * @param mixed $instance
      * @return mixed
      */
-    public function instance($abstract, $instance);
+    public function instance(string $abstract, $instance);
 
     /**
      * Add a contextual binding to the container.
@@ -115,7 +115,7 @@ interface Container extends ContainerInterface
      * @param \Closure|string $implementation
      * @return void
      */
-    public function addContextualBinding($concrete, $abstract, $implementation);
+    public function addContextualBinding(string $concrete, string $abstract, $implementation): void;
 
     /**
      * Define a contextual binding.
@@ -131,14 +131,14 @@ interface Container extends ContainerInterface
      * @param string $abstract
      * @return \Closure
      */
-    public function factory($abstract);
+    public function factory(string $abstract);
 
     /**
      * Flush the container of all bindings and resolved instances.
      *
      * @return void
      */
-    public function flush();
+    public function flush(): void;
 
     /**
      * Resolve the given type from the container.
@@ -149,7 +149,7 @@ interface Container extends ContainerInterface
      *
      * @throws BindingResolutionException
      */
-    public function make($abstract, array $parameters = []);
+    public function make(string $abstract, array $parameters = []);
 
     /**
      * Call the given Closure / class@method and inject its dependencies.
@@ -167,7 +167,7 @@ interface Container extends ContainerInterface
      * @param string $abstract
      * @return bool
      */
-    public function resolved($abstract);
+    public function resolved(string $abstract): bool;
 
     /**
      * Register a new resolving callback.

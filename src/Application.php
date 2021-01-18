@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace Mini;
 
 use Mini\Console\Panel;
-use Mini\Container\Container;
 use Mini\Service\Server\CustomServer;
 use Mini\Service\Server\HelpServer;
 use Mini\Service\Server\HttpServer;
@@ -20,7 +19,7 @@ use Mini\Service\Server\MainServer;
 use Mini\Service\Server\WsHttpServer;
 use Mini\Support\Command;
 
-class Application extends Container
+class Application
 {
     /**
      * version
