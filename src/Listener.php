@@ -10,17 +10,21 @@ namespace Mini;
 use Mini\Support\Command;
 use Throwable;
 
+/**
+ * Class Listener
+ * @package Mini
+ */
 class Listener
 {
-    private static $instance;
+    private static Listener $instance;
 
-    private static $config;
+    private static array $config = [];
 
     private function __construct()
     {
     }
 
-    public static function getInstance()
+    public static function getInstance(): Listener
     {
         if (is_null(self::$instance)) {
             self::$instance = new self();
@@ -30,11 +34,11 @@ class Listener
     }
 
     /**
-     * @param $event
+     * @param string $event
      * @param mixed ...$args
      * @throws Throwable
      */
-    public function listen($event, ...$args): void
+    public function listen(string $event, ...$args): void
     {
         try {
             if (isset(self::$config['server'][$event]) && $listener = self::$config['server'][$event]) {
@@ -45,18 +49,22 @@ class Listener
                 }
             }
         } catch (Throwable $throwable) {
-            Command::error($throwable);
+            app('exception')->throw($throwable);
         }
     }
 
-    public function on(\Swoole\Server $server, $event)
+    /**
+     * @param \Swoole\Server $server
+     * @param string $event
+     */
+    public function on(\Swoole\Server $server, string $event): void
     {
         try {
             if (isset(self::$config['server'][$event])) {
                 $server->on($event, self::$config['server'][$event]);
             }
         } catch (Throwable $throwable) {
-            Command::error($throwable);
+            app('exception')->throw($throwable);
         }
     }
 }

@@ -85,7 +85,7 @@ class Cache
      * @return AbstractCacheDriver
      * @throws CacheException
      */
-    public function driver(string $driverName)
+    public function driver(string $driverName): AbstractCacheDriver
     {
         if (!array_key_exists($driverName, $this->drivers)) {
             throw new CacheException("{$driverName} not exists.");

@@ -27,8 +27,8 @@ class BaseProviderService
 
     public function register(?Server $server, ?int $workerId): void
     {
-        foreach ($this->serviceProviders as $service) {
-            $service = new $service;
+        foreach ($this->serviceProviders as &$service) {
+            $service = is_object($service) ? $service : new $service;
             if ($service instanceof ServiceProviderInterface) {
                 $service->register($server, $workerId);
             }

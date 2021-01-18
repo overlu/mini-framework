@@ -423,6 +423,7 @@ if (!function_exists('make')) {
      * @param string $name
      * @param array $parameters
      * @return mixed
+     * @throws BindingResolutionException
      */
     function make(string $name, array $parameters = [])
     {

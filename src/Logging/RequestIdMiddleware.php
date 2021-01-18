@@ -7,19 +7,18 @@ declare(strict_types=1);
 
 namespace Mini\Logging;
 
-use Mini\Contracts\ServiceRequestInterface;
+use Mini\Contracts\MiddlewareInterface;
+use Psr\Http\Message\ResponseInterface;
 use \Seaslog;
-use Swoole\Http\Request;
-use Swoole\Http\Response;
 
-class LoggingRequestProvider implements ServiceRequestInterface
+class RequestIdMiddleware implements MiddlewareInterface
 {
     public function before()
     {
         Seaslog::setRequestID(uniqid('', true));
     }
 
-    public function after($response)
+    public function after(ResponseInterface $response)
     {
         return $response->withHeader('mini-request-id', Seaslog::getRequestID());
     }

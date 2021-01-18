@@ -9,7 +9,6 @@ namespace Mini\Service\HttpServer;
 
 use BadMethodCallException;
 use Mini\Container\Container;
-use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Contracts\Support\Sendable;
 use Mini\Exceptions\EncodingException;
 use Mini\Exceptions\FileException;

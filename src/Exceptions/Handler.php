@@ -42,7 +42,6 @@ class Handler implements HandlerInterface
 
     /**
      * @param Throwable $throwable
-     * @throws InvalidResponseException
      * @throws Throwable
      * @throws JsonException
      */
@@ -64,8 +63,8 @@ class Handler implements HandlerInterface
      */
     public function report(Throwable $throwable): void
     {
-        if ($this->checkNotDontReport($throwable) && !$throwable instanceof ExitException) {
-            Log::error($this->format($throwable));
+        if (!$throwable instanceof ExitException && $this->checkNotDontReport($throwable)) {
+            $this->logError($throwable);
             Command::line();
             Command::error($this->environment !== 'production' ? $this->formatException($throwable) : 'server is busy.');
             Command::line();
@@ -73,9 +72,17 @@ class Handler implements HandlerInterface
     }
 
     /**
+     * @param Throwable $throwable
+     */
+    public function logError(Throwable $throwable): void
+    {
+        Log::error($this->format($throwable));
+    }
+
+    /**
      * @param RequestInterface $request
      * @param Throwable $throwable
-     * @throws InvalidResponseException
+     * @throws JsonException
      */
     public function render(RequestInterface $request, Throwable $throwable): void
     {

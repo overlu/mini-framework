@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Mini\Provider;
 
 use Mini\Contracts\HttpMessage\ResponseInterface;
-use Mini\Contracts\ServiceRequestInterface;
+use Mini\Contracts\MiddlewareInterface;
 use Mini\Singleton;
 
 class BaseRequestService
@@ -26,7 +26,7 @@ class BaseRequestService
     {
         foreach ($this->services as $service) {
             $service = new $service;
-            if ($service instanceof ServiceRequestInterface) {
+            if ($service instanceof MiddlewareInterface) {
                 $service->before();
             }
         }
@@ -36,7 +36,7 @@ class BaseRequestService
     {
         foreach ($this->services as $service) {
             $service = new $service;
-            if ($service instanceof ServiceRequestInterface) {
+            if ($service instanceof MiddlewareInterface) {
                 $response = $service->after($response);
             }
         }

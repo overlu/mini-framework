@@ -199,7 +199,7 @@ class Cookie
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -209,7 +209,7 @@ class Cookie
      *
      * @return string
      */
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }
@@ -219,7 +219,7 @@ class Cookie
      *
      * @return null|string
      */
-    public function getDomain()
+    public function getDomain(): ?string
     {
         return $this->domain;
     }
@@ -229,7 +229,7 @@ class Cookie
      *
      * @return int
      */
-    public function getExpiresTime()
+    public function getExpiresTime(): int
     {
         return $this->expire;
     }
@@ -239,7 +239,7 @@ class Cookie
      *
      * @return int
      */
-    public function getMaxAge()
+    public function getMaxAge(): int
     {
         return $this->expire !== 0 ? $this->expire - time() : 0;
     }
@@ -249,7 +249,7 @@ class Cookie
      *
      * @return string
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
@@ -259,7 +259,7 @@ class Cookie
      *
      * @return bool
      */
-    public function isSecure()
+    public function isSecure(): bool
     {
         return $this->secure;
     }
@@ -269,7 +269,7 @@ class Cookie
      *
      * @return bool
      */
-    public function isHttpOnly()
+    public function isHttpOnly(): bool
     {
         return $this->httpOnly;
     }
@@ -279,7 +279,7 @@ class Cookie
      *
      * @return bool
      */
-    public function isCleared()
+    public function isCleared(): bool
     {
         return $this->expire < time();
     }
@@ -289,7 +289,7 @@ class Cookie
      *
      * @return bool
      */
-    public function isRaw()
+    public function isRaw(): bool
     {
         return $this->raw;
     }
@@ -299,7 +299,7 @@ class Cookie
      *
      * @return null|string
      */
-    public function getSameSite()
+    public function getSameSite(): ?string
     {
         return $this->sameSite;
     }

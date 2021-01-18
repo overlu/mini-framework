@@ -7,11 +7,8 @@ declare(strict_types=1);
 
 namespace Mini;
 
-use Closure;
 use Mini\Console\Panel;
 use Mini\Container\Container;
-use Mini\Contracts\ServiceProviderInterface;
-use Mini\Exceptions\HttpException;
 use Mini\Service\Server\CustomServer;
 use Mini\Service\Server\HelpServer;
 use Mini\Service\Server\HttpServer;
@@ -21,10 +18,7 @@ use Mini\Service\Server\WebSocket;
 use Mini\Service\Server\MqttServer;
 use Mini\Service\Server\MainServer;
 use Mini\Service\Server\WsHttpServer;
-use Mini\Support\Arr;
 use Mini\Support\Command;
-use Mini\Support\Str;
-use RuntimeException;
 
 class Application extends Container
 {
@@ -54,14 +48,12 @@ class Application extends Container
 
     public static function welcome(): void
     {
-        $version = self::$version;
-        $info = <<<EOL
+        Command::line(<<<EOL
  _______ _____ __   _ _____
  |  |  |   |   | \  |   |  
- |  |  | __|__ |  \_| __|__   $version \n
-EOL;
-        Command::line($info);
-        $data = [
+ |  |  | __|__ |  \_| __|__
+EOL. '   ' . self::$version . PHP_EOL);
+        Panel::show([
             'App Information' => [
                 'Name' => env('APP_NAME', 'Mini App'),
                 'Env' => ucfirst(env('APP_ENV', 'local')),
@@ -72,8 +64,7 @@ EOL;
                 'PHP' => PHP_VERSION,
                 'Swoole' => SWOOLE_VERSION,
             ],
-        ];
-        Panel::show($data, '');
+        ], '');
     }
 
     /**

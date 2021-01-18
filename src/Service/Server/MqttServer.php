@@ -10,6 +10,10 @@ namespace Mini\Service\Server;
 use Mini\Service\Server\Protocol\MQTT;
 use Swoole\Server;
 
+/**
+ * Class MqttServer
+ * @package Mini\Service\Server
+ */
 class MqttServer extends AbstractServer
 {
     protected string $type = 'Mqtt';
@@ -21,6 +25,7 @@ class MqttServer extends AbstractServer
 
     public function onReceive(Server $server, $fd, $fromId, $data): void
     {
+        parent::onReceive($server, $fd, $fromId, $data);
         try {
             $data = MQTT::decode($data);
             if (is_array($data) && isset($data['cmd'])) {

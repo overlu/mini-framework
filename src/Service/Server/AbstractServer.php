@@ -185,10 +185,10 @@ abstract class AbstractServer
         try {
             BaseProviderService::getInstance()->register($server, $workerId);
             BaseProviderService::getInstance()->boot($server, $workerId);
+            Listener::getInstance()->listen('workerStart', $server, $workerId);
         } catch (Throwable $throwable) {
-            Command::error($throwable);
+            app('exception')->throw($throwable);
         }
-        Listener::getInstance()->listen('workerStart', $server, $workerId);
     }
 
     /**
@@ -211,15 +211,30 @@ abstract class AbstractServer
             Context::set('IsInRequestEvent', true);
             Listener::getInstance()->listen('request', $request, $response);
         } catch (Throwable $throwable) {
-            Command::error($throwable);
+            app('exception')->throw($throwable);
         }
     }
 
-//    public function onReceive(Server $server, $fd, $fromId, $data): void
-//    {
-//        Listener::getInstance()->listen('receive', $server);
-//    }
+    /**
+     * @param Server $server
+     * @param $fd
+     * @param $fromId
+     * @param $data
+     */
+    public function onReceive(Server $server, $fd, $fromId, $data): void
+    {
+        try {
+            Listener::getInstance()->listen('receive', $server, $fd, $fromId, $data);
+        } catch (Throwable $throwable) {
+            app('exception')->throw($throwable);
+        }
+    }
 
+    /**
+     * @param Server $server
+     * @param Server\Task $task
+     * @return mixed
+     */
     public function onTask(Server $server, Server\Task $task)
     {
         try {
@@ -236,7 +251,7 @@ abstract class AbstractServer
             }
             Listener::getInstance()->listen('task', $server);
         } catch (Throwable $throwable) {
-            Command::error($throwable);
+            app('exception')->throw($throwable);
         }
     }
 
@@ -244,11 +259,14 @@ abstract class AbstractServer
      * @param Server $server
      * @param int $task_id
      * @param $data
-     * @throws Throwable
      */
     public function onFinish(Server $server, int $task_id, $data): void
     {
-        Listener::getInstance()->listen('finish', $server, $task_id, $data);
+        try {
+            Listener::getInstance()->listen('finish', $server, $task_id, $data);
+        } catch (Throwable $throwable) {
+            app('exception')->throw($throwable);
+        }
     }
 
     /**
