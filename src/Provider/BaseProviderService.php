@@ -25,6 +25,10 @@ class BaseProviderService
         $this->serviceProviders = config('app.providers', []);
     }
 
+    /**
+     * @param Server|null $server
+     * @param int|null $workerId
+     */
     public function register(?Server $server, ?int $workerId): void
     {
         foreach ($this->serviceProviders as &$service) {
@@ -35,10 +39,13 @@ class BaseProviderService
         }
     }
 
+    /**
+     * @param Server|null $server
+     * @param int|null $workerId
+     */
     public function boot(?Server $server, ?int $workerId): void
     {
         foreach ($this->serviceProviders as $service) {
-            $service = new $service;
             if ($service instanceof ServiceProviderInterface) {
                 $service->boot($server, $workerId);
             }
