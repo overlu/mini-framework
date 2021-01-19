@@ -7,8 +7,10 @@ declare(strict_types=1);
 
 namespace Mini\Service\HttpServer;
 
+use Mini\Container\Container;
 use Mini\Service\HttpMessage\Upload\UploadedFile;
 use Mini\Contracts\HttpMessage\RequestInterface;
+use Mini\Session\Session;
 use Mini\Support\Arr;
 use Mini\Context;
 use Mini\Support\Str;
@@ -292,6 +294,15 @@ class Request implements RequestInterface
         ksort($arr);
 
         return http_build_query($arr, '', '&', PHP_QUERY_RFC3986);
+    }
+
+    /**
+     * @return Session
+     * @throws \Mini\Container\EntryNotFoundException
+     */
+    public function session(): Session
+    {
+        return app('session');
     }
 
     /**

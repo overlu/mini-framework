@@ -19,19 +19,6 @@ use Swoole\Server;
 class ViewServiceProvider implements ServiceProviderInterface
 {
     /**
-     * @var mixed
-     */
-    private $bladeCompiler;
-    /**
-     * @var FileViewFinder
-     */
-    private FileViewFinder $viewFinder;
-    /**
-     * @var EngineResolver
-     */
-    private EngineResolver $resolver;
-
-    /**
      * Register the service provider.
      *
      * @param Server|null $server
@@ -51,9 +38,11 @@ class ViewServiceProvider implements ServiceProviderInterface
     public function registerFactory(): void
     {
         $app = app();
-        $app->alias(Factory::class, 'view');
-        $app->singleton(Factory::class, function () {
-            return new Factory(app('view.engine.resolver'), $this->viewFinder, app('events'));
+        $app->singleton('view', function () use ($app) {
+            $factory = new Factory(app('view.engine.resolver'), app('view.finder'), app('events'));
+            $factory->setContainer($app);
+            $factory->share('app', $app);
+            return $factory;
         });
     }
 
@@ -103,9 +92,9 @@ class ViewServiceProvider implements ServiceProviderInterface
      *
      * @return void
      */
-    public function registerFileEngine(): void
+    public function registerFileEngine($resolver): void
     {
-        $this->resolver->register('file', static function () {
+        $resolver->register('file', static function () {
             return new FileEngine(app('files'));
         });
     }
@@ -115,9 +104,9 @@ class ViewServiceProvider implements ServiceProviderInterface
      *
      * @return void
      */
-    public function registerPhpEngine(): void
+    public function registerPhpEngine($resolver): void
     {
-        $this->resolver->register('php', static function () {
+        $resolver->register('php', static function () {
             return new PhpEngine(app('files'));
         });
     }
@@ -127,9 +116,9 @@ class ViewServiceProvider implements ServiceProviderInterface
      *
      * @return void
      */
-    public function registerBladeEngine(): void
+    public function registerBladeEngine($resolver): void
     {
-        $this->resolver->register('blade', function () {
+        $resolver->register('blade', function () {
             return new CompilerEngine(app('blade.compiler'), app('files'));
         });
     }

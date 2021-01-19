@@ -23,7 +23,7 @@ class Container implements ArrayAccess, ContainerContract
     /**
      * The current globally available container (if any).
      */
-    protected static ?Container $instance;
+    protected static ?Container $instance = null;
 
     /**
      * An array of the types that have been resolved.
@@ -890,7 +890,7 @@ class Container implements ArrayAccess, ContainerContract
             return $parameter->getDefaultValue();
         }
 
-        $this->unresolvablePrimitive($parameter);
+//        $this->unresolvablePrimitive($parameter);
     }
 
     /**

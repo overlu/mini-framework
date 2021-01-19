@@ -48,6 +48,9 @@ class SessionServiceProvider implements ServiceProviderInterface
         app()->singleton('session', function () {
             return new Session($this->getSessionName(), $this->buildSessionHandler());
         });
+        app()->singleton('session.manager', function () {
+            return new SessionManager();
+        });
     }
 
     /**
@@ -55,7 +58,7 @@ class SessionServiceProvider implements ServiceProviderInterface
      */
     protected function buildSessionHandler(): SessionHandlerInterface
     {
-        $handler = config('session.handler', 'null');
+        $handler = config('session.driver', 'null');
         if (!$handler || !isset($this->drivers[$handler])) {
             throw new \InvalidArgumentException('Invalid handler of session');
         }

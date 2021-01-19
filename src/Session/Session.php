@@ -364,7 +364,7 @@ class Session implements SessionInterface
     protected function readFromHandler(): array
     {
         if ($data = $this->handler->read($this->getId())) {
-            $data = @unserialize($this->prepareForUnserialize($data), false);
+            $data = @unserialize($this->prepareForUnserialize($data));
 
             if (is_array($data)) {
                 return $data;

@@ -17,6 +17,7 @@ class ProviderService
      * @var ServiceProviderInterface[]
      */
     private array $serviceProviders;
+    private array $bootedServiceProviders = [];
 
     public function __construct(array $providers = [])
     {
@@ -30,7 +31,7 @@ class ProviderService
      */
     public function bootstrap(?Server $server = null, ?int $workerId = null): void
     {
-        foreach ($this->serviceProviders as &$serviceProvider) {
+        foreach ($this->serviceProviders as $serviceProvider) {
             if (!class_exists($serviceProvider)) {
                 throw new RuntimeException('class ' . $serviceProvider . ' not exists.');
             }
@@ -38,9 +39,10 @@ class ProviderService
                 throw new RuntimeException($serviceProvider . ' should instanceof ' . ServiceProviderInterface::class);
             }
             $serviceProvider->register($server, $workerId);
+            $this->bootedServiceProviders[] = $serviceProvider;
         }
-        foreach ($this->serviceProviders as $serviceProvider) {
-            $serviceProvider->boot($server, $workerId);
+        foreach ($this->bootedServiceProviders as $bootedServiceProvider) {
+            $bootedServiceProvider->boot($server, $workerId);
         }
     }
 
@@ -80,12 +82,6 @@ class ProviderService
      */
     public function getBootedServiceProviders(): array
     {
-        $bootedServiceProviders = [];
-        foreach ($this->serviceProviders as $serviceProvider) {
-            if ($serviceProvider instanceof ServiceProviderInterface) {
-                $bootedServiceProviders[] = get_class($serviceProvider);
-            }
-        }
-        return $bootedServiceProviders;
+        return $this->bootedServiceProviders;
     }
 }

@@ -33,23 +33,11 @@ class SessionMiddleware implements MiddlewareInterface
     public function __construct()
     {
         $this->sessionManager = app('session.manager');
-        $this->session = $this->sessionManager->getSession();
     }
 
     private function isSessionAvailable(): bool
     {
-        return Config::getInstance()->has('session.handler');
-    }
-
-    /**
-     * Store the current URL for the request if necessary.
-     */
-    private function storeCurrentUrl(): void
-    {
-        $request = request();
-        if ($request->getMethod() === 'GET') {
-            $this->session->setPreviousUrl((string)$request->getUri());
-        }
+        return Config::getInstance()->has('session.driver');
     }
 
     /**
@@ -63,24 +51,6 @@ class SessionMiddleware implements MiddlewareInterface
             $expirationDate = Carbon::now()->addMinutes(config('session.lifetime', 120))->getTimestamp();
         }
         return $expirationDate;
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function addCookieToResponse()
-    {
-        $uri = request()->getUri();
-
-        return response()->withCookie(new Cookie(
-            $this->session->getName(),
-            $this->session->getId(),
-            $this->getCookieExpirationDate(),
-            config('session.path', '/'),
-            config('session.domain', $uri->getHost()),
-            strtolower($uri->getScheme()) === 'https', true,
-            config('session.http_only', true),
-        ));
     }
 
     /**
@@ -102,8 +72,25 @@ class SessionMiddleware implements MiddlewareInterface
      */
     public function after(ResponseInterface $response)
     {
-        $this->storeCurrentUrl();
+        if (!$this->isSessionAvailable()) {
+            return $response;
+        }
+        $request = request();
+        $session = $this->sessionManager->getSession();
+        if ($request->getMethod() === 'GET') {
+            $session->setPreviousUrl((string)$request->getUri());
+        }
         $this->sessionManager->end();
-        return $this->addCookieToResponse();
+        $uri = $request->getUri();
+        $domain = config('session.domain', $uri->getHost());
+        return $response->withCookie(new Cookie(
+            $session->getName(),
+            $session->getId(),
+            $this->getCookieExpirationDate(),
+            config('session.path', '/'),
+            $domain ?: $uri->getHost(),
+            strtolower($uri->getScheme()) === 'https', true,
+            config('session.http_only', true),
+        ));
     }
 }

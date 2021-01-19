@@ -68,8 +68,10 @@ class HttpServer extends AbstractServer
         parent::onRequest($request, $response);
         try {
             [$psr7Request, $psr7Response] = $this->initRequestAndResponse($request, $response);
-            app('middleware')->registerBeforeRequest();
-            $resp = $this->route->dispatch($request);
+            $resp = app('middleware')->registerBeforeRequest();
+            if (is_null($resp)) {
+                $resp = $this->route->dispatch($request);
+            }
             if (!$resp instanceof \Psr\Http\Message\ResponseInterface) {
                 $resp = $this->transferToResponse($resp);
             }
@@ -84,7 +86,6 @@ class HttpServer extends AbstractServer
                 $resp->send(true);
             }
         } catch (Throwable $throwable) {
-            Context::destroy('IsInRequestEvent');
             app('exception')->throw($throwable);
         }
     }

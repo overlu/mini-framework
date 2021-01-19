@@ -611,6 +611,30 @@ if (!function_exists('base_path')) {
     }
 }
 
+if (!function_exists('session')) {
+    /**
+     * Get / set the specified session value.
+     *
+     * If an array is passed as the key, we will assume you want to set an array of values.
+     *
+     * @param array|string|null $key
+     * @param mixed $default
+     * @return mixed|\Mini\Session\Session
+     */
+    function session($key = null, $default = null)
+    {
+        if (is_null($key)) {
+            return app('session');
+        }
+
+        if (is_array($key)) {
+            return app('session')->put($key);
+        }
+
+        return app('session')->get($key, $default);
+    }
+}
+
 if (!function_exists('storage_path')) {
     /**
      * 获取仓库目录
@@ -752,7 +776,7 @@ if (!function_exists('view')) {
      */
     function view($view = null, $data = [], $mergeData = [])
     {
-        $factory = app(\Mini\View\Factory::class);
+        $factory = app('view');
         if (func_num_args() === 0) {
             return $factory;
         }

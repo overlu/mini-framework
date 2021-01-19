@@ -17,7 +17,15 @@ class Middleware
 
     public function __construct(array $middleware = [])
     {
-        $this->middleware = $middleware;
+        foreach ($middleware as $item) {
+            if (!class_exists($item)) {
+                throw new RuntimeException('class ' . $item . ' not exists.');
+            }
+            if (!($obj = new $item) instanceof MiddlewareInterface) {
+                throw new RuntimeException('class ' . $item . ' should instanceof ' . MiddlewareInterface::class . '.');
+            }
+            $this->middleware[$item] = $obj;
+        }
     }
 
     /**
@@ -25,11 +33,8 @@ class Middleware
      */
     public function registerBeforeRequest()
     {
-        foreach ($this->middleware as &$item) {
-            if (!class_exists($item)) {
-                throw new RuntimeException('class ' . $item . ' not exists.');
-            }
-            if ((($item = new $item) instanceof MiddlewareInterface) && !is_null($response = $item->before())) {
+        foreach ($this->middleware as $item) {
+            if (!is_null($response = $item->before())) {
                 return $response;
             }
         }
@@ -39,55 +44,8 @@ class Middleware
     public function bootAfterRequest(ResponseInterface $response)
     {
         foreach ($this->middleware as $item) {
-            if ($item instanceof MiddlewareInterface) {
-                $response = $item->after($response);
-            }
+            $response = $item->after($response);
         }
         return $response;
-    }
-
-    /**
-     * add middleware
-     * @param string $middleware
-     */
-    public function addMiddleware(string $middleware): void
-    {
-        if (!new $middleware instanceof MiddlewareInterface) {
-            throw new RuntimeException($middleware . ' should instanceof ' . MiddlewareInterface::class);
-        }
-        $this->middleware[] = $middleware;
-    }
-
-    /**
-     * remove middleware
-     * @param string $middleware
-     */
-    public function removeMiddleware(string $middleware): void
-    {
-        if (isset($this->middleware[$middleware])) {
-            unset($this->middleware[$middleware]);
-        }
-    }
-
-    /**
-     * @return MiddlewareInterface[]
-     */
-    public function getMiddleware(): array
-    {
-        return $this->middleware;
-    }
-
-    /**
-     * @return array
-     */
-    public function getBootedMiddleWares(): array
-    {
-        $bootedMiddleware = [];
-        foreach ($this->middleware as $item) {
-            if ($item instanceof MiddlewareInterface) {
-                $bootedMiddleware[] = get_class($item);
-            }
-        }
-        return $bootedMiddleware;
     }
 }

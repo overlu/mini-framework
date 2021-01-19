@@ -25,10 +25,9 @@ class ExceptionServiceProvider implements ServiceProviderInterface
      */
     public function register(?Server $server = null, ?int $workerId = null): void
     {
-        $app = app();
-        $handler = class_exists(Handler::class) ? Handler::class : \Mini\Exceptions\Handler::class;
-        $app->alias($handler, 'exception');
-        $app->singleton($handler, $handler);
+        app()->singleton('exception', function () {
+            return class_exists(Handler::class) ? Handler::getInstance() : \Mini\Exceptions\Handler::getInstance();
+        });
     }
 
     public function boot(?Server $server = null, ?int $workerId = null): void

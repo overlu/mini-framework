@@ -12,6 +12,7 @@ use JsonException;
 use Mini\Context;
 use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Logging\Log;
+use Mini\Singleton;
 use Mini\Support\Command;
 use Seaslog;
 use Swoole\ExitException;
@@ -23,6 +24,8 @@ use Throwable;
  */
 class Handler implements HandlerInterface
 {
+    use Singleton;
+
     protected bool $debug = false;
 
     protected string $environment = 'production';
@@ -34,7 +37,7 @@ class Handler implements HandlerInterface
         'server' => 'mini',
     ];
 
-    public function __construct()
+    private function __construct()
     {
         $this->environment = env('APP_ENV', 'production');
         $this->debug = env('APP_DEBUG', false);
@@ -52,7 +55,11 @@ class Handler implements HandlerInterface
             return;
         }
         if (Context::has('IsInRequestEvent')) {
-            $this->render(request(), $throwable);
+            try {
+                $this->render(request(), $throwable);
+            } catch (Throwable $throwable) {
+                Context::destroy('IsInRequestEvent');
+            }
         }
         $this->report($throwable);
     }

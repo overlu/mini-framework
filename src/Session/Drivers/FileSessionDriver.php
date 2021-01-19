@@ -35,12 +35,12 @@ class FileSessionDriver implements SessionHandlerInterface
 
     public function __construct()
     {
-        $this->files = app('file');
+        $this->files = app('files');
         $this->path = config('session.files');
         if (!$this->path) {
             throw new \InvalidArgumentException('Invalid session path.');
         }
-        $this->minutes = config('session.lifetime', 120);
+        $this->minutes = (int)config('session.lifetime', 120);
         if (!file_exists($this->path)) {
             $this->files->makeDirectory($this->path, 0755, true);
         }

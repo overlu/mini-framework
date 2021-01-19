@@ -15,7 +15,7 @@ use Throwable;
  */
 class Listener
 {
-    private static Listener $instance;
+    private static ?Listener $instance = null;
 
     private static array $config = [];
 

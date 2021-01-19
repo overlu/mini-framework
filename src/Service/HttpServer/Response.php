@@ -18,6 +18,7 @@ use Mini\Service\HttpMessage\Stream\SwooleFileStream;
 use Mini\Service\HttpMessage\Stream\SwooleStream;
 use Mini\Contracts\HttpMessage\ResponseInterface;
 use Mini\Service\HttpMessage\Uri\Uri;
+use Mini\Session\Session;
 use Mini\Support\ClearStatCache;
 use Mini\Context;
 use Mini\Contracts\Support\Arrayable;
@@ -282,6 +283,15 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
     public function getHeader($name): array
     {
         return $this->getResponse()->getHeader($name);
+    }
+
+    /**
+     * @return Session
+     * @throws \Mini\Container\EntryNotFoundException
+     */
+    public function session(): Session
+    {
+        return app('session');
     }
 
     /**

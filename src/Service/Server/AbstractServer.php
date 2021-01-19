@@ -11,6 +11,7 @@ use JsonException;
 use Mini\Bootstrap;
 use Mini\Context;
 use Mini\Crontab\Crontab;
+use Mini\Exceptions\Handler;
 use Mini\Listener;
 use Mini\RemoteShell;
 use Mini\Service\Watch\Runner;
@@ -81,7 +82,7 @@ abstract class AbstractServer
             }
             $this->server->start();
         } catch (Throwable $throwable) {
-            app('exception')->throw($throwable);
+            Handler::getInstance()->throw($throwable);
         }
     }
 
