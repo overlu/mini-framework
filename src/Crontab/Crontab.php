@@ -28,7 +28,7 @@ class Crontab
     /**
      * run crontab
      */
-    public static function run()
+    public static function run(): void
     {
         self::checkCrontabRules();
         $enable_crontab_coroutine = config('crontab.enable_crontab_coroutine', true);
@@ -38,7 +38,7 @@ class Crontab
         self::tick(time() % 60);
     }
 
-    public static function checkCrontabRules()
+    public static function checkCrontabRules(): void
     {
         CrontabTaskList::initialTaskList();
         $crontabTaskList = CrontabTaskList::getCrontabTaskList();

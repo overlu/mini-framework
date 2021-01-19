@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Session\Middleware;
+namespace Mini\Session;
 
 use Carbon\Carbon;
 use Exception;
@@ -13,7 +13,6 @@ use Mini\Config;
 use Mini\Contracts\HttpMessage\SessionInterface;
 use Mini\Contracts\MiddlewareInterface;
 use Mini\Service\HttpMessage\Cookie\Cookie;
-use Mini\Session\SessionManager;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -61,8 +60,7 @@ class SessionMiddleware implements MiddlewareInterface
         if (config('session.options.expire_on_close')) {
             $expirationDate = 0;
         } else {
-            $expireSeconds = config('session.options.cookie_lifetime', 5 * 60 * 60);
-            $expirationDate = Carbon::now()->addSeconds($expireSeconds)->getTimestamp();
+            $expirationDate = Carbon::now()->addMinutes(config('session.lifetime', 120))->getTimestamp();
         }
         return $expirationDate;
     }
@@ -78,9 +76,10 @@ class SessionMiddleware implements MiddlewareInterface
             $this->session->getName(),
             $this->session->getId(),
             $this->getCookieExpirationDate(),
-            '/',
-            config('session.options.domain', $uri->getHost()),
-            strtolower($uri->getScheme()) === 'https', true
+            config('session.path', '/'),
+            config('session.domain', $uri->getHost()),
+            strtolower($uri->getScheme()) === 'https', true,
+            config('session.http_only', true),
         ));
     }
 

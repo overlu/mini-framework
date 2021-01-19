@@ -25,7 +25,7 @@ class Application
      * version
      * @var string
      */
-    public static string $version = '2.1.5';
+    public static string $version = '2.2.0';
 
     /**
      * @var array|string[]
@@ -54,8 +54,8 @@ class Application
 EOL. '   ' . self::$version . PHP_EOL);
         Panel::show([
             'App Information' => [
-                'Name' => env('APP_NAME', 'Mini App'),
-                'Env' => ucfirst(env('APP_ENV', 'local')),
+                'Name' => config('app.name', 'Mini'),
+                'Env' => ucfirst(config('app.env', 'local')),
                 'Timezone' => ini_get('date.timezone'),
             ],
             'System Information' => [
@@ -71,8 +71,8 @@ EOL. '   ' . self::$version . PHP_EOL);
      */
     public static function run(): void
     {
-        self::initial();
         global $argv;
+        Bootstrap::initial();
         self::welcome();
         if (!isset($argv[1]) || !in_array($argv[1], ['start', 'stop'])) {
             new HelpServer();
@@ -84,12 +84,5 @@ EOL. '   ' . self::$version . PHP_EOL);
             $server = static::$mapping[$key] ?? CustomServer::class;
             new $server($key);
         }
-    }
-
-    public static function initial(): void
-    {
-        ini_set('display_errors', config('app.debug') === true ? 'on' : 'off');
-        ini_set('display_startup_errors', 'on');
-        ini_set('date.timezone', config('app.timezone', 'UTC'));
     }
 }

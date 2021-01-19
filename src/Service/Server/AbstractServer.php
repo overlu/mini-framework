@@ -8,10 +8,10 @@ declare(strict_types=1);
 namespace Mini\Service\Server;
 
 use JsonException;
+use Mini\Bootstrap;
 use Mini\Context;
 use Mini\Crontab\Crontab;
 use Mini\Listener;
-use Mini\Provider\BaseProviderService;
 use Mini\RemoteShell;
 use Mini\Service\Watch\Runner;
 use Mini\Support\Command;
@@ -183,9 +183,7 @@ abstract class AbstractServer
     public function onWorkerStart(Server $server, int $workerId): void
     {
         try {
-            BaseProviderService::getInstance()->register($server, $workerId);
-            BaseProviderService::getInstance()->boot($server, $workerId);
-            Listener::getInstance()->listen('workerStart', $server, $workerId);
+            Bootstrap::getInstance()->workerStart($server, $workerId);
         } catch (Throwable $throwable) {
             app('exception')->throw($throwable);
         }

@@ -17,7 +17,7 @@ class TranslateServiceProvider implements ServiceProviderInterface
      * @param Server|null $server
      * @param int|null $workerId
      */
-    public function register(?Server $server, ?int $workerId): void
+    public function register(?Server $server = null, ?int $workerId = null): void
     {
     }
 
@@ -26,7 +26,7 @@ class TranslateServiceProvider implements ServiceProviderInterface
      * @param int|null $workerId
      * @throws BindingResolutionException
      */
-    public function boot(?Server $server, ?int $workerId): void
+    public function boot(?Server $server = null, ?int $workerId = null): void
     {
         $app = app();
         $app->alias(Translate::class, 'translate');

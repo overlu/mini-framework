@@ -1,14 +1,9 @@
 <?php
-
-declare(strict_types=1);
 /**
  * This file is part of Mini.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ * @auth lupeng
  */
+declare(strict_types=1);
 
 namespace Mini\Session;
 
@@ -18,19 +13,10 @@ use Mini\Contract\ConfigInterface;
 use Mini\Contracts\HttpMessage\SessionInterface;
 use Mini\Support\Str;
 use Psr\Container\ContainerInterface;
-use SessionHandlerInterface;
+use RuntimeException;
 
 class SessionManager
 {
-    /**
-     * Get session name
-     * @return string
-     */
-    public function getSessionName(): string
-    {
-        return config('session.options.session_name', 'MINI_SESSION_ID');
-    }
-
     /**
      * @return void
      * @throws Exception
@@ -38,10 +24,10 @@ class SessionManager
     public function start(): void
     {
         $sessionId = $this->parseSessionId();
-        $session = new Session($this->getSessionName(), $this->buildSessionHandler());
+        $session = app('session');
         $session->setId($sessionId);
         if (!$session->start()) {
-            throw new \RuntimeException('Start session failed.');
+            throw new RuntimeException('Start session failed.');
         }
         $this->setSession($session);
     }
@@ -71,12 +57,13 @@ class SessionManager
         return (string)$sessionId;
     }
 
-    protected function buildSessionHandler(): SessionHandlerInterface
+    /**
+     * Get session name
+     * @return string
+     */
+    protected function getSessionName(): string
     {
-        $handler = config('session.handler');
-        if (!$handler) {
-            throw new \InvalidArgumentException('Invalid handler of session');
-        }
-        return ;
+        return config('session.options.session_name', 'MINI_SESSION_ID');
     }
+
 }

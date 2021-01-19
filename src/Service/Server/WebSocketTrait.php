@@ -24,6 +24,12 @@ use Throwable;
  */
 trait WebSocketTrait
 {
+
+    /**
+     * @var array|callable
+     */
+    private $handler;
+
     /**
      * @param Server $server
      * @param $frame
@@ -40,6 +46,7 @@ trait WebSocketTrait
     /**
      * @param $request
      * @param Server $server
+     * @throws \Mini\Contracts\Container\BindingResolutionException
      */
     protected function initWsRequestAndResponse($request, Server $server): void
     {

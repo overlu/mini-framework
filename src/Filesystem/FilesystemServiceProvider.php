@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Filesystem;
 
+use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\ServiceProviderInterface;
 use Swoole\Server;
 
@@ -18,8 +19,9 @@ class FilesystemServiceProvider implements ServiceProviderInterface
      * @param Server|null $server
      * @param int|null $workerId
      * @return void
+     * @throws BindingResolutionException
      */
-    public function register(?Server $server, ?int $workerId): void
+    public function register(?Server $server = null, ?int $workerId = null): void
     {
         $this->registerNativeFilesystem();
 
@@ -30,6 +32,7 @@ class FilesystemServiceProvider implements ServiceProviderInterface
      * Register the native filesystem implementation.
      *
      * @return void
+     * @throws BindingResolutionException
      */
     protected function registerNativeFilesystem(): void
     {
@@ -42,6 +45,7 @@ class FilesystemServiceProvider implements ServiceProviderInterface
      * Register the driver based filesystem.
      *
      * @return void
+     * @throws BindingResolutionException
      */
     protected function registerFlysystem(): void
     {
@@ -60,6 +64,7 @@ class FilesystemServiceProvider implements ServiceProviderInterface
      * Register the filesystem manager.
      *
      * @return void
+     * @throws BindingResolutionException
      */
     protected function registerManager(): void
     {
@@ -91,7 +96,7 @@ class FilesystemServiceProvider implements ServiceProviderInterface
     /**
      * @inheritDoc
      */
-    public function boot(?Server $server, ?int $workerId): void
+    public function boot(?Server $server = null, ?int $workerId = null): void
     {
         // TODO: Implement boot() method.
     }

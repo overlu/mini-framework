@@ -15,18 +15,12 @@ class HelpServer
     protected array $commands = [
         '',
         "start \t" => 'start mini http server',
-        'start http' => 'start mini http server',
-        'start ws' => 'start mini websocket server',
-        'start mqtt' => 'start mini mqtt server',
-//        'start main' => 'start mini http server',
-        'start all' => 'start all mini server',
+        'start all' => 'start mini all server',
+        'start {type}' => 'start mini custom server',
         '',
         "stop \t" => 'stop all mini server',
-        'stop http' => 'stop mini http server',
-        'stop ws ' => 'stop mini websocket server',
-        'stop mqtt' => 'stop mini mqtt server',
-//        'stop main' => 'stop mini http server',
-        'stop all' => 'stop all mini server',
+        'stop all' => 'stop mini all server',
+        'stop {type}' => 'stop mini custom server',
     ];
 
     public function __construct()

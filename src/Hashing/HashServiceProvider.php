@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Hashing;
 
+use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\ServiceProviderInterface;
 use Swoole\Server;
 
@@ -18,8 +19,9 @@ class HashServiceProvider implements ServiceProviderInterface
      * @param Server|null $server
      * @param int|null $workerId
      * @return void
+     * @throws BindingResolutionException
      */
-    public function register(?Server $server, ?int $workerId): void
+    public function register(?Server $server = null, ?int $workerId = null): void
     {
         $app = app();
         $app->singleton('hash', function ($app) {
@@ -31,7 +33,11 @@ class HashServiceProvider implements ServiceProviderInterface
         });
     }
 
-    public function boot(?Server $server, ?int $workerId): void
+    /**
+     * @param Server|null $server
+     * @param int|null $workerId
+     */
+    public function boot(?Server $server = null, ?int $workerId = null): void
     {
         // TODO: Implement boot() method.
     }

@@ -16,7 +16,7 @@ use Mini\Di;
 use Mini\Exceptions\Handler;
 use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Contracts\HttpMessage\ResponseInterface;
-use Mini\Provider\BaseRequestService;
+use Mini\Bootstrap\Middleware;
 use Mini\Service\HttpMessage\Stream\SwooleStream;
 use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\Support\Jsonable;
@@ -50,12 +50,12 @@ class HttpServer extends AbstractServer
      */
     public function onWorkerStart(HttpSwooleServer $server, int $workerId): void
     {
+        parent::onWorkerStart($server, $workerId);
         try {
             $this->route = RouteService::getInstance();
         } catch (Throwable $throwable) {
             app('exception')->throw($throwable);
         }
-        parent::onWorkerStart($server, $workerId);
     }
 
     /**
@@ -68,7 +68,7 @@ class HttpServer extends AbstractServer
         parent::onRequest($request, $response);
         try {
             [$psr7Request, $psr7Response] = $this->initRequestAndResponse($request, $response);
-            BaseRequestService::getInstance()->before();
+            app('middleware')->registerBeforeRequest();
             $resp = $this->route->dispatch($request);
             if (!$resp instanceof \Psr\Http\Message\ResponseInterface) {
                 $resp = $this->transferToResponse($resp);
@@ -77,7 +77,7 @@ class HttpServer extends AbstractServer
                 return;
             }
             $resp = $resp->withHeader('Server', 'Mini');
-            $resp = BaseRequestService::getInstance()->after($resp);
+            $resp = app('middleware')->bootAfterRequest($resp);
             if ($psr7Request->getMethod() === 'HEAD') {
                 $resp->send(false);
             } else {

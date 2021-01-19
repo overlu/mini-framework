@@ -17,8 +17,6 @@ use Mini\Command\MigrateRollbackCommandService;
 use Mini\Command\RunCrontabCommandService;
 use Mini\Command\StatusCrontabCommandService;
 use Mini\Command\StorageLinkCommandService;
-use Mini\Exceptions\Handler;
-use Mini\Provider\BaseProviderService;
 use Throwable;
 
 class Console
@@ -40,24 +38,13 @@ class Console
      */
     public static function run(): void
     {
-        self::initial();
         try {
-            \SeasLog::setRequestID(uniqid('', true));
-            BaseProviderService::getInstance()->register(null, null);
-            BaseProviderService::getInstance()->boot(null, null);
+            Bootstrap::initial();
+            Bootstrap::getInstance()->consoleStart();
             CommandService::register([...config('console', []), ...static::$systemCommandService]);
             CommandService::run();
         } catch (Throwable $throwable) {
             app('exception')->throw($throwable);
         }
-    }
-
-    private static function initial()
-    {
-        ini_set('display_errors', config('app.debug') === true ? 'on' : 'off');
-        ini_set('display_startup_errors', 'on');
-        ini_set('date.timezone', config('app.timezone', 'UTC'));
-//        error_reporting(env('APP_ENV', 'local') === 'production' ? 0 : E_ALL);
-        error_reporting(E_ALL);
     }
 }

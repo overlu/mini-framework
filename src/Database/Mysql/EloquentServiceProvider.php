@@ -10,13 +10,13 @@ namespace Mini\Database\Mysql;
 use Mini\Contracts\ServiceProviderInterface;
 use Swoole\Server;
 
-class OrmServiceProvider implements ServiceProviderInterface
+class EloquentServiceProvider implements ServiceProviderInterface
 {
     /**
      * @param Server|null $server
      * @param int|null $workerId
      */
-    public function register(?Server $server, ?int $workerId): void
+    public function register(?Server $server = null, ?int $workerId = null): void
     {
         $config = config('database.connections', []);
         if (!empty($config)) {
@@ -31,7 +31,7 @@ class OrmServiceProvider implements ServiceProviderInterface
      * @param Server|null $server
      * @param int|null $workerId
      */
-    public function boot(?Server $server, ?int $workerId): void
+    public function boot(?Server $server = null, ?int $workerId = null): void
     {
     }
 

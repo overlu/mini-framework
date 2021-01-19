@@ -1,14 +1,9 @@
 <?php
-
-declare(strict_types=1);
 /**
  * This file is part of Mini.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ * @auth lupeng
  */
+declare(strict_types=1);
 
 namespace Mini\Session\Drivers;
 
@@ -38,13 +33,16 @@ class FileSessionDriver implements SessionHandlerInterface
      */
     private string $path;
 
-    public function __construct(string $path, int $minutes)
+    public function __construct()
     {
         $this->files = app('file');
-        $this->path = $path;
-        $this->minutes = $minutes;
-        if (!file_exists($path)) {
-            $this->files->makeDirectory($path, 0755, true);
+        $this->path = config('session.files');
+        if (!$this->path) {
+            throw new \InvalidArgumentException('Invalid session path.');
+        }
+        $this->minutes = config('session.lifetime', 120);
+        if (!file_exists($this->path)) {
+            $this->files->makeDirectory($this->path, 0755, true);
         }
     }
 
@@ -85,7 +83,7 @@ class FileSessionDriver implements SessionHandlerInterface
             ->in($this->path)
             ->files()
             ->ignoreDotFiles(true)
-            ->date('<= now - ' . $maxlifetime . ' seconds');
+            ->date('<= now - ' . $this->minutes * 60 . ' seconds');
 
         foreach ($files as $file) {
             $this->files->delete($file->getRealPath());

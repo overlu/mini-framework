@@ -19,10 +19,6 @@ class WebSocket extends AbstractServer
     protected string $type = 'WebSocket';
 
     /**
-     * @var array|callable
-     */
-    private $handler = null;
-    /**
      * @var RouteService
      */
     protected RouteService $route;
@@ -39,11 +35,11 @@ class WebSocket extends AbstractServer
      */
     public function onWorkerStart(HttpSwooleServer $server, int $workerId): void
     {
+        parent::onWorkerStart($server, $workerId);
         try {
             $this->route = RouteService::getInstance();
         } catch (Throwable $throwable) {
             app('exception')->throw($throwable);
         }
-        parent::onWorkerStart($server, $workerId);
     }
 }

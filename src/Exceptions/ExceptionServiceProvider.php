@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Exceptions;
 
 use App\Exceptions\Handler;
+use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\ServiceProviderInterface;
 use Swoole\Server;
 
@@ -20,9 +21,9 @@ class ExceptionServiceProvider implements ServiceProviderInterface
     /**
      * @param Server|null $server
      * @param int|null $workerId
-     * @throws \Mini\Contracts\Container\BindingResolutionException
+     * @throws BindingResolutionException
      */
-    public function register(?Server $server, ?int $workerId): void
+    public function register(?Server $server = null, ?int $workerId = null): void
     {
         $app = app();
         $handler = class_exists(Handler::class) ? Handler::class : \Mini\Exceptions\Handler::class;
@@ -30,7 +31,7 @@ class ExceptionServiceProvider implements ServiceProviderInterface
         $app->singleton($handler, $handler);
     }
 
-    public function boot(?Server $server, ?int $workerId): void
+    public function boot(?Server $server = null, ?int $workerId = null): void
     {
         // TODO: Implement boot() method.
     }

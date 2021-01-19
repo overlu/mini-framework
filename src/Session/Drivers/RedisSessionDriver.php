@@ -1,23 +1,19 @@
 <?php
-
-declare(strict_types=1);
 /**
  * This file is part of Mini.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ * @auth lupeng
  */
+declare(strict_types=1);
 
 namespace Mini\Session\Drivers;
 
 use SessionHandlerInterface;
+use Swoole\Coroutine\Redis;
 
 class RedisSessionDriver implements SessionHandlerInterface
 {
     /**
-     * @var \Redis|\Swoole\Coroutine\Redis
+     * @var \Redis|Redis
      */
     protected $redis;
 
@@ -28,8 +24,8 @@ class RedisSessionDriver implements SessionHandlerInterface
 
     public function __construct(int $gcMaxLifeTime)
     {
-        $this->redis = redis('session');
-        $this->gcMaxLifeTime = $gcMaxLifeTime;
+        $this->redis = redis(config('session.connection', 'session'));
+        $this->gcMaxLifeTime = config('session.lifetime', 120);
     }
 
     /**

@@ -17,7 +17,7 @@ class LoggingServiceProvider implements ServiceProviderInterface
      * @param Server|null $server
      * @param int|null $workerId
      */
-    public function register(?Server $server, ?int $workerId): void
+    public function register(?Server $server = null, ?int $workerId = null): void
     {
         $config = config('logging');
         @Seaslog::setBasePath($config['default_basepath']);
@@ -28,7 +28,7 @@ class LoggingServiceProvider implements ServiceProviderInterface
      * @param Server|null $server
      * @param int|null $workerId
      */
-    public function boot(?Server $server, ?int $workerId): void
+    public function boot(?Server $server = null, ?int $workerId = null): void
     {
     }
 }

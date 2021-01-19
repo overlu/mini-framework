@@ -38,7 +38,7 @@ class ViewServiceProvider implements ServiceProviderInterface
      * @param int|null $workerId
      * @return void
      */
-    public function register(?Server $server, ?int $workerId): void
+    public function register(?Server $server = null, ?int $workerId = null): void
     {
     }
 
@@ -46,6 +46,7 @@ class ViewServiceProvider implements ServiceProviderInterface
      * Register the view environment.
      *
      * @return void
+     * @throws BindingResolutionException
      */
     public function registerFactory(): void
     {
@@ -54,11 +55,11 @@ class ViewServiceProvider implements ServiceProviderInterface
         $app->singleton(Factory::class, function () {
             return new Factory(app('view.engine.resolver'), $this->viewFinder, app('events'));
         });
-//        $app->singleton(Factory::class, Factory::class, $this->resolver, $this->viewFinder, app('events'));
     }
 
     /**
      * Register the view finder implementation.
+     * @throws BindingResolutionException
      */
     public function registerViewFinder(): void
     {
@@ -69,6 +70,7 @@ class ViewServiceProvider implements ServiceProviderInterface
 
     /**
      * Register the Blade compiler implementation.
+     * @throws BindingResolutionException
      */
     public function registerBladeCompiler(): void
     {
@@ -81,15 +83,13 @@ class ViewServiceProvider implements ServiceProviderInterface
 
     /**
      * Register the engine resolver instance.
+     * @throws BindingResolutionException
      */
     public function registerEngineResolver(): void
     {
         app()->singleton('view.engine.resolver', function () {
             $resolver = new EngineResolver;
 
-            // Next, we will register the various view engines with the resolver so that the
-            // environment will resolve the engines needed for various views based on the
-            // extension of view file. We call a method for each of the view's engines.
             foreach (['file', 'php', 'blade'] as $engine) {
                 $this->{'register' . ucfirst($engine) . 'Engine'}($resolver);
             }
@@ -138,7 +138,7 @@ class ViewServiceProvider implements ServiceProviderInterface
      * @inheritDoc
      * @throws BindingResolutionException
      */
-    public function boot(?Server $server, ?int $workerId): void
+    public function boot(?Server $server = null, ?int $workerId = null): void
     {
         $this->registerViewFinder();
         $this->registerBladeCompiler();

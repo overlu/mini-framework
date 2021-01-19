@@ -1238,7 +1238,7 @@ class Container implements ArrayAccess, ContainerContract
      */
     public function offsetSet($key, $value): void
     {
-        $this->bind($key, $value instanceof Closure ? $value : function () use ($value) {
+        $this->bind($key, $value instanceof Closure ? $value : static function () use ($value) {
             return $value;
         });
     }

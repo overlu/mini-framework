@@ -7,9 +7,12 @@ declare(strict_types=1);
 
 namespace Mini;
 
-use Mini\Contracts\ServiceProviderInterface;
-use RuntimeException;
+use Mini\Bootstrap\Middleware;
+use Mini\Bootstrap\ProviderService;
+use Mini\Command\CommandService;
+use SeasLog;
 use Swoole\Server;
+use Throwable;
 
 /**
  * Class Bootstrap
@@ -19,82 +22,41 @@ class Bootstrap
 {
     use Singleton;
 
+    public static function initial(): void
+    {
+        ini_set('display_errors', config('app.debug') === true ? 'on' : 'off');
+        ini_set('display_startup_errors', 'on');
+        ini_set('date.timezone', config('app.timezone', 'UTC'));
+    }
+
     /**
-     * @var ServiceProviderInterface[]
+     * Bootstrap constructor.
+     * @throws Contracts\Container\BindingResolutionException
      */
-    private array $serviceProviders;
-
-
-    private array $middlewares;
-
     private function __construct()
     {
-        $this->serviceProviders = config('app.providers', []);
-        $this->middlewares = config('app.middlewares', []);
+        app()->singleton('middleware', function () {
+            return new Middleware(config('app.middleware', []));
+        });
+        app()->singleton('providers', function () {
+            return new ProviderService(config('app.providers', []));
+        });
     }
 
     /**
-     * add serviceProvider
-     * @param string $serviceProvider
-     */
-    public function addServiceProvider(string $serviceProvider): void
-    {
-        if (!new $serviceProvider instanceof ServiceProviderInterface) {
-            throw new RuntimeException($serviceProvider . ' should instanceof ' . ServiceProviderInterface::class);
-        }
-        $this->serviceProviders[] = $serviceProvider;
-    }
-
-    /**
-     * remove serviceProvider
-     * @param string $serviceProvider
-     */
-    public function removeServiceProvider(string $serviceProvider): void
-    {
-        if (!new $serviceProvider instanceof ServiceProviderInterface) {
-            throw new RuntimeException($serviceProvider . ' should instanceof ' . ServiceProviderInterface::class);
-        }
-        if (isset($this->serviceProviders[$serviceProvider])) {
-            unset($this->serviceProviders[$serviceProvider]);
-        }
-    }
-
-    /**
-     * @return ServiceProviderInterface[]
-     */
-    public function getServiceProviders(): array
-    {
-        return $this->serviceProviders;
-    }
-
-    /**
-     * register serviceProviders
      * @param Server|null $server
      * @param int|null $workerId
+     * @throws Throwable
      */
-    public function registerServiceProviders(?Server $server, ?int $workerId): void
+    public function workerStart(?Server $server, ?int $workerId): void
     {
-        foreach ($this->serviceProviders as &$service) {
-            $service = is_object($service) ? $service : new $service;
-            if ($service instanceof ServiceProviderInterface) {
-                $service->register($server, $workerId);
-            }
-        }
+        app('providers')->bootstrap($server, $workerId);
+        Listener::getInstance()->listen('workerStart', $server, $workerId);
     }
 
-    /**
-     * boot serviceProviders
-     * @param Server|null $server
-     * @param int|null $workerId
-     */
-    public function bootServiceProviders(?Server $server, ?int $workerId): void
+    public function consoleStart(): void
     {
-        foreach ($this->serviceProviders as $service) {
-            if ($service instanceof ServiceProviderInterface) {
-                $service->boot($server, $workerId);
-            }
-        }
+        SeasLog::setRequestID(uniqid('', true));
+        app('providers')->bootstrap();
     }
-
-    // TODO
 }
