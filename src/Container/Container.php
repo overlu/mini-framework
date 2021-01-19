@@ -153,7 +153,7 @@ class Container implements ArrayAccess, ContainerContract
      * @param $id
      * @return bool
      */
-    public function has(string $id): bool
+    public function has($id): bool
     {
         return $this->bound($id);
     }
@@ -604,7 +604,7 @@ class Container implements ArrayAccess, ContainerContract
      * @throws EntryNotFoundException
      * @throws Exception
      */
-    public function get(string $id)
+    public function get($id)
     {
         try {
             return $this->resolve($id);
