@@ -59,6 +59,7 @@ class SessionServiceProvider implements ServiceProviderInterface
     protected function buildSessionHandler(): SessionHandlerInterface
     {
         $handler = config('session.driver', 'null');
+        $handler = is_null($handler) ? 'null' : $handler;
         if (!$handler || !isset($this->drivers[$handler])) {
             throw new \InvalidArgumentException('Invalid handler of session');
         }

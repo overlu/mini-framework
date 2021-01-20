@@ -509,6 +509,14 @@ class Request implements RequestInterface
     }
 
     /**
+     * @return string
+     */
+    public function method(): string
+    {
+        return $this->getMethod();
+    }
+
+    /**
      * @param string $method
      * @return Request
      */
