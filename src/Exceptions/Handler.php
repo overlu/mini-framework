@@ -83,7 +83,7 @@ class Handler implements HandlerInterface
      */
     public function logError(Throwable $throwable): void
     {
-        Log::error($this->format($throwable));
+        Log::error($this->format($throwable), [], 'error');
     }
 
     /**

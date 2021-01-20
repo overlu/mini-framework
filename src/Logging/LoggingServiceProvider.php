@@ -10,6 +10,7 @@ namespace Mini\Logging;
 use Mini\Contracts\ServiceProviderInterface;
 use \Seaslog;
 use Swoole\Server;
+use Throwable;
 
 class LoggingServiceProvider implements ServiceProviderInterface
 {
@@ -19,9 +20,14 @@ class LoggingServiceProvider implements ServiceProviderInterface
      */
     public function register(?Server $server = null, ?int $workerId = null): void
     {
-        $config = config('logging');
-        @Seaslog::setBasePath($config['default_basepath']);
-        @Seaslog::setLogger($config['default_logger']);
+        try {
+            $config = config('logging');
+            @Seaslog::setBasePath($config['default_basepath']);
+            @Seaslog::setLogger($config['default_logger']);
+        } catch (Throwable $throwable) {
+            app('exception')->logError($throwable);
+        }
+
     }
 
     /**
