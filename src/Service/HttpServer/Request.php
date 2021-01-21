@@ -576,7 +576,7 @@ class Request implements RequestInterface
      */
     public function isSecure(): bool
     {
-        $https = $this->getServerParams()['https'];
+        $https = $this->getServerParams()['https'] ?? '';
         return !empty($https) && 'off' !== strtolower($https);
     }
 
