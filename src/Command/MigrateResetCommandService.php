@@ -8,18 +8,15 @@ declare(strict_types=1);
 namespace Mini\Command;
 
 use Mini\Support\Command;
+use Mini\Support\Coroutine;
 
-class MigrateResetCommandService extends BaseCommandService
+class MigrateResetCommandService extends AbstractCommandService
 {
     use Migration;
 
-    public string $command = 'migrate:reset';
-
-    public string $description = 'rollback all database migrations.';
-
-    public function run()
+    public function handle()
     {
-        go(function (){
+        Coroutine::create(function () {
             if (!$this->confirmToProceed()) {
                 return;
             }
@@ -32,5 +29,15 @@ class MigrateResetCommandService extends BaseCommandService
                 [$this->getMigrationPaths()], $this->getOpt('pretend')
             );
         });
+    }
+
+    public function getCommand(): string
+    {
+        return 'migrate:reset';
+    }
+
+    public function getCommandDescription(): string
+    {
+        return 'rollback all database migrations.';
     }
 }

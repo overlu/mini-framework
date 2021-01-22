@@ -25,6 +25,10 @@ use Mini\Singleton;
  * @method static bool setMultiple($values, $ttl = null)
  * @method static bool deleteMultiple($keys)
  * @method static bool has($key)
+ * @method static mixed inc($key, int $step = 1)
+ * @method static mixed dec($key, int $step = 1)
+ * @method static void setPrefix(string $prefix)
+ * @method static string getPrefix()
  * @package Mini\Cache
  */
 class Cache

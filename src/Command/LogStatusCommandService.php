@@ -13,13 +13,12 @@ use Mini\Console\Table;
  * Class LogStatusCommandService
  * @package Mini\Command
  */
-class LogStatusCommandService extends BaseCommandService
+class LogStatusCommandService extends AbstractCommandService
 {
-    public string $command = 'log:status';
-
-    public string $description = 'View Log Status';
-
-    public function run()
+    /**
+     * @return mixed|void
+     */
+    public function handle()
     {
         $status = \SeasLog::analyzerCount();
         $total = 0;
@@ -29,5 +28,15 @@ class LogStatusCommandService extends BaseCommandService
         }
         $status['TOTAL'] = (string)$total;
         Table::show([$status], ' ');
+    }
+
+    public function getCommand(): string
+    {
+        return 'log:status';
+    }
+
+    public function getCommandDescription(): string
+    {
+        return 'View Log Status';
     }
 }

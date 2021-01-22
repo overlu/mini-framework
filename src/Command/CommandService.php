@@ -8,25 +8,27 @@ declare(strict_types=1);
 namespace Mini\Command;
 
 use Mini\Console\App;
-use Mini\Exceptions\Handler;
+use RuntimeException;
 use Swoole\ExitException;
 use Swoole\Process;
 
 class CommandService
 {
     /**
-     * @var BaseCommandService[]
+     * @var AbstractCommandService[]
      */
     private static array $commands = [];
 
     /**
      * 注册command服务
-     * @param $commandService
+     * @param AbstractCommandService[] $commandService
      */
     public static function register($commandService): void
     {
         foreach ((array)$commandService as $service) {
-            $service = new $service;
+            if (!($service = new $service) || $service instanceof AbstractCommandService) {
+                throw new RuntimeException(get_class($service) . ' should instance of ' . AbstractCommandService::class);
+            }
             static::$commands[$service->getCommand()] = $service;
         }
     }
@@ -39,7 +41,7 @@ class CommandService
             ]);
             foreach (static::$commands as $command => $instance) {
                 $app->addCommand($command, static function () use ($instance, $app) {
-                    $instance->setApp($app)->run();
+                    $instance->setApp($app)->handle();
                 }, $instance->getCommandDescription());
             }
             (new Process(function () use ($app) {

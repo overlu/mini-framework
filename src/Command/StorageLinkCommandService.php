@@ -9,13 +9,9 @@ namespace Mini\Command;
 
 use Mini\Support\Command;
 
-class StorageLinkCommandService extends BaseCommandService
+class StorageLinkCommandService extends AbstractCommandService
 {
-    public string $command = 'storage:link';
-
-    public string $description = 'Create the symbolic links configured for the application. [ --relative : Create the symbolic link using relative paths ]';
-
-    public function run()
+    public function handle()
     {
         $relative = $this->app->getOpt('relative');
 
@@ -41,5 +37,15 @@ class StorageLinkCommandService extends BaseCommandService
     {
         return config('filesystems.links') ??
             [public_path('storage') => storage_path('app/public')];
+    }
+
+    public function getCommand(): string
+    {
+        return 'storage:link';
+    }
+
+    public function getCommandDescription(): string
+    {
+        return 'Create the symbolic links configured for the application. [ --relative : Create the symbolic link using relative paths ]';
     }
 }

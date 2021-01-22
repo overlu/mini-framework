@@ -12,7 +12,7 @@ interface CommandInterface
     /**
      * @return mixed
      */
-    public function run();
+    public function handle();
 
     /**
      * @return string

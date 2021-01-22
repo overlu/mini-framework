@@ -9,13 +9,12 @@ namespace Mini\Command;
 
 use Mini\Support\Command;
 
-class HelloMiniCommandService extends BaseCommandService
+class HelloMiniCommandService extends AbstractCommandService
 {
-    public string $command = 'hello:mini';
-
-    public string $description = 'print hello app.';
-
-    public function run()
+    /**
+     * @return mixed|void
+     */
+    public function handle()
     {
         $info = <<<EOL
  _   _ _____ _     _     ___       __  __ ___ _   _ ___ 
@@ -25,5 +24,15 @@ class HelloMiniCommandService extends BaseCommandService
 |_| |_|_____|_____|_____\___/     |_|  |_|___|_| \_|___|\n
 EOL;
         Command::info($info);
+    }
+
+    public function getCommand(): string
+    {
+        return 'hello:mini';
+    }
+
+    public function getCommandDescription(): string
+    {
+        return 'print hello app.';
     }
 }

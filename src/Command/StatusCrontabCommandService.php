@@ -7,20 +7,16 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
-use Mini\Command\BaseCommandService;
+use Mini\Command\AbstractCommandService;
 use Mini\Console\Table;
 use Mini\Crontab\Crontab;
 use Mini\Crontab\CrontabTaskList;
 use Mini\Support\Command;
 use Swoole\Timer;
 
-class StatusCrontabCommandService extends BaseCommandService
+class StatusCrontabCommandService extends AbstractCommandService
 {
-    public string $command = 'crontab:status';
-
-    public string $description = 'view crontab task status';
-
-    public function run()
+    public function handle()
     {
         CrontabTaskList::initialTaskList();
         $crontabTaskList = CrontabTaskList::getCrontabTaskList();
@@ -37,5 +33,15 @@ class StatusCrontabCommandService extends BaseCommandService
         empty($data)
             ? Command::line('no crontab.')
             : Table::show($data, 'Mini Crontab List');
+    }
+
+    public function getCommand(): string
+    {
+        return 'crontab:status';
+    }
+
+    public function getCommandDescription(): string
+    {
+        return 'view crontab task status';
     }
 }

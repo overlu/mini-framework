@@ -7,17 +7,15 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
-class MigrateRefreshCommandService extends BaseCommandService
+use Mini\Support\Coroutine;
+
+class MigrateRefreshCommandService extends AbstractCommandService
 {
     use Migration;
 
-    public string $command = 'migrate:refresh';
-
-    public string $description = 'reset and re-run all migrations.';
-
-    public function run()
+    public function handle()
     {
-        go(function () {
+        Coroutine::create(function () {
             if (!$this->confirmToProceed()) {
                 return;
             }
@@ -57,5 +55,15 @@ class MigrateRefreshCommandService extends BaseCommandService
             '--realpath' => $this->getOpt('realpath'),
             '--force' => true,
         ]));
+    }
+
+    public function getCommand(): string
+    {
+        return 'migrate:refresh';
+    }
+
+    public function getCommandDescription(): string
+    {
+        return 'reset and re-run all migrations.';
     }
 }

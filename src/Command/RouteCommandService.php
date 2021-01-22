@@ -9,15 +9,21 @@ namespace Mini\Command;
 
 use Mini\Support\Command;
 
-class RouteCommandService extends BaseCommandService
+class RouteCommandService extends AbstractCommandService
 {
-    public string $command = 'route:clear';
-
-    public string $description = 'clear route config cache.';
-
-    public function run()
+    public function handle()
     {
         @unlink(BASE_PATH . '/storage/app/route.cache');
         Command::info('route cache cleared.');
+    }
+
+    public function getCommand(): string
+    {
+        return 'route:clear';
+    }
+
+    public function getCommandDescription(): string
+    {
+        return 'clear route config cache.';
     }
 }

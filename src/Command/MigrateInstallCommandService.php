@@ -8,23 +8,30 @@ declare(strict_types=1);
 namespace Mini\Command;
 
 use Mini\Support\Command;
+use Mini\Support\Coroutine;
 
-class MigrateInstallCommandService extends BaseCommandService
+class MigrateInstallCommandService extends AbstractCommandService
 {
     use Migration;
 
-    public string $command = 'migrate:install';
-
-    public string $description = 'create the migration repository.';
-
-    public function run()
+    public function handle()
     {
-        go(function () {
+        Coroutine::create(function () {
             $this->repository->setSource($this->getOpt('database'));
 
             $this->repository->createRepository();
 
             Command::info('Migration table created successfully.');
         });
+    }
+
+    public function getCommand(): string
+    {
+        return 'migrate:install';
+    }
+
+    public function getCommandDescription(): string
+    {
+        return 'create the migration repository.';
     }
 }

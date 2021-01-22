@@ -7,17 +7,23 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
-use Mini\Command\BaseCommandService;
+use Mini\Command\AbstractCommandService;
 use Mini\Crontab\Crontab;
 
-class RunCrontabCommandService extends BaseCommandService
+class RunCrontabCommandService extends AbstractCommandService
 {
-    public string $command = 'crontab:run';
-
-    public string $description = 'run crontab task';
-
-    public function run()
+    public function handle()
     {
         Crontab::run();
+    }
+
+    public function getCommand(): string
+    {
+        return 'crontab:run';
+    }
+
+    public function getCommandDescription(): string
+    {
+        return 'run mini crontab task';
     }
 }

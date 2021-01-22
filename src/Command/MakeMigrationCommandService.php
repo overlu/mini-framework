@@ -9,31 +9,28 @@ namespace Mini\Command;
 
 use Mini\Database\Mysql\Migrations\TableGuesser;
 use Mini\Support\Command;
+use Mini\Support\Coroutine;
 use Mini\Support\Str;
 
-class MakeMigrationCommandService extends BaseCommandService
+class MakeMigrationCommandService extends AbstractCommandService
 {
     use Migration;
-
-    public string $command = 'make:migration';
-
-    public string $description = 'create a new migration file.';
 
     /**
      * @return mixed|void
      * @throws \Exception
      */
-    public function run()
+    public function handle()
     {
-        go(function () {
+        Coroutine::create(function () {
             $argFirst = $this->getArgs()[0] ?? null;
             if (!$argFirst) {
                 Command::error('no migration file name');
                 return;
             }
             $name = Str::snake(trim($this->getArg('name', $argFirst)));
-            $table = $this->app->getOpt('table');
-            $create = $this->app->getOpt('create', false);
+            $table = $this->getOpt('table');
+            $create = $this->getOpt('create', false);
 
             if (!$table && is_string($create)) {
                 $table = $create;
@@ -68,5 +65,21 @@ class MakeMigrationCommandService extends BaseCommandService
         }
 
         Command::info("Created Migration: {$file}");
+    }
+
+    /**
+     * @return string
+     */
+    public function getCommand(): string
+    {
+        return 'make:migration';
+    }
+
+    /**
+     * @return string
+     */
+    public function getCommandDescription(): string
+    {
+        return 'create a new migration file.';
     }
 }

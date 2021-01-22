@@ -7,17 +7,15 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
-class MigrateCommandService extends BaseCommandService
+use Mini\Support\Coroutine;
+
+class MigrateCommandService extends AbstractCommandService
 {
     use Migration;
 
-    public string $command = 'migrate';
-
-    public string $description = 'migrate the database.';
-
-    public function run()
+    public function handle()
     {
-        go(function (){
+        Coroutine::create(function () {
             if (!$this->confirmToProceed()) {
                 return;
             }
@@ -37,5 +35,15 @@ class MigrateCommandService extends BaseCommandService
                 'database' => $this->getOpt('database'),
             ]));
         }
+    }
+
+    public function getCommand(): string
+    {
+        return 'migrate';
+    }
+
+    public function getCommandDescription(): string
+    {
+        return 'migrate the database.';
     }
 }

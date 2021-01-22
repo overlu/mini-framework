@@ -7,17 +7,15 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
-class MigrateRollbackCommandService extends BaseCommandService
+use Mini\Support\Coroutine;
+
+class MigrateRollbackCommandService extends AbstractCommandService
 {
     use Migration;
 
-    public string $command = 'migrate:rollback';
-
-    public string $description = 'rollback the last database migration.';
-
-    public function run()
+    public function handle()
     {
-        go(function () {
+        Coroutine::create(function () {
             if (!$this->confirmToProceed()) {
                 return;
             }
@@ -29,5 +27,15 @@ class MigrateRollbackCommandService extends BaseCommandService
                 ]
             );
         });
+    }
+
+    public function getCommand(): string
+    {
+        return 'migrate:rollback';
+    }
+
+    public function getCommandDescription(): string
+    {
+        return 'rollback the last database migration.';
     }
 }
