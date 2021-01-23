@@ -21,12 +21,12 @@ class CommandService
 
     /**
      * 注册command服务
-     * @param AbstractCommandService[] $commandService
+     * @param AbstractCommandService[]|AbstractCommandService $commandService
      */
     public static function register($commandService): void
     {
         foreach ((array)$commandService as $service) {
-            if (!($service = new $service) || $service instanceof AbstractCommandService) {
+            if (!($service = new $service) || !$service instanceof AbstractCommandService) {
                 throw new RuntimeException(get_class($service) . ' should instance of ' . AbstractCommandService::class);
             }
             static::$commands[$service->getCommand()] = $service;
