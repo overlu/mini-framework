@@ -60,7 +60,7 @@ namespace Mini\Facades;
  *
  * @package Mini\Facades
  */
-class Reponse extends Facade
+class Response extends Facade
 {
     protected static function getFacadeAccessor()
     {
