@@ -37,7 +37,7 @@ class Pool
     private function initialize(array $config)
     {
         foreach ($config as $key => $value) {
-            $conf = array_replace_recursive($this->config, $value);
+            $conf = array_replace_recursive($this->config, (array)$value);
             $this->pools[$key] = new RedisPool(
                 (new RedisConfig())
                     ->withHost($conf['host'])
@@ -73,7 +73,7 @@ class Pool
 
     public function getRedis($key = ''): \Redis
     {
-        $conf = array_replace_recursive($this->config, config('database.' . ($key ?: 'default'), []));
+        $conf = array_replace_recursive($this->config, (array)config('redis.' . ($key ?: 'default'), []));
         $redis = new \Redis();
         /* Compatible with different versions of Redis extension as much as possible */
         $arguments = [
