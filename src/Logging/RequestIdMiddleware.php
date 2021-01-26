@@ -13,12 +13,17 @@ use \Seaslog;
 
 class RequestIdMiddleware implements MiddlewareInterface
 {
-    public function before()
+    /**
+     * @param string $method
+     * @param string $className
+     * @return mixed|void
+     */
+    public function before(string $method, string $className)
     {
         Seaslog::setRequestID(uniqid('', true));
     }
 
-    public function after(ResponseInterface $response)
+    public function after(ResponseInterface $response): ResponseInterface
     {
         return $response->withHeader('mini-request-id', Seaslog::getRequestID());
     }

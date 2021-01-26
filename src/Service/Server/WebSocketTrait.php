@@ -72,7 +72,7 @@ trait WebSocketTrait
                 ];
                 return;
             }
-            if (is_array($resp) && isset($resp['callbale'])) {
+            if (is_array($resp) && isset($resp['callable'])) {
                 $this->handler = $resp;
                 return;
             }

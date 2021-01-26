@@ -67,12 +67,8 @@ class HttpServer extends AbstractServer
     {
         parent::onRequest($request, $response);
         try {
-            [$psr7Request, $psr7Response] = $this->initRequestAndResponse($request, $response);
-            $resp = app('middleware')->registerBeforeRequest();
-            if (is_null($resp)) {
-                $resp = $this->route->dispatch($request);
-            }
-            if (!$resp instanceof \Psr\Http\Message\ResponseInterface) {
+            $this->initRequestAndResponse($request, $response);
+            if (!($resp = $this->route->dispatch($request)) instanceof \Psr\Http\Message\ResponseInterface) {
                 $resp = $this->transferToResponse($resp);
             }
             if (!isset($resp) || !$resp instanceof Sendable) {
@@ -80,7 +76,7 @@ class HttpServer extends AbstractServer
             }
             $resp = $resp->withHeader('Server', 'Mini');
             $resp = app('middleware')->bootAfterRequest($resp);
-            if ($psr7Request->getMethod() === 'HEAD') {
+            if (request()->getMethod() === 'HEAD') {
                 $resp->send(false);
             } else {
                 $resp->send(true);
@@ -113,7 +109,6 @@ class HttpServer extends AbstractServer
         Context::set(RequestInterface::class, $psr7Request = Psr7Request::loadFromSwooleRequest($request));
         Context::set(ResponseInterface::class, $psr7Response = new Psr7Response($response));
         $this->initialProvider();
-        return [$psr7Request, $psr7Response];
     }
 
     /**
@@ -169,5 +164,13 @@ class HttpServer extends AbstractServer
     public function response()
     {
         return Context::get(ResponseInterface::class);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function request()
+    {
+        return Context::get(RequestInterface::class);
     }
 }

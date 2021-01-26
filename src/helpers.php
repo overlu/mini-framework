@@ -9,6 +9,7 @@ use Mini\Config;
 use Mini\Container\Container;
 use Mini\Context;
 use Mini\Contracts\Container\BindingResolutionException;
+use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Contracts\Support\Htmlable;
 use Mini\Contracts\View\Factory;
 use Mini\Database\Redis\Pool;
@@ -555,7 +556,7 @@ if (!function_exists('request')) {
         if (!Context::has('IsInRequestEvent')) {
             throw new RuntimeException("Not In Request Environment.");
         }
-        return app(\Mini\Contracts\HttpMessage\RequestInterface::class);
+        return app(RequestInterface::class);
     }
 }
 

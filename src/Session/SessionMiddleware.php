@@ -54,10 +54,12 @@ class SessionMiddleware implements MiddlewareInterface
     }
 
     /**
+     * @param string $method
+     * @param string $className
      * @return mixed|void
      * @throws Exception
      */
-    public function before()
+    public function before(string $method, string $className)
     {
         if (!$this->isSessionAvailable()) {
             return;
@@ -70,7 +72,7 @@ class SessionMiddleware implements MiddlewareInterface
      * @return mixed|ResponseInterface
      * @throws Exception
      */
-    public function after(ResponseInterface $response)
+    public function after(ResponseInterface $response): ResponseInterface
     {
         if (!$this->isSessionAvailable()) {
             return $response;

@@ -29,19 +29,25 @@ class Middleware
     }
 
     /**
+     * @param string $method
+     * @param string $className
      * @return mixed|null
      */
-    public function registerBeforeRequest()
+    public function registerBeforeRequest(string $method, string $className)
     {
         foreach ($this->middleware as $item) {
-            if (!is_null($response = $item->before())) {
+            if (!is_null($response = $item->before($method, $className))) {
                 return $response;
             }
         }
         return null;
     }
 
-    public function bootAfterRequest(ResponseInterface $response)
+    /**
+     * @param ResponseInterface $response
+     * @return ResponseInterface
+     */
+    public function bootAfterRequest(ResponseInterface $response): ResponseInterface
     {
         foreach ($this->middleware as $item) {
             $response = $item->after($response);

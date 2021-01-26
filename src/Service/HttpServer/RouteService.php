@@ -147,17 +147,21 @@ class RouteService
                     if (!class_exists($className)) {
                         throw new RuntimeException("Router {$uri} defined Class Not Found");
                     }
+                    $resp = app('middleware')->registerBeforeRequest($func, $className);
+                    if (!is_null($resp)) {
+                        return $resp;
+                    }
                     $controller = new $className($func);
                     if (!method_exists($controller, $func)) {
                         throw new RuntimeException("Router {$uri} defined {$func} Method Not Found");
                     }
                     $method = (new ReflectionMethod($controller, $func));
                     $data = $this->initialParams($method, $routeInfo[2] ?? []);
-                    if (method_exists($controller, 'beforeDispatch') && $resp = $controller->beforeDispatch($func)) {
+                    if (method_exists($controller, 'beforeDispatch') && $resp = $controller->beforeDispatch($func, $className)) {
                         return $resp;
                     }
                     $resp = $method->invokeArgs($controller, $data);
-                    return method_exists($controller, 'afterDispatch') ? $controller->afterDispatch($resp) : $resp;
+                    return method_exists($controller, 'afterDispatch') ? $controller->afterDispatch($resp, $func, $className) : $resp;
                 }
                 if (is_callable($handler)) {
                     $data = $this->initialParams(new ReflectionFunction($handler), $routeInfo[2] ?? []);
@@ -206,7 +210,7 @@ class RouteService
                 }
                 if (is_callable($handler)) {
                     return [
-                        'callbale' => $handler,
+                        'callable' => $handler,
                         'data' => $routeInfo[2]
                     ];
                 }
