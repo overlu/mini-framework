@@ -44,7 +44,10 @@ class Pool
         $this->defaultConnection = config('database.default', 'mysql');
     }
 
-    private function initialize(array $config)
+    /**
+     * @param array $config
+     */
+    private function initialize(array $config): void
     {
         foreach ($config as $key => $value) {
             $conf = array_replace_recursive($this->config, $value);

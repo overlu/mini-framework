@@ -8,80 +8,29 @@ declare(strict_types=1);
 namespace Mini\Cache;
 
 use Mini\Cache\Drivers\AbstractCacheDriver;
-use Mini\Cache\Drivers\FileCacheCacheDriver;
-use Mini\Cache\Drivers\RedisCacheCacheDriver;
-use Mini\Cache\Drivers\SwooleCacheCacheDriver;
 use Mini\Exceptions\CacheException;
-use Mini\Singleton;
 
 /**
  * 缓存管理器
  * Class Cache
- * @method static mixed get($key, $default = null)
- * @method static bool set($key, $value, $ttl = null)
- * @method static bool delete($key)
- * @method static bool clear()
- * @method static iterable getMultiple($keys, $default = null)
- * @method static bool setMultiple($values, $ttl = null)
- * @method static bool deleteMultiple($keys)
- * @method static bool has($key)
- * @method static mixed inc($key, int $step = 1)
- * @method static mixed dec($key, int $step = 1)
- * @method static void setPrefix(string $prefix)
- * @method static string getPrefix()
  * @package Mini\Cache
  */
 class Cache
 {
-    use Singleton;
-
     /**
      * 缓存驱动
-     * @var AbstractCacheDriver[]
+     * @var array
      */
-    protected array $drivers = [
-        'file' => FileCacheCacheDriver::class,
-        'redis' => RedisCacheCacheDriver::class,
-        'swoole' => SwooleCacheCacheDriver::class
-    ];
+    protected array $drivers = ['file', 'redis', 'swoole'];
 
     /**
      * @var mixed
      */
     protected $default;
 
-    private function __construct()
+    public function __construct()
     {
-        $driver = config('cache.default', 'file');
-        $driverClass = config('cache.drivers.' . $driver . '.driver', $this->drivers[$driver] ?? FileCacheCacheDriver::class);
-        $this->default = new $driverClass;
-    }
-
-    /**
-     * @param string $driver
-     * @param string $driverName
-     * @return $this
-     * @throws CacheException
-     */
-    public function addDriver(string $driver, string $driverName = 'default'): self
-    {
-        if ($driverName !== 'default' && array_key_exists($driverName, $this->drivers)) {
-            throw new CacheException("{$driverName} driver has been used");
-        }
-        if ((new $driver) instanceof AbstractCacheDriver) {
-            $this->drivers[$driverName] = $driver;
-        }
-        return $this;
-    }
-
-
-    /**
-     * @param string|null $driverName
-     * @return AbstractCacheDriver
-     */
-    public function getDriver(string $driverName = null): AbstractCacheDriver
-    {
-        return $driverName ? new $this->drivers[$driverName] : $this->default;
+        $this->default = config('cache.default', 'file');
     }
 
     /**
@@ -89,21 +38,11 @@ class Cache
      * @return AbstractCacheDriver
      * @throws CacheException
      */
-    public function driver(string $driverName): AbstractCacheDriver
+    public function driver(?string $driverName = null): AbstractCacheDriver
     {
-        if (!array_key_exists($driverName, $this->drivers)) {
+        if (!in_array($driverName, $this->drivers, true)) {
             throw new CacheException("{$driverName} not exists.");
         }
-        return $this->getDriver($driverName);
-    }
-
-    /**
-     * @param $name
-     * @param $arguments
-     * @return mixed
-     */
-    public static function __callStatic($name, $arguments)
-    {
-        return self::getInstance()->getDriver()->$name(...$arguments);
+        return app('cache.driver.' . $driverName ?: $this->default);
     }
 }

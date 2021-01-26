@@ -33,18 +33,19 @@ class DB
 
     /**
      * @param string $connection_key
+     * @return DB
      */
-    public function connection(string $connection_key = '')
+    public function connection(string $connection_key = ''): DB
     {
         $this->connection = $this->pool->getConnection($connection_key ?: $this->key);
         return $this;
     }
 
     /**
-     * @param $query
+     * @param string $query
      * @param array $parameters
      */
-    private function initialize($query, array $parameters = []): void
+    private function initialize(string $query, array $parameters = []): void
     {
         try {
             $this->prepare = $this->connection->prepare($query);

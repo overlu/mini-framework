@@ -22,6 +22,6 @@ class MiniDB extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return new DB();
+        return 'db.mini';
     }
 }

@@ -30,6 +30,6 @@ class Cache extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return \Mini\Cache\Cache::getInstance();
+        return 'cache';
     }
 }

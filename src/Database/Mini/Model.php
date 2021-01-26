@@ -26,7 +26,7 @@ class Model
 
     public function __construct($data = [])
     {
-        $this->db = new DB();
+        $this->db = app('db.mini');
         $this->variables = $data;
     }
 

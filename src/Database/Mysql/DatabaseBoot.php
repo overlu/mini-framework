@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Database\Mysql;
 
 use Mini\Container\Container;
+use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Database\Mysql\Capsule\Manager;
 use Mini\Events\Dispatcher;
 use Mini\Database\Mysql\Eloquent\Model;
@@ -29,6 +30,11 @@ class DatabaseBoot
         'size' => 64,
     ];
 
+    /**
+     * DatabaseBoot constructor.
+     * @param array $config
+     * @throws BindingResolutionException
+     */
     public function __construct(array $config)
     {
         Model::clearBootedModels();
