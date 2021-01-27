@@ -33,7 +33,7 @@ class Application
     public static array $mapping = [
         'http' => HttpServer::class,
         'ws' => WebSocket::class,
-        'wshttp' => WsHttpServer::class,
+        'ws-http' => WsHttpServer::class,
         'mqtt' => MqttServer::class,
         'main' => MainServer::class,
         'help' => HelpServer::class,
