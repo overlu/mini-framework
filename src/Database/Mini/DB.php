@@ -10,11 +10,12 @@ namespace Mini\Database\Mini;
 use PDO;
 use PDOException;
 use Swoole\Coroutine;
+use Swoole\Database\PDOProxy;
 use Throwable;
 
 class DB
 {
-    protected object $connection;
+    protected PDOProxy $connection;
 
     private ?object $prepare = null;
 

@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mini;
 
+use Mini\Context;
 use Mini\Support\Coroutine;
 use PDO;
 use Mini\Singleton;
@@ -91,19 +92,28 @@ class Pool
     public function getConnection(string $key = ''): PDOProxy
     {
         $key = $key ?: $this->defaultConnection;
-        if (Coroutine::inCoroutine()) {
-            if (empty($this->pools)) {
-                $this->initialize(config('database.connections', []));
-            }
-            $connection = $this->pools[$key]->get();
-            Coroutine::defer(function () use ($key, $connection) {
-                $this->close($key, $connection);
+        if (!Coroutine::inCoroutine()) {
+            return new PDOProxy(function () use ($key) {
+                return $this->getPdo($key);
             });
+        }
+        if ($connection = $this->getConnectionFromContext($key)) {
             return $connection;
         }
-        return new PDOProxy(function () use ($key) {
-            return $this->getPdo($key);
+        return $this->getConnectionFromPool($key);
+    }
+
+    protected function getConnectionFromPool($key)
+    {
+        if (empty($this->pools)) {
+            $this->initialize(config('database.connections', []));
+        }
+        $connection = $this->pools[$key]->get();
+        $this->setConnectionToContext($key, $connection);
+        Coroutine::defer(function () use ($key, $connection) {
+            $this->close($key, $connection);
         });
+        return $connection;
     }
 
     /**
@@ -115,5 +125,39 @@ class Pool
         $this->pools[$key ?: $this->defaultConnection]->put($connection);
     }
 
+    /**
+     * Set the connection to coroutine context.
+     *
+     * @param string $name
+     * @param mixed $connection
+     * @return void
+     */
+    protected function setConnectionToContext($name, $connection): void
+    {
+        $key = $this->getConnectionKeyInContext($name);
+        Context::set($key, $connection);
+    }
 
+    /**
+     * Get the connection key in coroutine context.
+     *
+     * @param string $name
+     * @return string
+     */
+    protected function getConnectionKeyInContext(string $name): string
+    {
+        return 'mini-db.connections.' . $name;
+    }
+
+    /**
+     * Get the connection from coroutine context.
+     *
+     * @param string $name
+     * @return mixed
+     */
+    protected function getConnectionFromContext($name)
+    {
+        $key = $this->getConnectionKeyInContext($name);
+        return Context::get($key);
+    }
 }

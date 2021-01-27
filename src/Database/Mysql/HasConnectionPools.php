@@ -103,7 +103,6 @@ trait HasConnectionPools
     {
         $key = $this->getConnectionKeyInContext($name);
         Context::set($key, $connection);
-//        Coroutine::getContext()[$key] = $connection;
     }
 
     /**
