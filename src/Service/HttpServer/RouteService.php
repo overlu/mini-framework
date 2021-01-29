@@ -130,46 +130,57 @@ class RouteService
         $routeInfo = self::$httpDispatcher->dispatch($method, $uri);
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
-                return $this->defaultRouter($uri);
+                return $this->defaultRouter();
             case Dispatcher::METHOD_NOT_ALLOWED:
                 abort(405);
                 break;
             case Dispatcher::FOUND:
-                $handler = $routeInfo[1];
                 $request->routes = $routeInfo[2] ?? [];
-                if (is_string($handler)) {
-                    $handler = explode('@', $handler);
-                    if (count($handler) !== 2) {
-                        throw new RuntimeException("Router {$uri} config error, Only @ are supported");
-                    }
-                    $className = '\\App\\Controllers\\' . $handler[0];
-                    $func = $handler[1];
-                    if (!class_exists($className)) {
-                        throw new RuntimeException("Router {$uri} defined Class Not Found");
-                    }
-                    $resp = app('middleware')->registerBeforeRequest($func, $className);
-                    if (!is_null($resp)) {
-                        return $resp;
-                    }
-                    $controller = new $className($func);
-                    if (!method_exists($controller, $func)) {
-                        throw new RuntimeException("Router {$uri} defined {$func} Method Not Found");
-                    }
-                    $method = (new ReflectionMethod($controller, $func));
-                    $data = $this->initialParams($method, $routeInfo[2] ?? []);
-                    if (method_exists($controller, 'beforeDispatch') && $resp = $controller->beforeDispatch($func, $className)) {
-                        return $resp;
-                    }
-                    $resp = $method->invokeArgs($controller, $data);
-                    return method_exists($controller, 'afterDispatch') ? $controller->afterDispatch($resp, $func, $className) : $resp;
-                }
-                if (is_callable($handler)) {
-                    $data = $this->initialParams(new ReflectionFunction($handler), $routeInfo[2] ?? []);
-                    return call_user_func_array($handler, $data);
-                }
-                return $this->defaultRouter($uri);
+                return $this->dispatchHandle($routeInfo[1], $request->routes);
         }
-        return $this->defaultRouter($uri);
+        return $this->defaultRouter();
+    }
+
+    /**
+     * @param $handler
+     * @param array $params
+     * @return mixed
+     * @throws ReflectionException
+     * @throws Throwable
+     */
+    protected function dispatchHandle($handler, array $params = [])
+    {
+        if (is_string($handler)) {
+            $handler = explode('@', $handler);
+            if (count($handler) !== 2) {
+                throw new RuntimeException("Router config error, Only @ are supported");
+            }
+            $className = '\\App\\Controllers\\' . $handler[0];
+            $func = $handler[1];
+            if (!class_exists($className)) {
+                throw new RuntimeException("Router defined Class Not Found");
+            }
+            $resp = app('middleware')->registerBeforeRequest($func, $className);
+            if (!is_null($resp)) {
+                return $resp;
+            }
+            $controller = new $className($func);
+            if (!method_exists($controller, $func)) {
+                throw new RuntimeException("Router defined {$className}->{$func} Method Not Found");
+            }
+            $method = (new ReflectionMethod($controller, $func));
+            $data = $this->initialParams($method, $params);
+            if (method_exists($controller, 'beforeDispatch') && $resp = $controller->beforeDispatch($func, $className)) {
+                return $resp;
+            }
+            $resp = $method->invokeArgs($controller, $data);
+            return method_exists($controller, 'afterDispatch') ? $controller->afterDispatch($resp, $func, $className) : $resp;
+        }
+        if (is_callable($handler)) {
+            $data = $this->initialParams(new ReflectionFunction($handler), $params);
+            return call_user_func_array($handler, $data);
+        }
+        throw new RuntimeException('Illegal default url format, only support controllerClass@method or callable');
     }
 
     /**
@@ -262,19 +273,15 @@ class RouteService
     }
 
     /**
-     * @param $uri
      * @return mixed
-     * @throws Exception
+     * @throws ReflectionException
+     * @throws Throwable
      */
-    public function defaultRouter(string $uri = '')
+    public function defaultRouter()
     {
-        $uri = trim($uri, '/');
-        if ($uri === '') {
-            $className = IndexController::class;
-            if (class_exists($className) && method_exists($className, 'index')) {
-                return (new $className('index'))->index(\request(), \response());
-            }
+        if (isset(self::$routes['default'])) {
+            return $this->dispatchHandle(self::$routes['default'], []);
         }
-        abort(404);
+        return abort(404);
     }
 }
