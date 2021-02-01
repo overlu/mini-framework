@@ -39,15 +39,21 @@ class Command
      * 执行shell脚本
      * @param string $shell
      * @return string|null
-     * @throws Exception
      */
     public static function exec(string $shell): ?string
     {
-        $result = System::exec($shell);
-        if ($result) {
-            return $result['output'];
+        if (Coroutine::inCoroutine()) {
+            $result = System::exec($shell);
+            if ($result) {
+                return rtrim($result['output']);
+            }
+        } else {
+            $result = shell_exec($shell);
+            if ($result) {
+                return rtrim($result);
+            }
         }
-        throw new \RuntimeException('shell command [ ' . $shell . ' ] run failed');
+        return '';
     }
 
     /**
@@ -148,5 +154,43 @@ class Command
         $format = $styles[$style] ?? '%s';
         $format .= $newLine ? PHP_EOL : '';
         printf($format, $message);
+    }
+
+    /**
+     * clear console information
+     */
+    public static function clear(): void
+    {
+        array_map(static function ($a) {
+            print chr($a);
+        }, array(27, 91, 72, 27, 91, 50, 74));
+    }
+
+    /**
+     * @param int $n
+     */
+    public static function removeLine(int $n = 1): void
+    {
+        print str_repeat("\r\033[K\033[1A\r\033[K\r", $n);
+    }
+
+    /**
+     * @param string $message
+     * @throws Exception
+     */
+    public static function replace(string $message, array $args = []): void
+    {
+        foreach ($args as $key => $value) {
+            $message = str_replace('{' . $key . '}', $value, $message);
+        }
+        if (empty($term_width = static::exec('tput cols'))) {
+            $term_width = 64;
+        }
+        $line_count = 0;
+        foreach (explode("\n", $message) as $line) {
+            $line_count += count(str_split($line, $term_width));
+        }
+        static::removeLine($line_count);
+        print $message;
     }
 }

@@ -53,6 +53,10 @@ class Log
         SeasLog::$name(...$arguments);
     }
 
+    /**
+     * @param $name
+     * @param $arguments
+     */
     private static function output($name, $arguments): void
     {
         $message = SeasLog::getRequestID() . ': ' . $arguments[0];
