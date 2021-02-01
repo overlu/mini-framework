@@ -13,6 +13,8 @@ use FastRoute\RouteCollector;
 use Mini\Config;
 use Mini\BindsProvider;
 use Mini\Di;
+use Mini\Exception\HttpException\MethodNotAllowedHttpException;
+use Mini\Exception\HttpException\NotFoundHttpException;
 use ReflectionException;
 use ReflectionFunction;
 use ReflectionFunctionAbstract;
@@ -132,7 +134,7 @@ class RouteService
             case Dispatcher::NOT_FOUND:
                 return $this->defaultRouter();
             case Dispatcher::METHOD_NOT_ALLOWED:
-                abort(405);
+                throw new MethodNotAllowedHttpException();
                 break;
             case Dispatcher::FOUND:
                 $request->routes = $routeInfo[2] ?? [];
@@ -282,6 +284,6 @@ class RouteService
         if (isset(self::$routes['default'])) {
             return $this->dispatchHandle(self::$routes['default'], []);
         }
-        return abort(404);
+        throw new NotFoundHttpException();
     }
 }
