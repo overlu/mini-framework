@@ -36,7 +36,7 @@ class FileEngine implements Engine
      * @param string $path
      * @param array $data
      * @return string
-     * @throws \Mini\Exceptions\FileNotFoundException
+     * @throws \Mini\Exception\FileNotFoundException
      */
     public function get(string $path, array $data = []): string
     {

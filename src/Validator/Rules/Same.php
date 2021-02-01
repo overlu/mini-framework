@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Validator\Rules;
 
-use Mini\Exceptions\MissingRequiredParameterException;
+use Mini\Exception\MissingRequiredParameterException;
 use Mini\Validator\Rule;
 
 class Same extends Rule

@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Exceptions;
+namespace Mini\Exception;
 
 use App\Exceptions\Handler;
 use Mini\Contracts\Container\BindingResolutionException;
@@ -14,7 +14,7 @@ use Swoole\Server;
 
 /**
  * Class ExceptionServiceProvider
- * @package Mini\Exceptions
+ * @package Mini\Exception
  */
 class ExceptionServiceProvider implements ServiceProviderInterface
 {
@@ -26,7 +26,7 @@ class ExceptionServiceProvider implements ServiceProviderInterface
     public function register(?Server $server = null, ?int $workerId = null): void
     {
         app()->singleton('exception', function () {
-            return class_exists(Handler::class) ? Handler::getInstance() : \Mini\Exceptions\Handler::getInstance();
+            return class_exists(Handler::class) ? Handler::getInstance() : \Mini\Exception\Handler::getInstance();
         });
     }
 

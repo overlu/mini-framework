@@ -8,8 +8,8 @@ declare(strict_types=1);
 namespace Mini\Validator;
 
 use Exception;
-use Mini\Exceptions\RuleNotFoundException;
-use Mini\Exceptions\RuleQuashException;
+use Mini\Exception\RuleNotFoundException;
+use Mini\Exception\RuleQuashException;
 use Mini\Support\Traits\AliasesTrait;
 use Mini\Support\Traits\MessagesTrait;
 use Mini\Support\Traits\TranslationsTrait;

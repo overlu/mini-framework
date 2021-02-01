@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\Contracts\Encryption;
 
-use Mini\Exceptions\DecryptException;
-use Mini\Exceptions\EncryptException;
+use Mini\Exception\DecryptException;
+use Mini\Exception\EncryptException;
 
 interface Encrypter
 {

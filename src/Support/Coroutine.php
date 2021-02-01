@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Support;
 
-use Mini\Exceptions\Handler;
+use Mini\Exception\Handler;
 use Swoole\Coroutine as SwooleCoroutine;
 use Throwable;
 

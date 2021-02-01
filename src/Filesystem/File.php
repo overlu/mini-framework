@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\Filesystem;
 
-use Mini\Exceptions\FileException;
-use Mini\Exceptions\FileNotFoundException;
+use Mini\Exception\FileException;
+use Mini\Exception\FileNotFoundException;
 use Mini\Service\HttpMessage\Upload\FileHelpers;
 
 /**

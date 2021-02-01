@@ -9,7 +9,7 @@ namespace Mini\Service\HttpMessage\Upload;
 
 use Mini\Container\Container;
 use Mini\Contracts\Filesystem\Factory as FilesystemFactory;
-use Mini\Exceptions\FileNotFoundException;
+use Mini\Exception\FileNotFoundException;
 use Mini\Support\Arr;
 use InvalidArgumentException;
 use Mini\Service\HttpMessage\Stream\StandardStream;

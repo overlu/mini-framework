@@ -37,7 +37,7 @@ interface Filesystem
      * @param  string  $path
      * @return string
      *
-     * @throws \Mini\Exceptions\FileNotFoundException
+     * @throws \Mini\Exception\FileNotFoundException
      */
     public function get($path);
 
@@ -47,7 +47,7 @@ interface Filesystem
      * @param  string  $path
      * @return resource|null The path resource or null on failure.
      *
-     * @throws \Mini\Exceptions\FileNotFoundException
+     * @throws \Mini\Exception\FileNotFoundException
      */
     public function readStream($path);
 
@@ -70,7 +70,7 @@ interface Filesystem
      * @return bool
      *
      * @throws \InvalidArgumentException If $resource is not a file handle.
-     * @throws \Mini\Exceptions\FileExistsException
+     * @throws \Mini\Exception\FileExistsException
      */
     public function writeStream($path, $resource, array $options = []);
 

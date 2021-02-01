@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Mini\Validator\Rules;
 
 use Exception;
-use Mini\Exceptions\MissingRequiredParameterException;
+use Mini\Exception\MissingRequiredParameterException;
 use Mini\Support\Traits\Rule\DateUtilsTrait;
 use Mini\Validator\Rule;
 

@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Filesystem;
 
-use Mini\Exceptions\LockTimeoutException;
+use Mini\Exception\LockTimeoutException;
 
 /**
  * Class LockableFile

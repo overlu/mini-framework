@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Validator\Rules;
 
-use Mini\Exceptions\MissingRequiredParameterException;
+use Mini\Exception\MissingRequiredParameterException;
 use Mini\Validator\Rule;
 
 class RequiredWithAll extends Required
@@ -33,7 +33,7 @@ class RequiredWithAll extends Required
      * Check the $value is valid
      * @param mixed $value
      * @return bool
-     * @throws MissingRequiredParameterException|\Mini\Exceptions\RuleNotFoundException
+     * @throws MissingRequiredParameterException|\Mini\Exception\RuleNotFoundException
      */
     public function check($value): bool
     {

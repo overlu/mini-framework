@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Support;
 
-use Mini\Exceptions\ParallelExecutionException;
+use Mini\Exception\ParallelExecutionException;
 use Swoole\Coroutine\Channel;
 use Throwable;
 use function sprintf;

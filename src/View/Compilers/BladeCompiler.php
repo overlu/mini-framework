@@ -137,7 +137,7 @@ class BladeCompiler extends Compiler implements CompilerInterface
      *
      * @param string|null $path
      * @return void
-     * @throws \Mini\Exceptions\FileNotFoundException
+     * @throws \Mini\Exception\FileNotFoundException
      */
     public function compile(?string $path = null): void
     {

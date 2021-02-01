@@ -5,11 +5,11 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Exceptions;
+namespace Mini\Exception;
 
 /**
  * Interface HttpExceptionInterface
- * @package Mini\Exceptions
+ * @package Mini\Exception
  */
 interface HttpExceptionInterface extends \Throwable
 {

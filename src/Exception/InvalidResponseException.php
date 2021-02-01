@@ -5,11 +5,11 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Exceptions;
+namespace Mini\Exception;
 
 /**
  * Class InvalidResponseException
- * @package Mini\Exceptions
+ * @package Mini\Exception
  */
 class InvalidResponseException extends \Exception
 {

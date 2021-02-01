@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Crontab;
 
-use Mini\Exceptions\CrontabException;
+use Mini\Exception\CrontabException;
 use Mini\Logging\Log;
 use Swoole\Timer;
 

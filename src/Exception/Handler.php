@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Exceptions;
+namespace Mini\Exception;
 
 use Exception;
 use JsonException;
@@ -20,7 +20,7 @@ use Throwable;
 
 /**
  * Class Handler
- * @package Mini\Exceptions
+ * @package Mini\Exception
  */
 class Handler implements HandlerInterface
 {

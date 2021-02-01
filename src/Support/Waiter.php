@@ -8,8 +8,8 @@ declare(strict_types=1);
 namespace Mini\Support;
 
 use Closure;
-use Mini\Exceptions\ExceptionThrower;
-use Mini\Exceptions\WaitTimeoutException;
+use Mini\Exception\ExceptionThrower;
+use Mini\Exception\WaitTimeoutException;
 use Mini\Support\Coroutine;
 use Swoole\Coroutine\Channel;
 use Throwable;

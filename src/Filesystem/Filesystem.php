@@ -9,7 +9,7 @@ namespace Mini\Filesystem;
 
 use ErrorException;
 use FilesystemIterator;
-use Mini\Exceptions\FileNotFoundException;
+use Mini\Exception\FileNotFoundException;
 use Mini\Support\LazyCollection;
 use Mini\Support\Traits\Macroable;
 use RuntimeException;

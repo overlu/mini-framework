@@ -746,7 +746,7 @@ if (!function_exists('abort')) {
      */
     function abort(int $code, $message = '', array $headers = []): void
     {
-        throw new \Mini\Exceptions\HttpException($message, $code, $headers);
+        throw new \Mini\Exception\HttpException($message, $code, $headers);
     }
 }
 

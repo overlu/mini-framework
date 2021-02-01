@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Exceptions;
+namespace Mini\Exception;
 
 use Throwable;
 

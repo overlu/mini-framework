@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Mini\Validator;
 
 use Mini\Container\EntryNotFoundException;
-use Mini\Exceptions\MissingRequiredParameterException;
+use Mini\Exception\MissingRequiredParameterException;
 
 abstract class Rule
 {

@@ -5,13 +5,13 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Exceptions;
+namespace Mini\Exception;
 
 use Mini\Contracts\HttpMessage\RequestInterface;
 
 /**
  * Interface HandlerInterface
- * @package Mini\Exceptions
+ * @package Mini\Exception
  */
 interface HandlerInterface
 {

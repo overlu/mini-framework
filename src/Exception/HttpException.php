@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Exceptions;
+namespace Mini\Exception;
 
 use Mini\Translate\Translate;
 use RuntimeException;
@@ -13,7 +13,7 @@ use Throwable;
 
 /**
  * Class HttpException
- * @package Mini\Exceptions
+ * @package Mini\Exception
  */
 class HttpException extends RuntimeException implements HttpExceptionInterface
 {
@@ -23,7 +23,7 @@ class HttpException extends RuntimeException implements HttpExceptionInterface
 
     /**
      * HttpException constructor.
-     * @param $statusCode
+     * @param mixed $statusCode
      * @param string|array $message
      * @param array $headers
      * @param int|null $code

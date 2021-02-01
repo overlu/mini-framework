@@ -9,7 +9,7 @@ namespace Mini\Service\HttpMessage\Stream;
 
 use BadMethodCallException;
 use Mini\Contracts\HttpMessage\FileInterface;
-use Mini\Exceptions\FileException;
+use Mini\Exception\FileException;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 use SplFileInfo;

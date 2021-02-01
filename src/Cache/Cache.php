@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Mini\Cache;
 
 use Mini\Cache\Drivers\AbstractCacheDriver;
-use Mini\Exceptions\CacheException;
+use Mini\Exception\CacheException;
 
 /**
  * 缓存管理器
