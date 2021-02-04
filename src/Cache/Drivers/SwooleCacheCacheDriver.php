@@ -38,7 +38,7 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
      * 周期性回收
      * @param int $interval
      */
-    private function recycle($interval = 1000): void
+    private function recycle(int $interval = 1000): void
     {
         Timer::tick($interval, function () {
             $time = time();
@@ -55,81 +55,76 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
      * @param null $default
      * @return mixed|null
      */
-    public function get($key, $default = null)
+    public function get(string $key, $default = null)
     {
         $value = $this->table->get($this->prefix . $key);
-        return $value === false ? $default : $value['value'];
+        return $value === false ? $default : unserialize($value['value']);
     }
 
 
     /**
      * @param string $key
      * @param mixed $value
-     * @param null $ttl
-     * @return bool|mixed
+     * @param int|null $ttl
+     * @return bool
      */
-    public function set($key, $value, $ttl = null)
+    public function set(string $key, $value, ?int $ttl = null): bool
     {
         return $this->table->set($this->prefix . $key, [
-            'value' => $value,
+            'value' => serialize($value),
             'expire' => is_null($ttl) ? 0 : (int)$ttl + time(),
         ]);
     }
 
     /**
      * @param string $key
-     * @return bool|mixed
+     * @return bool
      */
-    public function delete($key)
+    public function delete(string $key): bool
     {
         return $this->table->del($this->prefix . $key);
     }
 
     /**
-     * @return bool|void
+     * @return bool
      */
-    public function clear()
+    public function clear(): bool
     {
         if ($this->table instanceof Table) {
             $this->table->destroy();
             unset($this->table);
         }
         $this->initTable();
+        return true;
     }
 
     /**
      * @param string $key
-     * @return bool|mixed
+     * @return bool
      */
-    public function has($key)
+    public function has(string $key): bool
     {
         return $this->table->exist($this->prefix . $key);
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @param int $step
      * @return bool|mixed
      */
-    public function inc($key, int $step = 1)
+    public function inc(string $key, int $step = 1): int
     {
-        if ($this->has($key)) {
-            return $this->table->incr($this->prefix . $key, 'value', $step);
-        }
-        return $this->set($key, $step);
+        return $this->table->incr($this->prefix . $key, 'value', $step);
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @param int $step
      * @return int
      */
-    public function dec($key, int $step = 1)
+    public function dec(string $key, int $step = 1): int
     {
-        if ($this->has($key)) {
-            return $this->table->decr($this->prefix . $key, 'value', $step);
-        }
-        return $this->set($key, 0 - $step);
+        return $this->table->decr($this->prefix . $key, 'value', $step);
     }
 
 }

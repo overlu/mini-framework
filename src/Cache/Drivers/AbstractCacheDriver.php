@@ -19,19 +19,19 @@ abstract class AbstractCacheDriver implements CacheInterface
 {
     protected ?string $prefix = '';
 
-    abstract public function get($key, $default = null);
+    abstract public function get(string $key, $default = null);
 
-    abstract public function set($key, $value, $ttl = null);
+    abstract public function set(string $key, $value, ?int $ttl = null): bool;
 
-    abstract public function delete($key);
+    abstract public function delete(string $key): bool;
 
-    abstract public function clear();
+    abstract public function clear(): bool;
 
-    abstract public function has($key);
+    abstract public function has(string $key): bool;
 
-    abstract public function inc($key, int $step = 1);
+    abstract public function inc(string $key, int $step = 1): int;
 
-    abstract public function dec($key, int $step = 1);
+    abstract public function dec(string $key, int $step = 1): int;
 
     /**
      * @param iterable $keys
@@ -39,7 +39,7 @@ abstract class AbstractCacheDriver implements CacheInterface
      * @return array|iterable
      * @throws InvalidArgumentException
      */
-    public function getMultiple($keys, $default = null): array
+    public function getMultiple(iterable $keys, $default = null): array
     {
         $result = [];
         foreach ($keys as $key) {
@@ -50,11 +50,10 @@ abstract class AbstractCacheDriver implements CacheInterface
 
     /**
      * @param iterable $values
-     * @param null $ttl
+     * @param int|null $ttl
      * @return bool
-     * @throws InvalidArgumentException
      */
-    public function setMultiple($values, $ttl = null): bool
+    public function setMultiple(iterable $values, ?int $ttl = null): bool
     {
         foreach ($values as $key => $val) {
             $result = $this->set($key, $val, $ttl);
@@ -70,7 +69,7 @@ abstract class AbstractCacheDriver implements CacheInterface
      * @return bool
      * @throws InvalidArgumentException
      */
-    public function deleteMultiple($keys): bool
+    public function deleteMultiple(iterable $keys): bool
     {
         foreach ($keys as $key) {
             $result = $this->delete($key);

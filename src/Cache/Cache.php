@@ -45,4 +45,14 @@ class Cache
         }
         return app('cache.driver.' . $driverName ?: $this->default);
     }
+
+    /**
+     * @param $name
+     * @param $arguments
+     * @return mixed
+     */
+    public function __call($name, $arguments)
+    {
+        return app('cache.driver.' . $this->default)->$name(...$arguments);
+    }
 }

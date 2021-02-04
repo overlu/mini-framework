@@ -9,7 +9,6 @@ namespace Mini\Cache\Drivers;
 
 use Mini\Database\Redis\Pool;
 use Redis;
-use Swoole\Coroutine;
 
 class RedisCacheCacheDriver extends AbstractCacheDriver
 {
@@ -24,16 +23,14 @@ class RedisCacheCacheDriver extends AbstractCacheDriver
     /**
      * @param string $key
      * @param mixed $value
-     * @param null $ttl
+     * @param int|null $ttl
      * @return bool
      */
-    public function set($key, $value, $ttl = null): bool
+    public function set(string $key, $value, ?int $ttl = null): bool
     {
-        $key = $this->prefix . $key;
-        $value = (is_array($value) || is_object($value)) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value;
         return $ttl
-            ? $this->connection->setex($this->prefix . $key, (int)$ttl, $value)
-            : $this->connection->set($this->prefix . $key, $value);
+            ? $this->connection->setex($this->prefix . $key, $ttl, serialize($value))
+            : $this->connection->set($this->prefix . $key, serialize($value));
     }
 
     /**
@@ -41,18 +38,18 @@ class RedisCacheCacheDriver extends AbstractCacheDriver
      * @param null $default
      * @return bool|mixed|string|null
      */
-    public function get($key, $default = null)
+    public function get(string $key, $default = null)
     {
         $value = $this->connection->get($this->prefix . $key);
-        return $value === false ? $default : (is_json($value) ? json_decode($value, true) : $value);
+        return $value === false ? $default : unserialize($value);
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @param int $step
      * @return int
      */
-    public function inc($key, int $step = 1): int
+    public function inc(string $key, int $step = 1): int
     {
         return $this->connection->incrBy($this->prefix . $key, $step);
     }
@@ -62,7 +59,7 @@ class RedisCacheCacheDriver extends AbstractCacheDriver
      * @param int $step
      * @return int
      */
-    public function dec($key, int $step = 1): int
+    public function dec(string $key, int $step = 1): int
     {
         return $this->connection->decrby($this->prefix . $key, $step);
     }
@@ -71,7 +68,7 @@ class RedisCacheCacheDriver extends AbstractCacheDriver
      * @param string $key
      * @return bool
      */
-    public function has($key): bool
+    public function has(string $key): bool
     {
         return $this->connection->exists($this->prefix . $key);
     }
@@ -80,9 +77,9 @@ class RedisCacheCacheDriver extends AbstractCacheDriver
      * @param string $key
      * @return bool|int
      */
-    public function delete($key)
+    public function delete(string $key): bool
     {
-        return $this->connection->del($this->prefix . $key);
+        return $this->connection->del($this->prefix . $key) ? true : false;
     }
 
     /**
@@ -91,10 +88,5 @@ class RedisCacheCacheDriver extends AbstractCacheDriver
     public function clear(): bool
     {
         return $this->connection->flushDB();
-    }
-
-    protected function isPoolConnection(): bool
-    {
-        return Coroutine::getCid() > 0;
     }
 }

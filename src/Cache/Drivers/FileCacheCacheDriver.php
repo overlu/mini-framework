@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Cache\Drivers;
 
-use JsonException;
 use RuntimeException;
 
 class FileCacheCacheDriver extends AbstractCacheDriver
@@ -29,17 +28,16 @@ class FileCacheCacheDriver extends AbstractCacheDriver
      */
     protected function getCacheKey(string $name): string
     {
-        return $this->path . $this->prefix . md5($name) . '.cache';
+        return $this->path . $this->prefix . '-' . md5($name) . '.cache';
     }
 
     /**
      * @param string $key
      * @param mixed $value
-     * @param null $ttl
+     * @param int|null $ttl
      * @return bool
-     * @throws JsonException
      */
-    public function set($key, $value, $ttl = null): bool
+    public function set(string $key, $value, ?int $ttl = null): bool
     {
         $created_at = time();
         $data = [
@@ -47,7 +45,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
             'created_at' => $created_at
         ];
         if ($ttl) {
-            $data['ttl'] = (int)$ttl;
+            $data['ttl'] = $ttl;
         }
         return $this->setContent($key, $data);
     }
@@ -56,12 +54,11 @@ class FileCacheCacheDriver extends AbstractCacheDriver
      * @param string $key
      * @param array $data
      * @return bool
-     * @throws JsonException
      */
     protected function setContent(string $key, array $data): bool
     {
         $filename = $this->getCacheKey($key);
-        $new_data = json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+        $new_data = serialize($data);
         $result = file_put_contents($filename, $new_data, LOCK_EX);
         return $result ? true : false;
     }
@@ -70,21 +67,19 @@ class FileCacheCacheDriver extends AbstractCacheDriver
      * @param string $key
      * @param null $default
      * @return bool|mixed|string|null
-     * @throws JsonException
      */
-    public function get($key, $default = null)
+    public function get(string $key, $default = null)
     {
         $data = $this->getContent($key, $default);
         return $data === $default ? $data : $data['content'];
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @param null $default
      * @return bool|mixed|string|null
-     * @throws JsonException
      */
-    protected function getContent($key, $default = null)
+    protected function getContent(string $key, $default = null)
     {
         $filename = $this->getCacheKey($key);
         if (!is_file($filename)) {
@@ -92,7 +87,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
         }
         $content = @file_get_contents($filename);
         if (false !== $content) {
-            $content = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+            $content = unserialize($content);
             if (isset($content['ttl']) && ($content['created_at'] + $content['ttl']) < time()) {
                 $this->unlink($filename);
                 return $default;
@@ -103,12 +98,11 @@ class FileCacheCacheDriver extends AbstractCacheDriver
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @param int $step
-     * @return bool|int|mixed|string
-     * @throws JsonException
+     * @return int
      */
-    public function inc($key, int $step = 1)
+    public function inc(string $key, int $step = 1): int
     {
         if ($value = $this->getContent($key)) {
             $value['content'] = $value['content'] + $step;
@@ -118,16 +112,16 @@ class FileCacheCacheDriver extends AbstractCacheDriver
                 'created_at' => time()
             ];
         }
-        return $this->setContent($key, $value) ? $value['content'] : false;
+        $this->setContent($key, $value);
+        return $value['content'];
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @param int $step
-     * @return bool|int|mixed|string
-     * @throws JsonException
+     * @return int
      */
-    public function dec($key, int $step = 1)
+    public function dec(string $key, int $step = 1): int
     {
         if ($value = $this->getContent($key)) {
             $value['content'] = $value['content'] - $step;
@@ -137,15 +131,15 @@ class FileCacheCacheDriver extends AbstractCacheDriver
                 'created_at' => time()
             ];
         }
-        return $this->setContent($key, $value) ? $value['content'] : false;
+        $this->setContent($key, $value);
+        return $value['content'];
     }
 
     /**
      * @param string $key
      * @return bool
-     * @throws JsonException
      */
-    public function has($key): bool
+    public function has(string $key): bool
     {
         return $this->getContent($key) ? true : false;
     }
@@ -154,7 +148,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
      * @param string $key
      * @return bool
      */
-    public function delete($key): bool
+    public function delete(string $key): bool
     {
         $filename = $this->getCacheKey($key);
         return $this->unlink($filename);
@@ -169,10 +163,10 @@ class FileCacheCacheDriver extends AbstractCacheDriver
     }
 
     /**
-     * @param $path
+     * @param string $path
      * @return bool
      */
-    private function unlink($path): bool
+    private function unlink(string $path): bool
     {
         return is_file($path) && unlink($path);
     }
