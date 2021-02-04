@@ -21,7 +21,7 @@ use SeasLog;
  * @method static void log($level, $message, array $context = [], string $module = '')
  * @method static void notice($message, array $context = [], string $module = '')
  * @method static void warning($message, array $context = [], string $module = '')
- * @var SeasLog
+ * @mixin SeasLog
  */
 class Log
 {
@@ -38,6 +38,7 @@ class Log
     /**
      * @param $name
      * @param $arguments
+     * @return mixed
      * @throws JsonException
      */
     public static function __callStatic($name, $arguments)
@@ -50,7 +51,7 @@ class Log
                 static::output($name, $arguments);
             });
         }
-        SeasLog::$name(...$arguments);
+        return SeasLog::$name(...$arguments);
     }
 
     /**
