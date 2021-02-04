@@ -7,15 +7,12 @@ declare(strict_types=1);
 
 namespace Mini\Cache\Drivers;
 
-use Psr\SimpleCache\CacheInterface;
-use Psr\SimpleCache\InvalidArgumentException;
-
 /**
  * 抽象驱动类
  * Class AbstractDriver
  * @package Mini\Cache\Drivers
  */
-abstract class AbstractCacheDriver implements CacheInterface
+abstract class AbstractCacheDriver
 {
     protected ?string $prefix = '';
 
@@ -37,7 +34,6 @@ abstract class AbstractCacheDriver implements CacheInterface
      * @param iterable $keys
      * @param null $default
      * @return array|iterable
-     * @throws InvalidArgumentException
      */
     public function getMultiple(iterable $keys, $default = null): array
     {
@@ -67,7 +63,6 @@ abstract class AbstractCacheDriver implements CacheInterface
     /**
      * @param iterable $keys
      * @return bool
-     * @throws InvalidArgumentException
      */
     public function deleteMultiple(iterable $keys): bool
     {
