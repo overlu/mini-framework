@@ -7,6 +7,9 @@ declare(strict_types=1);
 
 namespace Mini\Service\WsServer;
 
+use Mini\Contracts\Support\Arrayable;
+use Mini\Contracts\Support\Jsonable;
+use Mini\Contracts\View\View;
 use Swoole\WebSocket\Server;
 
 class Response

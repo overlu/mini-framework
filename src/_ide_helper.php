@@ -221,7 +221,7 @@ class Eloquent extends Model
     /**
      * Find multiple models by their primary keys.
      *
-     * @param \Illuminate\Contracts\Support\Arrayable|array $ids
+     * @param \Mini\Contracts\Support\Arrayable|array $ids
      * @param array $columns
      * @return \Mini\Database\Mysql\Eloquent\Collection
      * @static
@@ -386,7 +386,7 @@ class Eloquent extends Model
     /**
      * Get a lazy collection for the given query.
      *
-     * @return \Illuminate\Support\LazyCollection
+     * @return \Mini\Support\LazyCollection
      * @static
      */
     public static function cursor()
@@ -400,7 +400,7 @@ class Eloquent extends Model
      *
      * @param string $column
      * @param string|null $key
-     * @return \Illuminate\Support\Collection
+     * @return \Mini\Support\Collection
      * @static
      */
     public static function pluck($column, $key = null)
@@ -416,7 +416,7 @@ class Eloquent extends Model
      * @param array $columns
      * @param string $pageName
      * @param int|null $page
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return \Mini\Contracts\Pagination\LengthAwarePaginator
      * @throws \InvalidArgumentException
      * @static
      */
@@ -433,7 +433,7 @@ class Eloquent extends Model
      * @param array $columns
      * @param string $pageName
      * @param int|null $page
-     * @return \Illuminate\Contracts\Pagination\Paginator
+     * @return \Mini\Contracts\Pagination\Paginator
      * @static
      */
     public static function simplePaginate($perPage = null, $columns = [], $pageName = 'page', $page = null)
@@ -1505,7 +1505,7 @@ class Eloquent extends Model
      * Add a "where in raw" clause for integer values to the query.
      *
      * @param string $column
-     * @param \Illuminate\Contracts\Support\Arrayable|array $values
+     * @param \Mini\Contracts\Support\Arrayable|array $values
      * @param string $boolean
      * @param bool $not
      * @return \Mini\Database\Mysql\Query\Builder
@@ -1521,7 +1521,7 @@ class Eloquent extends Model
      * Add an "or where in raw" clause for integer values to the query.
      *
      * @param string $column
-     * @param \Illuminate\Contracts\Support\Arrayable|array $values
+     * @param \Mini\Contracts\Support\Arrayable|array $values
      * @return \Mini\Database\Mysql\Query\Builder
      * @static
      */
@@ -1535,7 +1535,7 @@ class Eloquent extends Model
      * Add a "where not in raw" clause for integer values to the query.
      *
      * @param string $column
-     * @param \Illuminate\Contracts\Support\Arrayable|array $values
+     * @param \Mini\Contracts\Support\Arrayable|array $values
      * @param string $boolean
      * @return \Mini\Database\Mysql\Query\Builder
      * @static
@@ -1550,7 +1550,7 @@ class Eloquent extends Model
      * Add an "or where not in raw" clause for integer values to the query.
      *
      * @param string $column
-     * @param \Illuminate\Contracts\Support\Arrayable|array $values
+     * @param \Mini\Contracts\Support\Arrayable|array $values
      * @return \Mini\Database\Mysql\Query\Builder
      * @static
      */

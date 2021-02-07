@@ -121,22 +121,25 @@ class DateFactory
      * Use the given handler when generating dates (class name, callable, or factory).
      *
      * @param mixed $handler
-     * @return mixed
+     * @return void
      *
      * @throws \InvalidArgumentException
      */
     public static function use($handler)
     {
         if (is_callable($handler) && is_object($handler)) {
-            return static::useCallable($handler);
+            static::useCallable($handler);
+            return;
         }
 
         if (is_string($handler)) {
-            return static::useClass($handler);
+            static::useClass($handler);
+            return;
         }
 
         if ($handler instanceof Factory) {
-            return static::useFactory($handler);
+            static::useFactory($handler);
+            return;
         }
 
         throw new InvalidArgumentException('Invalid date creation handler. Please provide a class name, callable, or Carbon factory.');

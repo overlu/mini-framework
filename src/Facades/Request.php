@@ -91,7 +91,7 @@ class Request extends Facade
     protected static function getFacadeAccessor()
     {
         if (!Context::has('IsInRequestEvent')) {
-            throw new RuntimeException("Not In Request Environment.");
+            throw new \RuntimeException("Not In Request Environment.");
         }
         return \Mini\Contracts\HttpMessage\RequestInterface::class;
     }

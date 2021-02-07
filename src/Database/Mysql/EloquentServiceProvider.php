@@ -21,7 +21,7 @@ class EloquentServiceProvider implements ServiceProviderInterface
         $config = config('database.connections', []);
         if (!empty($config)) {
             /**
-             * @url https://github.com/illuminate/database
+             * @url https://github.com/Mini/database
              */
             new DatabaseBoot($config);
         }

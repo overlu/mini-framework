@@ -13,7 +13,7 @@ use Mini\Contracts\Support\Jsonable;
 use JsonSerializable;
 
 /**
- * Most of the methods in this file come from illuminate/support,
+ * Most of the methods in this file come from Mini/support,
  * thanks Laravel Team provide such a useful class.
  */
 class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable

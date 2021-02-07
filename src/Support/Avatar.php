@@ -55,7 +55,7 @@ class Avatar
         ) {
             //如果是中文，并且没有中文字体包，则按拼音首字母对其进行转换
             $CNByte = iconv("UTF-8", "gb2312", $this->Char);
-            $Code = ord($CNByte{0}) * 256 + ord($CNByte{1}) - 65536;//求其偏移量
+            $Code = ord($CNByte[0]) * 256 + ord($CNByte[1]) - 65536;//求其偏移量
             if ($Code >= -20319 and $Code <= -20284) $this->Char = "A";
             if ($Code >= -20283 and $Code <= -19776) $this->Char = "B";
             if ($Code >= -19775 and $Code <= -19219) $this->Char = "C";

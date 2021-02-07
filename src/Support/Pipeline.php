@@ -11,7 +11,7 @@ use Closure;
 use Psr\Container\ContainerInterface;
 
 /**
- * This file mostly code come from illuminate/pipe,
+ * This file mostly code come from Mini/pipe,
  * thanks Laravel Team provide such a useful class.
  */
 class Pipeline

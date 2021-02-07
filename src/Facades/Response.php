@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\Facades;
 
+use Mini\Context;
+
 /**
  * Class Reponse
  * @method static \Psr\Http\Message\ResponseInterface json(array|\Mini\Contracts\Support\Arrayable|\Mini\Contracts\Support\Jsonable $data)
@@ -65,7 +67,7 @@ class Response extends Facade
     protected static function getFacadeAccessor()
     {
         if (!Context::has('IsInRequestEvent')) {
-            throw new RuntimeException("Not In Request Environment.");
+            throw new \RuntimeException("Not In Request Environment.");
         }
         return \Mini\Contracts\HttpMessage\ResponseInterface::class;
     }

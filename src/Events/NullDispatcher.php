@@ -16,8 +16,6 @@ class NullDispatcher implements DispatcherContract
 
     /**
      * The underlying event dispatcher instance.
-     *
-     * @var \Mini\Contracts\Bus\Dispatcher
      */
     protected $dispatcher;
 

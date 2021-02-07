@@ -331,6 +331,7 @@ class Uri implements UriInterface
         $clone = clone $this;
         $clone->userInfo = $user;
         $clone->validateState();
+        return $clone;
     }
 
     /**

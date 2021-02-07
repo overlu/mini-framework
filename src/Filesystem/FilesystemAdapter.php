@@ -36,7 +36,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 /**
  * Class FilesystemAdapter
  * @package Mini\Filesystem
- * @mixin \League\Flysystem\FilesystemOperator
  */
 class FilesystemAdapter implements CloudFilesystemContract
 {

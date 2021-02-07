@@ -64,9 +64,10 @@ class Translate
 
     /**
      * @param string $key
+     * @param string|null $locale
      * @return bool
      */
-    public function has(string $key): bool
+    public function has(string $key, ?string $locale = null): bool
     {
         return Arr::has($this->translation[$locale ?: $this->locate], $key);
     }

@@ -9,7 +9,7 @@ namespace Mini\Support;
 
 /**
  * @mixin Collection
- * Most of the methods in this file come from illuminate/support,
+ * Most of the methods in this file come from Mini/support,
  * thanks Laravel Team provide such a useful class.
  */
 class HigherOrderCollectionProxy

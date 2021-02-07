@@ -37,7 +37,7 @@ class Pool
      */
     protected string $defaultConnection;
 
-    private function __construct(array $config = [])
+    final private function __construct(array $config = [])
     {
         if (empty($this->pools)) {
             $this->initialize($config);

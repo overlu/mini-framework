@@ -20,7 +20,7 @@ class LogStatusCommandService extends AbstractCommandService
      */
     public function handle()
     {
-        $status = \SeasLog::analyzerCount();
+        $status = \SeasLog::analyzerCount(SEASLOG_ALL, '*', null);
         $total = 0;
         foreach ($status as $key => $value) {
             $status[$key] = (string)$value;

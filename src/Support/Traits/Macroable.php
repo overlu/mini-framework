@@ -14,7 +14,7 @@ use ReflectionException;
 use ReflectionMethod;
 
 /**
- * This file come from illuminate/support,
+ * This file come from Mini/support,
  * thanks Laravel Team provide such a useful class.
  */
 trait Macroable

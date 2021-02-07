@@ -815,7 +815,7 @@ class Connection implements ConnectionInterface
     protected function fireConnectionEvent($event)
     {
         if (!isset($this->events)) {
-            return;
+            return null;
         }
 
         switch ($event) {

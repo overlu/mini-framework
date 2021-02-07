@@ -27,7 +27,6 @@ use League\Flysystem\Visibility;
 /**
  * Class FilesystemManager
  * @package Mini\Filesystem
- * @mixin \Mini\Contracts\Filesystem\Filesystem
  */
 class FilesystemManager implements FactoryContract
 {

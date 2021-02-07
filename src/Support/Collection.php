@@ -14,7 +14,7 @@ use Mini\Support\Traits\Macroable;
 use stdClass;
 
 /**
- * Most of the methods in this file come from illuminate/support,
+ * Most of the methods in this file come from Mini/support,
  * thanks Laravel Team provide such a useful class.
  *
  * @property HigherOrderCollectionProxy $average
@@ -92,7 +92,7 @@ class Collection implements ArrayAccess, Enumerable
     /**
      * Get a lazy collection for the items in this collection.
      *
-     * @return \Illuminate\Support\LazyCollection
+     * @return \Mini\Support\LazyCollection
      */
     public function lazy()
     {
@@ -355,7 +355,7 @@ class Collection implements ArrayAccess, Enumerable
     /**
      * Get all items except for those with the specified keys.
      *
-     * @param \Illuminate\Support\Collection|mixed $keys
+     * @param \Mini\Support\Collection|mixed $keys
      * @return static
      */
     public function except($keys)
@@ -1290,7 +1290,7 @@ class Collection implements ArrayAccess, Enumerable
     /**
      * Get a base Support collection instance from this collection.
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Mini\Support\Collection
      */
     public function toBase()
     {

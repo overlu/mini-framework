@@ -9,6 +9,7 @@ namespace Mini\Contracts\HttpMessage;
 
 use Countable;
 use IteratorAggregate;
+use Mini\Service\HttpMessage\Cookie\SetCookie;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 

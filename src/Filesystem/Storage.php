@@ -49,46 +49,6 @@ namespace Mini\Filesystem;
 class Storage
 {
     /**
-     * Replace the given disk with a local testing disk.
-     *
-     * @param string|null $disk
-     * @param array $config
-     * @return \Mini\Contracts\Filesystem\Filesystem
-     */
-    public static function fake($disk = null, array $config = [])
-    {
-        $disk = $disk ?: config('filesystems.default');
-
-        (new Filesystem)->cleanDirectory(
-            $root = storage_path('testing/disks/' . $disk)
-        );
-
-        static::set($disk, $fake = static::createLocalDriver(array_merge($config, [
-            'root' => $root,
-        ])));
-
-        return $fake;
-    }
-
-    /**
-     * Replace the given disk with a persistent local testing disk.
-     *
-     * @param string|null $disk
-     * @param array $config
-     * @return \Mini\Contracts\Filesystem\Filesystem
-     */
-    public static function persistentFake($disk = null, array $config = [])
-    {
-        $disk = $disk ?: config('filesystems.default');
-
-        static::set($disk, $fake = static::createLocalDriver(array_merge($config, [
-            'root' => storage_path('testing/disks/' . $disk),
-        ])));
-
-        return $fake;
-    }
-
-    /**
      * @param $name
      * @param $arguments
      * @return mixed

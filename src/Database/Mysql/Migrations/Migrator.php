@@ -196,7 +196,8 @@ class Migrator
         );
 
         if ($pretend) {
-            return $this->pretendToRun($migration, 'up');
+            $this->pretendToRun($migration, 'up');
+            return;
         }
 
         Command::line("Migrating: {$name}");
@@ -361,7 +362,8 @@ class Migrator
         Command::line("Rolling back: {$name}");
 
         if ($pretend) {
-            return $this->pretendToRun($instance, 'down');
+            $this->pretendToRun($instance, 'down');
+            return;
         }
 
         $startTime = microtime(true);

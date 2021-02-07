@@ -11,7 +11,7 @@ namespace Mini\Facades;
  * Class Event
  * @method static \Closure createClassListener(string $listener, bool $wildcard = false)
  * @method static \Closure makeListener(\Closure|string $listener, bool $wildcard = false)
- * @method static \Illuminate\Events\Dispatcher setQueueResolver(callable $resolver)
+ * @method static \Mini\Events\Dispatcher setQueueResolver(callable $resolver)
  * @method static array getListeners(string $eventName)
  * @method static array|null dispatch(string|object $event, mixed $payload = [], bool $halt = false)
  * @method static array|null task(string|object|callable $event, mixed $payload = [], bool $halt = false)
