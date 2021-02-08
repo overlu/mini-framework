@@ -9,10 +9,11 @@ namespace Mini\Command;
 
 use Mini\Command\AbstractCommandService;
 use Mini\Crontab\Crontab;
+use Swoole\Process;
 
 class RunCrontabCommandService extends AbstractCommandService
 {
-    public function handle()
+    public function handle(Process $process)
     {
         Crontab::run();
     }

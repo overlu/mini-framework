@@ -10,14 +10,15 @@ namespace Mini\Command;
 use Exception;
 use Mini\Support\Command;
 use Mini\Support\Coroutine;
+use Swoole\Process;
 
 class TestCommandService extends AbstractCommandService
 {
     /**
+     * @param Process $process
      * @return mixed|void
-     * @throws Exception
      */
-    public function handle()
+    public function handle(Process $process)
     {
         Coroutine::create(function () {
             Command::info(Command::exec(BASE_PATH . '/vendor/phpunit/phpunit/phpunit ./tests'));

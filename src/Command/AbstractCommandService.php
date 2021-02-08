@@ -11,6 +11,7 @@ use Exception;
 use Mini\Console\App;
 use Mini\Contracts\Console\CommandInterface;
 use Mini\Support\Command;
+use Swoole\Process;
 
 /**
  * Class AbstractCommandService
@@ -23,9 +24,10 @@ abstract class AbstractCommandService implements CommandInterface
 
     /**
      * run console
+     * @param Process $process
      * @return mixed
      */
-    abstract public function handle();
+    abstract public function handle(Process $process);
 
     /**
      * get command

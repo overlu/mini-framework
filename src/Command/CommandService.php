@@ -39,14 +39,15 @@ class CommandService
             $app = new App([
                 'desc' => 'mini cli application',
             ]);
+            $process = new Process(function () use ($app) {
+                $app->run();
+            });
             foreach (static::$commands as $command => $instance) {
-                $app->addCommand($command, static function () use ($instance, $app) {
-                    $instance->setApp($app)->handle();
+                $app->addCommand($command, static function () use ($instance, $app, $process) {
+                    $instance->setApp($app)->handle($process);
                 }, $instance->getCommandDescription());
             }
-            (new Process(function () use ($app) {
-                $app->run();
-            }))->start();
+            $process->start();
             Process::wait(!($app->getOpt('d') || $app->getArg('daemonize')));
         } catch (\Throwable $throwable) {
             if (!$throwable instanceof ExitException) {

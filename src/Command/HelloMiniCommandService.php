@@ -8,13 +8,15 @@ declare(strict_types=1);
 namespace Mini\Command;
 
 use Mini\Support\Command;
+use Swoole\Process;
 
 class HelloMiniCommandService extends AbstractCommandService
 {
     /**
+     * @param Process $process
      * @return mixed|void
      */
-    public function handle()
+    public function handle(Process $process)
     {
         $info = <<<EOL
  _   _ _____ _     _     ___       __  __ ___ _   _ ___ 

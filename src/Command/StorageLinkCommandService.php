@@ -8,10 +8,11 @@ declare(strict_types=1);
 namespace Mini\Command;
 
 use Mini\Support\Command;
+use Swoole\Process;
 
 class StorageLinkCommandService extends AbstractCommandService
 {
-    public function handle()
+    public function handle(Process $process)
     {
         $relative = $this->app->getOpt('relative');
 

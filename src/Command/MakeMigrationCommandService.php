@@ -11,16 +11,17 @@ use Mini\Database\Mysql\Migrations\TableGuesser;
 use Mini\Support\Command;
 use Mini\Support\Coroutine;
 use Mini\Support\Str;
+use Swoole\Process;
 
 class MakeMigrationCommandService extends AbstractCommandService
 {
     use Migration;
 
     /**
+     * @param Process $process
      * @return mixed|void
-     * @throws \Exception
      */
-    public function handle()
+    public function handle(Process $process)
     {
         Coroutine::create(function () {
             $argFirst = $this->getArgs()[0] ?? null;

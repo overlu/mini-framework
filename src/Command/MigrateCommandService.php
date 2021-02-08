@@ -8,12 +8,13 @@ declare(strict_types=1);
 namespace Mini\Command;
 
 use Mini\Support\Coroutine;
+use Swoole\Process;
 
 class MigrateCommandService extends AbstractCommandService
 {
     use Migration;
 
-    public function handle()
+    public function handle(Process $process)
     {
         Coroutine::create(function () {
             if (!$this->confirmToProceed()) {

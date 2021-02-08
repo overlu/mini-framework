@@ -8,10 +8,11 @@ declare(strict_types=1);
 namespace Mini\Command;
 
 use Mini\Support\Command;
+use Swoole\Process;
 
 class RouteCommandService extends AbstractCommandService
 {
-    public function handle()
+    public function handle(Process $process)
     {
         @unlink(BASE_PATH . '/storage/app/route.cache');
         Command::info('route cache cleared.');

@@ -7,12 +7,15 @@ declare(strict_types=1);
 
 namespace Mini\Contracts\Console;
 
+use Swoole\Process;
+
 interface CommandInterface
 {
     /**
+     * @param Process $process
      * @return mixed
      */
-    public function handle();
+    public function handle(Process $process);
 
     /**
      * @return string

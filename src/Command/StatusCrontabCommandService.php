@@ -12,11 +12,12 @@ use Mini\Console\Table;
 use Mini\Crontab\Crontab;
 use Mini\Crontab\CrontabTaskList;
 use Mini\Support\Command;
+use Swoole\Process;
 use Swoole\Timer;
 
 class StatusCrontabCommandService extends AbstractCommandService
 {
-    public function handle()
+    public function handle(Process $process)
     {
         CrontabTaskList::initialTaskList();
         $crontabTaskList = CrontabTaskList::getCrontabTaskList();
