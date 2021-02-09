@@ -176,7 +176,7 @@ class Command
 
     /**
      * @param string $message
-     * @throws Exception
+     * @param array $args
      */
     public static function replace(string $message, array $args = []): void
     {
@@ -188,7 +188,7 @@ class Command
         }
         $line_count = 0;
         foreach (explode("\n", $message) as $line) {
-            $line_count += count(str_split($line, $term_width));
+            $line_count += count(str_split($line, (int)$term_width));
         }
         static::removeLine($line_count);
         print $message;
