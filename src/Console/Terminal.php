@@ -62,7 +62,7 @@ class Terminal
      *
      * @var self
      */
-    private static Terminal $instance;
+    private static ?Terminal $instance = null;
 
     /**
      * Control cursor code list
@@ -114,7 +114,7 @@ class Terminal
      */
     private static array $ctrlScreenCodes = [
         // Clears entire screen content - 清除整个屏幕内容
-        'clear' => '2J', // "\033[2J"
+        'clear' => "H\033[2J", // "\033[2J"
 
         // Clears text from cursor to the beginning of the screen - 从光标清除文本到屏幕的开头
         'clearBeforeCursor' => '1J',
@@ -163,8 +163,7 @@ class Terminal
     public static function build($format, $type = 'm'): string
     {
         $format = null === $format ? '' : implode(';', (array)$format);
-
-        return "\033[" . implode(';', (array)$format) . $type;
+        return self::BEGIN_CHAR . implode(';', (array)$format) . $type . self::END_CHAR;
     }
 
     /**
@@ -176,7 +175,7 @@ class Terminal
      *
      * @return $this
      */
-    public function cursor($typeName, $arg1 = 1, $arg2 = null): self
+    private function cursor($typeName, $arg1 = 1, $arg2 = null): self
     {
         if (!isset(self::$ctrlCursorCodes[$typeName])) {
             Cli::stderr("The [$typeName] is not supported cursor control.");
@@ -213,7 +212,7 @@ class Terminal
      *
      * @return $this
      */
-    public function screen(string $typeName, $arg = null): self
+    private function screen(string $typeName, $arg = null): self
     {
         if (!isset(self::$ctrlScreenCodes[$typeName])) {
             Cli::stderr("The [$typeName] is not supported cursor control.");
@@ -231,24 +230,188 @@ class Terminal
         return $this;
     }
 
-    public function reset(): void
+    /**
+     * ============================= screen ==============================
+     */
+
+    /**
+     * 清除整个屏幕内容
+     * @return $this
+     */
+    public function clear(): self
     {
-        echo self::END_CHAR;
+        return $this->screen(self::CLEAR);
     }
 
     /**
-     * @return array
+     * 从光标清除文本到屏幕的开头
+     * @return $this
      */
-    public static function supportedCursorCtrl(): array
+    public function clearBeforeCursor(): self
     {
-        return array_keys(self::$ctrlCursorCodes);
+        return $this->screen(self::CLEAR_BEFORE_CURSOR);
     }
 
     /**
-     * @return array
+     * 清除此行
+     * @return $this
      */
-    public static function supportedScreenCtrl(): array
+    public function clearLine(): self
     {
-        return array_keys(self::$ctrlScreenCodes);
+        return $this->screen(self::CLEAR_LINE);
+    }
+
+    /**
+     * 清除此行从光标位置开始到开始的字符
+     * @return $this
+     */
+    public function clearLineBeforeCursor(): self
+    {
+        return $this->screen(self::CLEAR_LINE_BEFORE_CURSOR);
+    }
+
+    /**
+     * 清除此行从光标位置开始到结束的字符
+     * @return $this
+     */
+    public function clearLineAfterCursor(): self
+    {
+        return $this->screen(self::CLEAR_LINE_AFTER_CURSOR);
+    }
+
+    /**
+     * 上移$number行
+     * @param int $number
+     * @return $this
+     */
+    public function scrollUp(int $number = 1): self
+    {
+        return $this->screen(self::SCROLL_UP, $number);
+    }
+
+    /**
+     * 下移$number行
+     * @param int $number
+     * @return $this
+     */
+    public function scrollDown(int $number = 1): self
+    {
+        return $this->screen(self::SCROLL_DOWN, $number);
+    }
+
+    /**
+     * ============================= cursor ==============================
+     */
+
+    /**
+     * Hides the cursor
+     * @return $this
+     */
+    public function cursorHide(): self
+    {
+        return $this->cursor(self::CUR_HIDE);
+    }
+
+    /**
+     * Will show a cursor again when it has been hidden
+     * @return $this
+     */
+    public function cursorShow(): self
+    {
+        return $this->cursor(self::CUR_SHOW);
+    }
+
+    /**
+     * 保存当前光标位置，然后可以使用[restorePosition]恢复位置
+     * @return $this
+     */
+    public function saveCursorPosition(): self
+    {
+        return $this->cursor(self::CUR_SAVE_POSITION);
+    }
+
+    /**
+     * 恢复[savePosition]保存的光标位置
+     * @return $this
+     */
+    public function restoreCursorPosition(): self
+    {
+        return $this->cursor(self::CUR_RESTORE_POSITION);
+    }
+
+    /**
+     * 终端光标上移
+     * @param int $number
+     * @return $this
+     */
+    public function cursorUp(int $number = 1): self
+    {
+        return $this->cursor(self::CUR_UP, $number);
+    }
+
+    /**
+     * 终端光标下移
+     * @param int $number
+     * @return $this
+     */
+    public function cursorDown(int $number = 1): self
+    {
+        return $this->cursor(self::CUR_DOWN, $number);
+    }
+
+    /**
+     * 终端光标前移
+     * @param int $number
+     * @return $this
+     */
+    public function cursorForward(int $number = 1): self
+    {
+        return $this->cursor(self::CUR_FORWARD, $number);
+    }
+
+    /**
+     * 终端光标后移
+     * @param int $number
+     * @return $this
+     */
+    public function cursorBackward(int $number = 1): self
+    {
+        return $this->cursor(self::CUR_BACKWARD, $number);
+    }
+
+    /**
+     * 移动终端光标到前$number行的开始
+     * @param int $number
+     * @return $this
+     */
+    public function cursorPrevLine(int $number = 1): self
+    {
+        return $this->cursor(self::CUR_PREV_LINE, $number);
+    }
+
+    /**
+     * 移动终端光标到后$number行的开始
+     * @param int $number
+     * @return $this
+     */
+    public function cursorNextLine(int $number = 1): self
+    {
+        return $this->cursor(self::CUR_NEXT_LINE, $number);
+    }
+
+    /**
+     * 移动终端光标到指定位置
+     * @param int $column
+     * @param int|null $row
+     * @return $this
+     */
+    public function cursorPosition(int $column = 1, ?int $row = null): self
+    {
+        return $this->cursor(self::CUR_COORDINATE, $column, $row);
+    }
+
+    public function sound()
+    {
+        print "\007";
     }
 }

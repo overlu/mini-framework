@@ -8,7 +8,9 @@ declare(strict_types=1);
 namespace Mini\Support;
 
 use Exception;
+use Mini\Console\Cli;
 use Mini\Console\Highlighter;
+use Mini\Console\Terminal;
 use Swoole\Coroutine\System;
 
 class Command
@@ -159,11 +161,17 @@ class Command
     /**
      * clear console information
      */
-    public static function clear(): void
+    public static function clear()
     {
-        array_map(static function ($a) {
-            print chr($a);
-        }, array(27, 91, 72, 27, 91, 50, 74));
+        return self::terminal()->clear();
+    }
+
+    /**
+     * @return Terminal
+     */
+    public static function terminal(): Terminal
+    {
+        return Terminal::instance();
     }
 
     /**
@@ -192,5 +200,15 @@ class Command
         }
         static::removeLine($line_count);
         print $message;
+    }
+
+    /**
+     * @param string $question
+     * @param bool $inline
+     * @return string
+     */
+    public static function ask(string $question, bool $inline = true): string
+    {
+        return Cli::read($question, $inline);
     }
 }

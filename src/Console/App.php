@@ -182,7 +182,9 @@ class App
      */
     public function stop($code = 0): void
     {
-        Command::info(($code ? 'status: ' . $code . ', ' : '') . 'Done...');
+        if ($code) {
+            Command::error('error code: ' . $code);
+        }
     }
 
     /**
