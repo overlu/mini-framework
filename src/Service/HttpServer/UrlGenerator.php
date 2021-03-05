@@ -37,6 +37,7 @@ class UrlGenerator implements UrlGeneratorContract
     /**
      * Get the path URL for the request.
      *
+     * @param string $path
      * @return Uri
      */
     public function path(string $path = ''): Uri
