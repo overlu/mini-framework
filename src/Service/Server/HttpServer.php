@@ -13,7 +13,7 @@ use Mini\Context;
 use Mini\Contracts\Support\Htmlable;
 use Mini\Contracts\Support\Sendable;
 use Mini\Di;
-use Mini\Exception\Handler;
+use Mini\Exceptions\Handler;
 use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Contracts\HttpMessage\ResponseInterface;
 use Mini\Bootstrap\Middleware;

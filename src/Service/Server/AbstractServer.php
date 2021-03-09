@@ -11,7 +11,7 @@ use JsonException;
 use Mini\Bootstrap;
 use Mini\Context;
 use Mini\Crontab\Crontab;
-use Mini\Exception\Handler;
+use Mini\Exceptions\Handler;
 use Mini\Listener;
 use Mini\RemoteShell;
 use Mini\Service\Watch\Runner;
