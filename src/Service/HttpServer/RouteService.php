@@ -7,12 +7,9 @@ declare(strict_types=1);
 
 namespace Mini\Service\HttpServer;
 
-use Exception;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
-use Mini\Config;
 use Mini\BindsProvider;
-use Mini\Di;
 use Mini\Exception\HttpException\MethodNotAllowedHttpException;
 use Mini\Exception\HttpException\NotFoundHttpException;
 use ReflectionException;
@@ -21,10 +18,8 @@ use ReflectionFunctionAbstract;
 use ReflectionMethod;
 use RuntimeException;
 use Swoole\Http\Request;
-use Swoole\Http\Response;
 use Throwable;
 use function FastRoute\cachedDispatcher;
-use App\Controllers\IndexController;
 
 class RouteService
 {
@@ -157,7 +152,7 @@ class RouteService
             if (count($handler) !== 2) {
                 throw new RuntimeException("Router config error, Only @ are supported");
             }
-            $className = '\\App\\Controllers\\' . $handler[0];
+            $className = '\\App\\Controllers\\Http\\' . $handler[0];
             $func = $handler[1];
             if (!class_exists($className)) {
                 throw new RuntimeException("Router defined Class Not Found");
@@ -207,7 +202,7 @@ class RouteService
                     if (count($handler) !== 2) {
                         throw new RuntimeException("Router {$uri} config error, Only @ are supported");
                     }
-                    $className = '\\App\\Controllers\\' . $handler[0];
+                    $className = '\\App\\Controllers\\Websocket\\' . $handler[0];
                     $func = $handler[1];
                     if (!class_exists($className)) {
                         throw new RuntimeException("Router {$uri} defined Class Not Found");
@@ -229,11 +224,7 @@ class RouteService
                 }
                 return ['error' => 'method not found.', 'code' => 404];
         }
-        return [
-            'class' => IndexController::class,
-            'method' => 'index',
-            'data' => []
-        ];
+        return ['error' => 'method not found.', 'code' => 404];
     }
 
     /**

@@ -42,7 +42,10 @@ trait WebSocketTrait
     public function onMessage(Server $server, $frame): void
     {
         if ($this->handler) {
-            $wsResponse = $this->transferToWsResponse(call($this->handler['callable'], [$this->handler['data'], $frame, $server]));
+            $wsResponse = $this->transferToWsResponse(call($this->handler['callable'], [$frame, $this->handler['data'], $server]));
+            if (!empty($this->handler['className'])) {
+                $wsResponse = method_exists($this->handler['callable'][0], 'afterDispatch') ? $this->handler['callable'][0]->afterDispatch($wsResponse, $this->handler['callable'][1], $this->handler['className']) : $wsResponse;
+            }
             app(ResponseInterface::class)->push($wsResponse);
         }
     }
@@ -73,9 +76,16 @@ trait WebSocketTrait
             $resp = $this->route->dispatchWs($request);
 
             if (is_array($resp) && isset($resp['class'])) {
+                $controller = new $resp['class']($resp['method']);
+                if (method_exists($controller, 'beforeDispatch') && $dispatchResp = $controller->beforeDispatch($resp['method'], $resp['class'])) {
+                    $server->push($request->fd, $this->transferToWsResponse($dispatchResp));
+                    $server->close($request->fd);
+                    return;
+                }
                 $this->handler = [
-                    'callable' => [new $resp['class']($resp['method']), $resp['method']],
-                    'data' => $resp['data']
+                    'callable' => [$controller, $resp['method']],
+                    'data' => $resp['data'],
+                    'className' => $resp['class']
                 ];
                 return;
             }
