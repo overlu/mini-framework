@@ -9,10 +9,14 @@ namespace Mini\Service\Server;
 
 use Exception;
 use JsonException;
+use Mini\BindsProvider;
+use Mini\Context;
 use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Contracts\HttpMessage\ResponseInterface;
 use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\Support\Jsonable;
+use Mini\Listener;
+use Mini\Service\HttpMessage\Server\Request as Psr7Request;
 use Mini\Service\WsServer\Request;
 use Mini\Service\WsServer\Response;
 use Swoole\WebSocket\Server;
@@ -39,7 +43,7 @@ trait WebSocketTrait
     {
         if ($this->handler) {
             $wsResponse = $this->transferToWsResponse(call($this->handler['callable'], [$this->handler['data'], $frame, $server]));
-            response()->push($wsResponse);
+            app(ResponseInterface::class)->push($wsResponse);
         }
     }
 
@@ -50,8 +54,11 @@ trait WebSocketTrait
      */
     protected function initWsRequestAndResponse($request, Server $server): void
     {
-        app()->offsetSet(RequestInterface::class, new Request($request, $server));
-        app()->offsetSet(ResponseInterface::class, new Response($request, $server));
+        Context::set(RequestInterface::class, Psr7Request::loadFromSwooleRequest($request));
+        $app = app();
+        $app->bind(RequestInterface::class, \Mini\Service\HttpServer\Request::class);
+        $app->offsetSet(ResponseInterface::class, new Response($request, $server));
+        Context::set('IsInRequestEvent', true);
     }
 
     /**
@@ -67,7 +74,7 @@ trait WebSocketTrait
 
             if (is_array($resp) && isset($resp['class'])) {
                 $this->handler = [
-                    'callable' => [new $resp['class'], $resp['method']],
+                    'callable' => [new $resp['class']($resp['method']), $resp['method']],
                     'data' => $resp['data']
                 ];
                 return;
@@ -85,7 +92,7 @@ trait WebSocketTrait
             $server->close($request->fd);
         } catch (Throwable $throwable) {
             $server->close($request->fd);
-            app('exception')->throw($throwable);
+            app('exception')->report($throwable);
         }
     }
 
@@ -113,5 +120,15 @@ trait WebSocketTrait
         }
 
         return (string)$response;
+    }
+
+    /**
+     * @param Server $server
+     * @param $fd
+     * @throws Throwable
+     */
+    public function onClose(Server $server, $fd)
+    {
+        Listener::getInstance()->listen('close', $server, $fd);
     }
 }

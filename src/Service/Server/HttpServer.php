@@ -105,8 +105,8 @@ class HttpServer extends AbstractServer
      */
     protected function initRequestAndResponse($request, $response): void
     {
-        Context::set(RequestInterface::class, $psr7Request = Psr7Request::loadFromSwooleRequest($request));
-        Context::set(ResponseInterface::class, $psr7Response = new Psr7Response($response));
+        Context::set(RequestInterface::class, Psr7Request::loadFromSwooleRequest($request));
+        Context::set(ResponseInterface::class, new Psr7Response($response));
         $this->initialProvider();
     }
 

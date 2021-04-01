@@ -26,6 +26,6 @@ class WsHttpServer extends HttpServer
 
     public function initialize(): void
     {
-        $this->server = new Server($this->config['ip'], $this->config['port'], $this->config['mode']);
+        $this->server = new Server($this->config['ip'], $this->config['port'], $this->config['mode'], $this->config['sock_type']);
     }
 }
