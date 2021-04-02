@@ -7,7 +7,10 @@ declare(strict_types=1);
 
 namespace Mini\Contracts\HttpMessage;
 
-interface ControllerInterface
+use Swoole\WebSocket\Frame;
+use Swoole\WebSocket\Server;
+
+interface WebsocketControllerInterface
 {
     /**
      * @param string|null $success_message
@@ -34,4 +37,28 @@ interface ControllerInterface
      * @return mixed
      */
     public function afterDispatch($response);
+
+    /**
+     * @param Server $server
+     * @param \Swoole\Http\Request $request
+     * @param array $routeData
+     * @return mixed
+     */
+    public function onOpen(Server $server, \Swoole\Http\Request $request, array $routeData);
+
+    /**
+     * @param Server $server
+     * @param Frame $frame
+     * @param array $routeData
+     * @return mixed
+     */
+    public function onMessage(Server $server, Frame $frame, array $routeData);
+
+    /**
+     * @param Server $server
+     * @param $fd
+     * @param array $routeData
+     * @return mixed
+     */
+    public function onClose(Server $server, $fd, array $routeData);
 }

@@ -19,6 +19,7 @@ use Mini\Listener;
 use Mini\Service\HttpMessage\Server\Request as Psr7Request;
 use Mini\Service\WsServer\Request;
 use Mini\Service\WsServer\Response;
+use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 use Throwable;
 
@@ -36,17 +37,21 @@ trait WebSocketTrait
 
     /**
      * @param Server $server
-     * @param $frame
+     * @param Frame $frame
      * @throws Exception
      */
-    public function onMessage(Server $server, $frame): void
+    public function onMessage(Server $server, Frame $frame): void
     {
         if ($this->handler) {
-            $wsResponse = $this->transferToWsResponse(call($this->handler['callable'], [$frame, $this->handler['data'], $server]));
             if (!empty($this->handler['className'])) {
-                $wsResponse = method_exists($this->handler['callable'][0], 'afterDispatch') ? $this->handler['callable'][0]->afterDispatch($wsResponse, $this->handler['callable'][1], $this->handler['className']) : $wsResponse;
+                $wsResponse = call([$this->handler['callable'], 'onMessage'], [$server, $frame, $this->handler['data']]);
+                $wsResponse = method_exists($this->handler['callable'], 'afterDispatch') ? $this->handler['callable']->afterDispatch($wsResponse, $this->handler['className']) : $wsResponse;
+            } else {
+                $wsResponse = call($this->handler['callable'], [$server, $frame, $this->handler['data']]);
             }
-            app(ResponseInterface::class)->push($wsResponse);
+            if ($wsResponse) {
+                app(ResponseInterface::class)->push($this->transferToWsResponse($wsResponse));
+            }
         }
     }
 
@@ -69,24 +74,24 @@ trait WebSocketTrait
      * @param $request
      * @throws Throwable
      */
-    public function onOpen(Server $server, $request): void
+    public function onOpen(Server $server, \Swoole\Http\Request $request): void
     {
         try {
             $this->initWsRequestAndResponse($request, $server);
             $resp = $this->route->dispatchWs($request);
 
             if (is_array($resp) && isset($resp['class'])) {
-                $controller = new $resp['class']($resp['method']);
-                if (method_exists($controller, 'beforeDispatch') && $dispatchResp = $controller->beforeDispatch($resp['method'], $resp['class'])) {
+                if (method_exists($resp['class'], 'beforeDispatch') && $dispatchResp = $resp['class']->beforeDispatch($resp['className'])) {
                     $server->push($request->fd, $this->transferToWsResponse($dispatchResp));
                     $server->close($request->fd);
                     return;
                 }
                 $this->handler = [
-                    'callable' => [$controller, $resp['method']],
+                    'callable' => $resp['class'],
                     'data' => $resp['data'],
                     'className' => $resp['class']
                 ];
+                call([$resp['class'], 'onOpen'], [$server, $request, $this->handler['data']]);
                 return;
             }
             if (is_array($resp) && isset($resp['callable'])) {
@@ -139,6 +144,9 @@ trait WebSocketTrait
      */
     public function onClose(Server $server, $fd)
     {
+        if (!empty($this->handler['className'])) {
+            $wsResponse = call([$this->handler['callable'], 'onClose'], [$server, $fd, $this->handler['data']]);
+        }
         Listener::getInstance()->listen('close', $server, $fd);
     }
 }

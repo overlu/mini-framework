@@ -10,6 +10,7 @@ namespace Mini\Service\HttpServer;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Mini\BindsProvider;
+use Mini\Contracts\HttpMessage\WebsocketControllerInterface;
 use Mini\Exception\HttpException\MethodNotAllowedHttpException;
 use Mini\Exception\HttpException\NotFoundHttpException;
 use ReflectionException;
@@ -133,7 +134,7 @@ class RouteService
                 break;
             case Dispatcher::FOUND:
                 $request->routes = $routeInfo[2] ?? [];
-                return $this->dispatchHandle($routeInfo[1], $request->routes);
+                return $this->dispatchHandle($routeInfo[1], $request->routes, $uri);
         }
         return $this->defaultRouter();
     }
@@ -145,17 +146,17 @@ class RouteService
      * @throws ReflectionException
      * @throws Throwable
      */
-    protected function dispatchHandle($handler, array $params = [])
+    protected function dispatchHandle($handler, array $params = [], $uri)
     {
         if (is_string($handler)) {
             $handler = explode('@', $handler);
             if (count($handler) !== 2) {
-                throw new RuntimeException("Router config error, Only @ are supported");
+                throw new RuntimeException("Router {$uri} Config Error, Only @ Are Supported");
             }
             $className = '\\App\\Controllers\\Http\\' . $handler[0];
             $func = $handler[1];
             if (!class_exists($className)) {
-                throw new RuntimeException("Router defined Class Not Found");
+                throw new RuntimeException("Router {$uri} Defined Class {$className} Not Found");
             }
             $resp = app('middleware')->registerBeforeRequest($func, $className);
             if (!is_null($resp)) {
@@ -163,7 +164,7 @@ class RouteService
             }
             $controller = new $className($func);
             if (!method_exists($controller, $func)) {
-                throw new RuntimeException("Router defined {$className}->{$func} Method Not Found");
+                throw new RuntimeException("Router {$uri} Defined {$className}->{$func} Method Not Found");
             }
             $method = (new ReflectionMethod($controller, $func));
             $data = $this->initialParams($method, $params);
@@ -187,9 +188,8 @@ class RouteService
      */
     public function dispatchWs(Request $request): array
     {
-        $method = $request->server['request_method'] ?? 'GET';
         $uri = $request->server['request_uri'] ?? '/';
-        $routeInfo = self::$wsDispatcher->dispatch($method, $uri);
+        $routeInfo = self::$wsDispatcher->dispatch('GET', $uri);
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
                 return ['error' => 'method not found.', 'code' => 404];
@@ -198,21 +198,17 @@ class RouteService
             case Dispatcher::FOUND:
                 $handler = $routeInfo[1];
                 if (is_string($handler)) {
-                    $handler = explode('@', $handler);
-                    if (count($handler) !== 2) {
-                        throw new RuntimeException("Router {$uri} config error, Only @ are supported");
-                    }
-                    $className = '\\App\\Controllers\\Websocket\\' . $handler[0];
-                    $func = $handler[1];
+                    $className = '\\App\\Controllers\\Websocket\\' . $handler;
                     if (!class_exists($className)) {
-                        throw new RuntimeException("Router {$uri} defined Class Not Found");
+                        throw new RuntimeException("Router {$uri} Defined Class {$className} Not Found");
                     }
-                    if (!method_exists($className, $func)) {
-                        throw new RuntimeException("Router {$uri} defined {$func} Method Not Found");
+                    $class = new $className;
+                    if (!$class instanceof WebsocketControllerInterface) {
+                        throw new RuntimeException("Class {$className} Should Instanceof " . WebsocketControllerInterface::class);
                     }
                     return [
-                        'class' => $className,
-                        'method' => $func,
+                        'class' => $class,
+                        'className' => $className,
                         'data' => $routeInfo[2]
                     ];
                 }
