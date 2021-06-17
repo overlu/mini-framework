@@ -7,9 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
-use Exception;
 use Mini\Support\Command;
-use Mini\Support\Coroutine;
 use Swoole\Process;
 
 class TestCommandService extends AbstractCommandService
@@ -20,7 +18,7 @@ class TestCommandService extends AbstractCommandService
      */
     public function handle(Process $process)
     {
-        Coroutine::create(function () {
+        run(static function () {
             Command::info(Command::exec(BASE_PATH . '/vendor/phpunit/phpunit/phpunit ./tests'));
         });
     }

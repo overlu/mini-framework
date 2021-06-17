@@ -7,9 +7,9 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
+use Exception;
 use Mini\Database\Mysql\Migrations\TableGuesser;
 use Mini\Support\Command;
-use Mini\Support\Coroutine;
 use Mini\Support\Str;
 use Swoole\Process;
 
@@ -20,10 +20,11 @@ class MakeMigrationCommandService extends AbstractCommandService
     /**
      * @param Process $process
      * @return mixed|void
+     * @throws Exception
      */
     public function handle(Process $process)
     {
-        Coroutine::create(function () {
+        run(function () {
             $argFirst = $this->getArgs()[0] ?? null;
             if (!$argFirst) {
                 Command::error('no migration file name');
@@ -53,7 +54,7 @@ class MakeMigrationCommandService extends AbstractCommandService
      * @param $name
      * @param $table
      * @param $create
-     * @throws \Exception
+     * @throws Exception
      */
     protected function writeMigration($name, $table, $create): void
     {

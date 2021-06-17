@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace Mini\Command;
 
 use Mini\Support\Command;
-use Mini\Support\Coroutine;
 use Swoole\Process;
 
 class MigrateResetCommandService extends AbstractCommandService
@@ -17,7 +16,7 @@ class MigrateResetCommandService extends AbstractCommandService
 
     public function handle(Process $process)
     {
-        Coroutine::create(function () {
+        run(function () {
             if (!$this->confirmToProceed()) {
                 return;
             }

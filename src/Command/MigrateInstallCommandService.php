@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace Mini\Command;
 
 use Mini\Support\Command;
-use Mini\Support\Coroutine;
 use Swoole\Process;
 
 class MigrateInstallCommandService extends AbstractCommandService
@@ -17,7 +16,7 @@ class MigrateInstallCommandService extends AbstractCommandService
 
     public function handle(Process $process)
     {
-        Coroutine::create(function () {
+        run(function () {
             $this->repository->setSource($this->getOpt('database'));
 
             $this->repository->createRepository();
