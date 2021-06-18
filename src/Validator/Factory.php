@@ -144,6 +144,7 @@ class Factory
             'ipv6' => new Rules\Ipv6,
             'extension' => new Rules\Extension,
             'array' => new Rules\TypeArray,
+            'string' => new Rules\TypeString,
             'same' => new Rules\Same,
             'size' => new Rules\Size,
             'regex' => new Rules\Regex,
