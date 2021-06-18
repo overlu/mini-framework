@@ -15,25 +15,24 @@ class MigrateRefreshCommandService extends AbstractCommandService
 
     public function handle(Process $process)
     {
-        run(function () {
-            if (!$this->confirmToProceed()) {
-                return;
-            }
-            $database = $this->getOpt('database');
-            $path = $this->getOpt('path');
-            $step = $this->getOpt('step', 0);
-            if ($step > 0) {
-                $this->runRollback($database, $path, $step);
-            } else {
-                $this->runReset($database, $path);
-            }
-            $this->call('migrate', array_filter([
-                '--database' => $database,
-                '--path' => $path,
-                '--realpath' => $this->getOpt('realpath'),
-                '--force' => true,
-            ]));
-        });
+
+        if (!$this->confirmToProceed()) {
+            return;
+        }
+        $database = $this->getOpt('database');
+        $path = $this->getOpt('path');
+        $step = $this->getOpt('step', 0);
+        if ($step > 0) {
+            $this->runRollback($database, $path, $step);
+        } else {
+            $this->runReset($database, $path);
+        }
+        $this->call('migrate', array_filter([
+            '--database' => $database,
+            '--path' => $path,
+            '--realpath' => $this->getOpt('realpath'),
+            '--force' => true,
+        ]));
     }
 
     protected function runRollback($database, $path, $step): void
