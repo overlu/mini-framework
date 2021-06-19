@@ -84,7 +84,6 @@ class RouteService
                 array_pop($namespace);
             } else {
                 $handle = is_string($route[2]) ? implode('\\', $namespace) . '\\' . $route[2] : $route[2];
-                dump($handle);
                 $routerCollector->addRoute(static::parasMethod($route[0]), '/' . ltrim($route[1], '/'), $handle);
             }
         }
