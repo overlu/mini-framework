@@ -79,16 +79,16 @@ class RouteService
                 if (isset($explodeGroup[1])) {
                     $namespace[] = $explodeGroup[1];
                 }
-                $routerCollector->addGroup('/' . ltrim($explodeGroup[0], '/'), static function (RouteCollector $routerCollector) use ($route, $namespace) {
+                $routerCollector->addGroup(trim($explodeGroup[0], '/'), static function (RouteCollector $routerCollector) use ($route, $namespace) {
                     self::parseHttpRoutes($route, $routerCollector, $namespace);
                 });
-                array_pop($namespace);
-            } else {
-                if (empty($namespace)) {
-                    $namespace = ['Http'];
+                if (isset($explodeGroup[1])) {
+                    array_pop($namespace);
                 }
-                $handle = is_string($route[2]) ? implode('\\', $namespace) . '\\' . $route[2] : $route[2];
-                $routerCollector->addRoute(static::parasMethod($route[0]), '/' . ltrim($route[1], '/'), $handle);
+            } else {
+                $namespaceString = !empty($namespace) ? implode('\\', $namespace) . '\\' : '';
+                $handle = is_string($route[2]) ? $namespaceString . $route[2] : $route[2];
+                $routerCollector->addRoute(static::parasMethod($route[0]), trim($route[1], '/'), $handle);
             }
         }
     }
@@ -109,12 +109,13 @@ class RouteService
                 $routerCollector->addGroup('/' . ltrim($group, '/'), static function (RouteCollector $routerCollector) use ($route, $namespace) {
                     self::parseWebSocketRoutes($route, $routerCollector, $namespace);
                 });
-            } else {
-                if (empty($namespace)) {
-                    $namespace = ['Websocket'];
+                if (isset($explodeGroup[1])) {
+                    array_pop($namespace);
                 }
-                $handle = is_string($route[1]) ? implode('\\', $namespace) . '\\' . $route[1] : $route[1];
-                $routerCollector->addRoute('GET', '/' . ltrim($route[0], '/'), $handle);
+            } else {
+                $namespaceString = !empty($namespace) ? implode('\\', $namespace) . '\\' : '';
+                $handle = is_string($route[1]) ? $namespaceString . $route[1] : $route[1];
+                $routerCollector->addRoute('GET', '/' . trim($route[0], '/'), $handle);
             }
         }
     }
@@ -155,7 +156,7 @@ class RouteService
     {
         $method = $request->server['request_method'] ?? 'GET';
         $uri = $request->server['request_uri'] ?? '/';
-        $routeInfo = self::$httpDispatcher->dispatch($method, $uri);
+        $routeInfo = self::$httpDispatcher->dispatch($method, rtrim($uri, '/') ?: '/');
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
                 return $this->defaultRouter();
@@ -172,18 +173,19 @@ class RouteService
     /**
      * @param $handler
      * @param array $params
+     * @param string $uri
      * @return mixed
      * @throws ReflectionException
      * @throws Throwable
      */
-    protected function dispatchHandle($handler, array $params = [], $uri)
+    protected function dispatchHandle($handler, array $params = [], string $uri = '')
     {
         if (is_string($handler)) {
             $handler = explode('@', $handler);
             if (count($handler) !== 2) {
                 throw new RuntimeException("Router {$uri} Config Error, Only @ Are Supported");
             }
-            $className = '\\App\\Controllers\\' . $handler[0];
+            $className = '\\App\\Controllers\\Http\\' . $handler[0];
             $func = $handler[1];
             if (!class_exists($className)) {
                 throw new RuntimeException("Router {$uri} Defined Class {$className} Not Found");
@@ -219,7 +221,7 @@ class RouteService
     public function dispatchWs(Request $request): array
     {
         $uri = $request->server['request_uri'] ?? '/';
-        $routeInfo = self::$wsDispatcher->dispatch('GET', $uri);
+        $routeInfo = self::$wsDispatcher->dispatch('GET', rtrim($uri, '/'));
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
                 return ['error' => 'method not found.', 'code' => 404];
@@ -228,7 +230,7 @@ class RouteService
             case Dispatcher::FOUND:
                 $handler = $routeInfo[1];
                 if (is_string($handler)) {
-                    $className = '\\App\\Controllers\\' . $handler;
+                    $className = '\\App\\Controllers\\Websocket\\' . $handler;
                     if (!class_exists($className)) {
                         throw new RuntimeException("Router {$uri} Defined Class {$className} Not Found");
                     }
@@ -267,7 +269,7 @@ class RouteService
             $name = $param->getName();
             if ($type = $param->getType()) {
                 $key = $type->getName();
-                if (!$obj = app()->make($key)) {
+                if (class_exists($key) && !$obj = app()->make($key)) {
                     $obj = $this->getConfigProvider($key);
                 }
                 $data[$name] = $obj;
