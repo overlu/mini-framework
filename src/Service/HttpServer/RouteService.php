@@ -69,8 +69,9 @@ class RouteService
     /**
      * @param $httpRoutes
      * @param RouteCollector $routerCollector
+     * @param array $namespace
      */
-    private static function paraseHttpRoutes($httpRoutes, RouteCollector $routerCollector, $namespace = [])
+    private static function parseHttpRoutes($httpRoutes, RouteCollector $routerCollector, array $namespace = []): void
     {
         foreach ($httpRoutes as $group => $route) {
             if (is_string($group) && is_array($route[0])) {
@@ -79,10 +80,13 @@ class RouteService
                     $namespace[] = $explodeGroup[1];
                 }
                 $routerCollector->addGroup('/' . ltrim($explodeGroup[0], '/'), static function (RouteCollector $routerCollector) use ($route, $namespace) {
-                    self::paraseHttpRoutes($route, $routerCollector, $namespace);
+                    self::parseHttpRoutes($route, $routerCollector, $namespace);
                 });
                 array_pop($namespace);
             } else {
+                if (empty($namespace)) {
+                    $namespace = ['Http'];
+                }
                 $handle = is_string($route[2]) ? implode('\\', $namespace) . '\\' . $route[2] : $route[2];
                 $routerCollector->addRoute(static::parasMethod($route[0]), '/' . ltrim($route[1], '/'), $handle);
             }
@@ -92,16 +96,25 @@ class RouteService
     /**
      * @param $wsRoutes
      * @param RouteCollector $routerCollector
+     * @param array $namespace
      */
-    private static function paraseWebSocketRoutes($wsRoutes, RouteCollector $routerCollector)
+    private static function parseWebSocketRoutes($wsRoutes, RouteCollector $routerCollector, array $namespace = []): void
     {
         foreach ($wsRoutes as $group => $route) {
             if (is_string($group) && is_array($route[0])) {
-                $routerCollector->addGroup('/' . ltrim($group, '/'), static function (RouteCollector $routerCollector) use ($route) {
-                    self::paraseWebSocketRoutes($route, $routerCollector);
+                $explodeGroup = explode('#', $group, 2);
+                if (isset($explodeGroup[1])) {
+                    $namespace[] = $explodeGroup[1];
+                }
+                $routerCollector->addGroup('/' . ltrim($group, '/'), static function (RouteCollector $routerCollector) use ($route, $namespace) {
+                    self::parseWebSocketRoutes($route, $routerCollector, $namespace);
                 });
             } else {
-                $routerCollector->addRoute('GET', '/' . ltrim($route[0], '/'), $route[1]);
+                if (empty($namespace)) {
+                    $namespace = ['Websocket'];
+                }
+                $handle = is_string($route[1]) ? implode('\\', $namespace) . '\\' . $route[1] : $route[1];
+                $routerCollector->addRoute('GET', '/' . ltrim($route[0], '/'), $handle);
             }
         }
     }
@@ -112,7 +125,7 @@ class RouteService
             self::$instance = new self();
             self::$httpDispatcher = cachedDispatcher(
                 static function (RouteCollector $routerCollector) {
-                    self::paraseHttpRoutes(isset(self::$routes['ws']) ? (self::$routes['http'] ?? []) : self::$routes, $routerCollector);
+                    self::parseHttpRoutes(isset(self::$routes['ws']) ? (self::$routes['http'] ?? []) : self::$routes, $routerCollector);
                 },
                 [
                     'cacheFile' => BASE_PATH . '/storage/app/http.route.cache', /* required 缓存文件路径，必须设置 */
@@ -121,7 +134,7 @@ class RouteService
             );
             self::$wsDispatcher = cachedDispatcher(
                 static function (RouteCollector $routerCollector) {
-                    self::paraseWebSocketRoutes(self::$routes['ws'] ?? [], $routerCollector);
+                    self::parseWebSocketRoutes(self::$routes['ws'] ?? [], $routerCollector);
                 },
                 [
                     'cacheFile' => BASE_PATH . '/storage/app/ws.route.cache', /* required 缓存文件路径，必须设置 */
@@ -170,7 +183,7 @@ class RouteService
             if (count($handler) !== 2) {
                 throw new RuntimeException("Router {$uri} Config Error, Only @ Are Supported");
             }
-            $className = '\\App\\Controllers\\Http\\' . $handler[0];
+            $className = '\\App\\Controllers\\' . $handler[0];
             $func = $handler[1];
             if (!class_exists($className)) {
                 throw new RuntimeException("Router {$uri} Defined Class {$className} Not Found");
@@ -215,7 +228,7 @@ class RouteService
             case Dispatcher::FOUND:
                 $handler = $routeInfo[1];
                 if (is_string($handler)) {
-                    $className = '\\App\\Controllers\\Websocket\\' . $handler;
+                    $className = '\\App\\Controllers\\' . $handler;
                     if (!class_exists($className)) {
                         throw new RuntimeException("Router {$uri} Defined Class {$className} Not Found");
                     }
