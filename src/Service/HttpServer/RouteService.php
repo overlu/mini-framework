@@ -66,25 +66,54 @@ class RouteService
             }, (array)$method);
     }
 
+    /**
+     * @param $httpRoutes
+     * @param RouteCollector $routerCollector
+     */
+    private static function paraseHttpRoutes($httpRoutes, RouteCollector $routerCollector, $namespace = [])
+    {
+        foreach ($httpRoutes as $group => $route) {
+            if (is_string($group) && is_array($route[0])) {
+                $explodeGroup = explode('#', $group, 2);
+                if (isset($explodeGroup[1])) {
+                    $namespace[] = $explodeGroup[1];
+                }
+                $routerCollector->addGroup('/' . ltrim($explodeGroup[0], '/'), static function (RouteCollector $routerCollector) use ($route, $namespace) {
+                    self::paraseHttpRoutes($route, $routerCollector, $namespace);
+                });
+                array_pop($namespace);
+            } else {
+                $handle = is_string($route[2]) ? implode('\\', $namespace) . '\\' . $route[2] : $route[2];
+                dump($handle);
+                $routerCollector->addRoute(static::parasMethod($route[0]), '/' . ltrim($route[1], '/'), $handle);
+            }
+        }
+    }
+
+    /**
+     * @param $wsRoutes
+     * @param RouteCollector $routerCollector
+     */
+    private static function paraseWebSocketRoutes($wsRoutes, RouteCollector $routerCollector)
+    {
+        foreach ($wsRoutes as $group => $route) {
+            if (is_string($group) && is_array($route[0])) {
+                $routerCollector->addGroup('/' . ltrim($group, '/'), static function (RouteCollector $routerCollector) use ($route) {
+                    self::paraseWebSocketRoutes($route, $routerCollector);
+                });
+            } else {
+                $routerCollector->addRoute('GET', '/' . ltrim($route[0], '/'), $route[1]);
+            }
+        }
+    }
+
     public static function getInstance(): RouteService
     {
         if (!isset(self::$instance)) {
             self::$instance = new self();
             self::$httpDispatcher = cachedDispatcher(
                 static function (RouteCollector $routerCollector) {
-                    $httpRoutes = isset(self::$routes['ws']) ? (self::$routes['http'] ?? []) : self::$routes;
-                    foreach ($httpRoutes as $group => $route) {
-                        if (is_string($group) && is_array($route[0])) {
-                            $routerCollector->addGroup('/' . ltrim($group, '/'), static function (RouteCollector $routerCollector) use ($route) {
-                                foreach ($route as $r) {
-                                    $uri = trim($r[1], '/');
-                                    $routerCollector->addRoute(static::parasMethod($r[0]), $uri ? '/' . $uri : '', $r[2]);
-                                }
-                            });
-                        } else {
-                            $routerCollector->addRoute(static::parasMethod($route[0]), '/' . ltrim($route[1], '/'), $route[2]);
-                        }
-                    }
+                    self::paraseHttpRoutes(isset(self::$routes['ws']) ? (self::$routes['http'] ?? []) : self::$routes, $routerCollector);
                 },
                 [
                     'cacheFile' => BASE_PATH . '/storage/app/http.route.cache', /* required 缓存文件路径，必须设置 */
@@ -93,18 +122,7 @@ class RouteService
             );
             self::$wsDispatcher = cachedDispatcher(
                 static function (RouteCollector $routerCollector) {
-                    foreach (self::$routes['ws'] ?? [] as $group => $route) {
-                        if (is_string($group) && is_array($route[0])) {
-                            $routerCollector->addGroup('/' . ltrim($group, '/'), static function (RouteCollector $routerCollector) use ($route) {
-                                foreach ($route as $r) {
-                                    $uri = trim($r[0], '/');
-                                    $routerCollector->addRoute('GET', $uri ? '/' . $uri : '', $r[1]);
-                                }
-                            });
-                        } else {
-                            $routerCollector->addRoute('GET', '/' . ltrim($route[0], '/'), $route[1]);
-                        }
-                    }
+                    self::paraseWebSocketRoutes(self::$routes['ws'] ?? [], $routerCollector);
                 },
                 [
                     'cacheFile' => BASE_PATH . '/storage/app/ws.route.cache', /* required 缓存文件路径，必须设置 */
