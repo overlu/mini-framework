@@ -74,7 +74,7 @@ class RouteService
     private static function parseHttpRoutes($httpRoutes, RouteCollector $routerCollector, array $namespace = []): void
     {
         foreach ($httpRoutes as $group => $route) {
-            if (is_string($group) && is_array($route[0])) {
+            if (is_string($group) && is_array($route)) {
                 $explodeGroup = explode('#', $group, 2);
                 if (isset($explodeGroup[1])) {
                     $namespace[] = $explodeGroup[1];
@@ -86,9 +86,11 @@ class RouteService
                     array_pop($namespace);
                 }
             } else {
-                $namespaceString = !empty($namespace) ? implode('\\', $namespace) . '\\' : '';
-                $handle = is_string($route[2]) ? $namespaceString . $route[2] : $route[2];
-                $routerCollector->addRoute(static::parasMethod($route[0]), trim($route[1], '/'), $handle);
+                if (is_array($route) && isset($route[0]) && is_string($route[0])) {
+                    $namespaceString = !empty($namespace) ? implode('\\', $namespace) . '\\' : '';
+                    $handle = is_string($route[2]) ? $namespaceString . $route[2] : $route[2];
+                    $routerCollector->addRoute(static::parasMethod($route[0]), trim($route[1], '/'), $handle);
+                }
             }
         }
     }
@@ -106,7 +108,7 @@ class RouteService
                 if (isset($explodeGroup[1])) {
                     $namespace[] = $explodeGroup[1];
                 }
-                $routerCollector->addGroup('/' . ltrim($group, '/'), static function (RouteCollector $routerCollector) use ($route, $namespace) {
+                $routerCollector->addGroup(trim($group, '/'), static function (RouteCollector $routerCollector) use ($route, $namespace) {
                     self::parseWebSocketRoutes($route, $routerCollector, $namespace);
                 });
                 if (isset($explodeGroup[1])) {
@@ -115,7 +117,7 @@ class RouteService
             } else {
                 $namespaceString = !empty($namespace) ? implode('\\', $namespace) . '\\' : '';
                 $handle = is_string($route[1]) ? $namespaceString . $route[1] : $route[1];
-                $routerCollector->addRoute('GET', '/' . trim($route[0], '/'), $handle);
+                $routerCollector->addRoute('GET', trim($route[0], '/'), $handle);
             }
         }
     }
