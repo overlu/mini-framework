@@ -8,11 +8,12 @@ declare(strict_types=1);
 namespace Mini\Validator;
 
 use Closure;
-use Exception;
 use JsonException;
 use Mini\Container\EntryNotFoundException;
 use Mini\Contracts\Validator\BeforeValidate;
 use Mini\Contracts\Validator\ModifyValue;
+use Mini\Exception\MissingRequiredParameterException;
+use Mini\Exception\RuleNotFoundException;
 use Mini\Support\Traits\MessagesTrait;
 use Mini\Support\Traits\TranslationsTrait;
 use Mini\Validator\Rules\Required;
@@ -49,11 +50,12 @@ class Validation
 
     /**
      * Constructor
+     * Validation constructor.
      * @param Factory $validator
      * @param array $inputs
      * @param array $rules
      * @param array $messages
-     * @return void
+     * @throws RuleNotFoundException
      */
     public function __construct(Factory $validator, array $inputs, array $rules, array $messages = [])
     {
@@ -69,8 +71,8 @@ class Validation
     /**
      * Add attribute rules
      * @param string $attributeKey
-     * @param string|array $rules
-     * @return void
+     * @param $rules
+     * @throws RuleNotFoundException
      */
     public function addAttribute(string $attributeKey, $rules): void
     {
@@ -93,9 +95,13 @@ class Validation
     /**
      * Run validation
      * @param array $inputs
+     * @param bool $bail
      * @return void
+     * @throws EntryNotFoundException
+     * @throws JsonException
+     * @throws MissingRequiredParameterException
      */
-    public function validate(array $inputs = []): void
+    public function validate(array $inputs = [], bool $bail = true): void
     {
         $this->errors = new ErrorBag; // reset error bag
         $this->inputs = array_merge($this->inputs, $this->resolveInputAttributes($inputs));
@@ -111,6 +117,9 @@ class Validation
 
         foreach ($this->attributes as $attributeKey => $attribute) {
             $this->validateAttribute($attribute);
+            if ($bail && $this->errors->count() > 0) {
+                break;
+            }
         }
     }
 
@@ -126,7 +135,9 @@ class Validation
     /**
      * Validate attribute
      * @param Attribute $attribute
-     * @return void
+     * @throws EntryNotFoundException
+     * @throws JsonException
+     * @throws MissingRequiredParameterException
      */
     protected function validateAttribute(Attribute $attribute): void
     {
@@ -289,7 +300,7 @@ class Validation
      * @param string|null $attributeKey
      * @return array
      */
-    protected function extractDataFromPath($attributeKey): array
+    protected function extractDataFromPath(?string $attributeKey): array
     {
         $results = [];
 
@@ -305,9 +316,10 @@ class Validation
     /**
      * Add error to the $this->errors
      * @param Attribute $attribute
-     * @param mixed $value
+     * @param $value
      * @param Rule $ruleValidator
-     * @return void
+     * @throws EntryNotFoundException
+     * @throws JsonException
      */
     protected function addError(Attribute $attribute, $value, Rule $ruleValidator): void
     {
@@ -447,6 +459,7 @@ class Validation
      * Resolve $rules
      * @param mixed $rules
      * @return array
+     * @throws RuleNotFoundException
      */
     protected function resolveRules($rules): array
     {

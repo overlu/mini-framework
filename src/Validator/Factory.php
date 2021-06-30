@@ -7,7 +7,9 @@ declare(strict_types=1);
 
 namespace Mini\Validator;
 
-use Exception;
+use JsonException;
+use Mini\Container\EntryNotFoundException;
+use Mini\Exception\MissingRequiredParameterException;
 use Mini\Exception\RuleNotFoundException;
 use Mini\Exception\RuleQuashException;
 use Mini\Support\Traits\AliasesTrait;
@@ -66,12 +68,16 @@ class Factory
      * @param array $inputs
      * @param array $rules
      * @param array $messages
+     * @param bool $bail
      * @return Validation
+     * @throws JsonException
+     * @throws EntryNotFoundException
+     * @throws MissingRequiredParameterException
      */
-    public function validate(array $inputs, array $rules, array $messages = []): Validation
+    public function validate(array $inputs, array $rules, array $messages = [], bool $bail = true): Validation
     {
         $validation = $this->make($inputs, $rules, $messages);
-        $validation->validate();
+        $validation->validate([], $bail);
         $this->reset();
         return $validation;
     }
@@ -82,6 +88,7 @@ class Factory
      * @param array $rules
      * @param array $messages
      * @return Validation
+     * @throws RuleNotFoundException
      */
     public function make(array $inputs, array $rules, array $messages = []): Validation
     {
