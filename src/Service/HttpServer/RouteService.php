@@ -196,17 +196,17 @@ class RouteService
             if (!is_null($resp)) {
                 return $resp;
             }
-            $controller = new $className($func);
+            $controller = new $className($func, $params);
             if (!method_exists($controller, $func)) {
                 throw new RuntimeException("Router {$uri} Defined {$className}->{$func} Method Not Found");
             }
             $method = (new ReflectionMethod($controller, $func));
             $data = $this->initialParams($method, $params);
-            if (method_exists($controller, 'beforeDispatch') && $resp = $controller->beforeDispatch($func, $className)) {
+            if (method_exists($controller, 'beforeDispatch') && $resp = $controller->beforeDispatch($func, $className, $params)) {
                 return $resp;
             }
             $resp = $method->invokeArgs($controller, $data);
-            return method_exists($controller, 'afterDispatch') ? $controller->afterDispatch($resp, $func, $className) : $resp;
+            return method_exists($controller, 'afterDispatch') ? $controller->afterDispatch($resp, $func, $className, $params) : $resp;
         }
         if (is_callable($handler)) {
             $data = $this->initialParams(new ReflectionFunction($handler), $params);
@@ -236,7 +236,7 @@ class RouteService
                     if (!class_exists($className)) {
                         throw new RuntimeException("Router {$uri} Defined Class {$className} Not Found");
                     }
-                    $class = new $className;
+                    $class = new $className($routeInfo[2]);
                     if (!$class instanceof WebsocketControllerInterface) {
                         throw new RuntimeException("Class {$className} Should Instanceof " . WebsocketControllerInterface::class);
                     }

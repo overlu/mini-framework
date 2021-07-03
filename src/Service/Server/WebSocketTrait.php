@@ -9,7 +9,6 @@ namespace Mini\Service\Server;
 
 use Exception;
 use JsonException;
-use Mini\BindsProvider;
 use Mini\Context;
 use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Contracts\HttpMessage\ResponseInterface;
@@ -17,7 +16,6 @@ use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\Support\Jsonable;
 use Mini\Listener;
 use Mini\Service\HttpMessage\Server\Request as Psr7Request;
-use Mini\Service\WsServer\Request;
 use Mini\Service\WsServer\Response;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
@@ -45,7 +43,7 @@ trait WebSocketTrait
         if ($this->handler) {
             if (!empty($this->handler['className'])) {
                 $wsResponse = call([$this->handler['callable'], 'onMessage'], [$server, $frame, $this->handler['data']]);
-                $wsResponse = method_exists($this->handler['callable'], 'afterDispatch') ? $this->handler['callable']->afterDispatch($wsResponse, $this->handler['className']) : $wsResponse;
+                $wsResponse = method_exists($this->handler['callable'], 'afterDispatch') ? call([$this->handler['callable'], 'afterDispatch'], [$wsResponse, $frame, $this->handler['className'], $this->handler['data']]) : $wsResponse;
             } else {
                 $wsResponse = call($this->handler['callable'], [$server, $frame, $this->handler['data']]);
             }
@@ -81,7 +79,7 @@ trait WebSocketTrait
             $resp = $this->route->dispatchWs($request);
 
             if (is_array($resp) && isset($resp['class'])) {
-                if (method_exists($resp['class'], 'beforeDispatch') && $dispatchResp = $resp['class']->beforeDispatch($resp['className'])) {
+                if (method_exists($resp['class'], 'beforeDispatch') && $dispatchResp = $resp['class']->beforeDispatch($resp['className'], $resp['data'])) {
                     $server->push($request->fd, $this->transferToWsResponse($dispatchResp));
                     $server->close($request->fd);
                     return;
@@ -89,7 +87,7 @@ trait WebSocketTrait
                 $this->handler = [
                     'callable' => $resp['class'],
                     'data' => $resp['data'],
-                    'className' => $resp['class']
+                    'className' => $resp['className']
                 ];
                 call([$resp['class'], 'onOpen'], [$server, $request, $this->handler['data']]);
                 return;

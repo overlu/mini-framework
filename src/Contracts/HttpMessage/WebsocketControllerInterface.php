@@ -27,16 +27,20 @@ interface WebsocketControllerInterface
     public function failed(?string $error_message = 'failed', $code = 0): array;
 
     /**
-     * @param string $method
+     * @param string $className
+     * @param array $routeData
      * @return mixed
      */
-    public function beforeDispatch(string $method);
+    public function beforeDispatch(string $className, array $routeData);
 
     /**
      * @param $response
+     * @param Frame $frame
+     * @param string $className
+     * @param array $routeData
      * @return mixed
      */
-    public function afterDispatch($response);
+    public function afterDispatch($response, Frame $frame, string $className, array $routeData);
 
     /**
      * @param Server $server
