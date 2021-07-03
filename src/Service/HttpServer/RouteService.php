@@ -103,12 +103,12 @@ class RouteService
     private static function parseWebSocketRoutes($wsRoutes, RouteCollector $routerCollector, array $namespace = []): void
     {
         foreach ($wsRoutes as $group => $route) {
-            if (is_string($group) && is_array($route[0])) {
+            if (is_string($group) && is_array($route)) {
                 $explodeGroup = explode('#', $group, 2);
                 if (isset($explodeGroup[1])) {
                     $namespace[] = $explodeGroup[1];
                 }
-                $routerCollector->addGroup(trim($group, '/'), static function (RouteCollector $routerCollector) use ($route, $namespace) {
+                $routerCollector->addGroup(trim($explodeGroup[0], '/'), static function (RouteCollector $routerCollector) use ($route, $namespace) {
                     self::parseWebSocketRoutes($route, $routerCollector, $namespace);
                 });
                 if (isset($explodeGroup[1])) {
@@ -223,7 +223,7 @@ class RouteService
     public function dispatchWs(Request $request): array
     {
         $uri = $request->server['request_uri'] ?? '/';
-        $routeInfo = self::$wsDispatcher->dispatch('GET', rtrim($uri, '/'));
+        $routeInfo = self::$wsDispatcher->dispatch('GET', rtrim($uri, '/') ?: '/');
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
                 return ['error' => 'method not found.', 'code' => 404];
