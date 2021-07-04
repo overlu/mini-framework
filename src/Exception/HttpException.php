@@ -32,9 +32,9 @@ class HttpException extends RuntimeException implements HttpExceptionInterface
     public function __construct($message = '', $statusCode = 0, array $headers = [], ?int $code = 0, Throwable $previous = null)
     {
         $this->headers = $headers;
-        $this->statusCode = $statusCode;
+        $this->statusCode = app(Translate::class)->has('http_status_code.' . $statusCode) ? $statusCode : 200;
         $this->responseMessage = $message ?: app(Translate::class)->getOrDefault('http_status_code.' . $statusCode, 'something error');
-        parent::__construct('something error', $code, $previous);
+        parent::__construct('something error', $statusCode, $previous);
     }
 
     /**

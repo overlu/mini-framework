@@ -226,9 +226,10 @@ class RouteService
         $routeInfo = self::$wsDispatcher->dispatch('GET', rtrim($uri, '/') ?: '/');
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
-                return ['error' => 'method not found.', 'code' => 404];
+                return ws_abort(404);
             case Dispatcher::METHOD_NOT_ALLOWED:
-                return ['error' => 'method not allowed, please change method to GET', 'code' => 405];
+//                return ['error' => 'method not allowed, please change method to GET', 'code' => 405];
+                return ws_abort(405);
             case Dispatcher::FOUND:
                 $handler = $routeInfo[1];
                 if (is_string($handler)) {
@@ -252,9 +253,11 @@ class RouteService
                         'data' => $routeInfo[2]
                     ];
                 }
-                return ['error' => 'method not found.', 'code' => 404];
+                return ws_abort(404);
+//                return ['error' => 'method not found.', 'code' => 404];
         }
-        return ['error' => 'method not found.', 'code' => 404];
+        return ws_abort(404);
+//        return ['error' => 'method not found.', 'code' => 404];
     }
 
     /**

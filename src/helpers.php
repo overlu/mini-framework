@@ -560,6 +560,20 @@ if (!function_exists('request')) {
     }
 }
 
+if (!function_exists('ws_request')) {
+    /**
+     * 获取websocket request资源
+     * @return \Mini\Service\WsServer\Request
+     */
+    function ws_request()
+    {
+        if (!Context::has('IsInWebsocketEvent')) {
+            throw new RuntimeException("Not In Websocket Environment.");
+        }
+        return app(\Mini\Contracts\HttpMessage\WebsocketRequestInterface::class);
+    }
+}
+
 if (!function_exists('response')) {
     /**
      * 获取response资源
@@ -572,6 +586,21 @@ if (!function_exists('response')) {
             throw new RuntimeException("Not In Request Environment.");
         }
         return app(\Mini\Contracts\HttpMessage\ResponseInterface::class);
+    }
+}
+
+if (!function_exists('ws_response')) {
+    /**
+     * 获取websocket response资源
+     * @return \Mini\Service\WsServer\Response
+     * @throws Exception
+     */
+    function ws_response()
+    {
+        if (!Context::has('IsInWebsocketEvent')) {
+            throw new RuntimeException("Not In Websocket Environment.");
+        }
+        return app(\Mini\Contracts\HttpMessage\WebsocketResponseInterface::class);
     }
 }
 
@@ -747,6 +776,18 @@ if (!function_exists('abort')) {
     function abort(int $code, $message = '', array $headers = []): void
     {
         throw new \Mini\Exception\HttpException($message, $code, $headers);
+    }
+}
+
+if (!function_exists('ws_abort')) {
+    /**
+     * @param int $code
+     * @param string|array $message
+     * @param array $headers
+     */
+    function ws_abort(int $code, $message = ''): void
+    {
+        throw new \Mini\Exception\WebsocketException($message, $code);
     }
 }
 

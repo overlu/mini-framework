@@ -252,6 +252,7 @@ abstract class AbstractServer
         } catch (Throwable $throwable) {
             app('exception')->throw($throwable);
         }
+        return null;
     }
 
     /**

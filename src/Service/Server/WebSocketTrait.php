@@ -8,14 +8,12 @@ declare(strict_types=1);
 namespace Mini\Service\Server;
 
 use Exception;
-use JsonException;
 use Mini\Context;
-use Mini\Contracts\HttpMessage\RequestInterface;
-use Mini\Contracts\HttpMessage\ResponseInterface;
-use Mini\Contracts\Support\Arrayable;
-use Mini\Contracts\Support\Jsonable;
+use Mini\Contracts\Container\BindingResolutionException;
+use Mini\Contracts\HttpMessage\WebsocketRequestInterface;
+use Mini\Contracts\HttpMessage\WebsocketResponseInterface;
 use Mini\Listener;
-use Mini\Service\HttpMessage\Server\Request as Psr7Request;
+use Mini\Service\WsServer\Request;
 use Mini\Service\WsServer\Response;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
@@ -40,31 +38,35 @@ trait WebSocketTrait
      */
     public function onMessage(Server $server, Frame $frame): void
     {
-        if ($this->handler) {
-            if (!empty($this->handler['className'])) {
-                $wsResponse = call([$this->handler['callable'], 'onMessage'], [$server, $frame, $this->handler['data']]);
-                $wsResponse = method_exists($this->handler['callable'], 'afterDispatch') ? call([$this->handler['callable'], 'afterDispatch'], [$wsResponse, $frame, $this->handler['className'], $this->handler['data']]) : $wsResponse;
-            } else {
-                $wsResponse = call($this->handler['callable'], [$server, $frame, $this->handler['data']]);
+        try {
+            Context::set('IsInWebsocketEvent', true);
+            if ($this->handler) {
+                if (!empty($this->handler['className'])) {
+                    $wsResponse = call([$this->handler['callable'], 'onMessage'], [$server, $frame, $this->handler['data']]);
+                    $wsResponse = method_exists($this->handler['callable'], 'afterDispatch') ? call([$this->handler['callable'], 'afterDispatch'], [$wsResponse, $frame, $this->handler['className'], $this->handler['data']]) : $wsResponse;
+                } else {
+                    $wsResponse = call($this->handler['callable'], [$server, $frame, $this->handler['data']]);
+                }
+                if ($wsResponse) {
+                    ws_response()->push($wsResponse);
+                }
             }
-            if ($wsResponse) {
-                app(ResponseInterface::class)->push($this->transferToWsResponse($wsResponse));
-            }
+        } catch (Throwable $throwable) {
+            app('exception')->throw($throwable);
         }
     }
 
     /**
      * @param $request
      * @param Server $server
-     * @throws \Mini\Contracts\Container\BindingResolutionException
+     * @throws BindingResolutionException
      */
-    protected function initWsRequestAndResponse($request, Server $server): void
+    protected function initWsRequestAndResponse(\Swoole\Http\Request $request, Server $server): void
     {
-        Context::set(RequestInterface::class, Psr7Request::loadFromSwooleRequest($request));
+        Context::set('IsInWebsocketEvent', true);
         $app = app();
-        $app->bind(RequestInterface::class, \Mini\Service\HttpServer\Request::class);
-        $app->offsetSet(ResponseInterface::class, new Response($request, $server));
-        Context::set('IsInRequestEvent', true);
+        $app->offsetSet(WebsocketRequestInterface::class, new Request($request, $server));
+        $app->offsetSet(WebsocketResponseInterface::class, new Response($request, $server));
     }
 
     /**
@@ -77,11 +79,9 @@ trait WebSocketTrait
         try {
             $this->initWsRequestAndResponse($request, $server);
             $resp = $this->route->dispatchWs($request);
-
             if (is_array($resp) && isset($resp['class'])) {
                 if (method_exists($resp['class'], 'beforeDispatch') && $dispatchResp = $resp['class']->beforeDispatch($resp['className'], $resp['data'])) {
-                    $server->push($request->fd, $this->transferToWsResponse($dispatchResp));
-                    $server->close($request->fd);
+                    ws_response()->push($dispatchResp)->close();
                     return;
                 }
                 $this->handler = [
@@ -89,7 +89,9 @@ trait WebSocketTrait
                     'data' => $resp['data'],
                     'className' => $resp['className']
                 ];
-                call([$resp['class'], 'onOpen'], [$server, $request, $this->handler['data']]);
+                if ($openRes = call([$resp['class'], 'onOpen'], [$server, $request, $this->handler['data']])) {
+                    ws_response()->push($openRes);
+                }
                 return;
             }
             if (is_array($resp) && isset($resp['callable'])) {
@@ -97,42 +99,17 @@ trait WebSocketTrait
                 return;
             }
             if (is_array($resp) && isset($resp['error'])) {
-                $server->push($request->fd, $this->error($resp['error'], $resp['code'] ?? 0));
+                ws_response()->push($this->error($resp['error'], $resp['code'] ?? 0))->close();
+                return;
             }
             if (is_string($resp)) {
-                $server->push($request->fd, $this->error($resp));
+                ws_response()->push($this->error($resp))->close();
+                return;
             }
-            $server->close($request->fd);
+            ws_response()->push($this->error('whoops, something error'))->close();
         } catch (Throwable $throwable) {
-            $server->close($request->fd);
-            app('exception')->report($throwable);
+            app('exception')->throw($throwable);
         }
-    }
-
-    /**
-     * @param $response
-     * @return false|string
-     * @throws JsonException
-     */
-    protected function transferToWsResponse($response)
-    {
-        if ($response instanceof Arrayable) {
-            $response = $response->toArray();
-        }
-
-        if (is_array($response)) {
-            return json_encode($response, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
-        }
-
-        if ($response instanceof Jsonable) {
-            return (string)$response->toJson();
-        }
-
-        if (is_object($response)) {
-            return method_exists($response, '__toString') ? (string)$response : json_encode((array)$response, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
-        }
-
-        return (string)$response;
     }
 
     /**
@@ -143,7 +120,7 @@ trait WebSocketTrait
     public function onClose(Server $server, $fd)
     {
         if (!empty($this->handler['className'])) {
-            $wsResponse = call([$this->handler['callable'], 'onClose'], [$server, $fd, $this->handler['data']]);
+            call([$this->handler['callable'], 'onClose'], [$server, $fd, $this->handler['data']]);
         }
         Listener::getInstance()->listen('close', $server, $fd);
     }

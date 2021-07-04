@@ -11,9 +11,11 @@ use Exception;
 use JsonException;
 use Mini\Context;
 use Mini\Contracts\HttpMessage\RequestInterface;
+use Mini\Contracts\HttpMessage\WebsocketRequestInterface;
 use Mini\Logging\Log;
 use Mini\Singleton;
 use Mini\Support\Command;
+use Mini\Translate\Translate;
 use Seaslog;
 use Swoole\ExitException;
 use Throwable;
@@ -51,15 +53,18 @@ class Handler implements HandlerInterface
     public function throw(Throwable $throwable): void
     {
         if ($throwable instanceof HttpException) {
-            $this->sendException($throwable);
+            $this->sendHttpException($throwable);
+            return;
+        }
+        if ($throwable instanceof WebsocketException) {
+            $this->sendWebsocketException($throwable);
             return;
         }
         if (Context::has('IsInRequestEvent')) {
-            try {
-                $this->render(request(), $throwable);
-            } catch (Throwable $throwable) {
-                Context::destroy('IsInRequestEvent');
-            }
+            $this->render(request(), $throwable);
+        }
+        if (Context::has('IsInWebsocketEvent')) {
+            $this->render(ws_request(), $throwable);
         }
         $this->report($throwable);
     }
@@ -70,7 +75,7 @@ class Handler implements HandlerInterface
      */
     public function report(Throwable $throwable): void
     {
-        if (!$throwable instanceof ExitException && $this->checkNotDontReport($throwable)) {
+        if (!$throwable instanceof ExitException && $this->hasNoDontReport($throwable)) {
             $this->logError($throwable);
             Command::line();
             Command::error($this->environment !== 'production' ? $this->formatException($throwable) : 'server is busy.');
@@ -87,14 +92,28 @@ class Handler implements HandlerInterface
     }
 
     /**
-     * @param RequestInterface $request
+     * @param RequestInterface|WebsocketRequestInterface $request
      * @param Throwable $throwable
-     * @throws JsonException
+     * @throws Exception
      */
-    public function render(RequestInterface $request, Throwable $throwable): void
+    public function render($request, Throwable $throwable): void
     {
-        if ($this->checkNotDontReport($throwable)) {
-            $this->sendException($throwable);
+        if ($this->hasNoDontReport($throwable)) {
+            if (Context::has('IsInRequestEvent')) {
+                try {
+                    $this->sendHttpException($throwable);
+                } catch (Throwable $throwable) {
+                    Context::destroy('IsInRequestEvent');
+                }
+            } else if (Context::has('IsInWebsocketEvent')) {
+                try {
+                    $this->sendWebsocketException($throwable);
+                } catch (Throwable $throwable) {
+                    Context::destroy('IsInWebsocketEvent');
+                    ws_response()->close();
+                }
+            }
+
         }
     }
 
@@ -119,7 +138,10 @@ class Handler implements HandlerInterface
         if ($this->debug) {
             return $this->format($throwable);
         }
-        return 'whoops, something error.';
+        return [
+            'code' => 500,
+            'message' => 'whoops, something error.'
+        ];
     }
 
     /**
@@ -140,7 +162,7 @@ class Handler implements HandlerInterface
      * @param Throwable $throwable
      * @return bool
      */
-    private function checkNotDontReport(Throwable $throwable): bool
+    private function hasNoDontReport(Throwable $throwable): bool
     {
         foreach ($this->dontReport as $throw) {
             if ($throwable instanceof $throw) {
@@ -155,13 +177,13 @@ class Handler implements HandlerInterface
      * @throws JsonException
      * @throws Exception
      */
-    protected function sendException(Throwable $throwable): void
+    protected function sendHttpException(Throwable $throwable): void
     {
         if (Context::has('IsInRequestEvent') && $swResponse = response()->getSwooleResponse()) {
             if ($throwable instanceof HttpExceptionInterface) {
                 $code = $throwable->getStatusCode();
                 $content = [
-                    'code' => $code,
+                    'code' => $throwable->getCode(),
                     'message' => $throwable->getResponseMessage(),
                 ];
             } else {
@@ -183,5 +205,30 @@ class Handler implements HandlerInterface
         }
     }
 
-
+    /**
+     * @param Throwable $throwable
+     * @throws JsonException
+     */
+    protected function sendWebsocketException(Throwable $throwable): void
+    {
+        if (Context::has('IsInWebsocketEvent')) {
+            $shouldClose = false;
+            if ($throwable instanceof WebsocketException) {
+                $code = $throwable->getCode();
+                $content = [
+                    'code' => $code,
+                    'message' => $throwable->getMessage(),
+                ];
+                if (app(Translate::class)->has('http_status_code.' . $code)) {
+                    $shouldClose = true;
+                }
+            } else {
+                $content = $this->formatResponseException($throwable);
+            }
+            ws_response()->push(json_encode($content, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE));
+            if ($shouldClose) {
+                ws_response()->close();
+            }
+        }
+    }
 }
