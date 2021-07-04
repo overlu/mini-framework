@@ -830,15 +830,15 @@ if (!function_exists('view')) {
 if (!function_exists('is_json')) {
     /**
      * @param $string
-     * @return bool
+     * @return bool|mixed
      */
-    function is_json($string): bool
+    function is_json($string)
     {
         if (!is_string($string)) {
             return false;
         }
-        json_decode($string);
-        return (json_last_error() === JSON_ERROR_NONE);
+        $string = json_decode($string);
+        return json_last_error() === JSON_ERROR_NONE ? $string : false;
     }
 }
 
