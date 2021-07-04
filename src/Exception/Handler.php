@@ -219,7 +219,7 @@ class Handler implements HandlerInterface
                     'code' => $code,
                     'message' => $throwable->getMessage(),
                 ];
-                if (app(Translate::class)->has('http_status_code.' . $code)) {
+                if (($code < 200 || $code > 300) && app(Translate::class)->has('http_status_code.' . $code)) {
                     $shouldClose = true;
                 }
             } else {
