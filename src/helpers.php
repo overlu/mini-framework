@@ -512,7 +512,7 @@ if (!function_exists('redis')) {
 if (!function_exists('server')) {
     /**
      * 获取server
-     * @return \Swoole\Server
+     * @return \Swoole\Server|\Swoole\WebSocket\Server|\Swoole\Http\Server
      */
     function server(): \Swoole\Server
     {
@@ -830,7 +830,7 @@ if (!function_exists('view')) {
 if (!function_exists('is_json')) {
     /**
      * @param $string
-     * @return bool|mixed
+     * @return mixed
      */
     function is_json($string)
     {
