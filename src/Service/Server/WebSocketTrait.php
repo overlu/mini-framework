@@ -13,8 +13,10 @@ use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\HttpMessage\WebsocketRequestInterface;
 use Mini\Contracts\HttpMessage\WebsocketResponseInterface;
 use Mini\Listener;
+use Mini\Service\WsServer\AuthCodeCheck;
 use Mini\Service\WsServer\Request;
 use Mini\Service\WsServer\Response;
+use Mini\Service\WsServer\User;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 use Throwable;
@@ -39,13 +41,20 @@ trait WebSocketTrait
     public function onMessage(Server $server, Frame $frame): void
     {
         try {
-            Context::set('IsInWebsocketEvent', true);
+            parent::onMessage($server, $frame);
             if ($this->handler) {
                 if (!empty($this->handler['className'])) {
                     $wsResponse = call([$this->handler['callable'], 'onMessage'], [$server, $frame, $this->handler['data']]);
                     $wsResponse = method_exists($this->handler['callable'], 'afterDispatch') ? call([$this->handler['callable'], 'afterDispatch'], [$wsResponse, $frame, $this->handler['className'], $this->handler['data']]) : $wsResponse;
                 } else {
-                    $wsResponse = call($this->handler['callable'], [$server, $frame, $this->handler['data']]);
+                    $wsResponse = call($this->handler['callable'], [
+                        'onMessage',
+                        [
+                            'server' => $server,
+                            'frame' => $frame,
+                            'routeData' => $this->handler['data']
+                        ]
+                    ]);
                 }
                 if ($wsResponse) {
                     ws_response()->push($wsResponse);
@@ -63,7 +72,6 @@ trait WebSocketTrait
      */
     protected function initWsRequestAndResponse(\Swoole\Http\Request $request, Server $server): void
     {
-        Context::set('IsInWebsocketEvent', true);
         $app = app();
         $app->offsetSet(WebsocketRequestInterface::class, new Request($request, $server));
         $app->offsetSet(WebsocketResponseInterface::class, new Response($request, $server));
@@ -77,6 +85,7 @@ trait WebSocketTrait
     public function onOpen(Server $server, \Swoole\Http\Request $request): void
     {
         try {
+            parent::onOpen($server, $request);
             $this->initWsRequestAndResponse($request, $server);
             $resp = $this->route->dispatchWs($request);
             if (is_array($resp) && isset($resp['class'])) {
@@ -89,13 +98,23 @@ trait WebSocketTrait
                     'data' => $resp['data'],
                     'className' => $resp['className']
                 ];
-                if ($openRes = call([$resp['class'], 'onOpen'], [$server, $request, $this->handler['data']])) {
+                if ($openRes = call([$resp['class'], 'onOpen'], [$server, $request, $resp['data']])) {
                     ws_response()->push($openRes);
                 }
                 return;
             }
             if (is_array($resp) && isset($resp['callable'])) {
                 $this->handler = $resp;
+                if ($openRes = call($resp['callable'], [
+                    'onOpen',
+                    [
+                        'server' => $server,
+                        'request' => $request,
+                        'routeData' => $resp['data']
+                    ]
+                ])) {
+                    ws_response()->push($openRes);
+                }
                 return;
             }
             if (is_array($resp) && isset($resp['error'])) {
@@ -114,14 +133,45 @@ trait WebSocketTrait
 
     /**
      * @param Server $server
-     * @param $fd
+     * @param int $fd
      * @throws Throwable
      */
-    public function onClose(Server $server, $fd)
+    public function onClose(Server $server, int $fd, int $reactorId): void
     {
-        if (!empty($this->handler['className'])) {
-            call([$this->handler['callable'], 'onClose'], [$server, $fd, $this->handler['data']]);
+        try {
+            parent::onClose($server, $fd, $reactorId);
+            /**
+             * 解绑fd
+             */
+            $this->unbindFd($fd);
+            
+            if (!empty($this->handler['className'])) {
+                call([$this->handler['callable'], 'onClose'], [$server, $fd, $this->handler['data'], $reactorId]);
+            } elseif (!empty($this->handler['callable'])) {
+                call($this->handler['callable'], [
+                    'onClose',
+                    [
+                        'server' => $server,
+                        'fd' => $fd,
+                        'routeData' => $this->handler['data'],
+                        'reactorId' => $reactorId
+                    ]
+                ]);
+            }
+            return;
+        } catch (Throwable $throwable) {
+            app('exception')->throw($throwable);
         }
-        Listener::getInstance()->listen('close', $server, $fd);
+    }
+
+    /**
+     * 解绑fd
+     * @param int $fd
+     */
+    private function unbindFd(int $fd)
+    {
+        if ($uid = User::getUserByFd($fd)) {
+            User::unbind($uid, $fd);
+        }
     }
 }

@@ -21,6 +21,7 @@ use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Server;
 use Swoole\Table;
+use Swoole\WebSocket\Frame;
 use Throwable;
 
 abstract class AbstractServer
@@ -268,6 +269,50 @@ abstract class AbstractServer
             app('exception')->throw($throwable);
         }
     }
+
+    /**
+     * @param \Swoole\WebSocket\Server $server
+     * @param \Swoole\Http\Request $request
+     */
+    public function onOpen(\Swoole\WebSocket\Server $server, \Swoole\Http\Request $request): void
+    {
+        try {
+            Context::set('IsInWebsocketEvent', true);
+            Listener::getInstance()->listen('open', $server, $request);
+        } catch (Throwable $throwable) {
+            app('exception')->throw($throwable);
+        }
+    }
+
+    /**
+     * @param \Swoole\WebSocket\Server $server
+     * @param Frame $frame
+     */
+    public function onMessage(\Swoole\WebSocket\Server $server, Frame $frame): void
+    {
+        try {
+            Context::set('IsInWebsocketEvent', true);
+            Listener::getInstance()->listen('message', $server, $frame);
+        } catch (Throwable $throwable) {
+            app('exception')->throw($throwable);
+        }
+    }
+
+    /**
+     * @param \Swoole\WebSocket\Server $server
+     * @param int $fd
+     * @param int $reactorId
+     */
+    public function onClose(\Swoole\WebSocket\Server $server, int $fd, int $reactorId): void
+    {
+        try {
+            Context::set('IsInWebsocketEvent', true);
+            Listener::getInstance()->listen('close', $server, $fd);
+        } catch (Throwable $throwable) {
+            app('exception')->throw($throwable);
+        }
+    }
+
 
     /**
      * @param $error_message

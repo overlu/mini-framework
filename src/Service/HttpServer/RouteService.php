@@ -13,6 +13,8 @@ use Mini\BindsProvider;
 use Mini\Contracts\HttpMessage\WebsocketControllerInterface;
 use Mini\Exception\HttpException\MethodNotAllowedHttpException;
 use Mini\Exception\HttpException\NotFoundHttpException;
+use Mini\Facades\Log;
+use Mini\Support\Str;
 use ReflectionException;
 use ReflectionFunction;
 use ReflectionFunctionAbstract;
@@ -39,7 +41,9 @@ class RouteService
     private function __construct()
     {
         static::$cached = !config('app.route_cached', true);
-        self::$routes = config('routes', []);
+        $routes = config('routes', []);
+        self::$routes['http'] = array_merge(self::$routes['http'] ?? [], $routes['http']);
+        self::$routes['ws'] = array_merge(self::$routes['ws'] ?? [], $routes['ws']);
     }
 
     /**
@@ -115,9 +119,11 @@ class RouteService
                     array_pop($namespace);
                 }
             } else {
-                $namespaceString = !empty($namespace) ? implode('\\', $namespace) . '\\' : '';
-                $handle = is_string($route[1]) ? $namespaceString . $route[1] : $route[1];
-                $routerCollector->addRoute('GET', trim($route[0], '/'), $handle);
+                if (is_array($route) && isset($route[0]) && is_string($route[0])) {
+                    $namespaceString = !empty($namespace) ? implode('\\', $namespace) . '\\' : '';
+                    $handle = is_string($route[1]) ? $namespaceString . $route[1] : $route[1];
+                    $routerCollector->addRoute('GET', trim($route[0], '/'), $handle);
+                }
             }
         }
     }
@@ -233,9 +239,13 @@ class RouteService
             case Dispatcher::FOUND:
                 $handler = $routeInfo[1];
                 if (is_string($handler)) {
-                    $className = '\\App\\Controllers\\Websocket\\' . $handler;
-                    if (!class_exists($className)) {
-                        throw new RuntimeException("Router {$uri} Defined Class {$className} Not Found");
+                    if (class_exists($handler)) {
+                        $className = $handler;
+                    } else {
+                        $className = '\\App\\Controllers\\Websocket\\' . $handler;
+                        if (!class_exists($className)) {
+                            throw new RuntimeException("Router {$uri} Defined Class {$className} Not Found");
+                        }
                     }
                     $class = new $className($routeInfo[2]);
                     if (!$class instanceof WebsocketControllerInterface) {
