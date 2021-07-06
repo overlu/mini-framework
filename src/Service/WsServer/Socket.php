@@ -40,7 +40,9 @@ class Socket
         foreach ($clients as $client) {
             $clientArr = static::unPackClientId($client);
             if ($clientArr['host'] === config('websocket.host') && $clientArr['port'] === config('websocket.port')) {
-                $server->push($clientArr['fd'], static::transferToResponse($data));
+                if ($server->exist($clientArr['fd']) && $server->isEstablished($clientArr['fd'])) {
+                    $server->push($clientArr['fd'], static::transferToResponse($data));
+                }
             } else {
                 static::pushByAntherServer($clientArr, $data);
             }
@@ -76,6 +78,7 @@ class Socket
 
     /**
      * @param $clients
+     * @throws JsonException
      */
     public static function close($clients): void
     {
