@@ -10,6 +10,10 @@ namespace Mini\Service\WsServer;
 use Mini\Contracts\HttpMessage\WebsocketRequestInterface;
 use Swoole\WebSocket\Server;
 
+/**
+ * Class Request
+ * @package Mini\Service\WsServer
+ */
 class Request implements WebsocketRequestInterface
 {
     private \Swoole\Http\Request $request;
@@ -74,6 +78,9 @@ class Request implements WebsocketRequestInterface
         return isset($this->request->get[$key]) || isset($this->request->post[$key]);
     }
 
+    /**
+     * @return string
+     */
     public function getMethod(): string
     {
         return 'GET';

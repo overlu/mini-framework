@@ -9,10 +9,14 @@ namespace Mini\Service\WsServer;
 
 use Mini\Support\Store;
 
+/**
+ * Class Group
+ * @package Mini\Service\WsServer
+ */
 class Group
 {
-    private static string $prefix = 'socket_group_';
-    private static string $user_prefix = 'socket_user_group_';
+    public static string $prefix = 'socket_group:';
+    public static string $user_prefix = 'socket_user_group:';
 
     /**
      * 绑定用户组

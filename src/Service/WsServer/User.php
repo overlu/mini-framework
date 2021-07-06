@@ -7,23 +7,28 @@ declare(strict_types=1);
 
 namespace Mini\Service\WsServer;
 
+use JsonException;
 use Mini\Facades\Cache;
 use Mini\Support\Store;
-use Exception;
 
+/**
+ * Class User
+ * @package Mini\Service\WsServer
+ */
 class User
 {
-    private static string $prefix = 'socket_uid_';
+    private static string $prefix = 'socket_uid:';
 
     /**
      * 绑定用户
      * @param string $uid
      * @param int $fd
      * @return array
+     * @throws JsonException
      */
     public static function bind(string $uid, int $fd): array
     {
-        Cache::driver(config('websocket.cache_driver', 'redis'))->set('socket_fd_' . $fd, $uid);
+        Cache::driver(config('websocket.cache_driver', 'redis'))->set('socket_fd:' . $fd, $uid);
         $clientIds = Store::put(static::$prefix . $uid, Socket::packClientId($fd), config('websocket.max_num_of_uid_online', 0));
         if (!static::joined($uid)) {
             static::joinIn($uid);
@@ -47,7 +52,7 @@ class User
     /**
      * 判断是否绑定全局
      * @param string $uid
-     * @return array
+     * @return bool
      */
     public static function joined(string $uid): bool
     {
@@ -59,12 +64,13 @@ class User
      * @param string $uid
      * @param int $fd
      * @return bool
+     * @throws JsonException
      */
     public static function unbind(string $uid, int $fd): bool
     {
         $client = Socket::packClientId($fd);
         Store::remove(static::$prefix . $uid, $client);
-        Cache::driver(config('websocket.cache_driver', 'redis'))->delete('socket_fd_' . $fd);
+        Cache::driver(config('websocket.cache_driver', 'redis'))->delete('socket_fd:' . $fd);
         if (empty(static::getFds($uid))) {
             self::leaveOut($uid);
         }
@@ -102,7 +108,7 @@ class User
      */
     public static function getUserByFd($fd)
     {
-        return Cache::driver(config('websocket.cache_driver', 'redis'))->get('socket_fd_' . $fd);
+        return Cache::driver(config('websocket.cache_driver', 'redis'))->get('socket_fd:' . $fd);
     }
 
     /**
@@ -159,6 +165,6 @@ class User
 
     public static function getUserGroups(string $uid): array
     {
-        return Store::get('socket_user_group_' . $uid);
+        return Store::get(Group::$user_prefix . $uid);
     }
 }

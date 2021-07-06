@@ -11,6 +11,10 @@ use JsonException;
 use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\Support\Jsonable;
 
+/**
+ * Class Socket
+ * @package Mini\Service\WsServer
+ */
 class Socket
 {
     private static function pushByAntherServer($client, $data): void
@@ -116,6 +120,7 @@ class Socket
      * 打包生成链接id
      * @param $fd
      * @return string
+     * @throws JsonException
      */
     public static function packClientId($fd): string
     {
@@ -123,17 +128,17 @@ class Socket
             'host' => config('websocket.host'),
             'port' => config('websocket.port'),
             'fd' => $fd
-        ]));
+        ], JSON_THROW_ON_ERROR));
     }
 
     /**
      * 解包链接客户端
      * @param string $client
      * @return array
-     * @throws Exception
+     * @throws JsonException
      */
     public static function unPackClientId(string $client): array
     {
-        return json_decode(base64_decode($client), true);
+        return json_decode(base64_decode($client), true, 512, JSON_THROW_ON_ERROR);
     }
 }

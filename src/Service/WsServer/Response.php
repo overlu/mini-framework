@@ -7,12 +7,17 @@ declare(strict_types=1);
 
 namespace Mini\Service\WsServer;
 
+use JsonException;
 use Mini\Contracts\HttpMessage\WebsocketResponseInterface;
 use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\Support\Jsonable;
 use Swoole\WebSocket\Server;
 use Swoole\Http\Request;
 
+/**
+ * Class Response
+ * @package Mini\Service\WsServer
+ */
 class Response implements WebsocketResponseInterface
 {
     private Server $server;
@@ -30,7 +35,7 @@ class Response implements WebsocketResponseInterface
      * @param $data
      * @param null $fd
      * @return $this
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function push($data, $fd = null): WebsocketResponseInterface
     {
@@ -50,7 +55,7 @@ class Response implements WebsocketResponseInterface
     /**
      * @param $response
      * @return false|string
-     * @throws \JsonException
+     * @throws JsonException
      */
     private function transferToResponse($response)
     {

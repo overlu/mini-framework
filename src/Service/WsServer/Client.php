@@ -10,7 +10,6 @@ namespace Mini\Service\WsServer;
 use Mini\Singleton;
 use Mini\Support\Store;
 use Swoole\Coroutine\Http\Client as SwooleClient;
-use Swoole\WebSocket\Frame;
 
 class Client
 {
@@ -27,16 +26,18 @@ class Client
     }
 
     /**
-     * @param $data
-     * @param $fd
+     * @param $client
+     * @param $dcs_action
+     * @param array $arrData
+     * @throws \JsonException
      */
-    public function push($client, $dcs_action, $data = []): void
+    public function push(array $client, string $dcs_action, $arrData = []): void
     {
         $data = json_encode([
             'fd' => $client['fd'],
             'dcs_action' => $dcs_action,
-            'data' => $data
-        ]);
+            'data' => $arrData
+        ], JSON_THROW_ON_ERROR);
         $status = $this->getClient($client['host'], $client['port'])->push($data);
         if (!$status) {
             $this->setClient($client['host'], $client['port']);
@@ -58,7 +59,11 @@ class Client
         return $this->clients[$host . ':' . $port];
     }
 
-    private function setClient(string $host, string $port)
+    /**
+     * @param string $host
+     * @param string $port
+     */
+    private function setClient(string $host, string $port): void
     {
         $this->clients[$host . ':' . $port] = new SwooleClient($host, (int)$port);
         $this->clients[$host . ':' . $port]->upgrade(DCS::generateUrlPath());
