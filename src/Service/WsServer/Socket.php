@@ -42,6 +42,8 @@ class Socket
             if ($clientArr['host'] === config('websocket.host') && $clientArr['port'] === config('websocket.port')) {
                 if ($server->exist($clientArr['fd']) && $server->isEstablished($clientArr['fd'])) {
                     $server->push($clientArr['fd'], static::transferToResponse($data));
+                } else {
+                    User::unbind($uid, (int)$clientArr['fd']);
                 }
             } else {
                 static::pushByAntherServer($clientArr, $data);
@@ -121,13 +123,15 @@ class Socket
 
     /**
      * 打包生成链接id
+     * @param string $uid
      * @param $fd
      * @return string
      * @throws JsonException
      */
-    public static function packClientId($fd): string
+    public static function packClientId(string $uid, $fd): string
     {
         return base64_encode(json_encode([
+            'uid' => $uid,
             'host' => config('websocket.host'),
             'port' => config('websocket.port'),
             'fd' => $fd

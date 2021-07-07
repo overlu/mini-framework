@@ -29,7 +29,7 @@ class User
     public static function bind(string $uid, int $fd): array
     {
         Cache::driver(config('websocket.cache_driver', 'redis'))->set('socket_fd:' . $fd, $uid);
-        $clientIds = Store::put(static::$prefix . $uid, Socket::packClientId($fd), config('websocket.max_num_of_uid_online', 0));
+        $clientIds = Store::put(static::$prefix . $uid, Socket::packClientId($uid, $fd), config('websocket.max_num_of_uid_online', 0));
         if (!static::joined($uid)) {
             static::joinIn($uid);
         }
@@ -68,12 +68,24 @@ class User
      */
     public static function unbind(string $uid, int $fd): bool
     {
-        $client = Socket::packClientId($fd);
+        /**
+         * 打包客户端标识
+         */
+        $client = Socket::packClientId($uid, $fd);
+        /**
+         * 移除用户中的客户端
+         */
         Store::remove(static::$prefix . $uid, $client);
+        /**
+         * 删除（客户端-用户）缓存
+         */
         Cache::driver(config('websocket.cache_driver', 'redis'))->delete('socket_fd:' . $fd);
         if (empty(static::getFds($uid))) {
             self::leaveOut($uid);
         }
+        /**
+         * 断开链接
+         */
         Socket::close($client);
         return true;
     }

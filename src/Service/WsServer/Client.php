@@ -35,6 +35,7 @@ class Client
     {
         $data = json_encode([
             'fd' => $client['fd'],
+            'uid' => $client['uid'],
             'dcs_action' => $dcs_action,
             'data' => $arrData
         ], JSON_THROW_ON_ERROR);

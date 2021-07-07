@@ -41,13 +41,14 @@ class DCS implements WebsocketControllerInterface
             if ($data['dcs_action'] === 'push') {
                 if ($server->exist($data['fd']) && $server->isEstablished($data['fd'])) {
                     $server->push($data['fd'], Socket::transferToResponse($data['data']));
+                } else {
+                    User::unbind($data['uid'], (int)$data['fd']);
                 }
                 return;
             }
             if ($data['dcs_action'] === 'close') {
-                if ($server->exist($data['fd']) && $server->isEstablished($data['fd'])) {
-                    $server->close($data['fd']);
-                }
+                User::unbind($data['uid'], (int)$data['fd']);
+                $server->close($data['fd']);
                 return;
             }
         }
@@ -62,6 +63,9 @@ class DCS implements WebsocketControllerInterface
      */
     public function onClose(Server $server, int $fd, array $routeData, int $reactorId)
     {
+        if ($uid = User::getUserByFd($fd)) {
+            User::unbind($uid, $fd);
+        }
 //        return $reactorId;
     }
 
