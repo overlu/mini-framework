@@ -10,6 +10,11 @@ namespace Mini\Filesystem;
 use Aws\S3\S3Client;
 use Closure;
 use Mini\Contracts\Filesystem\Factory as FactoryContract;
+use Mini\Filesystem\OSS\Adapter as OSSAdapter;
+use Mini\Filesystem\OSS\Plugins\Kernel;
+use Mini\Filesystem\OSS\Plugins\SetBucket;
+use Mini\Filesystem\OSS\Plugins\SignatureConfig;
+use Mini\Filesystem\OSS\Plugins\Verify;
 use Mini\Support\Arr;
 use InvalidArgumentException;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter as S3Adapter;
@@ -235,6 +240,15 @@ class FilesystemManager implements FactoryContract
         );
     }
 
+    public function createOssDriver($config)
+    {
+        $adapter = new OSSAdapter($config);
+
+        $filesystem = new Flysystem($adapter, $config);
+
+        return new \Mini\Filesystem\OSSAdapter($filesystem, $adapter, $config);
+    }
+
     /**
      * Format the given S3 configuration with the default options.
      *
@@ -264,11 +278,6 @@ class FilesystemManager implements FactoryContract
         $config = Arr::only($config, ['visibility', 'disable_asserts', 'url']);
 
         return new Flysystem($adapter, $config);
-    }
-
-    protected function createOSSDriver(array $config)
-    {
-
     }
 
     /**

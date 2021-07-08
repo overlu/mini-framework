@@ -51,13 +51,13 @@ class FilesystemServiceProvider implements ServiceProviderInterface
     {
         $this->registerManager();
 
-        /*app()->singleton('filesystem.disk', function () {
-            return app('filesystem')->disk($this->getDefaultDriver());
-        });
-
-        app()->singleton('filesystem.cloud', function () {
-            return app('filesystem')->disk($this->getCloudDriver());
-        });*/
+//        app()->singleton('filesystem.disk', function () {
+//            return app('filesystem')->disk($this->getDefaultDriver());
+//        });
+//
+//        app()->singleton('filesystem.cloud', function () {
+//            return app('filesystem')->disk($this->getCloudDriver());
+//        });
     }
 
     /**
