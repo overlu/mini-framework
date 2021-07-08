@@ -39,6 +39,7 @@ class CommandService
             $app = new App([
                 'desc' => 'mini cli application',
             ]);
+            app('console')->setApp($app);
             $process = new Process(function () use ($app) {
                 $app->run();
             });

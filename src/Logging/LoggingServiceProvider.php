@@ -22,7 +22,7 @@ class LoggingServiceProvider implements ServiceProviderInterface
     {
         try {
             $config = config('logging');
-            @Seaslog::setBasePath($config['default_basepath']);
+            @Seaslog::setBasePath($config['default_base_path']);
             @Seaslog::setLogger($config['default_logger']);
         } catch (Throwable $throwable) {
             app('exception')->logError($throwable);

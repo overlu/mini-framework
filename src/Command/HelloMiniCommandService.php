@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
+use App\Models\Slip;
+use Mini\Facades\Console;
 use Mini\Support\Command;
 use Swoole\Process;
 

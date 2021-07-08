@@ -9,6 +9,7 @@ namespace Mini\Command;
 
 use Exception;
 use Mini\Console\App;
+use Mini\Console\Artisan;
 use Mini\Contracts\Console\CommandInterface;
 use Mini\Support\Command;
 use Swoole\Process;

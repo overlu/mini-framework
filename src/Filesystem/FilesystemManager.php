@@ -266,6 +266,11 @@ class FilesystemManager implements FactoryContract
         return new Flysystem($adapter, $config);
     }
 
+    protected function createOSSDriver(array $config)
+    {
+
+    }
+
     /**
      * Set the given disk instance.
      *

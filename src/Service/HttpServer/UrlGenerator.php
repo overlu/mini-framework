@@ -94,7 +94,7 @@ class UrlGenerator implements UrlGeneratorContract
         if (Context::has('IsInRequestEvent') && $request = request()) {
             $url = $request->getUri()->withQuery('')->withFragment('');
         } else {
-            $url = new Uri(rtrim(env('APP_URL'), 'http://localhost/'));
+            $url = new Uri(rtrim(env('APP_URL', 'http://localhost/')));
         }
         if ($path !== '') {
             $url = $url->withPath($path);
