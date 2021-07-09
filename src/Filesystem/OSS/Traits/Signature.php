@@ -24,7 +24,7 @@ trait Signature
      * @return array
      * @throws \Exception
      */
-    public function getSignatureConfig(string $prefix = '', ?string $callBackUrl = null, array $customData = [], int $expire = 30, int $contentLengthRangeValue = 1048576000, array $systemData = []): array
+    public function getOssSignatureConfig(string $prefix = '', ?string $callBackUrl = null, array $customData = [], int $expire = 30, int $contentLengthRangeValue = 1048576000, array $systemData = []): array
     {
         if (!empty($prefix)) {
             $prefix = ltrim($prefix, '/');

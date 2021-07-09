@@ -39,6 +39,8 @@ use Mini\Filesystem\Filesystem;
  * @method static string getVisibility(string $path)
  * @method static string temporaryUrl(string $path, \DateTimeInterface $expiration, array $options = [])
  * @method static string url(string $path)
+ * @method static array ossCallbackVerify()
+ * @method static array getOssSignatureConfig(string $prefix = '', ?string $callBackUrl = null, array $customData = [], int $expire = 30, int $contentLengthRangeValue = 1048576000, array $systemData = [])
  *
  * @see \Mini\Filesystem\FilesystemManager
  */

@@ -18,7 +18,7 @@ trait Verify
     /**
      * @return array
      */
-    public function verify(): array
+    public function ossCallbackVerify(): array
     {
         // oss 前面header、公钥 header
         $authorizationBase64 = Request::server('HTTP_AUTHORIZATION', '');
