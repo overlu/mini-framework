@@ -355,7 +355,7 @@ class Adapter implements FilesystemAdapter
      */
     public function getUrl($path): string
     {
-        if (isset($this->config['url'])) {
+        if (!empty($this->config['url'])) {
             return rtrim($this->config['url'], '/') . '/' . ltrim($path, '/');
         }
 
