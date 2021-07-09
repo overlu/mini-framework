@@ -11,13 +11,13 @@ use Carbon\Carbon;
 use League\Flysystem\Config;
 use League\Flysystem\FileAttributes;
 use League\Flysystem\FilesystemAdapter;
+use League\Flysystem\FilesystemException;
 use League\Flysystem\UnableToWriteFile;
 use League\Flysystem\Visibility;
-use Mini\Facades\Request;
+use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Filesystem\OSS\Traits\Signature;
 use Mini\Filesystem\OSS\Traits\Verify;
-use Mini\Service\HttpMessage\Stream\SwooleFileStream;
-use Mini\Service\HttpMessage\Stream\SwooleStream;
+use OSS\Core\OssException;
 use OSS\OssClient;
 
 /**
@@ -43,7 +43,7 @@ class Adapter implements FilesystemAdapter
     protected bool $isCName;
     protected bool $useSSL = false;
 
-    const SYSTEM_FIELD = [
+    public const SYSTEM_FIELD = [
         'bucket' => '${bucket}',
         'etag' => '${etag}',
         'filename' => '${object}',
@@ -53,6 +53,10 @@ class Adapter implements FilesystemAdapter
         'width' => '${imageInfo.width}',
         'format' => '${imageInfo.format}',
     ];
+    /**
+     * @var array|mixed
+     */
+    protected array $config;
 
     /**
      * @param $config = [
@@ -66,6 +70,7 @@ class Adapter implements FilesystemAdapter
      *     'token' => '',
      *     'proxy' => null,
      * ]
+     * @throws BindingResolutionException
      */
     public function __construct($config = [])
     {
@@ -113,7 +118,7 @@ class Adapter implements FilesystemAdapter
      * @param string $path
      * @param resource $contents
      * @param Config $config
-     * @throws \OSS\Core\OssException
+     * @throws OssException
      */
     public function writeStream(string $path, $contents, Config $config): void
     {
@@ -164,7 +169,7 @@ class Adapter implements FilesystemAdapter
 
     /**
      * @param string $path
-     * @throws \League\Flysystem\FilesystemException
+     * @throws FilesystemException
      */
     public function deleteDirectory(string $path): void
     {
@@ -191,7 +196,7 @@ class Adapter implements FilesystemAdapter
     /**
      * @param string $path
      * @param string $visibility
-     * @throws \OSS\Core\OssException
+     * @throws OssException
      */
     public function setVisibility(string $path, string $visibility): void
     {
@@ -205,7 +210,7 @@ class Adapter implements FilesystemAdapter
     /**
      * @param string $path
      * @return FileAttributes
-     * @throws \OSS\Core\OssException
+     * @throws OssException
      */
     public function visibility(string $path): FileAttributes
     {
@@ -247,7 +252,7 @@ class Adapter implements FilesystemAdapter
      * @param string $path
      * @param bool $deep
      * @return iterable
-     * @throws \OSS\Core\OssException
+     * @throws OssException
      */
     public function listContents(string $path, bool $deep): iterable
     {
@@ -308,7 +313,7 @@ class Adapter implements FilesystemAdapter
      * @param string $source
      * @param string $destination
      * @param Config $config
-     * @throws \OSS\Core\OssException
+     * @throws OssException
      */
     public function move(string $source, string $destination, Config $config): void
     {
@@ -320,7 +325,7 @@ class Adapter implements FilesystemAdapter
      * @param string $source
      * @param string $destination
      * @param Config $config
-     * @throws \OSS\Core\OssException
+     * @throws OssException
      */
     public function copy(string $source, string $destination, Config $config): void
     {
@@ -368,7 +373,8 @@ class Adapter implements FilesystemAdapter
      *
      * @param $path
      * @param $timeout
-     *
+     * @param array $options
+     * @param $method
      * @return bool|string
      */
     public function signUrl($path, $timeout, array $options = [], $method = OssClient::OSS_HTTP_GET)
@@ -381,7 +387,8 @@ class Adapter implements FilesystemAdapter
      *
      * @param $path
      * @param $expiration
-     *
+     * @param array $options
+     * @param $method
      * @return bool|string
      */
     public function getTemporaryUrl($path, $expiration, array $options = [], $method = OssClient::OSS_HTTP_GET)
@@ -392,7 +399,7 @@ class Adapter implements FilesystemAdapter
     /**
      * @return string
      */
-    protected function normalizeHost()
+    protected function normalizeHost(): string
     {
         if ($this->isCName) {
             $domain = $this->endpoint;
@@ -412,7 +419,7 @@ class Adapter implements FilesystemAdapter
     /**
      * Check the endpoint to see if SSL can be used.
      */
-    protected function checkEndpoint()
+    protected function checkEndpoint(): void
     {
         if (0 === strpos($this->endpoint, 'http://')) {
             $this->endpoint = substr($this->endpoint, strlen('http://'));
