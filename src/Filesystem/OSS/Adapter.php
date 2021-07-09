@@ -14,6 +14,8 @@ use League\Flysystem\FilesystemAdapter;
 use League\Flysystem\UnableToWriteFile;
 use League\Flysystem\Visibility;
 use Mini\Facades\Request;
+use Mini\Filesystem\OSS\Traits\Signature;
+use Mini\Filesystem\OSS\Traits\Verify;
 use Mini\Service\HttpMessage\Stream\SwooleFileStream;
 use Mini\Service\HttpMessage\Stream\SwooleStream;
 use OSS\OssClient;
@@ -24,6 +26,8 @@ use OSS\OssClient;
  */
 class Adapter implements FilesystemAdapter
 {
+    use Verify, Signature;
+
     /**
      * @var OssClient
      */
@@ -33,8 +37,8 @@ class Adapter implements FilesystemAdapter
      * @var string
      */
     protected string $bucket;
-    protected string $accessSecret;
-    protected string $accessId;
+    protected string $accessKeySecret;
+    protected string $accessKeyId;
     protected string $endpoint;
     protected bool $isCName;
     protected bool $useSSL = false;
@@ -67,14 +71,14 @@ class Adapter implements FilesystemAdapter
     {
         $this->config = $config;
         $this->bucket = $this->config['bucket'];
-        $this->accessId = $this->config['access_id'];
-        $this->accessSecret = $accessSecret;
+        $this->accessKeyId = $this->config['access_id'];
+        $this->accessKeySecret = $this->config['access_secret'];
         $this->endpoint = $this->config['endpoint'] ?? 'oss-cn-hangzhou.aliyuncs.com';
         $this->isCName = $this->config['is_cname'] ?? false;
 
         $this->client = make(OssClient::class, [
-            $this->accessId,
-            $this->accessSecret,
+            $this->accessKeyId,
+            $this->accessKeySecret,
             $this->endpoint,
             $this->isCName,
             $this->config['token'] ?? null,
@@ -358,97 +362,6 @@ class Adapter implements FilesystemAdapter
         return $this->normalizeHost() . ltrim($path, '/');
     }
 
-    /**
-     * oss 直传配置.
-     *
-     * @param string $prefix
-     * @param null $callBackUrl
-     * @param array $customData
-     * @param int $expire
-     * @param int $contentLengthRangeValue
-     * @param array $systemData
-     *
-     * @return false|string
-     *
-     * @throws \Exception
-     */
-    public function getSignatureConfig($prefix = '', $callBackUrl = null, $customData = [], $expire = 30, $contentLengthRangeValue = 1048576000, $systemData = [])
-    {
-        if (!empty($prefix)) {
-            $prefix = ltrim($prefix, '/');
-        }
-
-        // 系统参数
-        $system = [];
-        if (empty($systemData)) {
-            $system = self::SYSTEM_FIELD;
-        } else {
-            foreach ($systemData as $key => $value) {
-                if (!in_array($value, self::SYSTEM_FIELD)) {
-                    throw new \InvalidArgumentException("Invalid oss system filed: ${value}");
-                }
-                $system[$key] = $value;
-            }
-        }
-
-        // 自定义参数
-        $callbackVar = [];
-        $data = [];
-        if (!empty($customData)) {
-            foreach ($customData as $key => $value) {
-                $callbackVar['x:' . $key] = $value;
-                $data[$key] = '${x:' . $key . '}';
-            }
-        }
-
-        $callbackParam = [
-            'callbackUrl' => $callBackUrl,
-            'callbackBody' => urldecode(http_build_query(array_merge($system, $data))),
-            'callbackBodyType' => 'application/x-www-form-urlencoded',
-        ];
-        $callbackString = json_encode($callbackParam);
-        $base64CallbackBody = base64_encode($callbackString);
-
-        $now = time();
-        $end = $now + $expire;
-        $expiration = $this->gmt_iso8601($end);
-
-        // 最大文件大小.用户可以自己设置
-        $condition = [
-            0 => 'content-length-range',
-            1 => 0,
-            2 => $contentLengthRangeValue,
-        ];
-        $conditions[] = $condition;
-
-        $start = [
-            0 => 'starts-with',
-            1 => '$key',
-            2 => $prefix,
-        ];
-        $conditions[] = $start;
-
-        $arr = [
-            'expiration' => $expiration,
-            'conditions' => $conditions,
-        ];
-        $policy = json_encode($arr);
-        $base64Policy = base64_encode($policy);
-        $stringToSign = $base64Policy;
-        $signature = base64_encode(hash_hmac('sha1', $stringToSign, $this->accessSecret, true));
-
-        $response = [];
-        $response['accessid'] = $this->accessId;
-        $response['host'] = $this->normalizeHost();
-        $response['policy'] = $base64Policy;
-        $response['signature'] = $signature;
-        $response['expire'] = $end;
-        $response['callback'] = $base64CallbackBody;
-        $response['callback-var'] = $callbackVar;
-        $response['dir'] = $prefix;  // 这个参数是设置用户上传文件时指定的前缀。
-
-        return json_encode($response);
-    }
 
     /**
      * sign url.
@@ -477,17 +390,8 @@ class Adapter implements FilesystemAdapter
     }
 
     /**
-     * gmt.
-     * @param $time
      * @return string
-     * @throws \Exception
      */
-    public function gmt_iso8601($time)
-    {
-        // fix bug https://connect.console.aliyun.com/connect/detail/162632
-        return (new \DateTime(null, new \DateTimeZone('UTC')))->setTimestamp($time)->format('Y-m-d\TH:i:s\Z');
-    }
-
     protected function normalizeHost()
     {
         if ($this->isCName) {
@@ -525,57 +429,5 @@ class Adapter implements FilesystemAdapter
     public function getClient(): OssClient
     {
         return $this->client;
-    }
-
-    /**
-     * @return array
-     */
-    public function verify(): array
-    {
-        // oss 前面header、公钥 header
-        $authorizationBase64 = Request::server('HTTP_AUTHORIZATION', '');
-        $pubKeyUrlBase64 = Request::server('HTTP_X_OSS_PUB_KEY_URL', '');
-
-        // 验证失败
-        if (!$authorizationBase64 || !$pubKeyUrlBase64) {
-            return [false, ['CallbackFailed' => 'authorization or pubKeyUrl is null']];
-        }
-
-        // 获取OSS的签名
-        $authorization = base64_decode($authorizationBase64);
-        // 获取公钥
-        $pubKeyUrl = base64_decode($pubKeyUrlBase64);
-        // 请求验证
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $pubKeyUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-        $pubKey = curl_exec($ch);
-
-
-        if (!$pubKey) {
-            return [false, ['CallbackFailed' => 'curl is fail']];
-        }
-
-        // 获取回调 body
-        $body = file_get_contents('php://input');
-        // 拼接待签名字符串
-        $path = $_SERVER['REQUEST_URI'];
-        $pos = strpos($path, '?');
-        if (false === $pos) {
-            $authStr = urldecode($path) . "\n" . $body;
-        } else {
-            $authStr = urldecode(substr($path, 0, $pos)) . substr($path, $pos, strlen($path) - $pos) . "\n" . $body;
-        }
-        // 验证签名
-        $ok = openssl_verify($authStr, $authorization, $pubKey, OPENSSL_ALGO_MD5);
-
-        if (1 !== $ok) {
-            return [false, ['CallbackFailed' => 'verify is fail, Illegal data']];
-        }
-
-        parse_str($body, $data);
-
-        return [true, $data];
     }
 }

@@ -761,6 +761,10 @@ class FilesystemAdapter implements CloudFilesystemContract
      */
     public function __call($method, array $parameters)
     {
-        return $this->driver->{$method}(...array_values($parameters));
+        if (method_exists($this->driver, $method)) {
+            return $this->driver->{$method}(...array_values($parameters));
+        } elseif (method_exists($this->adapter, $method)) {
+            return $this->adapter->{$method}(...array_values($parameters));
+        }
     }
 }

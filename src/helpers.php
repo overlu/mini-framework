@@ -428,7 +428,15 @@ if (!function_exists('make')) {
      */
     function make(string $name, array $parameters = [])
     {
-        return Container::getInstance()->make($name, $parameters);
+        if (\Mini\Support\ApplicationContext::hasContainer()) {
+            $container = \Mini\Support\ApplicationContext::getContainer();
+            if (method_exists($container, 'make')) {
+                return $container->make($name, $parameters);
+            }
+        }
+        $parameters = array_values($parameters);
+        return new $name(...$parameters);
+//        return Container::getInstance()->make($name, $parameters);
     }
 }
 
