@@ -27,13 +27,13 @@ class SocketResetCommandService extends AbstractCommandService
             return;
         }
         Command::info('resetting...');
-        $redis = Redis::connection(config('cache . drivers . redis . collection', 'cache'));
+        $redis = Redis::connection(config('cache.drivers.redis.collection', 'cache'));
         Store::drop(Socket::$host);
         $this->removeKeys($redis, Socket::$fdPrefix);
         $this->removeKeys($redis, Socket::$groupPrefix);
         $this->removeKeys($redis, Socket::$userPrefix);
         $this->removeKeys($redis, Socket::$userGroupPrefix);
-        Command::info('done . ');
+        Command::info('done.');
     }
 
     /**
