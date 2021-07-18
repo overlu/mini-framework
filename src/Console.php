@@ -15,6 +15,7 @@ use Mini\Command\MigrateRefreshCommandService;
 use Mini\Command\MigrateResetCommandService;
 use Mini\Command\MigrateRollbackCommandService;
 use Mini\Command\RunCrontabCommandService;
+use Mini\Command\SocketResetCommandService;
 use Mini\Command\StatusCrontabCommandService;
 use Mini\Command\StorageLinkCommandService;
 use Throwable;
@@ -30,7 +31,8 @@ class Console
         MakeMigrationCommandService::class,
         StorageLinkCommandService::class,
         RunCrontabCommandService::class,
-        StatusCrontabCommandService::class
+        StatusCrontabCommandService::class,
+        SocketResetCommandService::class
     ];
 
     /**
