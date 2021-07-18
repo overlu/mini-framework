@@ -11,6 +11,10 @@ use Mini\Singleton;
 use Mini\Support\Store;
 use Swoole\Coroutine\Http\Client as SwooleClient;
 
+/**
+ * Class Client
+ * @package Mini\Service\WsServer
+ */
 class Client
 {
     use Singleton;
@@ -75,7 +79,7 @@ class Client
      */
     private function register(): void
     {
-        Store::put('websocket_server_hosts', config('websocket.host', '127.0.0.1') . ':' . config('websocket.port', '9501'));
+        Store::put(Socket::$host, config('websocket.host', '127.0.0.1') . ':' . config('websocket.port', '9501'));
         $this->path = DCS::generateUrlPath();
     }
 }

@@ -17,8 +17,6 @@ use Mini\Support\Store;
  */
 class User
 {
-    private static string $prefix = 'socket_uid:';
-
     /**
      * 绑定用户
      * @param string $uid
@@ -28,8 +26,8 @@ class User
      */
     public static function bind(string $uid, int $fd): array
     {
-        Cache::driver(config('websocket.cache_driver', 'redis'))->set('socket_fd:' . $fd, $uid);
-        $clientIds = Store::put(static::$prefix . $uid, Socket::packClientId($uid, $fd), config('websocket.max_num_of_uid_online', 0));
+        Cache::driver(config('websocket.cache_driver', 'redis'))->set(Socket::$fdPrefix . $fd, $uid);
+        $clientIds = Store::put(Socket::$userPrefix . $uid, Socket::packClientId($uid, $fd), config('websocket.max_num_of_uid_online', 0));
         if (!static::joined($uid)) {
             static::joinIn($uid);
         }
@@ -46,7 +44,7 @@ class User
      */
     public static function joinIn(string $uid): array
     {
-        return Store::put(static::$prefix . 'all', $uid);
+        return Store::put(Socket::$userPrefix . 'all', $uid);
     }
 
     /**
@@ -56,7 +54,7 @@ class User
      */
     public static function joined(string $uid): bool
     {
-        return Store::has(static::$prefix . 'all', $uid);
+        return Store::has(Socket::$userPrefix . 'all', $uid);
     }
 
     /**
@@ -75,11 +73,11 @@ class User
         /**
          * 移除用户中的客户端
          */
-        Store::remove(static::$prefix . $uid, $client);
+        Store::remove(Socket::$userPrefix . $uid, $client);
         /**
          * 删除（客户端-用户）缓存
          */
-        Cache::driver(config('websocket.cache_driver', 'redis'))->delete('socket_fd:' . $fd);
+        Cache::driver(config('websocket.cache_driver', 'redis'))->delete(Socket::$fdPrefix . $fd);
         if (empty(static::getFds($uid))) {
             self::leaveOut($uid);
         }
@@ -97,9 +95,9 @@ class User
      */
     public static function leaveOut(string $uid): bool
     {
-        Store::drop(static::$prefix . $uid);
+        Store::drop(Socket::$userPrefix . $uid);
         Group::unbind($uid);
-        return Store::remove(static::$prefix . 'all', $uid);
+        return Store::remove(Socket::$userPrefix . 'all', $uid);
     }
 
 
@@ -110,7 +108,7 @@ class User
      */
     public static function getFds(string $uid): array
     {
-        return Store::get(static::$prefix . $uid);
+        return Store::get(Socket::$userPrefix . $uid);
     }
 
     /**
@@ -120,7 +118,7 @@ class User
      */
     public static function getUserByFd($fd)
     {
-        return Cache::driver(config('websocket.cache_driver', 'redis'))->get('socket_fd:' . $fd);
+        return Cache::driver(config('websocket.cache_driver', 'redis'))->get(Socket::$fdPrefix . $fd);
     }
 
     /**
@@ -129,7 +127,7 @@ class User
      */
     public static function getAll(): array
     {
-        return Store::get(static::$prefix . 'all');
+        return Store::get(Socket::$userPrefix . 'all');
     }
 
     /**
@@ -153,7 +151,7 @@ class User
      */
     public static function isOnline(string $uid): bool
     {
-        return Store::has(static::$prefix . 'all', $uid);
+        return Store::has(Socket::$userPrefix . 'all', $uid);
     }
 
     /**

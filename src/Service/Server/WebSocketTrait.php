@@ -8,12 +8,9 @@ declare(strict_types=1);
 namespace Mini\Service\Server;
 
 use Exception;
-use Mini\Context;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\HttpMessage\WebsocketRequestInterface;
 use Mini\Contracts\HttpMessage\WebsocketResponseInterface;
-use Mini\Listener;
-use Mini\Service\WsServer\AuthCodeCheck;
 use Mini\Service\WsServer\Request;
 use Mini\Service\WsServer\Response;
 use Mini\Service\WsServer\User;
@@ -167,8 +164,9 @@ trait WebSocketTrait
     /**
      * 解绑fd
      * @param int $fd
+     * @throws \JsonException
      */
-    private function unbindFd(int $fd)
+    private function unbindFd(int $fd): void
     {
         if ($uid = User::getUserByFd($fd)) {
             User::unbind($uid, $fd);

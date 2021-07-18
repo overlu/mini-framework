@@ -15,9 +15,6 @@ use Mini\Support\Store;
  */
 class Group
 {
-    public static string $prefix = 'socket_group:';
-    public static string $user_prefix = 'socket_user_group:';
-
     /**
      * 绑定用户组
      * @param string $group
@@ -26,8 +23,8 @@ class Group
      */
     public static function bind(string $uid, string $group): array
     {
-        $user_groups = Store::put(static::$user_prefix . $uid, $group);
-        $group_users = Store::put(static::$prefix . $group, $uid);
+        $user_groups = Store::put(Socket::$userGroupPrefix . $uid, $group);
+        $group_users = Store::put(Socket::$groupPrefix . $group, $uid);
         return [
             'user_groups' => $user_groups,
             'group_users' => $group_users
@@ -43,21 +40,21 @@ class Group
     public static function unbind(string $uid, string $group = ''): bool
     {
         if ($group) {
-            Store::remove(static::$user_prefix . $uid, $group);
-            Store::remove(static::$prefix . $group, $uid);
+            Store::remove(Socket::$userGroupPrefix . $uid, $group);
+            Store::remove(Socket::$groupPrefix . $group, $uid);
             if (empty(static::getUsers($group))) {
-                Store::drop(static::$prefix . $group);
+                Store::drop(Socket::$groupPrefix . $group);
             }
             return true;
         }
         $groups = User::getUserGroups($uid);
         foreach ($groups as $group) {
-            Store::remove(static::$prefix . $group, $uid);
+            Store::remove(Socket::$groupPrefix . $group, $uid);
             if (empty(static::getUsers($group))) {
-                Store::drop(static::$prefix . $group);
+                Store::drop(Socket::$groupPrefix . $group);
             }
         }
-        Store::drop(static::$user_prefix . $uid);
+        Store::drop(Socket::$userGroupPrefix . $uid);
         return true;
     }
 
@@ -68,7 +65,7 @@ class Group
      */
     public static function getUsers(string $group): array
     {
-        return Store::get(static::$prefix . $group);
+        return Store::get(Socket::$groupPrefix . $group);
     }
 
     /**

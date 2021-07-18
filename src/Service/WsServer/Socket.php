@@ -17,6 +17,12 @@ use Mini\Contracts\Support\Jsonable;
  */
 class Socket
 {
+    public static string $userPrefix = 'socket:uid:';
+    public static string $fdPrefix = 'socket:fd:';
+    public static string $groupPrefix = 'socket:group:';
+    public static string $userGroupPrefix = 'socket:user:group:';
+    public static string $host = 'socket:hosts';
+
     private static function pushByAntherServer($client, $data): void
     {
         app('dcs')->push($client, 'push', $data);

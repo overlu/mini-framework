@@ -12,6 +12,10 @@ use Mini\Support\Store;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 
+/**
+ * Class DCS
+ * @package Mini\Service\WsServer
+ */
 class DCS implements WebsocketControllerInterface
 {
     /**
@@ -78,7 +82,7 @@ class DCS implements WebsocketControllerInterface
     public function checkAuthCode(string $authcode, string $host): bool
     {
         $host = base64_decode($host);
-        return sha1($host . config('websocket.secret_key')) === $authcode && Store::has('websocket_server_hosts', $host);
+        return sha1($host . config('websocket.secret_key')) === $authcode && Store::has(Socket::$host, $host);
     }
 
     /**
