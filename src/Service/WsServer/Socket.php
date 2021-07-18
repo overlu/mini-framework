@@ -38,15 +38,17 @@ class Socket
         $clients = User::getFds($uid);
         $server = server();
         foreach ($clients as $client) {
-            $clientArr = static::unPackClientId($client);
-            if ($clientArr['host'] === config('websocket.host') && $clientArr['port'] === config('websocket.port')) {
-                if ($server->exist($clientArr['fd']) && $server->isEstablished($clientArr['fd'])) {
-                    $server->push($clientArr['fd'], static::transferToResponse($data));
+            if (is_string($client)) {
+                $clientArr = static::unPackClientId($client);
+                if ($clientArr['host'] === config('websocket.host') && $clientArr['port'] === config('websocket.port')) {
+                    if ($server->exist($clientArr['fd']) && $server->isEstablished($clientArr['fd'])) {
+                        $server->push($clientArr['fd'], static::transferToResponse($data));
+                    } else {
+                        User::unbind($uid, (int)$clientArr['fd']);
+                    }
                 } else {
-                    User::unbind($uid, (int)$clientArr['fd']);
+                    static::pushByAntherServer($clientArr, $data);
                 }
-            } else {
-                static::pushByAntherServer($clientArr, $data);
             }
         }
     }
