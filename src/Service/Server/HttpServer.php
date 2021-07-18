@@ -34,7 +34,7 @@ class HttpServer extends AbstractServer
     /**
      * @var RouteService
      */
-    protected RouteService $route;
+    protected ?RouteService $route = null;
 
     protected string $type = 'Http';
 

@@ -8,9 +8,12 @@ declare(strict_types=1);
 namespace Mini\Support;
 
 use Mini\Facades\Cache;
+use Mini\Facades\Redis;
 
 class Store
 {
+    public static $lockPrefix = 'store_lock:';
+
     /**
      * 获取数据仓库
      * @param string $key
@@ -18,7 +21,7 @@ class Store
      */
     public static function get(string $key): array
     {
-        return (array)(Cache::driver(config('websocket.cache_driver', 'redis'))->get($key));
+        return (array)(Cache::driver(config('websocket.cache_driver', 'redis'))->get($key, []));
     }
 
     /**
@@ -30,19 +33,28 @@ class Store
      */
     public static function put(string $key, $value, int $length = 0): array
     {
-        $values = static::get($key);
-        $new_values = array_unique([...$values, ...(array)$value]);
-        $remove_values = [];
-        if ($length && ($remove_length = count($new_values) - $length) > 0) {
-            for ($i = 0; $i < $remove_length; $i++) {
-                $remove_values[] = array_shift($new_values);
+        $lockKet = static::$lockPrefix . $key;
+        $redis = Redis::connection(config('cache.drivers.redis.collection', 'cache'));
+        $notLocked = $redis->set($lockKet, 1, array('nx', 'ex' => 5));
+        if ($notLocked) {
+            $values = static::get($key);
+            $new_values = array_unique([...$values, ...(array)$value]);
+            $remove_values = [];
+            if ($length && ($remove_length = count($new_values) - $length) > 0) {
+                for ($i = 0; $i < $remove_length; $i++) {
+                    $remove_values[] = array_shift($new_values);
+                }
             }
+            Cache::driver(config('websocket.cache_driver', 'redis'))->set($key, $new_values);
+            $redis->del($lockKet);
+            return [
+                'remove_values' => $remove_values,
+                'new_values' => $new_values
+            ];
+        } else {
+            return [];
         }
-        Cache::driver(config('websocket.cache_driver', 'redis'))->set($key, $new_values);
-        return [
-            'remove_values' => $remove_values,
-            'new_values' => $new_values
-        ];
+
     }
 
     /**
