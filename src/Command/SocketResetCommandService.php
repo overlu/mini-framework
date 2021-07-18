@@ -18,6 +18,7 @@ class SocketResetCommandService extends AbstractCommandService
     /**
      * @param Process $process
      * @return mixed|void
+     * @throws \Exception
      */
     public function handle(Process $process)
     {
@@ -39,10 +40,10 @@ class SocketResetCommandService extends AbstractCommandService
      * @param \Redis $redis
      * @param $prefix
      */
-    public function removeKeys($redis, $prefix)
+    public function removeKeys($redis, $prefix): void
     {
         $it = NULL;
-        while ($keys = $redis->scan($it, $prefix . ' * ')) {
+        while ($keys = $redis->scan($it, $prefix . '*')) {
             is_array($keys) && $redis->unlink($keys);
         }
     }
