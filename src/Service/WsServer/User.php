@@ -175,6 +175,6 @@ class User
 
     public static function getUserGroups(string $uid): array
     {
-        return Store::get(Group::$user_prefix . $uid);
+        return Store::get(Socket::$userGroupPrefix . $uid);
     }
 }

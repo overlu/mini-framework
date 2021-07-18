@@ -26,7 +26,7 @@ class Client
 
     private function __construct()
     {
-        $this->register();
+        $this->path = DCS::generateUrlPath();
     }
 
     /**
@@ -77,9 +77,8 @@ class Client
     /**
      * 注册
      */
-    private function register(): void
+    public static function register(): void
     {
         Store::put(Socket::$host, config('websocket.host', '127.0.0.1') . ':' . config('websocket.port', '9501'));
-        $this->path = DCS::generateUrlPath();
     }
 }

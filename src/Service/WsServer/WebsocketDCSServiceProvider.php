@@ -30,6 +30,7 @@ class WebsocketDCSServiceProvider implements ServiceProviderInterface
      */
     public function boot(?Server $server = null, ?int $workerId = null): void
     {
+        Client::register();
         app()->singleton('dcs', function () {
             return Client::getInstance();
         });

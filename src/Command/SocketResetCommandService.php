@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
+use Mini\Facades\Redis;
 use Mini\Service\WsServer\Socket;
 use Mini\Support\Command;
 use Mini\Support\Store;
@@ -20,33 +21,30 @@ class SocketResetCommandService extends AbstractCommandService
      */
     public function handle(Process $process)
     {
+        if (Command::has('bin/mini')) {
+            Command::error('server is running, stop the mini server first!');
+            return;
+        }
         Command::info('resetting...');
-        if (Store::drop(Socket::$host)) {
-            Command::info('host reset succeed.');
-        } else {
-            Command::error('host reset failed.');
+        $redis = Redis::connection(config('cache . drivers . redis . collection', 'cache'));
+        Store::drop(Socket::$host);
+        $this->removeKeys($redis, Socket::$fdPrefix);
+        $this->removeKeys($redis, Socket::$groupPrefix);
+        $this->removeKeys($redis, Socket::$userPrefix);
+        $this->removeKeys($redis, Socket::$userGroupPrefix);
+        Command::info('done . ');
+    }
+
+    /**
+     * @param \Redis $redis
+     * @param $prefix
+     */
+    public function removeKeys($redis, $prefix)
+    {
+        $it = NULL;
+        while ($keys = $redis->scan($it, $prefix . ' * ')) {
+            is_array($keys) && $redis->unlink($keys);
         }
-        if (Store::drop(Socket::$fdPrefix)) {
-            Command::info('fd reset succeed.');
-        } else {
-            Command::error('fd reset failed.');
-        }
-        if (Store::drop(Socket::$groupPrefix)) {
-            Command::info('group reset succeed.');
-        } else {
-            Command::error('group reset failed.');
-        }
-        if (Store::drop(Socket::$userPrefix)) {
-            Command::info('user reset succeed.');
-        } else {
-            Command::error('user reset failed.');
-        }
-        if (Store::drop(Socket::$userGroupPrefix)) {
-            Command::info('user:group reset succeed.');
-        } else {
-            Command::error('user:group reset failed.');
-        }
-        Command::info('done.');
     }
 
     public function getCommand(): string
@@ -56,6 +54,6 @@ class SocketResetCommandService extends AbstractCommandService
 
     public function getCommandDescription(): string
     {
-        return 'reset socket data.';
+        return 'reset socket data . ';
     }
 }
