@@ -20,9 +20,9 @@ use Swoole\Http\Request;
  */
 class Response implements WebsocketResponseInterface
 {
-    private Server $server;
-    private $fd;
-    private Request $request;
+    private ?Server $server;
+    private ?int $fd;
+    private ?Request $request;
 
     public function __construct(Request $request, Server $server)
     {
@@ -40,7 +40,9 @@ class Response implements WebsocketResponseInterface
     public function push($data, $fd = null): WebsocketResponseInterface
     {
         $data = $this->transferToResponse($data);
-        $this->server->push(is_null($fd) ? $this->fd : $fd, $data);
+        if ($this->server->exists($fd) && $this->server->isEstablished($fd)) {
+            $this->server->push(is_null($fd) ? $this->fd : $fd, $data);
+        }
         return $this;
     }
 
