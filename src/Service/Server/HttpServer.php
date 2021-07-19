@@ -68,6 +68,9 @@ class HttpServer extends AbstractServer
         parent::onRequest($request, $response);
         try {
             $this->initRequestAndResponse($request, $response);
+            if (!$this->route) {
+                $this->route = RouteService::getInstance();
+            }
             if (!($resp = $this->route->dispatch($request)) instanceof \Psr\Http\Message\ResponseInterface) {
                 $resp = $this->transferToResponse($resp);
             }

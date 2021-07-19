@@ -11,6 +11,7 @@ use Exception;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\HttpMessage\WebsocketRequestInterface;
 use Mini\Contracts\HttpMessage\WebsocketResponseInterface;
+use Mini\Service\HttpServer\RouteService;
 use Mini\Service\WsServer\Request;
 use Mini\Service\WsServer\Response;
 use Mini\Service\WsServer\User;
@@ -58,6 +59,7 @@ trait WebSocketTrait
                 }
             }
         } catch (Throwable $throwable) {
+            $server->close($frame->fd);
             app('exception')->throw($throwable);
         }
     }
@@ -83,6 +85,9 @@ trait WebSocketTrait
     {
         try {
             parent::onOpen($server, $request);
+            if (!$this->route) {
+                $this->route = RouteService::getInstance();
+            }
             $this->initWsRequestAndResponse($request, $server);
             $resp = $this->route->dispatchWs($request);
             if (is_array($resp) && isset($resp['class'])) {
@@ -124,6 +129,7 @@ trait WebSocketTrait
             }
             ws_response()->push($this->error('whoops, something error'))->close();
         } catch (Throwable $throwable) {
+            $server->close($request->fd);
             app('exception')->throw($throwable);
         }
     }
@@ -141,7 +147,7 @@ trait WebSocketTrait
              * 解绑fd
              */
             $this->unbindFd($fd);
-            
+
             if (!empty($this->handler['className'])) {
                 call([$this->handler['callable'], 'onClose'], [$server, $fd, $this->handler['data'], $reactorId]);
             } elseif (!empty($this->handler['callable'])) {
