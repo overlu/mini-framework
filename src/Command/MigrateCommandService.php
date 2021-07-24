@@ -15,16 +15,14 @@ class MigrateCommandService extends AbstractCommandService
 
     public function handle(Process $process)
     {
-        run(function () {
-            if (!$this->confirmToProceed()) {
-                return;
-            }
-            $this->prepareDatabase();
-            $this->migrator->run([$this->getMigrationPaths()], [
-                'pretend' => $this->getOpt('pretend'),
-                'step' => $this->getOpt('step'),
-            ]);
-        });
+        if (!$this->confirmToProceed()) {
+            return;
+        }
+        $this->prepareDatabase();
+        $this->migrator->run([$this->getMigrationPaths()], [
+            'pretend' => $this->getOpt('pretend'),
+            'step' => $this->getOpt('step'),
+        ]);
     }
 
     protected function prepareDatabase(): void
