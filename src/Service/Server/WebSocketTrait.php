@@ -174,7 +174,8 @@ trait WebSocketTrait
      */
     private function unbindFd(int $fd): void
     {
-        if ($uid = User::getUserByFd($fd)) {
+        $uids = User::getUserByFd($fd);
+        foreach ($uids as $uid) {
             User::unbind($uid, $fd);
         }
     }

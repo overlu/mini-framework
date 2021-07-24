@@ -26,7 +26,7 @@ class User
      */
     public static function bind(string $uid, int $fd): array
     {
-        Cache::driver(config('websocket.cache_driver', 'redis'))->set(Socket::$fdPrefix . $fd, $uid);
+        Store::put(Socket::$fdPrefix . $fd, $uid);
         $clientIds = Store::put(Socket::$userPrefix . $uid, Socket::packClientId($uid, $fd), config('websocket.max_num_of_uid_online', 0));
         if (!static::joined($uid)) {
             static::joinIn($uid);
@@ -77,7 +77,7 @@ class User
         /**
          * 删除（客户端-用户）缓存
          */
-        Cache::driver(config('websocket.cache_driver', 'redis'))->delete(Socket::$fdPrefix . $fd);
+        Store::drop(Socket::$fdPrefix . $fd);
         if (empty(static::getFds($uid))) {
             self::leaveOut($uid);
         }
@@ -118,7 +118,7 @@ class User
      */
     public static function getUserByFd($fd)
     {
-        return Cache::driver(config('websocket.cache_driver', 'redis'))->get(Socket::$fdPrefix . $fd);
+        return Store::get(Socket::$fdPrefix . $fd);
     }
 
     /**

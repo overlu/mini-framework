@@ -67,7 +67,8 @@ class DCS implements WebsocketControllerInterface
      */
     public function onClose(Server $server, int $fd, array $routeData, int $reactorId)
     {
-        if ($uid = User::getUserByFd($fd)) {
+        $uids = User::getUserByFd($fd);
+        foreach ($uids as $uid) {
             User::unbind($uid, $fd);
         }
 //        return $reactorId;
