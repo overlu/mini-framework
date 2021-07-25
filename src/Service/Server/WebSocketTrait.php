@@ -129,7 +129,6 @@ trait WebSocketTrait
             }
             ws_response()->push($this->error('whoops, something error'))->close();
         } catch (Throwable $throwable) {
-            $server->close($request->fd);
             app('exception')->throw($throwable);
         }
     }

@@ -39,9 +39,9 @@ class Response implements WebsocketResponseInterface
      */
     public function push($data, $fd = null): WebsocketResponseInterface
     {
-        $data = $this->transferToResponse($data);
+        $fd = is_null($fd) ? $this->fd : $fd;
         if ($this->server->exists($fd) && $this->server->isEstablished($fd)) {
-            $this->server->push(is_null($fd) ? $this->fd : $fd, $data);
+            $this->server->push($fd, $this->transferToResponse($data));
         }
         return $this;
     }
