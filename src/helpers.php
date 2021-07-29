@@ -10,7 +10,9 @@ use Mini\Container\Container;
 use Mini\Context;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\HttpMessage\RequestInterface;
+use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\Support\Htmlable;
+use Mini\Contracts\Support\Jsonable;
 use Mini\Contracts\View\Factory;
 use Mini\Database\Redis\Pool;
 use Mini\Events\Dispatcher;
@@ -18,6 +20,8 @@ use Mini\Server;
 use Mini\Service\HttpMessage\Cookie\Cookie;
 use Mini\Service\HttpMessage\Stream\SwooleStream;
 use Mini\Service\HttpMessage\Uri\Uri;
+use Mini\Service\WsServer\Request;
+use Mini\Support\ApplicationContext;
 use Mini\Support\Arr;
 use Mini\Support\Collection;
 use Mini\Support\Coroutine;
@@ -51,6 +55,7 @@ if (!function_exists('app')) {
      * @param string|null $abstract
      * @param array $parameters
      * @return object|mixed|Container
+     * @throws BindingResolutionException
      */
     function app(?string $abstract = null, array $parameters = [])
     {
@@ -72,7 +77,7 @@ if (!function_exists('retry')) {
      * @return mixed
      * @throws Exception
      */
-    function retry($times, callable $callback, $sleep = 0, $when = null)
+    function retry(int $times, callable $callback, $sleep = 0, $when = null)
     {
         $attempts = 0;
 
@@ -233,7 +238,7 @@ if (!function_exists('head')) {
      * @param array $array
      * @return mixed
      */
-    function head($array)
+    function head(array $array)
     {
         return reset($array);
     }
@@ -245,7 +250,7 @@ if (!function_exists('last')) {
      * @param array $array
      * @return mixed
      */
-    function last($array)
+    function last(array $array)
     {
         return end($array);
     }
@@ -332,7 +337,7 @@ if (!function_exists('class_basename')) {
      * @param object|string $class
      * @return string
      */
-    function class_basename($class)
+    function class_basename($class): string
     {
         $class = is_object($class) ? get_class($class) : $class;
 
@@ -346,7 +351,7 @@ if (!function_exists('trait_uses_recursive')) {
      * @param string $trait
      * @return array
      */
-    function trait_uses_recursive($trait)
+    function trait_uses_recursive($trait): array
     {
         $traits = class_uses($trait);
 
@@ -364,7 +369,7 @@ if (!function_exists('class_uses_recursive')) {
      * @param object|string $class
      * @return array
      */
-    function class_uses_recursive($class)
+    function class_uses_recursive($class): array
     {
         if (is_object($class)) {
             $class = get_class($class);
@@ -409,7 +414,7 @@ if (!function_exists('parallel')) {
      * @param callable[] $callables
      * @return array
      */
-    function parallel(array $callables)
+    function parallel(array $callables): array
     {
         $parallel = new Parallel();
         foreach ($callables as $key => $callable) {
@@ -424,12 +429,11 @@ if (!function_exists('make')) {
      * @param string $name
      * @param array $parameters
      * @return mixed
-     * @throws BindingResolutionException
      */
     function make(string $name, array $parameters = [])
     {
-        if (\Mini\Support\ApplicationContext::hasContainer()) {
-            $container = \Mini\Support\ApplicationContext::getContainer();
+        if (ApplicationContext::hasContainer()) {
+            $container = ApplicationContext::getContainer();
             if (method_exists($container, 'make')) {
                 return $container->make($name, $parameters);
             }
@@ -571,7 +575,7 @@ if (!function_exists('request')) {
 if (!function_exists('ws_request')) {
     /**
      * 获取websocket request资源
-     * @return \Mini\Service\WsServer\Request
+     * @return Request
      */
     function ws_request()
     {
@@ -791,7 +795,6 @@ if (!function_exists('ws_abort')) {
     /**
      * @param int $code
      * @param string|array $message
-     * @param array $headers
      */
     function ws_abort(int $code, $message = ''): void
     {
@@ -805,11 +808,26 @@ if (!function_exists('e')) {
      * @param Htmlable|string $value
      * @param bool $doubleEncode
      * @return string
+     * @throws JsonException
      */
     function e($value, $doubleEncode = false): string
     {
         if ($value instanceof Htmlable) {
             return $value->toHtml();
+        }
+
+        if ($value instanceof Arrayable) {
+            return json_encode($value->toArray(), JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+        }
+
+        if ($value instanceof Jsonable) {
+            return $value->toJson();
+        }
+
+        if (is_object($value)) {
+            return method_exists($value, '__toString')
+                ? (string)$value
+                : json_encode((array)$value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
         }
         return htmlspecialchars($value, ENT_QUOTES, 'UTF-8', $doubleEncode);
     }
@@ -823,6 +841,7 @@ if (!function_exists('view')) {
      * @param array $data
      * @param array $mergeData
      * @return View|Factory
+     * @throws BindingResolutionException
      */
     function view($view = null, $data = [], $mergeData = [])
     {
@@ -918,7 +937,7 @@ if (!function_exists('cookie')) {
      * @return Cookie
      * @throws JsonException
      */
-    function cookie(string $name, $value, int $minutes = 0, string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = true)
+    function cookie(string $name, $value, int $minutes = 0, string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = true): Cookie
     {
         $value = is_array($value) ? json_encode($value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE) : $value;
         return new Mini\Service\HttpMessage\Cookie\Cookie($name, $value, $minutes, $path, $domain, $secure, $httpOnly);
@@ -934,7 +953,7 @@ if (!function_exists('redirect')) {
      * @return ResponseInterface
      * @throws Exception
      */
-    function redirect($toUrl, int $status = 302, string $schema = 'http')
+    function redirect($toUrl, int $status = 302, string $schema = 'http'): ResponseInterface
     {
         return response()->redirect($toUrl, $status, $schema);
     }
@@ -946,7 +965,7 @@ if (!function_exists('windows_os')) {
      *
      * @return bool
      */
-    function windows_os()
+    function windows_os(): bool
     {
         return PHP_OS_FAMILY === 'Windows';
     }
