@@ -14,9 +14,15 @@ use RecursiveIteratorIterator;
 
 class WatchServer
 {
-    protected string $watch_dir = BASE_PATH . '/app/';
+
+    protected array $watch_dir = [];
 
     protected array $hashes = [];
+
+    public function __construct()
+    {
+        $this->watch_dir = (array)config('app.watch_dir', []);
+    }
 
     public function watch(): void
     {
@@ -36,7 +42,10 @@ class WatchServer
 
     public function state(): void
     {
-        $files = $this->phpFiles($this->watch_dir);
+        $files = [];
+        foreach ($this->watch_dir as $dir) {
+            $files = array_merge($files, $this->phpFiles($dir));
+        }
         $this->hashes = array_combine($files, array_map([$this, 'fileHash'], $files));
         $count = count($this->hashes);
         Command::infoWithTime("📡 watching [{$count}] files...");
@@ -63,7 +72,8 @@ class WatchServer
      */
     protected function phpFiles(string $dirname): array
     {
-        $directory = new RecursiveDirectoryIterator($dirname);
+        $dir = BASE_PATH . DIRECTORY_SEPARATOR . trim($dirname, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $directory = new RecursiveDirectoryIterator($dir);
         $filter = new Filter($directory);
         $iterator = new RecursiveIteratorIterator($filter);
         return array_map(static function (\SplFileInfo $fileInfo) {
