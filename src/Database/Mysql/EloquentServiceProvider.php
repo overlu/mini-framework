@@ -105,7 +105,7 @@ class EloquentServiceProvider implements ServiceProviderInterface
             return;
         }
 
-        $trigger = config('logging.database_query_log_trigger', '');
+        $trigger = config('logging.database_query_log_trigger', false);
 
         if (!$this->requestHasTrigger($trigger)) {
             return;
@@ -141,11 +141,11 @@ class EloquentServiceProvider implements ServiceProviderInterface
     }
 
     /**
-     * @param string $trigger
+     * @param $trigger
      *
      * @return bool
      */
-    public function requestHasTrigger(string $trigger): bool
+    public function requestHasTrigger($trigger): bool
     {
         if (!$trigger) {
             return true;
