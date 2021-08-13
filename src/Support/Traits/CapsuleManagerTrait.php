@@ -17,7 +17,7 @@ trait CapsuleManagerTrait
      *
      * @var object
      */
-    protected static object $instance;
+    protected static ?object $instance = null;
 
     /**
      * The container instance.

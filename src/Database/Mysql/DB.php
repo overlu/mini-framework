@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql;
 
-use Mini\Database\Mysql\Capsule\Manager;
+use Mini\Facades\Facade;
 
 /**
  * Class DB
@@ -41,8 +41,16 @@ use Mini\Database\Mysql\Capsule\Manager;
  *
  * @see \Mini\Database\Mysql\DatabaseManager
  * @see \Mini\Database\Mysql\Connection
- * @package Mini\Database\Mysql
  */
-class DB extends Manager
+class DB extends Facade
 {
+    /**
+     * Get the registered name of the component.
+     *
+     * @return string
+     */
+    protected static function getFacadeAccessor()
+    {
+        return 'db';
+    }
 }

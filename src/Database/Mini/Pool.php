@@ -17,8 +17,6 @@ use Swoole\Database\PDOProxy;
 
 class Pool
 {
-    use Singleton;
-
     protected array $pools = [];
 
     protected array $config = [
@@ -37,7 +35,7 @@ class Pool
      */
     protected string $defaultConnection;
 
-    final private function __construct(array $config = [])
+    public function __construct(array $config = [])
     {
         if (empty($this->pools)) {
             $this->initialize($config);

@@ -15,11 +15,11 @@ class Redis extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return \Mini\Database\Redis\Pool::getInstance()->getConnection();
+        return app('redis')->getConnection('default');
     }
 
     public static function connection(string $connection = 'default')
     {
-        return \Mini\Database\Redis\Pool::getInstance()->getConnection($connection);
+        return app('redis')->getConnection($connection);
     }
 }

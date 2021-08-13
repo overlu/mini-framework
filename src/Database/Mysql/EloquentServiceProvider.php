@@ -7,12 +7,16 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql;
 
+use Doctrine\DBAL\Types\Type;
 use Mini\Context;
+use Mini\Contracts\Queue\EntityResolver;
 use Mini\Contracts\ServiceProviderInterface;
+use Mini\Database\Mysql\Connectors\ConnectionFactory;
+use Mini\Database\Mysql\Eloquent\Model;
+use Mini\Database\Mysql\Eloquent\QueueEntityResolver;
 use Mini\Database\Mysql\Events\QueryExecuted;
 use Mini\Facades\Console;
 use Mini\Facades\Log;
-use Mini\Facades\Request;
 use Swoole\Server;
 
 class EloquentServiceProvider implements ServiceProviderInterface
@@ -23,26 +27,85 @@ class EloquentServiceProvider implements ServiceProviderInterface
      */
     public function register(?Server $server = null, ?int $workerId = null): void
     {
-        $config = config('database.connections', []);
-        if (!empty($config)) {
-            /**
-             * @url https://github.com/Mini/database
-             */
-            new DatabaseBoot($config);
+        Model::clearBootedModels();
+
+        $this->registerConnectionServices();
+        $this->registerQueueableEntityResolver();
+        $this->registerDoctrineTypes();
+    }
+
+    /**
+     * Register the primary database bindings.
+     *
+     * @return void
+     * @throws \Mini\Contracts\Container\BindingResolutionException
+     */
+    protected function registerConnectionServices(): void
+    {
+        $app = app();
+        $app->singleton('db.factory', function ($app) {
+            return new ConnectionFactory($app);
+        });
+
+        $app->singleton('db', function ($app) {
+            return new DatabaseManager($app, $app['db.factory'], config('database.connections', []));
+        });
+
+        $app->bind('db.connection', function ($app) {
+            return $app['db']->connection();
+        });
+    }
+
+
+    /**
+     * Register the queueable entity resolver implementation.
+     *
+     * @return void
+     * @throws \Mini\Contracts\Container\BindingResolutionException
+     */
+    protected function registerQueueableEntityResolver(): void
+    {
+        app()->singleton(EntityResolver::class, function () {
+            return new QueueEntityResolver();
+        });
+    }
+
+    /**
+     * Register custom types with the Doctrine DBAL library.
+     *
+     * @return void
+     */
+    protected function registerDoctrineTypes(): void
+    {
+        if (!class_exists(Type::class)) {
+            return;
+        }
+
+        $types = config('database.dbal.types', []);
+
+        foreach ($types as $name => $class) {
+            if (!Type::hasType($name)) {
+                Type::addType($name, $class);
+            }
         }
     }
 
     /**
      * @param Server|null $server
      * @param int|null $workerId
+     * @throws \Mini\Contracts\Container\BindingResolutionException
      */
     public function boot(?Server $server = null, ?int $workerId = null): void
     {
+        Model::setConnectionResolver(app('db'));
+
+        Model::setEventDispatcher(app('events'));
+
         if (!config('logging.database_query_log_enabled', false) || config('app.env') === 'production') {
             return;
         }
 
-        $trigger = config('logging.database_query_log_trigger', false);
+        $trigger = config('logging.database_query_log_trigger', '');
 
         if (!$this->requestHasTrigger($trigger)) {
             return;
@@ -82,18 +145,21 @@ class EloquentServiceProvider implements ServiceProviderInterface
      *
      * @return bool
      */
-    public function requestHasTrigger($trigger)
+    public function requestHasTrigger(string $trigger): bool
     {
         if (!$trigger) {
             return true;
         }
+
+        if (RUN_ENV === 'artisan') {
+            return Console::getOpt($trigger, false);
+        }
+
         if (Context::has('IsInRequestEvent')) {
             $request = \request();
             return $request->hasHeader($trigger) || $request->has($trigger) || $request->hasCookie($trigger);
         }
-        if (RUN_ENV === 'artisan') {
-            return Console::getOpt($trigger, false);
-        }
+        return false;
     }
 
     /**
@@ -103,11 +169,13 @@ class EloquentServiceProvider implements ServiceProviderInterface
      *
      * @return string
      */
-    private function formatDuration($seconds)
+    private function formatDuration(float $seconds): string
     {
         if ($seconds < 0.001) {
             return round($seconds * 1000000) . 'μs';
-        } elseif ($seconds < 1) {
+        }
+
+        if ($seconds < 1) {
             return round($seconds * 1000, 2) . 'ms';
         }
 

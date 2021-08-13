@@ -517,7 +517,7 @@ if (!function_exists('redis')) {
      */
     function redis($connection = 'default')
     {
-        return Pool::getInstance()->getConnection($connection);
+        return app('redis')->getConnection($connection);
     }
 }
 

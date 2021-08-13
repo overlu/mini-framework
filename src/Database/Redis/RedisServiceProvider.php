@@ -15,13 +15,13 @@ class RedisServiceProvider implements ServiceProviderInterface
     /**
      * @param Server|null $server
      * @param int|null $workerId
+     * @throws \Mini\Contracts\Container\BindingResolutionException
      */
     public function register(?Server $server = null, ?int $workerId = null): void
     {
-        $config = config('redis', []);
-        if (!empty($config)) {
-            Pool::getInstance($config);
-        }
+        app()->singleton('redis', function () {
+            return new Redis();
+        });
     }
 
     /**
@@ -31,5 +31,4 @@ class RedisServiceProvider implements ServiceProviderInterface
     public function boot(?Server $server = null, ?int $workerId = null): void
     {
     }
-
 }

@@ -17,7 +17,7 @@ class RedisCacheCacheDriver extends AbstractCacheDriver
     public function __construct()
     {
         $this->prefix = config('cache.prefix', '');
-        $this->connection = Pool::getInstance()->getConnection(config('cache.drivers.redis.collection', 'default'));
+        $this->connection = app('redis')->getConnection(config('cache.drivers.redis.collection', 'default'));
     }
 
     /**

@@ -23,7 +23,7 @@ class MiniDBServiceProvider implements ServiceProviderInterface
         $config = config('database.connections', []);
         if (!empty($config)) {
             app()->singleton('db.mini', function () use ($config) {
-                return Pool::getInstance($config);
+                return new Pool($config);
             });
         }
     }
