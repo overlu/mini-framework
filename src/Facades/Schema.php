@@ -28,11 +28,18 @@ use Mini\Database\Mysql\Capsule\Manager;
  */
 class Schema extends Facade
 {
+    public static function connection($name)
+    {
+        return app('db')->connection($name)->getSchemaBuilder();
+    }
+
     /**
-     * @return \Mini\Database\Mysql\Schema\Builder|void
+     * Get a schema builder instance for the default connection.
+     *
+     * @return \Illuminate\Database\Schema\Builder
      */
     protected static function getFacadeAccessor()
     {
-        return Manager::schema();
+        return app('db')->connection()->getSchemaBuilder();
     }
 }

@@ -24,9 +24,10 @@ trait Migration
 
     public function __construct()
     {
+        $dbManger = app('db');
         $this->filesystem = new Filesystem();
-        $this->repository = new DatabaseMigrationRepository(Manager::getStaticDatabaseManager(), 'migrations');
-        $this->migrator = new Migrator($this->repository, Manager::getStaticDatabaseManager(), $this->filesystem);
+        $this->repository = new DatabaseMigrationRepository($dbManger, 'migrations');
+        $this->migrator = new Migrator($this->repository, $dbManger, $this->filesystem);
         $this->creator = new MigrationCreator($this->filesystem, stub_path());
     }
 
