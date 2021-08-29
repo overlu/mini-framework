@@ -23,14 +23,10 @@ class CacheServiceProviders implements ServiceProviderInterface
     /**
      * @param Server|null $server
      * @param int|null $workerId
-     * @throws BindingResolutionException
      */
     public function register(?Server $server = null, ?int $workerId = null): void
     {
-        $this->registerFileCacheDriver();
-        $this->registerRedisCacheDriver();
-        $this->registerSwooleCacheDriver();
-        $this->registerCache();
+        //
     }
 
     /**
@@ -73,8 +69,16 @@ class CacheServiceProviders implements ServiceProviderInterface
         });
     }
 
+    /**
+     * @param Server|null $server
+     * @param int|null $workerId
+     * @throws BindingResolutionException
+     */
     public function boot(?Server $server = null, ?int $workerId = null): void
     {
-        // TODO: Implement boot() method.
+        $this->registerFileCacheDriver();
+        $this->registerRedisCacheDriver();
+        $this->registerSwooleCacheDriver();
+        $this->registerCache();
     }
 }

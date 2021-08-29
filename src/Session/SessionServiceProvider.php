@@ -37,7 +37,7 @@ class SessionServiceProvider implements ServiceProviderInterface
      */
     public function register(?Server $server = null, ?int $workerId = null): void
     {
-        $this->registerSession();
+        //
     }
 
     /**
@@ -81,6 +81,6 @@ class SessionServiceProvider implements ServiceProviderInterface
      */
     public function boot(?Server $server = null, ?int $workerId = null): void
     {
-        // TODO: Implement boot() method.
+        $this->registerSession();
     }
 }
