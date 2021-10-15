@@ -44,6 +44,7 @@ class RouteService
         $routes = config('routes', []);
         self::$routes['http'] = array_merge(self::$routes['http'] ?? [], $routes['http']);
         self::$routes['ws'] = array_merge(self::$routes['ws'] ?? [], $routes['ws']);
+        self::$routes['default'] = $routes['default'] ?? null;
     }
 
     /**
@@ -315,9 +316,9 @@ class RouteService
      */
     public function defaultRouter()
     {
-        if (isset(self::$routes['default'])) {
-            return $this->dispatchHandle(self::$routes['default'], []);
+        if (empty(self::$routes['default'])) {
+            throw new NotFoundHttpException();
         }
-        throw new NotFoundHttpException();
+        return $this->dispatchHandle(self::$routes['default'], []);
     }
 }
