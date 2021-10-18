@@ -9,6 +9,7 @@ namespace Mini\Console;
 
 use InvalidArgumentException;
 use Mini\Application;
+use Mini\Facades\Log;
 use Mini\Support\Command;
 use RuntimeException;
 use Throwable;
@@ -221,24 +222,21 @@ class App
     }
 
     /**
-     * @param Throwable $e
+     * @param Throwable $throwable
      * @return int
      */
-    protected function handleException(Throwable $e): int
+    protected function handleException(Throwable $throwable): int
     {
-        $code = $e->getCode() !== 0 ? $e->getCode() : -1;
-
-        Command::error($e);
-
-//        if ($e instanceof InvalidArgumentException) {
-//            Color::println('ERROR: ' . $e->getMessage(), 'error');
-//            return 0;
-//        }
-//
-//        $eTpl = "Exception(%d): %s\nFile: %s(Line %d)\nTrace:\n%s\n";
-//
-//        // print exception message
-//        printf($eTpl, $code, $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
+        $code = $throwable->getCode() !== 0 ? $throwable->getCode() : -1;
+        Log::error([
+            'exception' => get_class($throwable),
+            'exception code' => $throwable->getCode(),
+            'exception message' => $throwable->getMessage() . ' in ' . $throwable->getFile() . ':' . $throwable->getLine(),
+            'exception trace detail' => $throwable->getTrace()
+        ]);
+        Command::line();
+        Command::error($throwable);
+        Command::line();
 
         return $code;
     }
