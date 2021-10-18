@@ -13,7 +13,6 @@ use Mini\Session\Drivers\NullSessionHandler;
 use Mini\Session\Drivers\RedisSessionDriver;
 use Mini\Support\ServiceProvider;
 use SessionHandlerInterface;
-use Swoole\Server;
 
 /**
  * Class SessionServiceProvider

@@ -10,7 +10,6 @@ namespace Mini\Service\WsServer;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Service\HttpServer\RouteService;
 use Mini\Support\ServiceProvider;
-use Swoole\Server;
 
 class WebsocketDCSServiceProvider extends ServiceProvider
 {

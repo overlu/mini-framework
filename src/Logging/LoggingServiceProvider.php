@@ -9,7 +9,6 @@ namespace Mini\Logging;
 
 use Mini\Support\ServiceProvider;
 use \Seaslog;
-use Swoole\Server;
 use Throwable;
 
 class LoggingServiceProvider extends ServiceProvider

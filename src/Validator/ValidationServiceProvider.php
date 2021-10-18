@@ -9,7 +9,6 @@ namespace Mini\Validator;
 
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Support\ServiceProvider;
-use Swoole\Server;
 
 class ValidationServiceProvider extends ServiceProvider
 {

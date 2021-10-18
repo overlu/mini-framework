@@ -9,7 +9,6 @@ namespace Mini\Translate;
 
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Support\ServiceProvider;
-use Swoole\Server;
 
 class TranslateServiceProvider extends ServiceProvider
 {

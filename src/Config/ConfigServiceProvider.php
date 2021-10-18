@@ -10,7 +10,6 @@ namespace Mini\Config;
 use Mini\Config;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Support\ServiceProvider;
-use Swoole\Server;
 
 class ConfigServiceProvider extends ServiceProvider
 {

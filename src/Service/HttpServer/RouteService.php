@@ -14,9 +14,7 @@ use Mini\BindsProvider;
 use Mini\Contracts\HttpMessage\WebsocketControllerInterface;
 use Mini\Exception\HttpException\MethodNotAllowedHttpException;
 use Mini\Exception\HttpException\NotFoundHttpException;
-use Mini\Facades\Log;
 use Mini\Support\Arr;
-use Mini\Support\Str;
 use ReflectionException;
 use ReflectionFunction;
 use ReflectionFunctionAbstract;
@@ -44,13 +42,9 @@ class RouteService
     {
         static::$cached = !config('app.route_cached', true);
         $routes = config('routes', []);
-        foreach ($routes as $key => $value) {
-            if (in_array($key, ['http', 'ws'])) {
-                self::$routes[$key] = array_merge(self::$routes[$key] ?? [], $value);
-                continue;
-            }
-            self::$routes[$key] = $value;
-        }
+        self::$routes['http'] = array_merge(self::$routes['http'] ?? [], $routes['http']);
+        self::$routes['ws'] = array_merge(self::$routes['ws'] ?? [], $routes['ws']);
+        self::$routes['default'] = $routes['default'] ?? null;
     }
 
     /**
@@ -176,7 +170,7 @@ class RouteService
         $routeInfo = self::$httpDispatcher->dispatch($method, rtrim($uri, '/') ?: '/');
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
-                throw new NotFoundHttpException();
+                return $this->defaultRouter();
             case Dispatcher::METHOD_NOT_ALLOWED:
                 throw new MethodNotAllowedHttpException();
             case Dispatcher::FOUND:
@@ -326,6 +320,7 @@ class RouteService
     public function defaultRouter()
     {
         if (empty(self::$routes['default'])) {
+            throw new NotFoundHttpException();
         }
         return $this->dispatchHandle(self::$routes['default'], []);
     }

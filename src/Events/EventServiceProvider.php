@@ -9,7 +9,6 @@ namespace Mini\Events;
 
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Support\ServiceProvider;
-use Swoole\Server;
 
 class EventServiceProvider extends ServiceProvider
 {

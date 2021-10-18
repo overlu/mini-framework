@@ -10,7 +10,6 @@ namespace Mini\Exception;
 use App\Exceptions\Handler;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Support\ServiceProvider;
-use Swoole\Server;
 
 /**
  * Class ExceptionServiceProvider
