@@ -7,14 +7,14 @@ declare(strict_types=1);
 
 namespace Mini\Bootstrap;
 
-use Mini\Contracts\ServiceProviderInterface;
+use Mini\Support\ServiceProvider;
 use RuntimeException;
 use Swoole\Server;
 
 class ProviderService
 {
     /**
-     * @var ServiceProviderInterface[]
+     * @var ServiceProvider[]
      */
     private array $serviceProviders;
     private array $bootedServiceProviders = [];
@@ -28,15 +28,17 @@ class ProviderService
      * bootstrap serviceProviders
      * @param Server|null $server
      * @param int|null $workerId
+     * @throws \Mini\Contracts\Container\BindingResolutionException
      */
     public function bootstrap(?Server $server = null, ?int $workerId = null): void
     {
+        $app = app();
         foreach ($this->serviceProviders as $serviceProvider) {
             if (!class_exists($serviceProvider)) {
                 throw new RuntimeException('class ' . $serviceProvider . ' not exists.');
             }
-            if (!($serviceProvider = new $serviceProvider) instanceof ServiceProviderInterface) {
-                throw new RuntimeException($serviceProvider . ' should instanceof ' . ServiceProviderInterface::class);
+            if (!($serviceProvider = new $serviceProvider($app)) instanceof ServiceProvider) {
+                throw new RuntimeException($serviceProvider . ' should instanceof ' . ServiceProvider::class);
             }
             $serviceProvider->register($server, $workerId);
             $this->bootedServiceProviders[] = $serviceProvider;
@@ -52,8 +54,8 @@ class ProviderService
      */
     public function addServiceProvider(string $serviceProvider): void
     {
-        if (!new $serviceProvider instanceof ServiceProviderInterface) {
-            throw new RuntimeException($serviceProvider . ' should instanceof ' . ServiceProviderInterface::class);
+        if (!new $serviceProvider instanceof ServiceProvider) {
+            throw new RuntimeException($serviceProvider . ' should instanceof ' . ServiceProvider::class);
         }
         $this->serviceProviders[] = $serviceProvider;
     }
@@ -70,7 +72,7 @@ class ProviderService
     }
 
     /**
-     * @return ServiceProviderInterface[]
+     * @return ServiceProvider[]
      */
     public function getServiceProviders(): array
     {

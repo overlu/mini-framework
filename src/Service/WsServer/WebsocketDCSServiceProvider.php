@@ -8,11 +8,11 @@ declare(strict_types=1);
 namespace Mini\Service\WsServer;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Contracts\ServiceProviderInterface;
 use Mini\Service\HttpServer\RouteService;
+use Mini\Support\ServiceProvider;
 use Swoole\Server;
 
-class WebsocketDCSServiceProvider implements ServiceProviderInterface
+class WebsocketDCSServiceProvider extends ServiceProvider
 {
     /**
      * @param Server|null $server
@@ -31,7 +31,7 @@ class WebsocketDCSServiceProvider implements ServiceProviderInterface
     public function boot(?Server $server = null, ?int $workerId = null): void
     {
         Client::register();
-        app()->singleton('dcs', function () {
+        $this->app->singleton('dcs', function () {
             return Client::getInstance();
         });
     }

@@ -25,7 +25,7 @@ trait Migration
     public function __construct()
     {
         $dbManger = app('db');
-        $this->filesystem = new Filesystem();
+        $this->filesystem = app('files');
         $this->repository = new DatabaseMigrationRepository($dbManger, 'migrations');
         $this->migrator = new Migrator($this->repository, $dbManger, $this->filesystem);
         $this->creator = new MigrationCreator($this->filesystem, stub_path());

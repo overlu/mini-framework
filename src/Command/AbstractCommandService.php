@@ -7,11 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
-use Exception;
 use Mini\Console\App;
-use Mini\Console\Artisan;
 use Mini\Contracts\Console\CommandInterface;
-use Mini\Support\Command;
 use Swoole\Process;
 
 /**
@@ -22,6 +19,11 @@ use Swoole\Process;
 abstract class AbstractCommandService implements CommandInterface
 {
     protected App $app;
+
+    public function __construct()
+    {
+
+    }
 
     /**
      * run console
@@ -51,6 +53,7 @@ abstract class AbstractCommandService implements CommandInterface
         $this->app = $app;
         return $this;
     }
+
 
     /**
      * @param $name

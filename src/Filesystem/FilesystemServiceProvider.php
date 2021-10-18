@@ -8,10 +8,10 @@ declare(strict_types=1);
 namespace Mini\Filesystem;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Contracts\ServiceProviderInterface;
+use Mini\Support\ServiceProvider;
 use Swoole\Server;
 
-class FilesystemServiceProvider implements ServiceProviderInterface
+class FilesystemServiceProvider extends ServiceProvider
 {
     /**
      * Register the service provider.
@@ -36,7 +36,7 @@ class FilesystemServiceProvider implements ServiceProviderInterface
      */
     protected function registerNativeFilesystem(): void
     {
-        app()->singleton('files', function () {
+        $this->app->singleton('files', function () {
             return new Filesystem;
         });
     }
@@ -51,12 +51,12 @@ class FilesystemServiceProvider implements ServiceProviderInterface
     {
         $this->registerManager();
 
-//        app()->singleton('filesystem.disk', function () {
-//            return app('filesystem')->disk($this->getDefaultDriver());
+//        $this->app->singleton('filesystem.disk', function ($app) {
+//            return $app['filesystem']->disk($this->getDefaultDriver());
 //        });
 //
-//        app()->singleton('filesystem.cloud', function () {
-//            return app('filesystem')->disk($this->getCloudDriver());
+//        $this->app->singleton('filesystem.cloud', function ($app) {
+//            return $app['filesystem']->disk($this->getCloudDriver());
 //        });
     }
 
@@ -68,7 +68,7 @@ class FilesystemServiceProvider implements ServiceProviderInterface
      */
     protected function registerManager(): void
     {
-        app()->singleton('filesystem', function ($app) {
+        $this->app->singleton('filesystem', function ($app) {
             return new FilesystemManager($app);
         });
     }

@@ -52,7 +52,7 @@ class CommandService
             Process::wait(!($app->getOpt('d') || $app->getArg('daemonize')));
         } catch (\Throwable $throwable) {
             if (!$throwable instanceof ExitException) {
-                app('exception')->throw($throwable);
+                throw $throwable;
             }
         }
     }

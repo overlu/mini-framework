@@ -5,18 +5,14 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Exception;
+namespace Mini\Config;
 
-use App\Exceptions\Handler;
+use Mini\Config;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Support\ServiceProvider;
 use Swoole\Server;
 
-/**
- * Class ExceptionServiceProvider
- * @package Mini\Exception
- */
-class ExceptionServiceProvider extends ServiceProvider
+class ConfigServiceProvider extends ServiceProvider
 {
     /**
      * @param Server|null $server
@@ -25,13 +21,13 @@ class ExceptionServiceProvider extends ServiceProvider
      */
     public function register(?Server $server = null, ?int $workerId = null): void
     {
-        $this->app->singleton('exception', function () {
-            return class_exists(Handler::class) ? Handler::getInstance() : \Mini\Exception\Handler::getInstance();
+        $this->app->singleton('config', function () {
+            return Config::getInstance();
         });
     }
 
     public function boot(?Server $server = null, ?int $workerId = null): void
     {
-        // TODO: Implement boot() method.
     }
+
 }

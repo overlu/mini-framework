@@ -226,16 +226,19 @@ class App
      */
     protected function handleException(Throwable $e): int
     {
-        if ($e instanceof InvalidArgumentException) {
-            Color::println('ERROR: ' . $e->getMessage(), 'error');
-            return 0;
-        }
-
         $code = $e->getCode() !== 0 ? $e->getCode() : -1;
-        $eTpl = "Exception(%d): %s\nFile: %s(Line %d)\nTrace:\n%s\n";
 
-        // print exception message
-        printf($eTpl, $code, $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
+        Command::error($e);
+
+//        if ($e instanceof InvalidArgumentException) {
+//            Color::println('ERROR: ' . $e->getMessage(), 'error');
+//            return 0;
+//        }
+//
+//        $eTpl = "Exception(%d): %s\nFile: %s(Line %d)\nTrace:\n%s\n";
+//
+//        // print exception message
+//        printf($eTpl, $code, $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
 
         return $code;
     }

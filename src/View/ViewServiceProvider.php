@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Mini\View;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Contracts\ServiceProviderInterface;
+use Mini\Support\ServiceProvider;
 use Mini\View\Compilers\BladeCompiler;
 use Mini\View\Engines\CompilerEngine;
 use Mini\View\Engines\EngineResolver;
@@ -16,7 +16,7 @@ use Mini\View\Engines\FileEngine;
 use Mini\View\Engines\PhpEngine;
 use Swoole\Server;
 
-class ViewServiceProvider implements ServiceProviderInterface
+class ViewServiceProvider extends ServiceProvider
 {
     /**
      * Register the service provider.
@@ -37,9 +37,8 @@ class ViewServiceProvider implements ServiceProviderInterface
      */
     public function registerFactory(): void
     {
-        $app = app();
-        $app->singleton('view', function () use ($app) {
-            $factory = new Factory(app('view.engine.resolver'), app('view.finder'), app('events'));
+        $this->app->singleton('view', function ($app) {
+            $factory = new Factory($app['view.engine.resolver'], $app['view.finder'], $app['events']);
             $factory->setContainer($app);
             $factory->share('app', $app);
             return $factory;
@@ -52,8 +51,8 @@ class ViewServiceProvider implements ServiceProviderInterface
      */
     public function registerViewFinder(): void
     {
-        app()->bind('view.finder', function ($app) {
-            return new FileViewFinder(app('files'), config('view.paths'));
+        $this->app->bind('view.finder', function ($app) {
+            return new FileViewFinder($app['files'], config('view.paths'));
         });
     }
 
@@ -63,8 +62,8 @@ class ViewServiceProvider implements ServiceProviderInterface
      */
     public function registerBladeCompiler(): void
     {
-        app()->singleton('blade.compiler', function ($app) {
-            return tap(new BladeCompiler(app('files'), config('view.compiled')), static function ($blade) {
+        $this->app->singleton('blade.compiler', function ($app) {
+            return tap(new BladeCompiler($app['files'], config('view.compiled')), static function ($blade) {
                 $blade->component('dynamic-component', DynamicComponent::class);
             });
         });
@@ -76,7 +75,7 @@ class ViewServiceProvider implements ServiceProviderInterface
      */
     public function registerEngineResolver(): void
     {
-        app()->singleton('view.engine.resolver', function () {
+        $this->app->singleton('view.engine.resolver', function () {
             $resolver = new EngineResolver;
 
             foreach (['file', 'php', 'blade'] as $engine) {
@@ -90,36 +89,39 @@ class ViewServiceProvider implements ServiceProviderInterface
     /**
      * Register the file engine implementation.
      *
+     * @param EngineResolver $resolver
      * @return void
      */
-    public function registerFileEngine($resolver): void
+    public function registerFileEngine(EngineResolver $resolver): void
     {
-        $resolver->register('file', static function () {
-            return new FileEngine(app('files'));
+        $resolver->register('file', function () {
+            return new FileEngine($this->app['files']);
         });
     }
 
     /**
      * Register the PHP engine implementation.
      *
+     * @param EngineResolver $resolver
      * @return void
      */
-    public function registerPhpEngine($resolver): void
+    public function registerPhpEngine(EngineResolver $resolver): void
     {
-        $resolver->register('php', static function () {
-            return new PhpEngine(app('files'));
+        $resolver->register('php', function () {
+            return new PhpEngine($this->app['files']);
         });
     }
 
     /**
      * Register the Blade engine implementation.
      *
+     * @param EngineResolver $resolver
      * @return void
      */
-    public function registerBladeEngine($resolver): void
+    public function registerBladeEngine(EngineResolver $resolver): void
     {
         $resolver->register('blade', function () {
-            return new CompilerEngine(app('blade.compiler'), app('files'));
+            return new CompilerEngine($this->app['blade.compiler'], $this->app['files']);
         });
     }
 

@@ -7,19 +7,20 @@ declare(strict_types=1);
 
 namespace Mini\Database\Redis;
 
-use Mini\Contracts\ServiceProviderInterface;
+use Mini\Contracts\Container\BindingResolutionException;
+use Mini\Support\ServiceProvider;
 use Swoole\Server;
 
-class RedisServiceProvider implements ServiceProviderInterface
+class RedisServiceProvider extends ServiceProvider
 {
     /**
      * @param Server|null $server
      * @param int|null $workerId
-     * @throws \Mini\Contracts\Container\BindingResolutionException
+     * @throws BindingResolutionException
      */
     public function register(?Server $server = null, ?int $workerId = null): void
     {
-        app()->singleton('redis', function () {
+        $this->app->singleton('redis', function () {
             return new Redis();
         });
     }
@@ -30,5 +31,6 @@ class RedisServiceProvider implements ServiceProviderInterface
      */
     public function boot(?Server $server = null, ?int $workerId = null): void
     {
+        //
     }
 }

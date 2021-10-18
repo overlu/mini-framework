@@ -9,6 +9,7 @@ namespace Mini\Support;
 
 use Exception;
 use Mini\Console\Cli;
+use Mini\Console\Color;
 use Mini\Console\Highlighter;
 use Mini\Console\Terminal;
 use Swoole\Coroutine\System;
@@ -82,31 +83,34 @@ class Command
 
     /**
      * 打印成功消息
-     * @param $message
+     * @param string $message
      */
-    public static function info($message): void
+    public static function info(string $message): void
     {
         static::out($message, 'success');
     }
 
-    public static function infoWithTime($msg): void
+    /**
+     * @param string $msg
+     */
+    public static function infoWithTime(string $msg): void
     {
         static::line(date('Y/m/d H:i:s') . " \033[32m{$msg}\033[0m");
     }
 
     /**
      * 打印错误消息
-     * @param $message
+     * @param string|\Throwable $message
      */
     public static function error($message): void
     {
         if ($message instanceof \Throwable) {
             static::out(get_class($message), 'error');
-            static::line();
-            static::line("\033[1;37m" . $message->getMessage() . "\033[0m\n");
-            static::line("\e[0;1min\e[0m \e[33;4m" . $message->getFile() . ':' . $message->getLine() . "\033[0m");
-            static::line(Highlighter::getInstance()->highlightSnippet(file_get_contents($message->getFile()), $message->getLine(), 3, 3));
-            static::line($message->getTraceAsString());
+            static::out(PHP_EOL);
+            static::out("\033[1;37m" . $message->getMessage() . "\033[0m\n");
+            static::out("\e[0;1min\e[0m \e[33;4m" . $message->getFile() . ':' . $message->getLine() . "\033[0m");
+            static::out(Highlighter::getInstance()->highlightSnippet(file_get_contents($message->getFile()), $message->getLine(), 3, 3));
+            static::out($message->getTraceAsString());
         } else {
             static::out($message, 'error');
         }
@@ -116,36 +120,38 @@ class Command
      * 打印警告消息
      * @param $message
      */
-    public static function warning($message): void
+    public static function warning(string $message): void
     {
         static::out($message, 'warning');
     }
 
     /**
      * 打印普通消息
-     * @param $message
+     * @param string $message
+     * @param bool $newLine
      */
-    public static function line($message = ''): void
+    public static function line(string $message = '', bool $newLine = true): void
     {
-        static::out($message);
+//        static::out($message);
+        echo Color::render($message . PHP_EOL);
     }
 
     /**
      * 打印建议消息
      * @param $message
      */
-    public static function suggest($message): void
+    public static function suggest(string $message): void
     {
         static::out($message, 'suggest');
     }
 
     /**
      * 输出消息
-     * @param $message
-     * @param null $style
+     * @param string $message
+     * @param string|null $style
      * @param bool $newLine
      */
-    public static function out($message, $style = null, $newLine = true): void
+    public static function out(string $message, ?string $style = null, bool $newLine = true): void
     {
         $styles = [
             'success' => "\033[0;32m%s\033[0m",

@@ -11,14 +11,14 @@ use Mini\Cache\Drivers\FileCacheCacheDriver;
 use Mini\Cache\Drivers\RedisCacheCacheDriver;
 use Mini\Cache\Drivers\SwooleCacheCacheDriver;
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Contracts\ServiceProviderInterface;
+use Mini\Support\ServiceProvider;
 use Swoole\Server;
 
 /**
  * Class CacheServiceProviders
  * @package Mini\Cache
  */
-class CacheServiceProviders implements ServiceProviderInterface
+class CacheServiceProviders extends ServiceProvider
 {
     /**
      * @param Server|null $server
@@ -34,7 +34,7 @@ class CacheServiceProviders implements ServiceProviderInterface
      */
     private function registerFileCacheDriver(): void
     {
-        app()->singleton('cache.driver.file', function () {
+        $this->app->singleton('cache.driver.file', function () {
             return new FileCacheCacheDriver();
         });
     }
@@ -44,7 +44,7 @@ class CacheServiceProviders implements ServiceProviderInterface
      */
     private function registerSwooleCacheDriver(): void
     {
-        app()->singleton('cache.driver.swoole', function () {
+        $this->app->singleton('cache.driver.swoole', function () {
             return new SwooleCacheCacheDriver();
         });
     }
@@ -54,7 +54,7 @@ class CacheServiceProviders implements ServiceProviderInterface
      */
     private function registerRedisCacheDriver(): void
     {
-        app()->singleton('cache.driver.redis', function () {
+        $this->app->singleton('cache.driver.redis', function () {
             return new RedisCacheCacheDriver();
         });
     }
@@ -64,7 +64,7 @@ class CacheServiceProviders implements ServiceProviderInterface
      */
     private function registerCache(): void
     {
-        app()->singleton('cache', function () {
+        $this->app->singleton('cache', function () {
             return new Cache();
         });
     }

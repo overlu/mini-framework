@@ -18,6 +18,7 @@ use Mini\Command\RunCrontabCommandService;
 use Mini\Command\SocketResetCommandService;
 use Mini\Command\StatusCrontabCommandService;
 use Mini\Command\StorageLinkCommandService;
+use Mini\Command\VendorPublishCommandService;
 use Throwable;
 
 class Console
@@ -32,7 +33,8 @@ class Console
         StorageLinkCommandService::class,
         RunCrontabCommandService::class,
         StatusCrontabCommandService::class,
-        SocketResetCommandService::class
+        SocketResetCommandService::class,
+        VendorPublishCommandService::class
     ];
 
     /**

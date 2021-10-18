@@ -8,10 +8,10 @@ declare(strict_types=1);
 namespace Mini\Events;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Contracts\ServiceProviderInterface;
+use Mini\Support\ServiceProvider;
 use Swoole\Server;
 
-class EventServiceProvider implements ServiceProviderInterface
+class EventServiceProvider extends ServiceProvider
 {
     /**
      * @param Server|null $server
@@ -20,9 +20,8 @@ class EventServiceProvider implements ServiceProviderInterface
      */
     public function register(?Server $server = null, ?int $workerId = null): void
     {
-        $app = app();
-        $app->alias(Dispatcher::class, 'events');
-        $app->singleton(Dispatcher::class, Dispatcher::class);
+        $this->app->alias(Dispatcher::class, 'events');
+        $this->app->singleton(Dispatcher::class, Dispatcher::class);
     }
 
     /**
@@ -31,7 +30,7 @@ class EventServiceProvider implements ServiceProviderInterface
      */
     public function boot(?Server $server = null, ?int $workerId = null): void
     {
-        $dispatch = app('events');
+        $dispatch = $this->app['events'];
         $events = config('listeners.events', []);
         foreach ((array)$events as $event => $listen) {
             $dispatch->listen($event, $listen);

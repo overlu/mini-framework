@@ -9,21 +9,23 @@ namespace Mini\Database\Mysql;
 
 use Doctrine\DBAL\Types\Type;
 use Mini\Context;
+use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\Queue\EntityResolver;
-use Mini\Contracts\ServiceProviderInterface;
 use Mini\Database\Mysql\Connectors\ConnectionFactory;
 use Mini\Database\Mysql\Eloquent\Model;
 use Mini\Database\Mysql\Eloquent\QueueEntityResolver;
 use Mini\Database\Mysql\Events\QueryExecuted;
 use Mini\Facades\Console;
 use Mini\Facades\Log;
+use Mini\Support\ServiceProvider;
 use Swoole\Server;
 
-class EloquentServiceProvider implements ServiceProviderInterface
+class EloquentServiceProvider extends ServiceProvider
 {
     /**
      * @param Server|null $server
      * @param int|null $workerId
+     * @throws BindingResolutionException
      */
     public function register(?Server $server = null, ?int $workerId = null): void
     {
@@ -38,20 +40,19 @@ class EloquentServiceProvider implements ServiceProviderInterface
      * Register the primary database bindings.
      *
      * @return void
-     * @throws \Mini\Contracts\Container\BindingResolutionException
+     * @throws BindingResolutionException
      */
     protected function registerConnectionServices(): void
     {
-        $app = app();
-        $app->singleton('db.factory', function ($app) {
+        $this->app->singleton('db.factory', function ($app) {
             return new ConnectionFactory($app);
         });
 
-        $app->singleton('db', function ($app) {
+        $this->app->singleton('db', function ($app) {
             return new DatabaseManager($app, $app['db.factory'], config('database.connections', []));
         });
 
-        $app->bind('db.connection', function ($app) {
+        $this->app->bind('db.connection', function ($app) {
             return $app['db']->connection();
         });
     }
@@ -61,11 +62,11 @@ class EloquentServiceProvider implements ServiceProviderInterface
      * Register the queueable entity resolver implementation.
      *
      * @return void
-     * @throws \Mini\Contracts\Container\BindingResolutionException
+     * @throws BindingResolutionException
      */
     protected function registerQueueableEntityResolver(): void
     {
-        app()->singleton(EntityResolver::class, function () {
+        $this->app->singleton(EntityResolver::class, function () {
             return new QueueEntityResolver();
         });
     }
@@ -93,13 +94,13 @@ class EloquentServiceProvider implements ServiceProviderInterface
     /**
      * @param Server|null $server
      * @param int|null $workerId
-     * @throws \Mini\Contracts\Container\BindingResolutionException
+     * @throws BindingResolutionException
      */
     public function boot(?Server $server = null, ?int $workerId = null): void
     {
-        Model::setConnectionResolver(app('db'));
+        Model::setConnectionResolver($this->app['db']);
 
-        Model::setEventDispatcher(app('events'));
+        Model::setEventDispatcher($this->app['events']);
 
         if (!config('logging.database_query_log_enabled', false) || config('app.env') === 'production') {
             return;

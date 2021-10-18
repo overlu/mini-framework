@@ -8,10 +8,10 @@ declare(strict_types=1);
 namespace Mini\Validator;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Contracts\ServiceProviderInterface;
+use Mini\Support\ServiceProvider;
 use Swoole\Server;
 
-class ValidationServiceProvider implements ServiceProviderInterface
+class ValidationServiceProvider extends ServiceProvider
 {
     /**
      * @param Server|null $server
@@ -28,8 +28,7 @@ class ValidationServiceProvider implements ServiceProviderInterface
      */
     public function boot(?Server $server = null, ?int $workerId = null): void
     {
-        $app = app();
-        $app->alias(Factory::class, 'validator');
-        $app->singleton(Factory::class, Factory::class);
+        $this->app->alias(Factory::class, 'validator');
+        $this->app->singleton(Factory::class, Factory::class);
     }
 }

@@ -8,10 +8,10 @@ declare(strict_types=1);
 namespace Mini\Database\Mini;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Contracts\ServiceProviderInterface;
+use Mini\Support\ServiceProvider;
 use Swoole\Server;
 
-class MiniDBServiceProvider implements ServiceProviderInterface
+class MiniDBServiceProvider extends ServiceProvider
 {
     /**
      * @param Server|null $server
@@ -22,7 +22,7 @@ class MiniDBServiceProvider implements ServiceProviderInterface
     {
         $config = config('database.connections', []);
         if (!empty($config)) {
-            app()->singleton('db.mini', function () use ($config) {
+            $this->app->singleton('db.mini', function () use ($config) {
                 return new Pool($config);
             });
         }

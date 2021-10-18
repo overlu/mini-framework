@@ -8,10 +8,10 @@ declare(strict_types=1);
 namespace Mini\Hashing;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Contracts\ServiceProviderInterface;
+use Mini\Support\ServiceProvider;
 use Swoole\Server;
 
-class HashServiceProvider implements ServiceProviderInterface
+class HashServiceProvider extends ServiceProvider
 {
     /**
      * Register the service provider.
@@ -23,13 +23,12 @@ class HashServiceProvider implements ServiceProviderInterface
      */
     public function register(?Server $server = null, ?int $workerId = null): void
     {
-        $app = app();
-        $app->singleton('hash', function ($app) {
-            return new HashManager($app);
+        $this->app->singleton('hash', function () {
+            return new HashManager($this->app);
         });
 
-        $app->singleton('hash.driver', function ($app) {
-            return $app['hash']->driver();
+        $this->app->singleton('hash.driver', function () {
+            return $this->app['hash']->driver();
         });
     }
 

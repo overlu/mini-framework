@@ -8,10 +8,10 @@ declare(strict_types=1);
 namespace Mini\Translate;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Contracts\ServiceProviderInterface;
+use Mini\Support\ServiceProvider;
 use Swoole\Server;
 
-class TranslateServiceProvider implements ServiceProviderInterface
+class TranslateServiceProvider extends ServiceProvider
 {
     /**
      * @param Server|null $server
@@ -28,8 +28,7 @@ class TranslateServiceProvider implements ServiceProviderInterface
      */
     public function boot(?Server $server = null, ?int $workerId = null): void
     {
-        $app = app();
-        $app->alias(Translate::class, 'translate');
-        $app->singleton(Translate::class, Translate::class);
+        $this->app->alias(Translate::class, 'translate');
+        $this->app->singleton(Translate::class, Translate::class);
     }
 }

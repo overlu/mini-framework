@@ -8,10 +8,10 @@ declare(strict_types=1);
 namespace Mini\Session;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Contracts\ServiceProviderInterface;
 use Mini\Session\Drivers\FileSessionDriver;
 use Mini\Session\Drivers\NullSessionHandler;
 use Mini\Session\Drivers\RedisSessionDriver;
+use Mini\Support\ServiceProvider;
 use SessionHandlerInterface;
 use Swoole\Server;
 
@@ -19,7 +19,7 @@ use Swoole\Server;
  * Class SessionServiceProvider
  * @package Mini\Session
  */
-class SessionServiceProvider implements ServiceProviderInterface
+class SessionServiceProvider extends ServiceProvider
 {
     /**
      * @var array|string[]
@@ -45,10 +45,10 @@ class SessionServiceProvider implements ServiceProviderInterface
      */
     protected function registerSession(): void
     {
-        app()->singleton('session', function () {
+        $this->app->singleton('session', function () {
             return new Session($this->getSessionName(), $this->buildSessionHandler());
         });
-        app()->singleton('session.manager', function () {
+        $this->app->singleton('session.manager', function () {
             return new SessionManager();
         });
     }
