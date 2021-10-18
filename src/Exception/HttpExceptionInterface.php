@@ -13,7 +13,7 @@ namespace Mini\Exception;
  */
 interface HttpExceptionInterface extends \Throwable
 {
-    public function getStatusCode();
+    public function getStatusCode(): int;
 
     public function getHeaders(): array;
 

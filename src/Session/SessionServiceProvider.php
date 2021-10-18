@@ -30,12 +30,7 @@ class SessionServiceProvider extends ServiceProvider
         'null' => NullSessionHandler::class
     ];
 
-    /**
-     * @param Server|null $server
-     * @param int|null $workerId
-     * @throws BindingResolutionException
-     */
-    public function register(?Server $server = null, ?int $workerId = null): void
+    public function register(): void
     {
         //
     }
@@ -76,10 +71,9 @@ class SessionServiceProvider extends ServiceProvider
     }
 
     /**
-     * @param Server|null $server
-     * @param int|null $workerId
+     * @throws BindingResolutionException
      */
-    public function boot(?Server $server = null, ?int $workerId = null): void
+    public function boot(): void
     {
         $this->registerSession();
     }

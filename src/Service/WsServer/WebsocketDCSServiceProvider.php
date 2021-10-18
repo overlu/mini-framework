@@ -14,21 +14,15 @@ use Swoole\Server;
 
 class WebsocketDCSServiceProvider extends ServiceProvider
 {
-    /**
-     * @param Server|null $server
-     * @param int|null $workerId
-     */
-    public function register(?Server $server = null, ?int $workerId = null): void
+    public function register(): void
     {
         RouteService::registerWsRoute(['/{authcode:[0-9a-zA-Z]{40}}/{host}', DCS::class]);
     }
 
     /**
-     * @param Server|null $server
-     * @param int|null $workerId
      * @throws BindingResolutionException
      */
-    public function boot(?Server $server = null, ?int $workerId = null): void
+    public function boot(): void
     {
         Client::register();
         $this->app->singleton('dcs', function () {

@@ -35,10 +35,11 @@ class Bootstrap
      */
     private function __construct()
     {
-        app()->singleton('middleware', function () {
+        $app = app();
+        $app->singleton('middleware', function () {
             return new Middleware(config('app.middleware', []));
         });
-        app()->singleton('providers', function () {
+        $app->singleton('providers', function () {
             return new ProviderService(config('app.providers', []));
         });
     }
@@ -56,7 +57,7 @@ class Bootstrap
 
     public function consoleStart(): void
     {
-        SeasLog::setRequestID(uniqid('', true));
+        SeasLog::setRequestID(uniqid('mini-artisan-', true));
         app('providers')->bootstrap();
     }
 }

@@ -9,7 +9,6 @@ namespace Mini\Console;
 
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Support\ServiceProvider;
-use Swoole\Server;
 
 /**
  * Class ConsoleServiceProvider
@@ -18,22 +17,16 @@ use Swoole\Server;
 class ConsoleServiceProvider extends ServiceProvider
 {
     /**
-     * @param Server|null $server
-     * @param int|null $workerId
      * @throws BindingResolutionException
      */
-    public function register(?Server $server = null, ?int $workerId = null): void
+    public function register(): void
     {
         $this->app->singleton('console', function () {
             return new Console();
         });
     }
 
-    /**
-     * @param Server|null $server
-     * @param int|null $workerId
-     */
-    public function boot(?Server $server = null, ?int $workerId = null): void
+    public function boot(): void
     {
     }
 }

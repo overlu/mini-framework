@@ -18,16 +18,13 @@ use Mini\Database\Mysql\Events\QueryExecuted;
 use Mini\Facades\Console;
 use Mini\Facades\Log;
 use Mini\Support\ServiceProvider;
-use Swoole\Server;
 
 class EloquentServiceProvider extends ServiceProvider
 {
     /**
-     * @param Server|null $server
-     * @param int|null $workerId
      * @throws BindingResolutionException
      */
-    public function register(?Server $server = null, ?int $workerId = null): void
+    public function register(): void
     {
         Model::clearBootedModels();
 
@@ -91,12 +88,7 @@ class EloquentServiceProvider extends ServiceProvider
         }
     }
 
-    /**
-     * @param Server|null $server
-     * @param int|null $workerId
-     * @throws BindingResolutionException
-     */
-    public function boot(?Server $server = null, ?int $workerId = null): void
+    public function boot(): void
     {
         Model::setConnectionResolver($this->app['db']);
 

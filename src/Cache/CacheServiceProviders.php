@@ -12,7 +12,6 @@ use Mini\Cache\Drivers\RedisCacheCacheDriver;
 use Mini\Cache\Drivers\SwooleCacheCacheDriver;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Support\ServiceProvider;
-use Swoole\Server;
 
 /**
  * Class CacheServiceProviders
@@ -20,11 +19,7 @@ use Swoole\Server;
  */
 class CacheServiceProviders extends ServiceProvider
 {
-    /**
-     * @param Server|null $server
-     * @param int|null $workerId
-     */
-    public function register(?Server $server = null, ?int $workerId = null): void
+    public function register(): void
     {
         //
     }
@@ -70,11 +65,9 @@ class CacheServiceProviders extends ServiceProvider
     }
 
     /**
-     * @param Server|null $server
-     * @param int|null $workerId
      * @throws BindingResolutionException
      */
-    public function boot(?Server $server = null, ?int $workerId = null): void
+    public function boot(): void
     {
         $this->registerFileCacheDriver();
         $this->registerRedisCacheDriver();

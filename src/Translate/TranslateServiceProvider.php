@@ -13,20 +13,14 @@ use Swoole\Server;
 
 class TranslateServiceProvider extends ServiceProvider
 {
-    /**
-     * @param Server|null $server
-     * @param int|null $workerId
-     */
-    public function register(?Server $server = null, ?int $workerId = null): void
+    public function register(): void
     {
     }
 
     /**
-     * @param Server|null $server
-     * @param int|null $workerId
      * @throws BindingResolutionException
      */
-    public function boot(?Server $server = null, ?int $workerId = null): void
+    public function boot(): void
     {
         $this->app->alias(Translate::class, 'translate');
         $this->app->singleton(Translate::class, Translate::class);

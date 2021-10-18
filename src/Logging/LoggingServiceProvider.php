@@ -14,11 +14,7 @@ use Throwable;
 
 class LoggingServiceProvider extends ServiceProvider
 {
-    /**
-     * @param Server|null $server
-     * @param int|null $workerId
-     */
-    public function register(?Server $server = null, ?int $workerId = null): void
+    public function register(): void
     {
         try {
             $config = config('logging');
@@ -30,11 +26,8 @@ class LoggingServiceProvider extends ServiceProvider
 
     }
 
-    /**
-     * @param Server|null $server
-     * @param int|null $workerId
-     */
-    public function boot(?Server $server = null, ?int $workerId = null): void
+    public function boot(): void
     {
+        //
     }
 }

@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Service\HttpServer;
 
+use ArrayAccess;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Mini\BindsProvider;
@@ -14,6 +15,7 @@ use Mini\Contracts\HttpMessage\WebsocketControllerInterface;
 use Mini\Exception\HttpException\MethodNotAllowedHttpException;
 use Mini\Exception\HttpException\NotFoundHttpException;
 use Mini\Facades\Log;
+use Mini\Support\Arr;
 use Mini\Support\Str;
 use ReflectionException;
 use ReflectionFunction;
@@ -28,7 +30,7 @@ class RouteService
 {
     private static RouteService $instance;
 
-    private static $routes = [];
+    private static array $routes = [];
 
     private static bool $cached = false;
 
@@ -42,9 +44,13 @@ class RouteService
     {
         static::$cached = !config('app.route_cached', true);
         $routes = config('routes', []);
-        self::$routes['http'] = array_merge(self::$routes['http'] ?? [], $routes['http']);
-        self::$routes['ws'] = array_merge(self::$routes['ws'] ?? [], $routes['ws']);
-        self::$routes['default'] = $routes['default'] ?? null;
+        foreach ($routes as $key => $value) {
+            if (in_array($key, ['http', 'ws'])) {
+                self::$routes[$key] = array_merge(self::$routes[$key] ?? [], $value);
+                continue;
+            }
+            self::$routes[$key] = $value;
+        }
     }
 
     /**
@@ -79,7 +85,10 @@ class RouteService
     private static function parseHttpRoutes($httpRoutes, RouteCollector $routerCollector, array $namespace = []): void
     {
         foreach ($httpRoutes as $group => $route) {
-            if (is_string($group) && is_array($route)) {
+            if (!is_array($route)) {
+                continue;
+            }
+            if (is_string($group)) {
                 $explodeGroup = explode('#', $group, 2);
                 if (isset($explodeGroup[1])) {
                     $namespace[] = $explodeGroup[1];
@@ -90,12 +99,10 @@ class RouteService
                 if (isset($explodeGroup[1])) {
                     array_pop($namespace);
                 }
-            } else {
-                if (is_array($route) && isset($route[0]) && is_string($route[0])) {
-                    $namespaceString = !empty($namespace) ? implode('\\', $namespace) . '\\' : '';
-                    $handle = is_string($route[2]) ? $namespaceString . $route[2] : $route[2];
-                    $routerCollector->addRoute(static::parasMethod($route[0]), trim($route[1], '/'), $handle);
-                }
+            } else if (isset($route[0]) && is_string($route[0])) {
+                $namespaceString = !empty($namespace) ? implode('\\', $namespace) . '\\' : '';
+                $handle = is_string($route[2]) ? $namespaceString . $route[2] : $route[2];
+                $routerCollector->addRoute(static::parasMethod($route[0]), trim($route[1], '/'), $handle);
             }
         }
     }
@@ -108,7 +115,10 @@ class RouteService
     private static function parseWebSocketRoutes($wsRoutes, RouteCollector $routerCollector, array $namespace = []): void
     {
         foreach ($wsRoutes as $group => $route) {
-            if (is_string($group) && is_array($route)) {
+            if (!is_array($route)) {
+                continue;
+            }
+            if (is_string($group)) {
                 $explodeGroup = explode('#', $group, 2);
                 if (isset($explodeGroup[1])) {
                     $namespace[] = $explodeGroup[1];
@@ -119,12 +129,10 @@ class RouteService
                 if (isset($explodeGroup[1])) {
                     array_pop($namespace);
                 }
-            } else {
-                if (is_array($route) && isset($route[0]) && is_string($route[0])) {
-                    $namespaceString = !empty($namespace) ? implode('\\', $namespace) . '\\' : '';
-                    $handle = is_string($route[1]) ? $namespaceString . $route[1] : $route[1];
-                    $routerCollector->addRoute('GET', trim($route[0], '/'), $handle);
-                }
+            } else if (isset($route[0]) && is_string($route[0])) {
+                $namespaceString = !empty($namespace) ? implode('\\', $namespace) . '\\' : '';
+                $handle = is_string($route[1]) ? $namespaceString . $route[1] : $route[1];
+                $routerCollector->addRoute('GET', trim($route[0], '/'), $handle);
             }
         }
     }
@@ -168,10 +176,9 @@ class RouteService
         $routeInfo = self::$httpDispatcher->dispatch($method, rtrim($uri, '/') ?: '/');
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
-                return $this->defaultRouter();
+                throw new NotFoundHttpException();
             case Dispatcher::METHOD_NOT_ALLOWED:
                 throw new MethodNotAllowedHttpException();
-                break;
             case Dispatcher::FOUND:
                 $request->routes = $routeInfo[2] ?? [];
                 return $this->dispatchHandle($routeInfo[1], $request->routes, $uri);
@@ -187,7 +194,7 @@ class RouteService
      * @throws ReflectionException
      * @throws Throwable
      */
-    protected function dispatchHandle($handler, array $params = [], string $uri = '')
+    public function dispatchHandle($handler, array $params = [], string $uri = '')
     {
         if (is_string($handler)) {
             $handler = explode('@', $handler);
@@ -233,10 +240,12 @@ class RouteService
         $routeInfo = self::$wsDispatcher->dispatch('GET', rtrim($uri, '/') ?: '/');
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
-                return ws_abort(404);
+                ws_abort(404);
+                break;
             case Dispatcher::METHOD_NOT_ALLOWED:
 //                return ['error' => 'method not allowed, please change method to GET', 'code' => 405];
-                return ws_abort(405);
+                ws_abort(405);
+                break;
             case Dispatcher::FOUND:
                 $handler = $routeInfo[1];
                 if (is_string($handler)) {
@@ -264,11 +273,11 @@ class RouteService
                         'data' => $routeInfo[2]
                     ];
                 }
-                return ws_abort(404);
-//                return ['error' => 'method not found.', 'code' => 404];
+                ws_abort(404);
+                break;
         }
-        return ws_abort(404);
-//        return ['error' => 'method not found.', 'code' => 404];
+        ws_abort(404);
+        return [];
     }
 
     /**
@@ -317,8 +326,77 @@ class RouteService
     public function defaultRouter()
     {
         if (empty(self::$routes['default'])) {
-            throw new NotFoundHttpException();
         }
         return $this->dispatchHandle(self::$routes['default'], []);
+    }
+
+    /**
+     * 是否存在路由
+     * @param $key
+     * @return bool
+     */
+    public function hasRoute(string $key): bool
+    {
+        return Arr::has(self::$routes, $key);
+    }
+
+    /**
+     * 所有的路由
+     * @return array
+     */
+    public function routes(): array
+    {
+        return self::$routes;
+    }
+
+    /**
+     * 所有的http路由
+     * @return array
+     */
+    public function httpRoutes(): array
+    {
+        return self::$routes['http'] ?? [];
+    }
+
+    /**
+     * 所有的ws路由
+     * @return array
+     */
+    public function wsRoutes(): array
+    {
+        return self::$routes['ws'] ?? [];
+    }
+
+    /**
+     * 获取路由
+     * @param string $key
+     * @param null $default
+     * @return array|ArrayAccess|mixed
+     */
+    public function route(string $key, $default = null)
+    {
+        return Arr::get(self::$routes, $key, $default);
+    }
+
+    /**
+     * 获取http路由
+     * @param string $key
+     * @param null $default
+     * @return array|ArrayAccess|mixed
+     */
+    public function httpRoute(string $key, $default = null)
+    {
+        return Arr::get($this->httpRoutes(), $key, $default);
+    }
+
+    /**
+     * 获取ws路由
+     * @param string $key
+     * @param null $default
+     * @return array|ArrayAccess|mixed
+     */
+    public function wsRoute(string $key, $default = null)
+    {
+        return Arr::get($this->wsRoutes(), $key, $default);
     }
 }

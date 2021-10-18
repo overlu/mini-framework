@@ -14,18 +14,15 @@ use Mini\View\Engines\CompilerEngine;
 use Mini\View\Engines\EngineResolver;
 use Mini\View\Engines\FileEngine;
 use Mini\View\Engines\PhpEngine;
-use Swoole\Server;
 
 class ViewServiceProvider extends ServiceProvider
 {
     /**
      * Register the service provider.
      *
-     * @param Server|null $server
-     * @param int|null $workerId
      * @return void
      */
-    public function register(?Server $server = null, ?int $workerId = null): void
+    public function register(): void
     {
     }
 
@@ -129,7 +126,7 @@ class ViewServiceProvider extends ServiceProvider
      * @inheritDoc
      * @throws BindingResolutionException
      */
-    public function boot(?Server $server = null, ?int $workerId = null): void
+    public function boot(): void
     {
         $this->registerViewFinder();
         $this->registerBladeCompiler();

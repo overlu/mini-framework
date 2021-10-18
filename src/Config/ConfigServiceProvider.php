@@ -15,18 +15,16 @@ use Swoole\Server;
 class ConfigServiceProvider extends ServiceProvider
 {
     /**
-     * @param Server|null $server
-     * @param int|null $workerId
      * @throws BindingResolutionException
      */
-    public function register(?Server $server = null, ?int $workerId = null): void
+    public function register(): void
     {
         $this->app->singleton('config', function () {
             return Config::getInstance();
         });
     }
 
-    public function boot(?Server $server = null, ?int $workerId = null): void
+    public function boot(): void
     {
     }
 

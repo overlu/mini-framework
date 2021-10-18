@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Bootstrap;
 
+use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Support\ServiceProvider;
 use RuntimeException;
 use Swoole\Server;
@@ -28,7 +29,7 @@ class ProviderService
      * bootstrap serviceProviders
      * @param Server|null $server
      * @param int|null $workerId
-     * @throws \Mini\Contracts\Container\BindingResolutionException
+     * @throws BindingResolutionException
      */
     public function bootstrap(?Server $server = null, ?int $workerId = null): void
     {
@@ -37,14 +38,14 @@ class ProviderService
             if (!class_exists($serviceProvider)) {
                 throw new RuntimeException('class ' . $serviceProvider . ' not exists.');
             }
-            if (!($serviceProvider = new $serviceProvider($app)) instanceof ServiceProvider) {
+            if (!($serviceProvider = new $serviceProvider($app, $server, $workerId)) instanceof ServiceProvider) {
                 throw new RuntimeException($serviceProvider . ' should instanceof ' . ServiceProvider::class);
             }
-            $serviceProvider->register($server, $workerId);
+            $serviceProvider->register();
             $this->bootedServiceProviders[] = $serviceProvider;
         }
         foreach ($this->bootedServiceProviders as $bootedServiceProvider) {
-            $bootedServiceProvider->boot($server, $workerId);
+            $bootedServiceProvider->boot();
         }
     }
 

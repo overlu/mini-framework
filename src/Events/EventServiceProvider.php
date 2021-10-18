@@ -14,21 +14,15 @@ use Swoole\Server;
 class EventServiceProvider extends ServiceProvider
 {
     /**
-     * @param Server|null $server
-     * @param int|null $workerId
      * @throws BindingResolutionException
      */
-    public function register(?Server $server = null, ?int $workerId = null): void
+    public function register(): void
     {
         $this->app->alias(Dispatcher::class, 'events');
         $this->app->singleton(Dispatcher::class, Dispatcher::class);
     }
 
-    /**
-     * @param Server|null $server
-     * @param int|null $workerId
-     */
-    public function boot(?Server $server = null, ?int $workerId = null): void
+    public function boot(): void
     {
         $dispatch = $this->app['events'];
         $events = config('listeners.events', []);

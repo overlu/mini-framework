@@ -27,6 +27,18 @@ abstract class ServiceProvider implements ServiceProviderInterface
      */
     protected Container $app;
 
+
+    /**
+     * @var Server|null
+     */
+    protected ?Server $server;
+
+
+    /**
+     * @var int|null
+     */
+    protected ?int $worker_id;
+
     /**
      * All of the registered booting callbacks.
      *
@@ -59,32 +71,26 @@ abstract class ServiceProvider implements ServiceProviderInterface
      * Create a new service provider instance.
      *
      * @param Container $app
+     * @param Server|null $server
+     * @param int|null $worker_id
      */
-    public function __construct(Container $app)
+    public function __construct(Container $app, ?Server $server = null, ?int $worker_id = null)
     {
         $this->app = $app;
+        $this->server = $server;
+        $this->worker_id = $worker_id;
     }
 
     /**
      * Register any application services.
      *
-     * @param Server|null $server
-     * @param int|null $workerId
      * @return void
      */
-    public function register(?Server $server = null, ?int $workerId = null): void
-    {
-        //
-    }
+    abstract public function register(): void;
 
     /**
-     * @param Server|null $server
-     * @param int|null $workerId
      */
-    public function boot(?Server $server = null, ?int $workerId = null): void
-    {
-        //
-    }
+    abstract public function boot(): void;
 
     /**
      * Register a booting callback to be run before the "boot" method is called.

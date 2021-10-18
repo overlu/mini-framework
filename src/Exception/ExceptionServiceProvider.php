@@ -19,19 +19,17 @@ use Swoole\Server;
 class ExceptionServiceProvider extends ServiceProvider
 {
     /**
-     * @param Server|null $server
-     * @param int|null $workerId
      * @throws BindingResolutionException
      */
-    public function register(?Server $server = null, ?int $workerId = null): void
+    public function register(): void
     {
         $this->app->singleton('exception', function () {
             return class_exists(Handler::class) ? Handler::getInstance() : \Mini\Exception\Handler::getInstance();
         });
     }
 
-    public function boot(?Server $server = null, ?int $workerId = null): void
+    public function boot(): void
     {
-        // TODO: Implement boot() method.
+        //
     }
 }

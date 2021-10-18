@@ -16,12 +16,10 @@ class HashServiceProvider extends ServiceProvider
     /**
      * Register the service provider.
      *
-     * @param Server|null $server
-     * @param int|null $workerId
      * @return void
      * @throws BindingResolutionException
      */
-    public function register(?Server $server = null, ?int $workerId = null): void
+    public function register(): void
     {
         $this->app->singleton('hash', function () {
             return new HashManager($this->app);
@@ -32,12 +30,8 @@ class HashServiceProvider extends ServiceProvider
         });
     }
 
-    /**
-     * @param Server|null $server
-     * @param int|null $workerId
-     */
-    public function boot(?Server $server = null, ?int $workerId = null): void
+    public function boot(): void
     {
-        // TODO: Implement boot() method.
+        //
     }
 }

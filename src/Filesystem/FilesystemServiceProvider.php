@@ -16,12 +16,10 @@ class FilesystemServiceProvider extends ServiceProvider
     /**
      * Register the service provider.
      *
-     * @param Server|null $server
-     * @param int|null $workerId
      * @return void
      * @throws BindingResolutionException
      */
-    public function register(?Server $server = null, ?int $workerId = null): void
+    public function register(): void
     {
         $this->registerNativeFilesystem();
 
@@ -93,11 +91,8 @@ class FilesystemServiceProvider extends ServiceProvider
         return config('filesystems.cloud');
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function boot(?Server $server = null, ?int $workerId = null): void
+    public function boot(): void
     {
-        // TODO: Implement boot() method.
+        //
     }
 }
