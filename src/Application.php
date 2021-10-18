@@ -25,7 +25,7 @@ class Application
      * version
      * @var string
      */
-    public static string $version = '2.12.21';
+    public static string $version = '2.12.23';
 
     /**
      * @var array|string[]

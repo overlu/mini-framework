@@ -8,8 +8,8 @@ declare(strict_types=1);
 namespace Mini\Service\HttpServer;
 
 use ArrayAccess;
-use FastRoute\Dispatcher;
-use FastRoute\RouteCollector;
+use MiniRoute\Dispatcher;
+use MiniRoute\RouteCollector;
 use Mini\BindsProvider;
 use Mini\Contracts\HttpMessage\WebsocketControllerInterface;
 use Mini\Exception\HttpException\MethodNotAllowedHttpException;
@@ -22,7 +22,7 @@ use ReflectionMethod;
 use RuntimeException;
 use Swoole\Http\Request;
 use Throwable;
-use function FastRoute\cachedDispatcher;
+use function MiniRoute\cachedDispatcher;
 
 class RouteService
 {
