@@ -84,9 +84,9 @@ class Cookie
         $this->domain = $domain;
         $this->expire = 0 < $expire ? (int)$expire : 0;
         $this->path = empty($path) ? '/' : $path;
-        $this->secure = (bool)$secure;
-        $this->httpOnly = (bool)$httpOnly;
-        $this->raw = (bool)$raw;
+        $this->secure = $secure;
+        $this->httpOnly = $httpOnly;
+        $this->raw = $raw;
 
         if ($sameSite !== null) {
             $sameSite = strtolower($sameSite);
@@ -108,7 +108,7 @@ class Cookie
     {
         $str = ($this->isRaw() ? $this->getName() : urlencode($this->getName())) . '=';
 
-        if ((string)$this->getValue() === '') {
+        if ($this->getValue() === '') {
             $str .= 'deleted; expires=' . gmdate('D, d-M-Y H:i:s T', time() - 31536001) . '; max-age=-31536001';
         } else {
             $str .= $this->isRaw() ? $this->getValue() : rawurlencode($this->getValue());
@@ -152,7 +152,7 @@ class Cookie
      *
      * @return static
      */
-    public static function fromString($cookie, $decode = false)
+    public static function fromString(string $cookie, $decode = false): Cookie
     {
         $data = [
             'expires' => 0,

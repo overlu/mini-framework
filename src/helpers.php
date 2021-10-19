@@ -676,6 +676,8 @@ if (!function_exists('session')) {
      * @param array|string|null $key
      * @param mixed $default
      * @return mixed|\Mini\Session\Session
+     * @throws BindingResolutionException
+     * @throws \Mini\Container\EntryNotFoundException
      */
     function session($key = null, $default = null)
     {

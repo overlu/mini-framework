@@ -10,27 +10,25 @@ namespace Mini\Contracts\Encryption;
 use Mini\Exception\DecryptException;
 use Mini\Exception\EncryptException;
 
-interface Encrypter
+interface StringEncrypter
 {
     /**
-     * Encrypt the given value.
+     * Encrypt a string without serialization.
      *
-     * @param mixed $value
-     * @param bool $serialize
+     * @param string $value
      * @return string
      *
      * @throws EncryptException
      */
-    public function encrypt($value, bool $serialize = true): string;
+    public function encryptString(string $value): string;
 
     /**
-     * Decrypt the given value.
+     * Decrypt the given string without unserialization.
      *
      * @param string $payload
-     * @param bool $unserialize
-     * @return mixed
+     * @return string
      *
      * @throws DecryptException
      */
-    public function decrypt(string $payload, bool $unserialize = true);
+    public function decryptString(string $payload): string;
 }
