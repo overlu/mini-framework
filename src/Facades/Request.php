@@ -13,6 +13,7 @@ use Mini\Context;
  * Class Request
  * @method static array all()
  * @method static mixed get(null|string $key = null, $default = null)
+ * @method static array only(array $keys)
  * @method static mixed query(null|string $key = null, $default = null)
  * @method static mixed post(null|string $key = null, $default = null)
  * @method static mixed input(string $key = null, $default = null)

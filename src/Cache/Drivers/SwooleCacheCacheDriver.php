@@ -70,9 +70,12 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
      */
     public function set(string $key, $value, ?int $ttl = null): bool
     {
+        if ($ttl <= 0 && !is_null($ttl)) {
+            return $this->delete($key);
+        }
         return $this->table->set($this->prefix . $key, [
             'value' => serialize($value),
-            'expire' => is_null($ttl) ? 0 : (int)$ttl + time(),
+            'expire' => is_null($ttl) ? 0 : $ttl + time(),
         ]);
     }
 

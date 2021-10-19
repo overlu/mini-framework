@@ -38,39 +38,34 @@ interface SessionInterface
     public function getName(): string;
 
     /**
+     * Get the value of a given key and then forget it.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function pull(string $key, $default = null);
+
+    /**
      * Sets the session name.
      * @param string $name
      */
     public function setName(string $name);
 
     /**
-     * Invalidates the current session.
+     * Flush the session data and regenerate the ID.
      *
-     * Clears all session attributes and flashes and regenerates the
-     * session and deletes the old session from persistence.
-     *
-     * @param int $lifetime Sets the cookie lifetime for the session cookie. A null value
-     *                      will leave the system settings unchanged, 0 sets the cookie
-     *                      to expire with browser session. Time is in seconds, and is
-     *                      not a Unix timestamp.
-     *
-     * @return bool True if session invalidated, false if error
+     * @return bool
      */
-    public function invalidate(?int $lifetime = null): bool;
+    public function invalidate(): bool;
 
     /**
-     * Migrates the current session to a new session id while maintaining all
-     * session attributes.
+     * Generate a new session ID for the session.
      *
-     * @param bool $destroy Whether to delete the old session or leave it to garbage collection
-     * @param int $lifetime Sets the cookie lifetime for the session cookie. A null value
-     *                      will leave the system settings unchanged, 0 sets the cookie
-     *                      to expire with browser session. Time is in seconds, and is
-     *                      not a Unix timestamp.
-     *
-     * @return bool True if session migrated, false if error
+     * @param bool $destroy
+     * @return bool
      */
-    public function migrate(bool $destroy = false, ?int $lifetime = null): bool;
+    public function migrate($destroy = false): bool;
 
     /**
      * Force the session to be saved and closed.
@@ -82,13 +77,12 @@ interface SessionInterface
     public function save(): void;
 
     /**
-     * Checks if an attribute is defined.
+     * Checks if a key is present and not null.
      *
-     * @param string $name The attribute name
-     *
-     * @return bool true if the attribute is defined, false otherwise
+     * @param string|array $key
+     * @return bool
      */
-    public function has(string $name): bool;
+    public function has($key): bool;
 
     /**
      * Returns an attribute.

@@ -7,11 +7,14 @@ declare(strict_types=1);
 
 namespace Mini\Session;
 
+use Closure;
 use Exception;
 use Mini\Contracts\HttpMessage\SessionInterface;
+use Mini\Contracts\Session\ExistenceAwareInterface;
 use Mini\Support\Arr;
 use Mini\Support\Str;
 use SessionHandlerInterface;
+use stdClass;
 
 /**
  * This's a data class, please create an new instance for each requests.
@@ -72,12 +75,77 @@ class Session implements SessionInterface
 
     /**
      * Starts the session storage.
+     * @return bool
+     * @throws Exception
      */
     public function start(): bool
     {
         $this->loadSession();
 
+        if (!$this->has('_token')) {
+            $this->regenerateToken();
+        }
+
         return $this->started = true;
+    }
+
+    /**
+     * Load the session data from the handler.
+     */
+    protected function loadSession(): void
+    {
+        $this->attributes = array_merge($this->attributes, $this->readFromHandler());
+    }
+
+    /**
+     * Read the session data from the handler.
+     */
+    protected function readFromHandler(): array
+    {
+        if ($data = $this->handler->read($this->getId())) {
+            $data = @unserialize($this->prepareForUnserialize($data));
+
+            if (is_array($data)) {
+                return $data;
+            }
+        }
+
+        return [];
+    }
+
+    /**
+     * Prepare the raw string data from the session for unserialization.
+     * @param string $data
+     * @return string
+     */
+    protected function prepareForUnserialize(string $data): string
+    {
+        return $data;
+    }
+
+    /**
+     * Force the session to be saved and closed.
+     * This method is generally not required for real sessions as
+     * the session will be automatically saved at the end of
+     * code execution.
+     */
+    public function save(): void
+    {
+        $this->ageFlashData();
+
+        $this->handler->write($this->getId(), $this->prepareForStorage(serialize($this->attributes)));
+
+        $this->started = false;
+    }
+
+    /**
+     * Prepare the serialized session data for storage.
+     * @param string $data
+     * @return string
+     */
+    protected function prepareForStorage(string $data): string
+    {
+        return $data;
     }
 
     /**
@@ -94,10 +162,11 @@ class Session implements SessionInterface
      * Sets the session ID.
      * @param string $id
      * @return Session
+     * @throws Exception
      */
     public function setId(string $id): self
     {
-        $this->id = $id;
+        $this->id = $this->isValidId($id) ? $id : $this->generateSessionId();
         return $this;
     }
 
@@ -121,41 +190,32 @@ class Session implements SessionInterface
     }
 
     /**
-     * Invalidates the current session.
-     * Clears all session attributes and flashes and regenerates the
-     * session and deletes the old session from persistence.
+     * Flush the session data and regenerate the ID.
      *
-     * @param int|null $lifetime Sets the cookie lifetime for the session cookie. A null value
-     *                      will leave the system settings unchanged, 0 sets the cookie
-     *                      to expire with browser session. Time is in seconds, and is
-     *                      not a Unix timestamp.
-     * @return bool True if session invalidated, false if error
+     * @return bool
      * @throws Exception
      */
-    public function invalidate(?int $lifetime = null): bool
+    public function invalidate(): bool
     {
-        $this->clear();
+        $this->flush();
 
-        return $this->migrate(true, $lifetime);
+        return $this->migrate(true);
     }
 
     /**
-     * Migrates the current session to a new session id while maintaining all
-     * session attributes.
+     * Generate a new session ID for the session.
      *
-     * @param bool $destroy Whether to delete the old session or leave it to garbage collection
-     * @param int|null $lifetime Sets the cookie lifetime for the session cookie. A null value
-     *                      will leave the system settings unchanged, 0 sets the cookie
-     *                      to expire with browser session. Time is in seconds, and is
-     *                      not a Unix timestamp.
-     * @return bool True if session migrated, false if error
+     * @param bool $destroy
+     * @return bool
      * @throws Exception
      */
-    public function migrate(bool $destroy = false, ?int $lifetime = null): bool
+    public function migrate($destroy = false): bool
     {
         if ($destroy) {
             $this->handler->destroy($this->getId());
         }
+
+        $this->setExists(false);
 
         $this->setId($this->generateSessionId());
 
@@ -163,29 +223,42 @@ class Session implements SessionInterface
     }
 
     /**
-     * Force the session to be saved and closed.
-     * This method is generally not required for real sessions as
-     * the session will be automatically saved at the end of
-     * code execution.
+     * Checks if a key exists.
+     *
+     * @param string|array $key
+     * @return bool
      */
-    public function save(): void
+    public function exists($key): bool
     {
-        $this->ageFlashData();
+        $placeholder = new stdClass();
 
-        $this->handler->write($this->getId(), $this->prepareForStorage(serialize($this->attributes)));
+        return !collect(is_array($key) ? $key : func_get_args())->contains(function ($key) use ($placeholder) {
+            return $this->get($key, $placeholder) === $placeholder;
+        });
+    }
 
-        $this->started = false;
+    /**
+     * Determine if the given key is missing from the session data.
+     *
+     * @param string|array $key
+     * @return bool
+     */
+    public function missing($key): bool
+    {
+        return !$this->exists($key);
     }
 
     /**
      * Checks if an attribute is defined.
      *
-     * @param string $name The attribute name
+     * @param $key
      * @return bool true if the attribute is defined, false otherwise
      */
-    public function has(string $name): bool
+    public function has($key): bool
     {
-        return Arr::exists($this->attributes, $name);
+        return !collect(is_array($key) ? $key : func_get_args())->contains(function ($key) {
+            return is_null($this->get($key));
+        });
     }
 
     /**
@@ -237,14 +310,25 @@ class Session implements SessionInterface
     }
 
     /**
-     * Sets attributes.
+     * Get a subset of the session data.
+     *
+     * @param array $keys
+     * @return array
+     */
+    public function only(array $keys): array
+    {
+        return Arr::only($this->attributes, $keys);
+    }
+
+    /**
+     * Replace the given session attributes entirely.
+     *
      * @param array $attributes
+     * @return void
      */
     public function replace(array $attributes): void
     {
-        foreach ($attributes as $name => $value) {
-            $this->set($name, $value);
-        }
+        $this->put($attributes);
     }
 
     /**
@@ -277,6 +361,16 @@ class Session implements SessionInterface
     }
 
     /**
+     * Remove all of the items from the session.
+     *
+     * @return void
+     */
+    public function flush(): void
+    {
+        $this->attributes = [];
+    }
+
+    /**
      * Checks if the session was started.
      */
     public function isStarted(): bool
@@ -304,6 +398,20 @@ class Session implements SessionInterface
     }
 
     /**
+     * Generate a new session identifier.
+     *
+     * @param bool $destroy
+     * @return bool
+     * @throws Exception
+     */
+    public function regenerate(bool $destroy = false): bool
+    {
+        return tap($this->migrate($destroy), function () {
+            $this->regenerateToken();
+        });
+    }
+
+    /**
      * Get the previous URL from the session.
      */
     public function previousUrl(): ?string
@@ -322,6 +430,26 @@ class Session implements SessionInterface
     public function setPreviousUrl(string $url): void
     {
         $this->set('_previous.url', $url);
+    }
+
+    /**
+     * Specify that the user has confirmed their password.
+     *
+     * @return void
+     */
+    public function passwordConfirmed(): void
+    {
+        $this->put('auth.password_confirmed_at', time());
+    }
+
+    /**
+     * Get the underlying session handler implementation.
+     *
+     * @return SessionHandlerInterface
+     */
+    public function getHandler(): SessionHandlerInterface
+    {
+        return $this->handler;
     }
 
     /**
@@ -349,48 +477,97 @@ class Session implements SessionInterface
         return Str::random(40);
     }
 
-
     /**
-     * Load the session data from the handler.
+     * Get the value of a given key and then forget it.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
      */
-    protected function loadSession(): void
+    public function pull(string $key, $default = null)
     {
-        $this->attributes = array_merge($this->attributes, $this->readFromHandler());
+        return Arr::pull($this->attributes, $key, $default);
     }
 
     /**
-     * Read the session data from the handler.
+     * Determine if the session contains old input.
+     *
+     * @param string|null $key
+     * @return bool
      */
-    protected function readFromHandler(): array
+    public function hasOldInput(?string $key = null): bool
     {
-        if ($data = $this->handler->read($this->getId())) {
-            $data = @unserialize($this->prepareForUnserialize($data));
+        $old = $this->getOldInput($key);
 
-            if (is_array($data)) {
-                return $data;
-            }
+        return is_null($key) ? count($old) > 0 : !is_null($old);
+    }
+
+    /**
+     * Get the requested item from the flashed input array.
+     *
+     * @param string|null $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getOldInput(?string $key = null, $default = null)
+    {
+        return Arr::get($this->get('_old_input', []), $key, $default);
+    }
+
+    /**
+     * Get an item from the session, or store the default value.
+     *
+     * @param string $key
+     * @param Closure $callback
+     * @return mixed
+     */
+    public function remember(string $key, Closure $callback)
+    {
+        if (!is_null($value = $this->get($key))) {
+            return $value;
         }
 
-        return [];
+        return tap($callback(), function ($value) use ($key) {
+            $this->put($key, $value);
+        });
     }
 
     /**
-     * Prepare the raw string data from the session for unserialization.
-     * @param string $data
-     * @return string
+     * Increment the value of an item in the session.
+     *
+     * @param string $key
+     * @param int $amount
+     * @return mixed
      */
-    protected function prepareForUnserialize(string $data): string
+    public function increment(string $key, int $amount = 1)
     {
-        return $data;
+        $this->put($key, $value = $this->get($key, 0) + $amount);
+
+        return $value;
     }
 
     /**
-     * Prepare the serialized session data for storage.
-     * @param string $data
-     * @return string
+     * Decrement the value of an item in the session.
+     *
+     * @param string $key
+     * @param int $amount
+     * @return int
      */
-    protected function prepareForStorage(string $data): string
+    public function decrement(string $key, int $amount = 1)
     {
-        return $data;
+        return $this->increment($key, $amount * -1);
+    }
+
+    /**
+     * Set the existence of the session on the handler if applicable.
+     *
+     * @param bool $value
+     * @return void
+     */
+    public function setExists(bool $value): void
+    {
+        if ($this->handler instanceof ExistenceAwareInterface) {
+            $this->handler->setExists($value);
+        }
     }
 }

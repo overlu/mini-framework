@@ -30,6 +30,9 @@ class RedisCacheCacheDriver extends AbstractCacheDriver
      */
     public function set(string $key, $value, ?int $ttl = null): bool
     {
+        if ($ttl <= 0 && !is_null($ttl)) {
+            return $this->delete($key);
+        }
         return $ttl
             ? Redis::connection($this->connection)->setex($this->prefix . $key, $ttl, serialize($value))
             : Redis::connection($this->connection)->set($this->prefix . $key, serialize($value));

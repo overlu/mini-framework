@@ -33,7 +33,7 @@ namespace Mini\Facades;
  */
 class Validator extends Facade
 {
-    protected static function getFacadeAccessor()
+    protected static function getFacadeAccessor(): string
     {
         return 'validator';
     }

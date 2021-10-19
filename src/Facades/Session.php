@@ -31,7 +31,6 @@ namespace Mini\Facades;
  * @method static void put(string|array $key, $value = null)
  * @method static void setId(string $id)
  * @method static void setPreviousUrl(string $url)
- * @method static void setRequestOnHandler(\Mini\Http\Request $request)
  *
  * @see \Mini\Session\Session
  */

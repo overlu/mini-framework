@@ -40,11 +40,14 @@ class FileCacheCacheDriver extends AbstractCacheDriver
     public function set(string $key, $value, ?int $ttl = null): bool
     {
         $created_at = time();
+        if ($ttl <= 0 && !is_null($ttl)) {
+            return $this->delete($key);
+        }
         $data = [
             'content' => $value,
             'created_at' => $created_at
         ];
-        if ($ttl) {
+        if ($ttl > 0) {
             $data['ttl'] = $ttl;
         }
         return $this->setContent($key, $data);

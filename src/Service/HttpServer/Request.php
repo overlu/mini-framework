@@ -18,6 +18,7 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use RuntimeException;
 use SplFileInfo;
+use stdClass;
 
 /**
  * @property string $pathInfo
@@ -65,6 +66,31 @@ class Request implements RequestInterface
     public function get(?string $key = null, $default = null)
     {
         return $this->query($key, $default);
+    }
+
+    /**
+     * Get a subset containing the provided keys with values from the input data.
+     *
+     * @param array|mixed $keys
+     * @return array
+     */
+    public function only(array $keys): array
+    {
+        $results = [];
+
+        $input = $this->all();
+
+        $placeholder = new stdClass();
+
+        foreach ($keys as $key) {
+            $value = data_get($input, $key, $placeholder);
+
+            if ($value !== $placeholder) {
+                Arr::set($results, $key, $value);
+            }
+        }
+
+        return $results;
     }
 
     /**

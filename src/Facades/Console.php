@@ -8,6 +8,8 @@ declare(strict_types=1);
 namespace Mini\Facades;
 
 
+use Exception;
+
 /**
  * Class Config
  * @method static void call(string $command, array $args = [], array $opts = [])
@@ -44,10 +46,14 @@ namespace Mini\Facades;
  */
 class Console extends Facade
 {
-    protected static function getFacadeAccessor()
+    /**
+     * @return string
+     * @throws Exception
+     */
+    protected static function getFacadeAccessor(): string
     {
         if (RUN_ENV !== 'artisan') {
-            throw new \Exception('Only can use in artisan environemnt');
+            throw new Exception('Only can use in artisan environemnt');
         }
         return 'console';
     }

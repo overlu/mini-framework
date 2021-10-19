@@ -27,6 +27,7 @@ use Mini\Support\Collection;
 use Mini\Support\Coroutine;
 use Mini\Support\Dotenv;
 use Mini\Support\HigherOrderTapProxy;
+use Mini\Support\HtmlString;
 use Mini\Support\Parallel;
 use Mini\Support\Str;
 use Mini\Support\Waiter;
@@ -259,11 +260,11 @@ if (!function_exists('last')) {
 if (!function_exists('tap')) {
     /**
      * Call the given Closure with the given value then return the value.
-     * @param null|callable $callback
-     * @param mixed $value
-     * @return HigherOrderTapProxy|mixed
+     * @param $value
+     * @param callable|null $callback
+     * @return HigherOrderTapProxy
      */
-    function tap($value, $callback = null)
+    function tap($value, ?callable $callback = null)
     {
         if (is_null($callback)) {
             return new HigherOrderTapProxy($value);
@@ -561,14 +562,26 @@ if (!function_exists('task')) {
 if (!function_exists('request')) {
     /**
      * 获取request资源
+     * @param null $key
+     * @param null $default
      * @return Mini\Service\HttpServer\Request | Mini\Service\HttpMessage\Server\Request
+     * @throws BindingResolutionException
      */
-    function request()
+    function request($key = null, $default = null)
     {
         if (!Context::has('IsInRequestEvent')) {
             throw new RuntimeException("Not In Request Environment.");
         }
-        return app(RequestInterface::class);
+        if (is_null($key)) {
+            return app(RequestInterface::class);
+        }
+
+        if (is_array($key)) {
+            return app(RequestInterface::class)->only($key);
+        }
+        $value = app(RequestInterface::class)->__get($key);
+
+        return is_null($value) ? value($default) : $value;
     }
 }
 
@@ -576,6 +589,7 @@ if (!function_exists('ws_request')) {
     /**
      * 获取websocket request资源
      * @return Request
+     * @throws BindingResolutionException
      */
     function ws_request()
     {
@@ -633,11 +647,11 @@ if (!function_exists('url')) {
 if (!function_exists('html')) {
     /**
      * @param $string
-     * @return \Mini\Support\HtmlString
+     * @return HtmlString
      */
     function html($string)
     {
-        return new \Mini\Support\HtmlString($string);
+        return new HtmlString($string);
     }
 }
 
@@ -981,5 +995,37 @@ if (!function_exists('wait')) {
     function wait(Closure $closure, ?float $timeout = null)
     {
         return Container::getInstance()->get(Waiter::class)->wait($closure, $timeout);
+    }
+}
+
+if (!function_exists('csrf_field')) {
+    /**
+     * Generate a CSRF token form field.
+     *
+     * @return HtmlString
+     */
+    function csrf_field(): HtmlString
+    {
+        return new HtmlString('<input type="hidden" name="_token" value="' . csrf_token() . '">');
+    }
+}
+
+if (!function_exists('csrf_token')) {
+    /**
+     * Get the CSRF token value.
+     *
+     * @return string
+     *
+     * @throws \RuntimeException
+     */
+    function csrf_token(): string
+    {
+        $session = app('session');
+
+        if (isset($session)) {
+            return $session->token();
+        }
+
+        throw new RuntimeException('Application session store not set.');
     }
 }
