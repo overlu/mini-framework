@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Service\WsServer;
 
+use JsonException;
 use Mini\Contracts\HttpMessage\WebsocketControllerInterface;
 use Mini\Support\Store;
 use Swoole\WebSocket\Frame;
@@ -36,7 +37,7 @@ class DCS implements WebsocketControllerInterface
      * @param Frame $frame
      * @param array $routeData
      * @return mixed|void
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function onMessage(Server $server, Frame $frame, array $routeData)
     {
@@ -64,6 +65,7 @@ class DCS implements WebsocketControllerInterface
      * @param array $routeData
      * @param int $reactorId
      * @return mixed|void
+     * @throws JsonException
      */
     public function onClose(Server $server, int $fd, array $routeData, int $reactorId)
     {

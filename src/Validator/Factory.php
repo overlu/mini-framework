@@ -72,7 +72,7 @@ class Factory
      * @return Validation
      * @throws JsonException
      * @throws EntryNotFoundException
-     * @throws MissingRequiredParameterException
+     * @throws MissingRequiredParameterException|RuleNotFoundException
      */
     public function validate(array $inputs, array $rules, array $messages = [], bool $bail = true): Validation
     {
