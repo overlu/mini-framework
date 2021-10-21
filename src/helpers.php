@@ -478,14 +478,23 @@ if (!function_exists('getInstance')) {
 
 if (!function_exists('env')) {
     /**
-     * Gets the value of an environment variable.
-     * @param string $key
-     * @param null|mixed $default
-     * @return array|bool|false|mixed|string|void
+     * get or set environment
+     * @param null $key
+     * @param null $default
+     * @return \Mini\Singleton|Dotenv|mixed|void|null
      */
-    function env(string $key, $default = null)
+    function env($key = null, $default = null)
     {
-        return Dotenv::getInstance()->get($key, $default);
+        if (is_null($key)) {
+            return Dotenv::getInstance();
+        }
+        if (is_string($key)) {
+            return Dotenv::getInstance()->get($key, $default);
+        }
+        if (is_array($key)) {
+            return Dotenv::getInstance()->setMany($key);
+        }
+        throw new Exception('error params');
     }
 }
 
@@ -579,7 +588,7 @@ if (!function_exists('request')) {
         if (is_array($key)) {
             return app(RequestInterface::class)->only($key);
         }
-        $value = app(RequestInterface::class)->__get($key);
+        $value = app(RequestInterface::class)->input($key);
 
         return is_null($value) ? value($default) : $value;
     }

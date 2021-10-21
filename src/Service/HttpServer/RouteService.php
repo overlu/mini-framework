@@ -195,11 +195,15 @@ class RouteService
             if (count($handler) !== 2) {
                 throw new RuntimeException("Router {$uri} Config Error, Only @ Are Supported");
             }
-            $className = '\\App\\Controllers\\Http\\' . $handler[0];
-            $func = $handler[1];
-            if (!class_exists($className)) {
-                throw new RuntimeException("Router {$uri} Defined Class {$className} Not Found");
+            if (class_exists($handler[0])) {
+                $className = $handler[0];
+            } else {
+                $className = '\\App\\Controllers\\Http\\' . $handler[0];
+                if (!class_exists($className)) {
+                    throw new RuntimeException("Router {$uri} Defined Class {$className} Not Found");
+                }
             }
+            $func = $handler[1];
             $resp = app('middleware')->registerBeforeRequest($func, $className);
             if (!is_null($resp)) {
                 return $resp;

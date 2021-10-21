@@ -28,7 +28,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
      */
     protected function getCacheKey(string $name): string
     {
-        return $this->path . $this->prefix . '-' . md5($name) . '.cache';
+        return $this->path . ($this->prefix ? $this->prefix . '.' : '') . md5($name) . '.cache';
     }
 
     /**

@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini;
 
 use Mini\Command\CommandService;
+use Mini\Command\KeyGenerateCommandService;
 use Mini\Command\MakeMigrationCommandService;
 use Mini\Command\MigrateCommandService;
 use Mini\Command\MigrateInstallCommandService;
@@ -34,7 +35,8 @@ class Console
         RunCrontabCommandService::class,
         StatusCrontabCommandService::class,
         SocketResetCommandService::class,
-        VendorPublishCommandService::class
+        VendorPublishCommandService::class,
+        KeyGenerateCommandService::class,
     ];
 
     /**

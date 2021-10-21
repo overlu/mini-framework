@@ -207,6 +207,16 @@ abstract class AbstractCacheDriver
      * @param string $key
      * @return bool
      */
+    public function remove(string $key): bool
+    {
+        return $this->delete($key);
+    }
+
+    /**
+     * Remove an item from the cache.
+     * @param string $key
+     * @return bool
+     */
     public function offsetUnset(string $key): bool
     {
         return $this->delete($key);

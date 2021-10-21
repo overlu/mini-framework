@@ -226,8 +226,8 @@ class VendorPublishCommandService extends AbstractCommandService
     public function getCommandDescription(): string
     {
         return 'Publish any publishable assets from vendor packages.
-                   <yellow>{--force : Overwrite any existing files}
+                   <blue>{--force : Overwrite any existing files}
                    {--all : Publish assets for all service providers without prompt}
-                   {--provider= : The service provider that has assets you want to publish}</yellow>';
+                   {--provider= : The service provider that has assets you want to publish}</blue>';
     }
 }

@@ -187,7 +187,7 @@ abstract class AbstractServer
         try {
             Bootstrap::getInstance()->workerStart($server, $workerId);
         } catch (Throwable $throwable) {
-            app('exception')->throw($throwable);
+            Handler::getInstance()->throw($throwable);
         }
     }
 
@@ -211,7 +211,7 @@ abstract class AbstractServer
             Context::set('IsInRequestEvent', true);
             Listener::getInstance()->listen('request', $request, $response);
         } catch (Throwable $throwable) {
-            app('exception')->throw($throwable);
+            Handler::getInstance()->throw($throwable);
         }
     }
 
@@ -226,7 +226,7 @@ abstract class AbstractServer
         try {
             Listener::getInstance()->listen('receive', $server, $fd, $fromId, $data);
         } catch (Throwable $throwable) {
-            app('exception')->throw($throwable);
+            Handler::getInstance()->throw($throwable);
         }
     }
 
@@ -251,7 +251,7 @@ abstract class AbstractServer
             }
             Listener::getInstance()->listen('task', $server);
         } catch (Throwable $throwable) {
-            app('exception')->throw($throwable);
+            Handler::getInstance()->throw($throwable);
         }
         return null;
     }
@@ -266,7 +266,7 @@ abstract class AbstractServer
         try {
             Listener::getInstance()->listen('finish', $server, $task_id, $data);
         } catch (Throwable $throwable) {
-            app('exception')->throw($throwable);
+            Handler::getInstance()->throw($throwable);
         }
     }
 
@@ -280,7 +280,7 @@ abstract class AbstractServer
             Context::set('IsInWebsocketEvent', true);
             Listener::getInstance()->listen('open', $server, $request);
         } catch (Throwable $throwable) {
-            app('exception')->throw($throwable);
+            Handler::getInstance()->throw($throwable);
         }
     }
 
@@ -294,7 +294,7 @@ abstract class AbstractServer
             Context::set('IsInWebsocketEvent', true);
             Listener::getInstance()->listen('message', $server, $frame);
         } catch (Throwable $throwable) {
-            app('exception')->throw($throwable);
+            Handler::getInstance()->throw($throwable);
         }
     }
 
@@ -309,7 +309,7 @@ abstract class AbstractServer
             Context::set('IsInWebsocketEvent', true);
             Listener::getInstance()->listen('close', $server, $fd);
         } catch (Throwable $throwable) {
-            app('exception')->throw($throwable);
+            Handler::getInstance()->throw($throwable);
         }
     }
 

@@ -29,6 +29,7 @@ use Mini\Cache\Drivers\AbstractCacheDriver;
  * @method static bool forever(string $key, $value)
  * @method static bool delete(string $key)
  * @method static bool forget(string $key)
+ * @method static bool remove(string $key)
  * @method static bool offsetUnset(string $key)
  * @method static bool deleteMultiple(array $keys)
  * @method static bool clear()

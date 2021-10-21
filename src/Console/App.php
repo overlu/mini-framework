@@ -424,6 +424,16 @@ class App
     }
 
     /**
+     * @param $name
+     * @param null $default
+     * @return mixed|null
+     */
+    public function argument($name, $default = null)
+    {
+        return $this->getArg($name, $default);
+    }
+
+    /**
      * @param string|int $name
      * @param int $default
      *
@@ -454,6 +464,16 @@ class App
     public function getOpt(string $name, $default = null)
     {
         return $this->opts[$name] ?? $default;
+    }
+
+    /**
+     * @param string $name
+     * @param null $default
+     * @return mixed|null
+     */
+    public function option(string $name, $default = null)
+    {
+        return $this->getOpt($name, $default);
     }
 
     /**

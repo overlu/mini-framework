@@ -11,6 +11,7 @@ use ArrayAccess;
 use Closure;
 use Exception;
 use InvalidArgumentException;
+use Mini\Application;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\Container\Container as ContainerContract;
 use LogicException;
@@ -1253,6 +1254,23 @@ class Container implements ArrayAccess, ContainerContract
     public function offsetUnset($key): void
     {
         unset($this->bindings[$key], $this->instances[$key], $this->resolved[$key]);
+    }
+
+    /**
+     * return mini framework version
+     * @return string
+     */
+    public function version(): string
+    {
+        return Application::$version;
+    }
+
+    /**
+     * @return string
+     */
+    public function environment(): string
+    {
+        return env('APP_ENV', 'local');
     }
 
     /**

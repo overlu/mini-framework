@@ -137,11 +137,12 @@ abstract class Rule
     /**
      * Get parameter from given $key, return null if it not exists
      * @param string $key
-     * @return mixed
+     * @param null $default
+     * @return mixed|null
      */
-    public function parameter(string $key)
+    public function parameter(string $key, $default = null)
     {
-        return $this->params[$key] ?? null;
+        return $this->params[$key] ?? $default;
     }
 
     /**

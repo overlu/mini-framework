@@ -30,6 +30,8 @@ namespace Mini\Facades;
  * @method static array getAliases()
  * @method static bool isUsingHumanizedKey()
  * @package Mini\Facades
+ *
+ * @see \Mini\Validator\Factory
  */
 class Validator extends Facade
 {

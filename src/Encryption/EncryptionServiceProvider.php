@@ -37,7 +37,6 @@ class EncryptionServiceProvider extends ServiceProvider
     {
         $this->app->singleton('encrypter', function ($app) {
             $config = config('app');
-
             return new Encrypter($this->parseKey($config), $config['cipher']);
         });
     }

@@ -132,8 +132,7 @@ class Command
      */
     public static function line(string $message = '', bool $newLine = true): void
     {
-//        static::out($message);
-        echo Color::render($message . PHP_EOL);
+        printf('%s', Color::render($message . PHP_EOL));
     }
 
     /**

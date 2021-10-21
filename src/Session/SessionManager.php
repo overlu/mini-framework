@@ -24,6 +24,9 @@ class SessionManager
     public function start(): void
     {
         $sessionId = $this->parseSessionId();
+        /**
+         * @var $session Session
+         */
         $session = app('session');
         $session->setId($sessionId);
         if (!$session->start()) {

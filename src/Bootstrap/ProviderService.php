@@ -34,18 +34,22 @@ class ProviderService
     public function bootstrap(?Server $server = null, ?int $workerId = null): void
     {
         $app = app();
+        $booted = [];
         foreach ($this->serviceProviders as $serviceProvider) {
             if (!class_exists($serviceProvider)) {
                 throw new RuntimeException('class ' . $serviceProvider . ' not exists.');
             }
-            if (!($serviceProvider = new $serviceProvider($app, $server, $workerId)) instanceof ServiceProvider) {
+            if (!($serviceProviderObj = new $serviceProvider($app, $server, $workerId)) instanceof ServiceProvider) {
                 throw new RuntimeException($serviceProvider . ' should instanceof ' . ServiceProvider::class);
             }
-            $serviceProvider->register();
-            $this->bootedServiceProviders[] = $serviceProvider;
+            if ($this->serviceProviderWasNotBooted($serviceProvider)) {
+                $booted[] = $serviceProviderObj;
+                $serviceProviderObj->register();
+                $this->bootedServiceProviders[] = $serviceProvider;
+            }
         }
-        foreach ($this->bootedServiceProviders as $bootedServiceProvider) {
-            $bootedServiceProvider->boot();
+        foreach ($booted as $serviceProviderbooted) {
+            $serviceProviderbooted->boot();
         }
     }
 
@@ -67,9 +71,18 @@ class ProviderService
      */
     public function removeServiceProvider(string $serviceProvider): void
     {
-        if (isset($this->serviceProviders[$serviceProvider])) {
+        if ($this->hasServiceProvider($serviceProvider)) {
             unset($this->serviceProviders[$serviceProvider]);
         }
+    }
+
+    /**
+     * @param string $serviceProvider
+     * @return bool
+     */
+    public function hasServiceProvider(string $serviceProvider): bool
+    {
+        return isset(array_flip($this->serviceProviders)[$serviceProvider]);
     }
 
     /**
@@ -86,5 +99,23 @@ class ProviderService
     public function getBootedServiceProviders(): array
     {
         return $this->bootedServiceProviders;
+    }
+
+    /**
+     * @param string $serviceProvider
+     * @return bool
+     */
+    public function serviceProviderWasBooted(string $serviceProvider): bool
+    {
+        return isset(array_flip($this->bootedServiceProviders)[$serviceProvider]);
+    }
+
+    /**
+     * @param string $serviceProvider
+     * @return bool
+     */
+    public function serviceProviderWasNotBooted(string $serviceProvider): bool
+    {
+        return !$this->serviceProviderWasBooted($serviceProvider);
     }
 }
