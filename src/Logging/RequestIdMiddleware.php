@@ -20,7 +20,7 @@ class RequestIdMiddleware implements MiddlewareInterface
      */
     public function before(string $method, string $className)
     {
-        Seaslog::setRequestID(uniqid('mini-', true));
+        Seaslog::setRequestID(uniqid('mini.', true));
     }
 
     public function after(ResponseInterface $response): ResponseInterface

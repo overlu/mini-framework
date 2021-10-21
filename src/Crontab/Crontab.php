@@ -9,6 +9,7 @@ namespace Mini\Crontab;
 
 use Mini\Exception\CrontabException;
 use Mini\Logging\Log;
+use Swoole\Event;
 use Swoole\Timer;
 
 class Crontab
@@ -32,10 +33,19 @@ class Crontab
     {
         self::checkCrontabRules();
         $enable_crontab_coroutine = config('crontab.enable_crontab_coroutine', true);
-        Timer::set([
-            'enable_coroutine' => (bool)$enable_crontab_coroutine,
-        ]);
+        if (version_compare(swoole_version(), '4.6.0') >= 0) {
+            if (!$enable_crontab_coroutine) {
+                swoole_async_set([
+                    'enable_coroutine' => false,
+                ]);
+            }
+        } else {
+            Timer::set([
+                'enable_coroutine' => (bool)$enable_crontab_coroutine,
+            ]);
+        }
         self::tick(time() % 60);
+        Event::wait();
     }
 
     public static function checkCrontabRules(): void
