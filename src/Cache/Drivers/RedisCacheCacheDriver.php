@@ -34,8 +34,8 @@ class RedisCacheCacheDriver extends AbstractCacheDriver
             return $this->delete($key);
         }
         return $ttl
-            ? Redis::connection($this->connection)->setex($this->prefix . $key, $ttl, serialize($value))
-            : Redis::connection($this->connection)->set($this->prefix . $key, serialize($value));
+            ? (bool)Redis::connection($this->connection)->setex($this->prefix . $key, $ttl, serialize($value))
+            : (bool)Redis::connection($this->connection)->set($this->prefix . $key, serialize($value));
     }
 
     /**
@@ -58,7 +58,7 @@ class RedisCacheCacheDriver extends AbstractCacheDriver
      */
     public function inc(string $key, int $step = 1): int
     {
-        return Redis::connection($this->connection)->incrBy($this->prefix . $key, $step);
+        return (int)Redis::connection($this->connection)->incrBy($this->prefix . $key, $step);
     }
 
     /**
@@ -69,7 +69,7 @@ class RedisCacheCacheDriver extends AbstractCacheDriver
      */
     public function dec(string $key, int $step = 1): int
     {
-        return Redis::connection($this->connection)->decrby($this->prefix . $key, $step);
+        return (int)Redis::connection($this->connection)->decrby($this->prefix . $key, $step);
     }
 
     /**
@@ -79,12 +79,12 @@ class RedisCacheCacheDriver extends AbstractCacheDriver
      */
     public function has(string $key): bool
     {
-        return Redis::connection($this->connection)->exists($this->prefix . $key);
+        return Redis::connection($this->connection)->exists($this->prefix . $key) ? true : false;
     }
 
     /**
      * @param string $key
-     * @return bool|int
+     * @return bool
      * @throws BindingResolutionException
      */
     public function delete(string $key): bool
@@ -98,6 +98,6 @@ class RedisCacheCacheDriver extends AbstractCacheDriver
      */
     public function clear(): bool
     {
-        return Redis::connection($this->connection)->flushDB();
+        return Redis::connection($this->connection)->flushDB() ? true : false;
     }
 }

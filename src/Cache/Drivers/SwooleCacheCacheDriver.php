@@ -76,7 +76,7 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
         return $this->table->set($this->prefix . $key, [
             'value' => serialize($value),
             'expire' => is_null($ttl) ? 0 : $ttl + time(),
-        ]);
+        ]) ? true : false;
     }
 
     /**
@@ -85,7 +85,7 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
      */
     public function delete(string $key): bool
     {
-        return $this->table->del($this->prefix . $key);
+        return $this->table->del($this->prefix . $key) ? true : false;
     }
 
     /**
@@ -107,7 +107,7 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
      */
     public function has(string $key): bool
     {
-        return $this->table->exist($this->prefix . $key);
+        return $this->table->exist($this->prefix . $key) ? true : false;
     }
 
     /**
@@ -117,7 +117,7 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
      */
     public function inc(string $key, int $step = 1): int
     {
-        return $this->table->incr($this->prefix . $key, 'value', $step);
+        return (int)$this->table->incr($this->prefix . $key, 'value', $step);
     }
 
     /**
@@ -127,7 +127,7 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
      */
     public function dec(string $key, int $step = 1): int
     {
-        return $this->table->decr($this->prefix . $key, 'value', $step);
+        return (int)$this->table->decr($this->prefix . $key, 'value', $step);
     }
 
 }

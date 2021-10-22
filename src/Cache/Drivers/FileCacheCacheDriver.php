@@ -107,7 +107,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
      */
     public function inc(string $key, int $step = 1): int
     {
-        if ($value = $this->getContent($key)) {
+        if ($value = (int)$this->getContent($key)) {
             $value['content'] = $value['content'] + $step;
         } else {
             $value = [
@@ -126,7 +126,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
      */
     public function dec(string $key, int $step = 1): int
     {
-        if ($value = $this->getContent($key)) {
+        if ($value = (int)$this->getContent($key)) {
             $value['content'] = $value['content'] - $step;
         } else {
             $value = [
@@ -154,7 +154,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
     public function delete(string $key): bool
     {
         $filename = $this->getCacheKey($key);
-        return $this->unlink($filename);
+        return $this->unlink($filename) ? true : false;
     }
 
     /**
@@ -162,7 +162,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
      */
     public function clear(): bool
     {
-        return app('files')->cleanDirectory($this->path);
+        return app('files')->cleanDirectory($this->path) ? true : false;
     }
 
     /**

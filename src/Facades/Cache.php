@@ -44,6 +44,8 @@ use Mini\Cache\Drivers\AbstractCacheDriver;
  * @method static void setPrefix(string $prefix)
  * @method static string getPrefix()
  * @method static AbstractCacheDriver driver(?string $driverName)
+ *
+ * @see AbstractCacheDriver
  * @package Mini\Facades
  */
 class Cache extends Facade
