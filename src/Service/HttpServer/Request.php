@@ -580,13 +580,26 @@ class Request implements RequestInterface
     /**
      * @return array|mixed|string
      */
-    public function getClientIP()
+    public function getClientIp()
     {
-        $ip = $this->server('remote_addr');
-        if (empty($ip) || $ip === '127.0.0.1') {
-            $ip = $this->header('x-real-ip');
+        return $this->getClientIps()[0];
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getClientIps(): array
+    {
+        if (!empty($ips = $this->getHeader('x-forwarded-for'))) {
+            return $ips;
         }
-        return $ip ?: '127.0.0.1';
+        if (!empty($ips = $this->getHeader('x-real-ip'))) {
+            return $ips;
+        }
+        if (!empty($ips = $this->getHeader('remote_addr'))) {
+            return $ips;
+        }
+        return ['127.0.0.1'];
     }
 
     /**

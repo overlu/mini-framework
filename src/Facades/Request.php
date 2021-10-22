@@ -62,7 +62,7 @@ use Mini\Context;
  * @method static \Mini\Contracts\HttpMessage\RequestInterface withUri(\Psr\Http\Message\UriInterface $uri, $preserveHost = false)
  * @method static array getServerParams()
  * @method static \Mini\Contracts\HttpMessage\RequestInterface withServerParams(array $serverParams)
- * @method static string getClientIP()
+ * @method static string getClientIp()
  * @method static string ip()
  * @method static string getScheme()
  * @method static bool isSecure()
