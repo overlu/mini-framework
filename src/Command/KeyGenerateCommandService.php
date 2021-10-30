@@ -74,7 +74,7 @@ class KeyGenerateCommandService extends AbstractCommandService
      * @param string $key
      * @return void
      */
-    protected function writeNewEnvironmentFileWith($key)
+    protected function writeNewEnvironmentFileWith($key): void
     {
         env([
             'APP_KEY' => $key

@@ -41,8 +41,8 @@ class Handler implements HandlerInterface
 
     private function __construct()
     {
-        $this->environment = env('APP_ENV', 'production');
-        $this->debug = env('APP_DEBUG', false);
+        $this->environment = (string)env('APP_ENV', 'production');
+        $this->debug = (bool)env('APP_DEBUG', false);
     }
 
     /**

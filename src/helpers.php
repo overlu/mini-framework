@@ -489,7 +489,6 @@ if (!function_exists('env')) {
      * @param null $key
      * @param null $default
      * @return Singleton|Dotenv|mixed|void|null
-     * @throws Exception
      */
     function env($key = null, $default = null)
     {
@@ -503,7 +502,6 @@ if (!function_exists('env')) {
             Dotenv::getInstance()->setMany($key);
             return;
         }
-        throw new Exception('error params');
     }
 }
 
@@ -1060,22 +1058,20 @@ if (!function_exists('csrf_token')) {
 if (!function_exists('is_production_env')) {
     /**
      * @return bool
-     * @throws Exception
      */
     function is_production_env(): bool
     {
-        return env('APP_ENV', 'production') === 'production';
+        return env('APP_ENV', 'local') === 'production';
     }
 }
 
 if (!function_exists('is_local_env')) {
     /**
      * @return bool
-     * @throws Exception
      */
     function is_local_env(): bool
     {
-        return env('APP_ENV', 'production') === 'local';
+        return env('APP_ENV', 'local') === 'local';
     }
 }
 
@@ -1083,11 +1079,10 @@ if (!function_exists('is_dev_env')) {
     /**
      * @param bool $include_local
      * @return bool
-     * @throws Exception
      */
     function is_dev_env(bool $include_local = false): bool
     {
-        $app_env = strtolower(env('APP_ENV', 'production'));
+        $app_env = strtolower(env('APP_ENV', 'local'));
         return in_array($app_env, $include_local ? ['local', 'dev', 'develop', 'test'] : ['dev', 'develop', 'test'], true);
     }
 }
