@@ -7,20 +7,27 @@ declare(strict_types=1);
 
 use Mini\Config;
 use Mini\Container\Container;
+use Mini\Container\EntryNotFoundException;
 use Mini\Context;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\HttpMessage\RequestInterface;
+use Mini\Contracts\HttpMessage\WebsocketRequestInterface;
+use Mini\Contracts\HttpMessage\WebsocketResponseInterface;
 use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\Support\Htmlable;
 use Mini\Contracts\Support\Jsonable;
 use Mini\Contracts\View\Factory;
-use Mini\Database\Redis\Pool;
 use Mini\Events\Dispatcher;
+use Mini\Exception\WebsocketException;
+use Mini\Facades\Url;
 use Mini\Server;
 use Mini\Service\HttpMessage\Cookie\Cookie;
 use Mini\Service\HttpMessage\Stream\SwooleStream;
 use Mini\Service\HttpMessage\Uri\Uri;
 use Mini\Service\WsServer\Request;
+use Mini\Service\WsServer\Response;
+use Mini\Session\Session;
+use Mini\Singleton;
 use Mini\Support\ApplicationContext;
 use Mini\Support\Arr;
 use Mini\Support\Collection;
@@ -119,7 +126,7 @@ if (!function_exists('collect')) {
      * @param null|mixed $value
      * @return Collection
      */
-    function collect($value = null)
+    function collect($value = null): Collection
     {
         return new Collection($value);
     }
@@ -185,9 +192,9 @@ if (!function_exists('data_set')) {
      * @param array|string $key
      * @param bool $overwrite
      * @param mixed $value
-     * @return array|mixed
+     * @return array|object
      */
-    function data_set(&$target, $key, $value, $overwrite = true)
+    function data_set(&$target, $key, $value, bool $overwrite = true)
     {
         $segments = is_array($key) ? $key : explode('.', $key);
         if (($segment = array_shift($segments)) === '*') {
@@ -260,9 +267,9 @@ if (!function_exists('last')) {
 if (!function_exists('tap')) {
     /**
      * Call the given Closure with the given value then return the value.
-     * @param $value
+     * @param mixed $value
      * @param callable|null $callback
-     * @return HigherOrderTapProxy
+     * @return mixed|HigherOrderTapProxy
      */
     function tap($value, ?callable $callback = null)
     {
@@ -349,7 +356,7 @@ if (!function_exists('class_basename')) {
 if (!function_exists('trait_uses_recursive')) {
     /**
      * Returns all traits used by a trait and its traits.
-     * @param string $trait
+     * @param string|object $trait
      * @return array
      */
     function trait_uses_recursive($trait): array
@@ -481,7 +488,8 @@ if (!function_exists('env')) {
      * get or set environment
      * @param null $key
      * @param null $default
-     * @return \Mini\Singleton|Dotenv|mixed|void|null
+     * @return Singleton|Dotenv|mixed|void|null
+     * @throws Exception
      */
     function env($key = null, $default = null)
     {
@@ -492,7 +500,8 @@ if (!function_exists('env')) {
             return Dotenv::getInstance()->get($key, $default);
         }
         if (is_array($key)) {
-            return Dotenv::getInstance()->setMany($key);
+            Dotenv::getInstance()->setMany($key);
+            return;
         }
         throw new Exception('error params');
     }
@@ -523,7 +532,8 @@ if (!function_exists('redis')) {
     /**
      * 获取redis实例
      * @param string $connection
-     * @return \Swoole\Coroutine\Redis | \Redis
+     * @return \Swoole\Coroutine\Redis | Redis
+     * @throws BindingResolutionException
      */
     function redis($connection = 'default')
     {
@@ -548,6 +558,7 @@ if (!function_exists('event')) {
      *
      * @param array $args
      * @return array|null
+     * @throws BindingResolutionException
      */
     function event(...$args)
     {
@@ -561,6 +572,7 @@ if (!function_exists('task')) {
      *
      * @param array $args
      * @return array|null
+     * @throws BindingResolutionException
      */
     function task(...$args)
     {
@@ -605,7 +617,7 @@ if (!function_exists('ws_request')) {
         if (!Context::has('IsInWebsocketEvent')) {
             throw new RuntimeException("Not In Websocket Environment.");
         }
-        return app(\Mini\Contracts\HttpMessage\WebsocketRequestInterface::class);
+        return app(WebsocketRequestInterface::class);
     }
 }
 
@@ -627,7 +639,7 @@ if (!function_exists('response')) {
 if (!function_exists('ws_response')) {
     /**
      * 获取websocket response资源
-     * @return \Mini\Service\WsServer\Response
+     * @return Response
      * @throws Exception
      */
     function ws_response()
@@ -635,7 +647,7 @@ if (!function_exists('ws_response')) {
         if (!Context::has('IsInWebsocketEvent')) {
             throw new RuntimeException("Not In Websocket Environment.");
         }
-        return app(\Mini\Contracts\HttpMessage\WebsocketResponseInterface::class);
+        return app(WebsocketResponseInterface::class);
     }
 }
 
@@ -649,16 +661,16 @@ if (!function_exists('url')) {
      */
     function url(string $path = '', array $params = [], string $fragment = ''): Uri
     {
-        return \Mini\Facades\Url::make($path, $params, $fragment);
+        return Url::make($path, $params, $fragment);
     }
 }
 
 if (!function_exists('html')) {
     /**
-     * @param $string
+     * @param string $string
      * @return HtmlString
      */
-    function html($string)
+    function html(string $string): HtmlString
     {
         return new HtmlString($string);
     }
@@ -684,9 +696,9 @@ if (!function_exists('session')) {
      *
      * @param array|string|null $key
      * @param mixed $default
-     * @return mixed|\Mini\Session\Session
+     * @return mixed|Session
      * @throws BindingResolutionException
-     * @throws \Mini\Container\EntryNotFoundException
+     * @throws EntryNotFoundException
      */
     function session($key = null, $default = null)
     {
@@ -823,7 +835,7 @@ if (!function_exists('ws_abort')) {
      */
     function ws_abort(int $code, $message = ''): void
     {
-        throw new \Mini\Exception\WebsocketException($message, $code);
+        throw new WebsocketException($message, $code);
     }
 }
 
@@ -882,7 +894,7 @@ if (!function_exists('view')) {
 if (!function_exists('is_json')) {
     /**
      * @param $string
-     * @return mixed
+     * @return bool|array
      */
     function is_json($string)
     {
@@ -928,6 +940,8 @@ if (!function_exists('__')) {
      * @param string|null $domain
      * @param string|null $locale
      * @return string
+     * @throws EntryNotFoundException
+     * @throws BindingResolutionException
      */
     function __(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
     {
@@ -943,6 +957,7 @@ if (!function_exists('trans')) {
      * @param string|null $domain
      * @param string|null $locale
      * @return string
+     * @throws BindingResolutionException
      */
     function trans(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
     {
@@ -1027,7 +1042,7 @@ if (!function_exists('csrf_token')) {
      *
      * @return string
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException|BindingResolutionException
      */
     function csrf_token(): string
     {
@@ -1038,5 +1053,53 @@ if (!function_exists('csrf_token')) {
         }
 
         throw new RuntimeException('Application session store not set.');
+    }
+}
+
+
+if (!function_exists('is_production_env')) {
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    function is_production_env(): bool
+    {
+        return env('APP_ENV', 'production') === 'production';
+    }
+}
+
+if (!function_exists('is_local_env')) {
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    function is_local_env(): bool
+    {
+        return env('APP_ENV', 'production') === 'local';
+    }
+}
+
+if (!function_exists('is_dev_env')) {
+    /**
+     * @param bool $include_local
+     * @return bool
+     * @throws Exception
+     */
+    function is_dev_env(bool $include_local = false): bool
+    {
+        $app_env = strtolower(env('APP_ENV', 'production'));
+        return in_array($app_env, $include_local ? ['local', 'dev', 'develop', 'test'] : ['dev', 'develop', 'test'], true);
+    }
+}
+
+if (!function_exists('mini_version')) {
+    /**
+     * 获取mini框架版本
+     * @return string
+     * @throws BindingResolutionException
+     */
+    function mini_version(): string
+    {
+        return app()->version();
     }
 }
