@@ -18,7 +18,7 @@ class Response extends \Mini\Service\HttpMessage\Base\Response implements Sendab
     /**
      * @var null|\Swoole\Http\Response
      */
-    protected \Swoole\Http\Response $swooleResponse;
+    protected ?\Swoole\Http\Response $swooleResponse = null;
 
     /**
      * @var array
@@ -41,15 +41,21 @@ class Response extends \Mini\Service\HttpMessage\Base\Response implements Sendab
             return;
         }
 
-        $this->buildSwooleResponse($this->swooleResponse, $this);
+        $this->buildSwooleResponse();
         $content = $this->getBody();
         if ($content instanceof FileInterface) {
-            return $this->swooleResponse->sendfile($content->getFilename());
+            $this->swooleResponse->sendfile($content->getFilename());
+            $this->swooleResponse->end();
+            return;
         }
         if ($withContent && $content = $content->getContents()) {
-            return Context::has('hasWriteContent')
-                ? $this->swooleResponse->write($content)
-                : $this->swooleResponse->end($content);
+            if (Context::has('hasWriteContent')) {
+                $this->swooleResponse->write($content);
+                $this->swooleResponse->end();
+                return;
+            }
+            $this->swooleResponse->end($content);
+            return;
         }
         $this->swooleResponse->end();
     }
@@ -101,16 +107,14 @@ class Response extends \Mini\Service\HttpMessage\Base\Response implements Sendab
      * Keep this method at public level,
      * allows the proxy class to override this method,
      * or override the method that used this method.
-     * @param \Swoole\Http\Response $swooleResponse
-     * @param Response $response
      */
-    public function buildSwooleResponse(\Swoole\Http\Response $swooleResponse, Response $response): void
+    public function buildSwooleResponse(): void
     {
         /*
          * Headers
          */
-        foreach ($response->getHeaders() as $key => $value) {
-            $swooleResponse->header($key, implode(';', $value));
+        foreach ($this->getHeaders() as $key => $value) {
+            $this->swooleResponse->header($key, implode(';', $value));
         }
 
         /*
@@ -121,7 +125,7 @@ class Response extends \Mini\Service\HttpMessage\Base\Response implements Sendab
                 foreach ($item ?? [] as $name => $cookie) {
                     if ($cookie instanceof Cookie) {
                         $value = $cookie->isRaw() ? $cookie->getValue() : rawurlencode($cookie->getValue());
-                        $swooleResponse->rawcookie($cookie->getName(), $value, $cookie->getExpiresTime(), $cookie->getPath(), $cookie->getDomain(), $cookie->isSecure(), $cookie->isHttpOnly(), (string)$cookie->getSameSite());
+                        $this->swooleResponse->rawcookie($cookie->getName(), $value, $cookie->getExpiresTime(), $cookie->getPath(), $cookie->getDomain(), $cookie->isSecure(), $cookie->isHttpOnly(), (string)$cookie->getSameSite());
                     }
                 }
             }
@@ -130,6 +134,6 @@ class Response extends \Mini\Service\HttpMessage\Base\Response implements Sendab
         /*
          * Status code
          */
-        $swooleResponse->status($response->getStatusCode());
+        $this->swooleResponse->status($this->getStatusCode());
     }
 }

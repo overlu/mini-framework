@@ -7,16 +7,12 @@ declare(strict_types=1);
 
 namespace Mini\Service\Server;
 
-use Mini\Config;
 use Mini\BindsProvider;
 use Mini\Context;
 use Mini\Contracts\Support\Htmlable;
 use Mini\Contracts\Support\Sendable;
-use Mini\Di;
-use Mini\Exception\Handler;
 use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Contracts\HttpMessage\ResponseInterface;
-use Mini\Bootstrap\Middleware;
 use Mini\Service\HttpMessage\Stream\SwooleStream;
 use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\Support\Jsonable;
@@ -32,7 +28,7 @@ use Throwable;
 class HttpServer extends AbstractServer
 {
     /**
-     * @var RouteService
+     * @var RouteService|null
      */
     protected ?RouteService $route = null;
 
@@ -71,14 +67,22 @@ class HttpServer extends AbstractServer
             if (!$this->route) {
                 $this->route = RouteService::getInstance();
             }
-            if (!($resp = $this->route->dispatch($request)) instanceof \Psr\Http\Message\ResponseInterface) {
+            $resp = $this->route->dispatch($request);
+            if (!isset($resp)) {
+                return;
+            }
+            if (!$resp instanceof \Psr\Http\Message\ResponseInterface) {
                 $resp = $this->transferToResponse($resp);
             }
-            if (!isset($resp) || !$resp instanceof Sendable) {
+            if (!$resp instanceof Sendable) {
                 return;
             }
             $resp = $resp->withHeader('Server', 'Mini');
+            /**
+             * @var $resp Psr7Response
+             */
             $resp = app('middleware')->bootAfterRequest($resp);
+            $resp = $resp->withStatus(200);
             if (request()->getMethod() === 'HEAD') {
                 $resp->send(false);
             } else {
