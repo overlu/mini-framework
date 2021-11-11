@@ -12,7 +12,7 @@ use Swoole\Process;
 
 class RouteCommandService extends AbstractCommandService
 {
-    public function handle(Process $process)
+    public function handle(Process $process): void
     {
         @unlink(BASE_PATH . '/storage/app/route.cache');
         Command::info('route cache cleared.');

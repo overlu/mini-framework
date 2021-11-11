@@ -47,10 +47,10 @@ class VendorPublishCommandService extends AbstractCommandService
 
     /**
      * @param Process $process
-     * @return mixed|void
+     * @return void
      * @throws FilesystemException
      */
-    public function handle(Process $process)
+    public function handle(Process $process): void
     {
         $this->determineWhatShouldBePublished();
         $tags = empty($this->tags) ? [null] : $this->tags;

@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Command;
 
 use Mini\Console\Table;
+use SeasLog;
 use Swoole\Process;
 
 /**
@@ -18,11 +19,11 @@ class LogStatusCommandService extends AbstractCommandService
 {
     /**
      * @param Process $process
-     * @return mixed|void
+     * @return void
      */
-    public function handle(Process $process)
+    public function handle(Process $process): void
     {
-        $status = \SeasLog::analyzerCount(SEASLOG_ALL, '*', null);
+        $status = SeasLog::analyzerCount(SEASLOG_ALL, '*', null);
         $total = 0;
         foreach ($status as $key => $value) {
             $status[$key] = (string)$value;

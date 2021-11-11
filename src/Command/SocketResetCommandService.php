@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
+use Exception;
 use Mini\Facades\Redis;
 use Mini\Service\WsServer\Socket;
 use Mini\Support\Command;
@@ -17,10 +18,10 @@ class SocketResetCommandService extends AbstractCommandService
 {
     /**
      * @param Process $process
-     * @return mixed|void
-     * @throws \Exception
+     * @return void
+     * @throws Exception
      */
-    public function handle(Process $process)
+    public function handle(Process $process): void
     {
         if (Command::has('bin/mini')) {
             Command::error('server is running, stop the mini server first!');

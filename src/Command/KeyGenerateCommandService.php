@@ -17,14 +17,15 @@ class KeyGenerateCommandService extends AbstractCommandService
 
     /**
      * @param Process $process
-     * @return mixed|void
+     * @return void
      */
-    public function handle(Process $process)
+    public function handle(Process $process): void
     {
         $key = $this->generateRandomKey();
 
         if ($this->getOpt('show')) {
-            return Command::line('<comment>' . $key . '</comment>');
+            Command::line('<comment>' . $key . '</comment>');
+            return;
         }
 
         // Next, we will replace the application key in the environment file so it is

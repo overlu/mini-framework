@@ -14,7 +14,7 @@ class MigrateResetCommandService extends AbstractCommandService
 {
     use Migration;
 
-    public function handle(Process $process)
+    public function handle(Process $process): void
     {
         run(function () {
             if (!$this->confirmToProceed()) {

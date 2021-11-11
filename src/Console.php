@@ -15,6 +15,7 @@ use Mini\Command\MigrateInstallCommandService;
 use Mini\Command\MigrateRefreshCommandService;
 use Mini\Command\MigrateResetCommandService;
 use Mini\Command\MigrateRollbackCommandService;
+use Mini\Command\RoutesAllCommandService;
 use Mini\Command\RunCrontabCommandService;
 use Mini\Command\SocketResetCommandService;
 use Mini\Command\StatusCrontabCommandService;
@@ -37,6 +38,7 @@ class Console
         SocketResetCommandService::class,
         VendorPublishCommandService::class,
         KeyGenerateCommandService::class,
+        RoutesAllCommandService::class,
     ];
 
     /**

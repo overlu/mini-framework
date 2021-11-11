@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
-use Mini\Database\Mysql\Capsule\Manager;
 use Mini\Database\Mysql\Migrations\DatabaseMigrationRepository;
 use Mini\Database\Mysql\Migrations\MigrationCreator;
 use Mini\Database\Mysql\Migrations\MigrationRepositoryInterface;

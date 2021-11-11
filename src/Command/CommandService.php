@@ -8,9 +8,11 @@ declare(strict_types=1);
 namespace Mini\Command;
 
 use Mini\Console\App;
+use Mini\Contracts\Container\BindingResolutionException;
 use RuntimeException;
 use Swoole\ExitException;
 use Swoole\Process;
+use Throwable;
 
 class CommandService
 {
@@ -33,6 +35,9 @@ class CommandService
         }
     }
 
+    /**
+     * @throws BindingResolutionException|Throwable
+     */
     public static function run(): void
     {
         try {
@@ -50,7 +55,7 @@ class CommandService
             }
             $process->start();
             Process::wait(!($app->getOpt('d') || $app->getArg('daemonize')));
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             if (!$throwable instanceof ExitException) {
                 throw $throwable;
             }

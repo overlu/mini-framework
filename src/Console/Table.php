@@ -123,7 +123,7 @@ class Table
                         $hasHead = true;
                     }
 
-                    $info['columnMaxWidth'][$index] = mb_strlen($name, 'UTF-8');
+                    $info['columnMaxWidth'][$index] = mb_strlen((string)$name, 'UTF-8');
                 }
             }
 

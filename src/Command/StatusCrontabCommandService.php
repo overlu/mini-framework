@@ -7,17 +7,14 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
-use Mini\Command\AbstractCommandService;
 use Mini\Console\Table;
-use Mini\Crontab\Crontab;
 use Mini\Crontab\CrontabTaskList;
 use Mini\Support\Command;
 use Swoole\Process;
-use Swoole\Timer;
 
 class StatusCrontabCommandService extends AbstractCommandService
 {
-    public function handle(Process $process)
+    public function handle(Process $process): void
     {
         CrontabTaskList::initialTaskList();
         $crontabTaskList = CrontabTaskList::getCrontabTaskList();

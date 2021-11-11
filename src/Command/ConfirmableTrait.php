@@ -8,6 +8,8 @@ declare(strict_types=1);
 namespace Mini\Command;
 
 
+use Closure;
+
 trait ConfirmableTrait
 {
     /**
@@ -16,10 +18,10 @@ trait ConfirmableTrait
      * This method only asks for confirmation in production.
      *
      * @param string $warning
-     * @param \Closure|bool|null $callback
+     * @param Closure|bool|null $callback
      * @return bool
      */
-    public function confirmToProceed($warning = 'Application In Production!', $callback = null)
+    public function confirmToProceed(string $warning = 'Application In Production!', $callback = null): bool
     {
         $callback = is_null($callback) ? $this->getDefaultConfirmCallback() : $callback;
 
@@ -47,11 +49,11 @@ trait ConfirmableTrait
     /**
      * Get the default confirmation callback.
      *
-     * @return \Closure
+     * @return Closure
      */
-    protected function getDefaultConfirmCallback()
+    protected function getDefaultConfirmCallback(): Closure
     {
-        return function () {
+        return static function () {
             return app()->environment() === 'production';
         };
     }

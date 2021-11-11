@@ -14,9 +14,9 @@ class HelloMiniCommandService extends AbstractCommandService
 {
     /**
      * @param Process $process
-     * @return mixed|void
+     * @return void
      */
-    public function handle(Process $process)
+    public function handle(Process $process): void
     {
         $info = <<<EOL
  _   _ _____ _     _     ___       __  __ ___ _   _ ___ 
