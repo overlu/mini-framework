@@ -27,6 +27,11 @@ class RoutesAllCommandService extends AbstractCommandService
         $this->parseWebSocketRoutes($routes['ws']);
         $this->parseHttpRoutes($routes['http']);
         Command::line();
+        $defaultRoute = [[
+            'Handler' => empty($routes['default']) ? '<red>404</red>' : $this->paraseHandler($routes['default'])
+        ]];
+        Command::info('  Default Route:');
+        Table::show($defaultRoute, '');
         if (empty($this->wsRoutes)) {
             $wsRoutes = [[
                 'Url' => '[empty]',
@@ -37,11 +42,12 @@ class RoutesAllCommandService extends AbstractCommandService
             foreach ($this->wsRoutes as $wsRoute) {
                 $wsRoutes[] = [
                     'Url' => '<underscore>' . $wsRoute['url'] . '</underscore>',
-                    'Handler' => is_string($wsRoute['handler']) ? '<light_blue>' . $wsRoute['handler'] . '</light_blue>' : (is_callable($wsRoute['handler']) ? '<yellow>Callable</yellow>' : '<red>Error: </red>' . ucfirst(gettype($wsRoute['handler'])))
+                    'Handler' => $this->paraseHandler($wsRoute['handler'])
                 ];
             }
         }
-        Table::show($wsRoutes, "Websocket Routes");
+        Command::info('  Websocket Routes:');
+        Table::show($wsRoutes, '');
         if (empty($this->httpRoutes)) {
             $httpRoutes = [[
                 'Url' => '[empty]',
@@ -50,8 +56,8 @@ class RoutesAllCommandService extends AbstractCommandService
             ]];
         } else {
             $httpRoutes = [];
-            foreach ($this->httpRoutes as $wsRoute) {
-                $method = strtoupper($wsRoute['method']);
+            foreach ($this->httpRoutes as $httpRoute) {
+                $method = strtoupper($httpRoute['method']);
                 switch ($method) {
                     case 'GET':
                         $method = '<green>' . $method . '</green>';
@@ -70,13 +76,23 @@ class RoutesAllCommandService extends AbstractCommandService
                         break;
                 }
                 $httpRoutes[] = [
-                    'Url' => '<underscore>' . $wsRoute['url'] . '</underscore>',
+                    'Url' => '<underscore>' . $httpRoute['url'] . '</underscore>',
                     'Method' => $method,
-                    'Handler' => is_string($wsRoute['handler']) ? '<light_blue>' . $wsRoute['handler'] . '</light_blue>' : (is_callable($wsRoute['handler']) ? '<yellow>Callable</yellow>' : '<red>Error: </red>' . ucfirst(gettype($wsRoute['handler'])))
+                    'Handler' => $this->paraseHandler($httpRoute['handler'])
                 ];
             }
         }
-        Table::show($httpRoutes, 'Http Routes');
+        Command::info('  Http Routes:');
+        Table::show($httpRoutes, '');
+    }
+
+    /**
+     * @param $hander
+     * @return string
+     */
+    private function paraseHandler($hander): string
+    {
+        return is_string($hander) ? '<light_blue>' . $hander . '</light_blue>' : (is_callable($hander) ? '<yellow>Callable</yellow>' : '<red>Error: </red>' . ucfirst(gettype($hander)));
     }
 
     private function parseWebSocketRoutes($wsRoutes, array $prefix = [], array $namespace = []): void
@@ -98,9 +114,17 @@ class RoutesAllCommandService extends AbstractCommandService
                 }
             } else if (isset($route[0]) && is_string($route[0])) {
                 $namespaceString = !empty($namespace) ? implode('\\', $namespace) . '\\' : '';
+                if (is_string($route[1])) {
+                    $handler = $namespaceString . $route[1];
+                    if (class_exists($handler)) {
+                        $handler = '\\' . trim($handler, '\\');
+                    }
+                } else {
+                    $handler = $route[1];
+                }
                 $this->wsRoutes[] = [
                     'url' => !empty($prefix) ? '/' . implode('/', $prefix) . '/' . trim($route[0], '/') : '/' . trim($route[0], '/'),
-                    'handler' => is_string($route[1]) ? $namespaceString . $route[1] : $route[1]
+                    'handler' => $handler
                 ];
             }
         }
@@ -125,10 +149,18 @@ class RoutesAllCommandService extends AbstractCommandService
                 array_pop($prefix);
             } else if (isset($route[0]) && is_string($route[0])) {
                 $namespaceString = !empty($namespace) ? implode('\\', $namespace) . '\\' : '';
+                if (is_string($route[2])) {
+                    $handler = $namespaceString . $route[2];
+                    if (class_exists($handler)) {
+                        $handler = '\\' . trim($handler, '\\');
+                    }
+                } else {
+                    $handler = $route[2];
+                }
                 $this->httpRoutes[] = [
                     'method' => $route[0],
                     'url' => !empty($prefix) ? '/' . implode('/', $prefix) . '/' . trim($route[1], '/') : '/' . trim($route[1], '/'),
-                    'handler' => is_string($route[2]) ? $namespaceString . $route[2] : $route[2]
+                    'handler' => $handler
                 ];
             }
         }
