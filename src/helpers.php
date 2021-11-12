@@ -531,9 +531,8 @@ if (!function_exists('redis')) {
      * 获取redis实例
      * @param string $connection
      * @return \Swoole\Coroutine\Redis | Redis
-     * @throws BindingResolutionException
      */
-    function redis($connection = 'default')
+    function redis(string $connection = 'default')
     {
         return app('redis')->getConnection($connection);
     }
