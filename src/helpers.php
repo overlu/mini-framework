@@ -63,7 +63,6 @@ if (!function_exists('app')) {
      * @param string|null $abstract
      * @param array $parameters
      * @return object|mixed|Container
-     * @throws BindingResolutionException
      */
     function app(?string $abstract = null, array $parameters = [])
     {
@@ -83,7 +82,6 @@ if (!function_exists('retry')) {
      * @param int $sleep
      * @param callable|null $when
      * @return mixed
-     * @throws Exception
      */
     function retry(int $times, callable $callback, $sleep = 0, $when = null)
     {
@@ -138,7 +136,7 @@ if (!function_exists('data_fill')) {
      * @param mixed $target
      * @param array|string $key
      * @param mixed $value
-     * @return array|mixed
+     * @return array|object
      */
     function data_fill(&$target, $key, $value)
     {
@@ -152,7 +150,7 @@ if (!function_exists('data_get')) {
      * @param array|int|string $key
      * @param null|mixed $default
      * @param mixed $target
-     * @return array|mixed
+     * @return array|null|mixed
      */
     function data_get($target, $key, $default = null)
     {
@@ -555,7 +553,6 @@ if (!function_exists('event')) {
      *
      * @param array $args
      * @return array|null
-     * @throws BindingResolutionException
      */
     function event(...$args)
     {
@@ -569,7 +566,6 @@ if (!function_exists('task')) {
      *
      * @param array $args
      * @return array|null
-     * @throws BindingResolutionException
      */
     function task(...$args)
     {
@@ -583,7 +579,6 @@ if (!function_exists('request')) {
      * @param null $key
      * @param null $default
      * @return Mini\Service\HttpServer\Request | Mini\Service\HttpMessage\Server\Request
-     * @throws BindingResolutionException
      */
     function request($key = null, $default = null)
     {
@@ -607,7 +602,6 @@ if (!function_exists('ws_request')) {
     /**
      * 获取websocket request资源
      * @return Request
-     * @throws BindingResolutionException
      */
     function ws_request()
     {
@@ -622,7 +616,6 @@ if (!function_exists('response')) {
     /**
      * 获取response资源
      * @return Mini\Service\HttpServer\Response | Mini\Service\HttpMessage\Server\Response
-     * @throws Exception
      */
     function response()
     {
@@ -637,7 +630,6 @@ if (!function_exists('ws_response')) {
     /**
      * 获取websocket response资源
      * @return Response
-     * @throws Exception
      */
     function ws_response()
     {
@@ -694,8 +686,6 @@ if (!function_exists('session')) {
      * @param array|string|null $key
      * @param mixed $default
      * @return mixed|Session
-     * @throws BindingResolutionException
-     * @throws EntryNotFoundException
      */
     function session($key = null, $default = null)
     {
@@ -842,7 +832,6 @@ if (!function_exists('e')) {
      * @param Htmlable|string $value
      * @param bool $doubleEncode
      * @return string
-     * @throws JsonException
      */
     function e($value, $doubleEncode = false): string
     {
@@ -871,20 +860,18 @@ if (!function_exists('view')) {
     /**
      * Get the evaluated view contents for the given view.
      *
-     * @param string $view
+     * @param string|null $view
      * @param array $data
-     * @param array $mergeData
      * @return View|Factory
-     * @throws BindingResolutionException
      */
-    function view($view = null, $data = [], $mergeData = [])
+    function view(?string $view = null, array $data = [])
     {
         $factory = app('view');
-        if (func_num_args() === 0) {
+        if (empty($view)) {
             return $factory;
         }
 
-        return $factory->make($view, $data, $mergeData);
+        return $factory->make($view, $data);
     }
 }
 
@@ -907,7 +894,6 @@ if (!function_exists('debug')) {
     /**
      * @param $var
      * @param array $moreVars
-     * @throws Exception
      */
     function debug($var, ...$moreVars)
     {
@@ -937,8 +923,6 @@ if (!function_exists('__')) {
      * @param string|null $domain
      * @param string|null $locale
      * @return string
-     * @throws EntryNotFoundException
-     * @throws BindingResolutionException
      */
     function __(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
     {
@@ -954,7 +938,6 @@ if (!function_exists('trans')) {
      * @param string|null $domain
      * @param string|null $locale
      * @return string
-     * @throws BindingResolutionException
      */
     function trans(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
     {
@@ -972,7 +955,6 @@ if (!function_exists('cookie')) {
      * @param bool $secure
      * @param bool $httpOnly
      * @return Cookie
-     * @throws JsonException
      */
     function cookie(string $name, $value, int $minutes = 0, string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = true): Cookie
     {
@@ -988,7 +970,6 @@ if (!function_exists('redirect')) {
      * @param int $status
      * @param string $schema
      * @return ResponseInterface
-     * @throws Exception
      */
     function redirect($toUrl, int $status = 302, string $schema = 'http'): ResponseInterface
     {
@@ -1013,7 +994,6 @@ if (!function_exists('wait')) {
      * @param Closure $closure
      * @param float|null $timeout
      * @return mixed
-     * @throws Throwable
      */
     function wait(Closure $closure, ?float $timeout = null)
     {
@@ -1036,10 +1016,7 @@ if (!function_exists('csrf_field')) {
 if (!function_exists('csrf_token')) {
     /**
      * Get the CSRF token value.
-     *
      * @return string
-     *
-     * @throws RuntimeException|BindingResolutionException
      */
     function csrf_token(): string
     {
@@ -1090,7 +1067,6 @@ if (!function_exists('mini_version')) {
     /**
      * 获取mini框架版本
      * @return string
-     * @throws BindingResolutionException
      */
     function mini_version(): string
     {
