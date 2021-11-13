@@ -173,9 +173,9 @@ class App
     }
 
     /**
-     * @param int $code
+     * @param mixed $code
      */
-    public function stop(int $code = 0): void
+    public function stop($code = 0): void
     {
         if ($code) {
             Command::error('error code: ' . $code);
