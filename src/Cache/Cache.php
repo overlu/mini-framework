@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace Mini\Cache;
 
 use Mini\Cache\Drivers\AbstractCacheDriver;
-use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Exception\CacheException;
 
 /**
@@ -37,7 +36,6 @@ class Cache
     /**
      * @param string|null $driverName
      * @return AbstractCacheDriver
-     * @throws BindingResolutionException
      * @throws CacheException
      */
     public function driver(?string $driverName = null): AbstractCacheDriver
@@ -52,7 +50,6 @@ class Cache
      * @param $name
      * @param $arguments
      * @return mixed
-     * @throws BindingResolutionException
      */
     public function __call($name, $arguments)
     {

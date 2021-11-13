@@ -16,7 +16,7 @@ class HashServiceProvider extends ServiceProvider
      * Register the service provider.
      *
      * @return void
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|\ReflectionException
      */
     public function register(): void
     {

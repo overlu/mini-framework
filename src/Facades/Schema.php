@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Facades;
 
-use Mini\Database\Mysql\Capsule\Manager;
-
 /**
  * Class Schema
  * @method static \Mini\Database\Mysql\Schema\Builder create(string $table, \Closure $callback)
@@ -36,7 +34,7 @@ class Schema extends Facade
     /**
      * Get a schema builder instance for the default connection.
      *
-     * @return \Illuminate\Database\Schema\Builder
+     * @return \Mini\Database\Mysql\Schema\Builder
      */
     protected static function getFacadeAccessor()
     {

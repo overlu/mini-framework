@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace Mini\Config;
 
 use Exception;
-use Mini\Contracts\Config\Repository as RepositoryContract;
 use RuntimeException;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;

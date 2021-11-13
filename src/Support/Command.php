@@ -82,15 +82,6 @@ class Command
     }
 
     /**
-     * 打印成功消息
-     * @param string $message
-     */
-    public static function info(string $message): void
-    {
-        static::out($message, 'success');
-    }
-
-    /**
      * @param string $msg
      */
     public static function infoWithTime(string $msg): void
@@ -117,15 +108,6 @@ class Command
     }
 
     /**
-     * 打印警告消息
-     * @param $message
-     */
-    public static function warning(string $message): void
-    {
-        static::out($message, 'warning');
-    }
-
-    /**
      * 打印普通消息
      * @param string $message
      * @param bool $newLine
@@ -137,7 +119,7 @@ class Command
 
     /**
      * 打印建议消息
-     * @param $message
+     * @param string $message
      */
     public static function suggest(string $message): void
     {
@@ -166,7 +148,7 @@ class Command
     /**
      * clear console information
      */
-    public static function clear()
+    public static function clear(): Terminal
     {
         return self::terminal()->clear();
     }
@@ -208,12 +190,108 @@ class Command
     }
 
     /**
-     * @param string $question
-     * @param bool $inline
-     * @return string
+     * @param string $string
      */
-    public static function ask(string $question, bool $inline = true): string
+    public static function alert(string $string): void
     {
-        return Cli::read($question, $inline);
+        Cli::writeln('<alert>' . $string . '</alert>');
+    }
+
+    /**
+     * @param string $string
+     */
+    public static function warning(string $string): void
+    {
+        Cli::writeln('<warning>' . $string . '</warning>');
+    }
+
+    /**
+     * @param string $string
+     */
+    public static function critical(string $string): void
+    {
+        Cli::writeln('<critical>' . $string . '</critical>');
+    }
+
+    /**
+     * @param string $string
+     */
+    public static function notice(string $string): void
+    {
+        Cli::writeln('<notice>' . $string . '</notice>');
+    }
+
+    /**
+     * @param string $string
+     */
+    public static function info(string $string): void
+    {
+        Cli::writeln('<info>' . $string . '</info>');
+    }
+
+    /**
+     * @param string $string
+     */
+    public static function success(string $string): void
+    {
+        Cli::writeln('<success>' . $string . '</success>');
+    }
+
+    /**
+     * @param string $string
+     */
+    public static function comment(string $string): void
+    {
+        Cli::writeln('<comment>' . $string . '</comment>');
+    }
+
+    /**
+     * @param string $string
+     * @param string $default
+     * @param string $type
+     * @return bool
+     */
+    public static function confirm(string $string, string $default = 'y', string $type = 'info'): bool
+    {
+        $result = Cli::read('<' . $type . '>' . $string . '</' . $type . '> (' . $default . '): ');
+        return ($result ?: $default) === 'y';
+    }
+
+    /**
+     * @param string $string
+     * @param string $default
+     * @param string $type
+     * @return bool
+     */
+    public static function confirmLn(string $string, string $default = 'y', string $type = 'info'): bool
+    {
+        $result = Cli::read('<' . $type . '>' . $string . '</' . $type . '> (' . $default . '): ', true);
+        return ($result ?: $default) === 'y';
+    }
+
+    /**
+     * @param string $question
+     * @param null $default
+     * @param string $type
+     * @return mixed
+     */
+    public static function ask(string $question, $default = null, string $type = 'info')
+    {
+        $question = '<' . $type . '>' . $question . '</' . $type . '>';
+        $result = Cli::read($question . ($default ? ' (' . $default . ')' : ''));
+        return $result ?: $default;
+    }
+
+    /**
+     * @param string $question
+     * @param null $default
+     * @param string $type
+     * @return mixed
+     */
+    public static function askLn(string $question, $default = null, string $type = 'info')
+    {
+        $question = '<' . $type . '>' . $question . '</' . $type . '>';
+        $result = Cli::read($question . ($default ? ' (' . $default . ')' : ''), true);
+        return $result ?: $default;
     }
 }

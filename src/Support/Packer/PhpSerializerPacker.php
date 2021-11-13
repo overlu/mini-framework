@@ -18,6 +18,6 @@ class PhpSerializerPacker implements PackerInterface
 
     public function unpack(string $data)
     {
-        return unserialize($data);
+        return unserialize($data, ["allowed_classes" => true]);
     }
 }

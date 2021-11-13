@@ -12,6 +12,7 @@ use Mini\Cache\Drivers\RedisCacheCacheDriver;
 use Mini\Cache\Drivers\SwooleCacheCacheDriver;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Support\ServiceProvider;
+use ReflectionException;
 
 /**
  * Class CacheServiceProviders
@@ -25,7 +26,7 @@ class CacheServiceProviders extends ServiceProvider
     }
 
     /**
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     private function registerFileCacheDriver(): void
     {
@@ -35,7 +36,7 @@ class CacheServiceProviders extends ServiceProvider
     }
 
     /**
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     private function registerSwooleCacheDriver(): void
     {
@@ -45,7 +46,7 @@ class CacheServiceProviders extends ServiceProvider
     }
 
     /**
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     private function registerRedisCacheDriver(): void
     {
@@ -55,7 +56,7 @@ class CacheServiceProviders extends ServiceProvider
     }
 
     /**
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     private function registerCache(): void
     {
@@ -65,7 +66,7 @@ class CacheServiceProviders extends ServiceProvider
     }
 
     /**
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function boot(): void
     {

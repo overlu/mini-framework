@@ -35,7 +35,7 @@ class SessionServiceProvider extends ServiceProvider
     }
 
     /**
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|\ReflectionException
      */
     protected function registerSession(): void
     {
@@ -70,7 +70,7 @@ class SessionServiceProvider extends ServiceProvider
     }
 
     /**
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|\ReflectionException
      */
     public function boot(): void
     {

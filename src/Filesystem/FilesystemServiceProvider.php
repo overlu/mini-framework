@@ -16,7 +16,7 @@ class FilesystemServiceProvider extends ServiceProvider
      * Register the service provider.
      *
      * @return void
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|\ReflectionException
      */
     public function register(): void
     {
@@ -29,7 +29,7 @@ class FilesystemServiceProvider extends ServiceProvider
      * Register the native filesystem implementation.
      *
      * @return void
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|\ReflectionException
      */
     protected function registerNativeFilesystem(): void
     {

@@ -51,7 +51,7 @@ class Highlighter
     ];
 
     /** @var bool */
-    private $hasTokenFunc;
+    private bool $hasTokenFunc;
 
     public function __construct()
     {
@@ -115,7 +115,7 @@ class Highlighter
         $offset = max($offset, 0);
         $length = $linesAfter + $linesBefore + 1;
 
-        $tokenLines = array_slice($tokenLines, $offset, $length, $preserveKeys = true);
+        $tokenLines = array_slice($tokenLines, $offset, $length, true);
 
         $lines = $this->colorLines($tokenLines);
 

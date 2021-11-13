@@ -9,11 +9,12 @@ namespace Mini\Database\Redis;
 
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Support\ServiceProvider;
+use ReflectionException;
 
 class RedisServiceProvider extends ServiceProvider
 {
     /**
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function register(): void
     {

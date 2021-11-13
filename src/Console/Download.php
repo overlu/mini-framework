@@ -182,7 +182,7 @@ class Download
             if ($size === null) {
                 printf("\rUnknown file size... %2d kb done..", $tfKb);
             } else {
-                $length = ceil(($transferredBytes / $size) * 100); // ■ =
+                $length = (int)ceil(($transferredBytes / $size) * 100); // ■ =
                 printf("\r[%-100s] %d%% (%2d/%2d kb)", str_repeat('=', $length) . '>', $length, $tfKb, $size / 1024);
             }
         } else {

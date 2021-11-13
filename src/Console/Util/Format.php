@@ -53,7 +53,7 @@ class Format
      * @param integer $width
      * @return string the wrapped text.
      */
-    public static function wrapText($text, $indent = 0, $width = 0): string
+    public static function wrapText(string $text, int $indent = 0, int $width = 0): string
     {
         if (!$text) {
             return $text;
@@ -112,12 +112,12 @@ class Format
     }
 
     /**
-     * @param float $memory
+     * @param int $memory
      * @return string
      */
-    public static function memoryUsage($memory = null): string
+    public static function memoryUsage(int $memory = 0): string
     {
-        $memory = $memory ?: memory_get_usage(true);
+        $memory = $memory > 0 ? $memory : memory_get_usage(true);
         if ($memory >= 1024 * 1024 * 1024) {
             return sprintf('%.2f Gb', $memory / 1024 / 1024 / 1024);
         }
@@ -153,9 +153,9 @@ class Format
         ];
         foreach ($timeFormats as $index => $format) {
             if ($secs >= $format[0]) {
-                $next = $timeFormats[$index + 1] ?? false;
+                $next = $timeFormats[$index + 1] ?? [];
 
-                if (($next && $secs < $next[0]) || $index === count($timeFormats) - 1) {
+                if ((!empty($next) && $secs < $next[0]) || $index === count($timeFormats) - 1) {
                     if (2 === count($format)) {
                         return $format[1];
                     }
@@ -239,10 +239,9 @@ class Format
     }
 
     /**
-     * @param bool $refresh
      * @return array|bool
      */
-    public static function getScreenSize(bool $refresh = false)
+    public static function getScreenSize()
     {
         $stty = [];
         if (exec('stty -a 2>&1', $stty) && preg_match('/rows\s+(\d+);\s*columns\s+(\d+);/mi', implode(' ', $stty), $matches)) {
@@ -272,7 +271,7 @@ class Format
     {
         $keyMaxWidth = 0;
         foreach ($data as $key => $value) {
-            // key is not a integer
+            // key is not an integer
             if (!$expectInt || !is_numeric($key)) {
                 $width = mb_strlen((string)$key, 'UTF-8');
                 $keyMaxWidth = $width > $keyMaxWidth ? $width : $keyMaxWidth;

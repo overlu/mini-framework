@@ -160,7 +160,7 @@ class Terminal
      *
      * @return string
      */
-    public static function build($format, $type = 'm'): string
+    public static function build($format, string $type = 'm'): string
     {
         $format = null === $format ? '' : implode(';', (array)$format);
         return self::BEGIN_CHAR . implode(';', (array)$format) . $type . self::END_CHAR;
@@ -175,7 +175,7 @@ class Terminal
      *
      * @return $this
      */
-    private function cursor($typeName, $arg1 = 1, $arg2 = null): self
+    private function cursor(string $typeName, int $arg1 = 1, $arg2 = null): self
     {
         if (!isset(self::$ctrlCursorCodes[$typeName])) {
             Cli::stderr("The [$typeName] is not supported cursor control.");
@@ -207,7 +207,7 @@ class Terminal
     /**
      * control screen
      *
-     * @param      $typeName
+     * @param string $typeName
      * @param null $arg
      *
      * @return $this
@@ -410,7 +410,7 @@ class Terminal
         return $this->cursor(self::CUR_COORDINATE, $column, $row);
     }
 
-    public function sound()
+    public function sound(): void
     {
         print "\007";
     }

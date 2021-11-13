@@ -72,7 +72,7 @@ trait WriteMessageTrait
      *
      * @return int
      */
-    public static function writeRaw($message, $nl = true, $quit = false, array $opts = []): int
+    public static function writeRaw($message, bool $nl = true, $quit = false, array $opts = []): int
     {
         $opts['color'] = false;
         return self::write($message, $nl, $quit, $opts);
@@ -137,7 +137,7 @@ trait WriteMessageTrait
      *
      * @return int
      */
-    public static function write($messages, $nl = true, $quit = false, array $opts = []): int
+    public static function write($messages, bool $nl = true, $quit = false, array $opts = []): int
     {
         if (is_array($messages)) {
             $messages = implode($nl ? PHP_EOL : '', $messages);
@@ -200,7 +200,7 @@ trait WriteMessageTrait
      * @param bool $nl
      * @param bool|int $quit
      */
-    public static function stderr($text, $nl = true, $quit = -2): void
+    public static function stderr($text, bool $nl = true, $quit = -2): void
     {
         self::write($text, $nl, $quit, [
             'stream' => self::$errorStream,
@@ -262,7 +262,7 @@ trait WriteMessageTrait
      * @return string If flush = False, will return all buffer text.
      * @see write()
      */
-    public static function stopBuffer($flush = true, $nl = false, $quit = false, array $opts = []): string
+    public static function stopBuffer(bool $flush = true, bool $nl = false, bool $quit = false, array $opts = []): string
     {
         self::$buffering = false;
 
@@ -289,7 +289,7 @@ trait WriteMessageTrait
      *
      * @see write()
      */
-    public static function flushBuffer($nl = false, $quit = false, array $opts = []): void
+    public static function flushBuffer(bool $nl = false, bool $quit = false, array $opts = []): void
     {
         self::stopBuffer(true, $nl, $quit, $opts);
     }

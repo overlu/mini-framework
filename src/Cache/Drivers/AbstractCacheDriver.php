@@ -16,7 +16,7 @@ use Closure;
  */
 abstract class AbstractCacheDriver
 {
-    protected ?string $prefix = '';
+    protected string $prefix = '';
 
     /**
      * Retrieve an item from the cache by key.

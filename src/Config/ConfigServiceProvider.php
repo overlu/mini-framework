@@ -14,7 +14,7 @@ use Mini\Support\ServiceProvider;
 class ConfigServiceProvider extends ServiceProvider
 {
     /**
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|\ReflectionException
      */
     public function register(): void
     {

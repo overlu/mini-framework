@@ -16,7 +16,6 @@ use Swoole\Timer;
  */
 class SwooleCacheCacheDriver extends AbstractCacheDriver
 {
-    /** @var Table */
     protected Table $table;
 
     /**
@@ -36,11 +35,10 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
 
     /**
      * 周期性回收
-     * @param int $interval
      */
-    private function recycle(int $interval = 1000): void
+    private function recycle(): void
     {
-        Timer::tick($interval, function () {
+        Timer::tick(1000, function () {
             $time = time();
             foreach ($this->table as $key => $item) {
                 if ($item['expire'] !== 0 && $item['expire'] < $time) {
@@ -58,7 +56,7 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
     public function get(string $key, $default = null)
     {
         $value = $this->table->get($this->prefix . $key);
-        return $value === false ? $default : unserialize($value['value']);
+        return $value === false ? $default : unserialize($value['value'], ["allowed_classes" => true]);
     }
 
 
@@ -73,10 +71,10 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
         if ($ttl <= 0 && !is_null($ttl)) {
             return $this->delete($key);
         }
-        return $this->table->set($this->prefix . $key, [
+        return (bool)$this->table->set($this->prefix . $key, [
             'value' => serialize($value),
             'expire' => is_null($ttl) ? 0 : $ttl + time(),
-        ]) ? true : false;
+        ]);
     }
 
     /**
@@ -85,7 +83,7 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
      */
     public function delete(string $key): bool
     {
-        return $this->table->del($this->prefix . $key) ? true : false;
+        return (bool)$this->table->del($this->prefix . $key);
     }
 
     /**
@@ -107,7 +105,7 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
      */
     public function has(string $key): bool
     {
-        return $this->table->exist($this->prefix . $key) ? true : false;
+        return (bool)$this->table->exist($this->prefix . $key);
     }
 
     /**

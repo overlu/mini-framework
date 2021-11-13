@@ -18,6 +18,7 @@ use Mini\Database\Mysql\Events\QueryExecuted;
 use Mini\Facades\Console;
 use Mini\Facades\Log;
 use Mini\Support\ServiceProvider;
+use ReflectionException;
 
 class EloquentServiceProvider extends ServiceProvider
 {
@@ -37,7 +38,7 @@ class EloquentServiceProvider extends ServiceProvider
      * Register the primary database bindings.
      *
      * @return void
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     protected function registerConnectionServices(): void
     {
@@ -59,7 +60,7 @@ class EloquentServiceProvider extends ServiceProvider
      * Register the queueable entity resolver implementation.
      *
      * @return void
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     protected function registerQueueableEntityResolver(): void
     {

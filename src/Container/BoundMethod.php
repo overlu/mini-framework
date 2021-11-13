@@ -27,7 +27,7 @@ class BoundMethod
      * @return mixed
      * @throws InvalidArgumentException|BindingResolutionException
      */
-    public static function call($container, $callback, array $parameters = [], $defaultMethod = null)
+    public static function call(Container $container, $callback, array $parameters = [], string $defaultMethod = null)
     {
         if ($defaultMethod || static::isCallableWithAtSign($callback)) {
             return static::callClass($container, $callback, $parameters, $defaultMethod);
@@ -48,9 +48,9 @@ class BoundMethod
      * @param string|null $defaultMethod
      * @return mixed
      * @throws InvalidArgumentException
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
-    protected static function callClass($container, $target, array $parameters = [], $defaultMethod = null)
+    protected static function callClass(Container $container, string $target, array $parameters = [], string $defaultMethod = null)
     {
         $segments = explode('@', $target);
 
@@ -76,7 +76,7 @@ class BoundMethod
      * @param mixed $default
      * @return mixed
      */
-    protected static function callBoundMethod($container, $callback, $default)
+    protected static function callBoundMethod(Container $container, callable $callback, $default)
     {
         if (!is_array($callback)) {
             return Util::unwrapIfClosure($default);
@@ -99,7 +99,7 @@ class BoundMethod
      * @param callable $callback
      * @return string
      */
-    protected static function normalizeMethod($callback): string
+    protected static function normalizeMethod(callable $callback): string
     {
         $class = is_string($callback[0]) ? $callback[0] : get_class($callback[0]);
 
@@ -115,7 +115,7 @@ class BoundMethod
      * @throws ReflectionException
      * @throws BindingResolutionException
      */
-    protected static function getMethodDependencies($container, $callback, array $parameters = []): array
+    protected static function getMethodDependencies(Container $container, $callback, array $parameters = []): array
     {
         $dependencies = [];
 
@@ -154,8 +154,8 @@ class BoundMethod
      * @return void
      * @throws BindingResolutionException|ReflectionException
      */
-    protected static function addDependencyForCallParameter($container, $parameter,
-                                                            array &$parameters, &$dependencies): void
+    protected static function addDependencyForCallParameter(Container $container, ReflectionParameter $parameter,
+                                                            array     &$parameters, array &$dependencies): void
     {
         if (array_key_exists($paramName = $parameter->getName(), $parameters)) {
             $dependencies[] = $parameters[$paramName];

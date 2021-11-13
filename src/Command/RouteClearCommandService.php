@@ -10,7 +10,7 @@ namespace Mini\Command;
 use Mini\Support\Command;
 use Swoole\Process;
 
-class RouteCommandService extends AbstractCommandService
+class RouteClearCommandService extends AbstractCommandService
 {
     public function handle(Process $process): void
     {

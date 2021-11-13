@@ -113,7 +113,7 @@ class Flags
         while (false !== ($p = current($params))) {
             next($params);
 
-            // is options
+            // Are options
             if ($p[0] === '-') {
                 $value = true;
                 $option = substr($p, 1);
@@ -253,12 +253,12 @@ class Flags
     }
 
     /**
-     * @param string|bool $val
+     * @param mixed|bool $val
      * @param bool $enable
      *
      * @return bool|mixed
      */
-    public static function filterBool($val, $enable = true)
+    public static function filterBool($val, bool $enable = true)
     {
         if ($enable) {
             if (is_bool($val) || is_numeric($val)) {
@@ -310,7 +310,7 @@ class Flags
     }
 
     /**
-     * Escapes a token through escapeshellarg if it contains unsafe chars.
+     * Escapes a token through escapement if it contains unsafe chars.
      *
      * @param string $token
      *

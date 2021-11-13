@@ -9,6 +9,7 @@ namespace Mini\Console;
 
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Support\ServiceProvider;
+use ReflectionException;
 
 /**
  * Class ConsoleServiceProvider
@@ -17,7 +18,7 @@ use Mini\Support\ServiceProvider;
 class ConsoleServiceProvider extends ServiceProvider
 {
     /**
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function register(): void
     {

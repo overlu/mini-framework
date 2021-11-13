@@ -103,7 +103,6 @@ EOF;
             // translate array to string
             if (is_array($value)) {
                 $temp = '';
-                /** @var array $value */
                 foreach ($value as $key => $val) {
                     if (is_bool($val)) {
                         $val = $val ? 'True' : 'False';
@@ -195,7 +194,6 @@ EOF;
             if (is_array($value)) {
                 $temp = '';
 
-                /** @var array $value */
                 foreach ($value as $key => $val) {
                     if (is_bool($val)) {
                         $val = $val ? 'True' : 'False';
@@ -264,9 +262,9 @@ EOF;
      * @param bool $border
      * @return $this
      */
-    public function showBorder($border): self
+    public function showBorder(bool $border): self
     {
-        $this->showBorder = (bool)$border;
+        $this->showBorder = $border;
         return $this;
     }
 }

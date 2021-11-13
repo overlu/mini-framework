@@ -16,9 +16,6 @@ use Throwable;
 
 class App
 {
-    /** @var self */
-    public static App $i;
-
     private const COMMAND_CONFIG = [
         'desc' => '',
         'usage' => '',
@@ -75,13 +72,10 @@ class App
      * Class constructor.
      *
      * @param array $config
-     * @param array $argv
+     * @param array|null $argv
      */
     public function __construct(array $config = [], array $argv = null)
     {
-        // save self
-        self::$i = $this;
-
         // get current dir
         $this->pwd = (string)getcwd();
 
@@ -181,7 +175,7 @@ class App
     /**
      * @param int $code
      */
-    public function stop($code = 0): void
+    public function stop(int $code = 0): void
     {
         if ($code) {
             Command::error('error code: ' . $code);
@@ -266,7 +260,7 @@ class App
      */
     public function addByConfig(callable $handler, array $config): void
     {
-        if (empty($config['name']) || !$handler) {
+        if (empty($config['name'])) {
             throw new InvalidArgumentException('Invalid arguments for add command');
         }
 
@@ -478,6 +472,15 @@ class App
 
     /**
      * @param string $name
+     * @return bool
+     */
+    public function hasOption(string $name): bool
+    {
+        return isset($this->opts[$name]);
+    }
+
+    /**
+     * @param string $name
      * @param int $default
      *
      * @return int
@@ -647,5 +650,119 @@ class App
     public function setMetas(array $metas): void
     {
         $this->metas = array_merge($this->metas, $metas);
+    }
+
+    /**
+     * @param string $string
+     */
+    public function alert(string $string): void
+    {
+        Cli::writeln('<alert>' . $string . '</alert>');
+    }
+
+    /**
+     * @param string $string
+     */
+    public function warning(string $string): void
+    {
+        Cli::writeln('<warning>' . $string . '</warning>');
+    }
+
+    /**
+     * @param string $string
+     */
+    public function error(string $string): void
+    {
+        Cli::writeln('<error>' . $string . '</error>');
+    }
+
+    /**
+     * @param string $string
+     */
+    public function critical(string $string): void
+    {
+        Cli::writeln('<critical>' . $string . '</critical>');
+    }
+
+    /**
+     * @param string $string
+     */
+    public function notice(string $string): void
+    {
+        Cli::writeln('<notice>' . $string . '</notice>');
+    }
+
+    /**
+     * @param string $string
+     */
+    public function info(string $string): void
+    {
+        Cli::writeln('<info>' . $string . '</info>');
+    }
+
+    /**
+     * @param string $string
+     */
+    public function success(string $string): void
+    {
+        Cli::writeln('<success>' . $string . '</success>');
+    }
+
+    /**
+     * @param string $string
+     */
+    public function comment(string $string): void
+    {
+        Cli::writeln('<comment>' . $string . '</comment>');
+    }
+
+    /**
+     * @param string $string
+     * @param string $default
+     * @param string $type
+     * @return bool
+     */
+    public function confirm(string $string, string $default = 'y', string $type = 'info'): bool
+    {
+        $result = Cli::read('<' . $type . '>' . $string . '</' . $type . '> (' . $default . '): ');
+        return ($result ?: $default) === 'y';
+    }
+
+    /**
+     * @param string $string
+     * @param string $default
+     * @param string $type
+     * @return bool
+     */
+    public function confirmLn(string $string, string $default = 'y', string $type = 'info'): bool
+    {
+        $result = Cli::read('<' . $type . '>' . $string . '</' . $type . '> (' . $default . '): ', true);
+        return ($result ?: $default) === 'y';
+    }
+
+    /**
+     * @param string $question
+     * @param null $default
+     * @param string $type
+     * @return mixed
+     */
+    public function ask(string $question, $default = null, string $type = 'info')
+    {
+        $question = '<' . $type . '>' . $question . '</' . $type . '>';
+        $result = Cli::read($question . ($default ? ' (' . $default . ')' : ''));
+        return $result ?: $default;
+    }
+
+    /**
+     * @param string $question
+     * @param null $default
+     * @param string $type
+     * @return mixed
+     */
+    public function askLn(string $question, $default = null, string $type = 'info')
+    {
+        $question = '<' . $type . '>' . $question . '</' . $type . '>';
+        $result = Cli::read($question . ($default ? ' (' . $default . ')' : ''), true);
+        return $result ?: $default;
     }
 }

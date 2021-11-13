@@ -117,7 +117,7 @@ class ColorCode
      * @return ColorCode
      * @throws InvalidArgumentException
      */
-    public static function make($fg = '', $bg = '', array $options = [], bool $extra = false): ColorCode
+    public static function make(string $fg = '', string $bg = '', array $options = [], bool $extra = false): ColorCode
     {
         return new self($fg, $bg, $options, $extra);
     }
@@ -129,7 +129,7 @@ class ColorCode
      * @throws InvalidArgumentException
      * @throws RuntimeException
      */
-    public static function fromString(string $string)
+    public static function fromString(string $string): ColorCode
     {
         $extra = false;
         $options = [];
@@ -157,7 +157,6 @@ class ColorCode
                     break;
                 default:
                     throw new RuntimeException('Invalid option');
-                    break;
             }
         }
 
@@ -172,7 +171,7 @@ class ColorCode
      * @param bool $extra
      * @throws InvalidArgumentException
      */
-    public function __construct($fg = '', $bg = '', array $options = [], bool $extra = false)
+    public function __construct(string $fg = '', string $bg = '', array $options = [], bool $extra = false)
     {
         if ($fg) {
             if (!isset(self::KNOWN_COLORS[$fg])) {

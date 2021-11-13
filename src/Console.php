@@ -8,24 +8,34 @@ declare(strict_types=1);
 namespace Mini;
 
 use Mini\Command\CommandService;
+use Mini\Command\HelloMiniCommandService;
 use Mini\Command\KeyGenerateCommandService;
+use Mini\Command\LogStatusCommandService;
 use Mini\Command\MakeMigrationCommandService;
 use Mini\Command\MigrateCommandService;
 use Mini\Command\MigrateInstallCommandService;
 use Mini\Command\MigrateRefreshCommandService;
 use Mini\Command\MigrateResetCommandService;
 use Mini\Command\MigrateRollbackCommandService;
+use Mini\Command\RouteClearCommandService;
 use Mini\Command\RoutesAllCommandService;
 use Mini\Command\RunCrontabCommandService;
 use Mini\Command\SocketResetCommandService;
 use Mini\Command\StatusCrontabCommandService;
 use Mini\Command\StorageLinkCommandService;
+use Mini\Command\TestCommandService;
 use Mini\Command\VendorPublishCommandService;
 use Throwable;
 
 class Console
 {
     private static array $systemCommandService = [
+        HelloMiniCommandService::class,
+        KeyGenerateCommandService::class,
+        RouteClearCommandService::class,
+        RoutesAllCommandService::class,
+        TestCommandService::class,
+        LogStatusCommandService::class,
         MigrateCommandService::class,
         MigrateInstallCommandService::class,
         MigrateResetCommandService::class,
@@ -37,8 +47,6 @@ class Console
         StatusCrontabCommandService::class,
         SocketResetCommandService::class,
         VendorPublishCommandService::class,
-        KeyGenerateCommandService::class,
-        RoutesAllCommandService::class,
     ];
 
     /**

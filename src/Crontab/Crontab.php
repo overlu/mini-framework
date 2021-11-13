@@ -15,7 +15,7 @@ use Swoole\Timer;
 class Crontab
 {
     /**
-     * crontab initiation status
+     * crontab's initiation status
      * @var bool
      */
     public static bool $isInitialed = false;

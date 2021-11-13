@@ -78,7 +78,7 @@ class ContextualBindingBuilder implements ContextualBindingBuilderContract
      * @param string $tag
      * @return void
      */
-    public function giveTagged($tag): void
+    public function giveTagged(string $tag): void
     {
         $this->give(function ($container) use ($tag) {
             $taggedServices = $container->tagged($tag);

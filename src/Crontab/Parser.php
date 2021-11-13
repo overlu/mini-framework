@@ -16,7 +16,7 @@ use InvalidArgumentException;
 class Parser
 {
     /**
-     *  Finds next execution time(stamp) parsin crontab syntax.
+     *  Finds next execution time(stamp) parsing crontab syntax.
      *
      * @param string $crontab_string :
      *   0    1    2    3    4    5

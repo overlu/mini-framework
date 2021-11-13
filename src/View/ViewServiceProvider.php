@@ -30,7 +30,7 @@ class ViewServiceProvider extends ServiceProvider
      * Register the view environment.
      *
      * @return void
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|\ReflectionException
      */
     public function registerFactory(): void
     {

@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Console;
 
+use Exception;
 use Mini\Singleton;
 
 /**
@@ -18,7 +19,7 @@ class Console
 {
     private ?App $app = null;
 
-    public function setApp(App $app)
+    public function setApp(App $app): void
     {
         $this->app = $app;
     }
@@ -27,11 +28,12 @@ class Console
      * @param $name
      * @param $arguments
      * @return mixed
+     * @throws Exception
      */
     public function __call($name, $arguments)
     {
         if (!$this->app) {
-            throw new \Exception('Console not initialize yet');
+            throw new Exception('Console not initialize yet');
         }
         return $this->app->$name(...$arguments);
     }

@@ -43,7 +43,7 @@ class Facade
 
     /**
      * Get the registered name of the component.
-     * @throws RuntimeException
+     * @return mixed
      */
     protected static function getFacadeAccessor()
     {

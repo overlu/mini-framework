@@ -7,9 +7,7 @@ declare(strict_types=1);
 
 use Mini\Config;
 use Mini\Container\Container;
-use Mini\Container\EntryNotFoundException;
 use Mini\Context;
-use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Contracts\HttpMessage\WebsocketRequestInterface;
 use Mini\Contracts\HttpMessage\WebsocketResponseInterface;

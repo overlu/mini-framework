@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Events;
 
 use Mini\Container\Container;
+use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\Queue\Job;
 use Mini\Contracts\Queue\ShouldQueue;
 use Mini\Queue\InteractsWithQueue;
@@ -73,7 +74,7 @@ class CallQueuedListener implements ShouldQueue
      * @param array $data
      * @return void
      */
-    public function __construct($class, $method, $data)
+    public function __construct(string $class, string $method, array $data)
     {
         $this->data = $data;
         $this->class = $class;
@@ -83,9 +84,9 @@ class CallQueuedListener implements ShouldQueue
     /**
      * Handle the queued job.
      *
-     * @param \Mini\Container\Container $container
+     * @param Container $container
      * @return void
-     * @throws \Mini\Contracts\Container\BindingResolutionException
+     * @throws BindingResolutionException|\ReflectionException
      */
     public function handle(Container $container): void
     {
@@ -123,7 +124,7 @@ class CallQueuedListener implements ShouldQueue
      *
      * @param \Throwable $e
      * @return void
-     * @throws \Mini\Contracts\Container\BindingResolutionException
+     * @throws BindingResolutionException
      */
     public function failed($e): void
     {

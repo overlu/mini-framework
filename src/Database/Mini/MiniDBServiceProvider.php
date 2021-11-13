@@ -9,11 +9,12 @@ namespace Mini\Database\Mini;
 
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Support\ServiceProvider;
+use ReflectionException;
 
 class MiniDBServiceProvider extends ServiceProvider
 {
     /**
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function register(): void
     {

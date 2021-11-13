@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\Crontab;
 
+use InvalidArgumentException;
+
 /**
  * Class CrontabTaskList
  * @package Mini\Crontab
@@ -84,11 +86,11 @@ class CrontabTaskList
         $crontabTaskList = config('crontab.crontab_task_list', []);
         foreach ($crontabTaskList as $crontabTask) {
             if (!class_exists($crontabTask)) {
-                throw new \InvalidArgumentException('Class ' . $crontabTask . ' not exists.');
+                throw new InvalidArgumentException('Class ' . $crontabTask . ' not exists.');
             }
             $taskObj = new $crontabTask;
             if (!($taskObj instanceof CrontabTaskInterface)) {
-                throw new \InvalidArgumentException('Task ' . $crontabTask . ' should instanceof ' . CrontabTaskInterface::class);
+                throw new InvalidArgumentException('Task ' . $crontabTask . ' should instanceof ' . CrontabTaskInterface::class);
             }
             self::addTask($crontabTask, $taskObj);
         }

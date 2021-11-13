@@ -69,7 +69,7 @@ class Container implements ArrayAccess, ContainerContract
     protected array $extenders = [];
 
     /**
-     * All of the registered tags.
+     * All the registered tags.
      * @var array[]
      */
     protected array $tags = [];
@@ -93,31 +93,31 @@ class Container implements ArrayAccess, ContainerContract
     public array $contextual = [];
 
     /**
-     * All of the registered rebound callbacks.
+     * All the registered rebound callbacks.
      * @var array[]
      */
     protected array $reboundCallbacks = [];
 
     /**
-     * All of the global resolving callbacks.
+     * All the global resolving callbacks.
      * @var Closure[]
      */
     protected array $globalResolvingCallbacks = [];
 
     /**
-     * All of the global after resolving callbacks.
+     * All the global after resolving callbacks.
      * @var Closure[]
      */
     protected array $globalAfterResolvingCallbacks = [];
 
     /**
-     * All of the resolving callbacks by class type.
+     * All the resolving callbacks by class type.
      * @var array[]
      */
     protected array $resolvingCallbacks = [];
 
     /**
-     * All of the after resolving callbacks by class type.
+     * All the after resolving callbacks by class type.
      * @var array[]
      */
     protected array $afterResolvingCallbacks = [];
@@ -202,7 +202,7 @@ class Container implements ArrayAccess, ContainerContract
      * @param Closure|string|null $concrete
      * @param bool $shared
      * @return void
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function bind(string $abstract, $concrete = null, bool $shared = false): void
     {
@@ -246,7 +246,7 @@ class Container implements ArrayAccess, ContainerContract
             }
 
             return $container->resolve(
-                $concrete, $parameters, $raiseEvents = false
+                $concrete, $parameters, false
             );
         };
     }
@@ -315,7 +315,7 @@ class Container implements ArrayAccess, ContainerContract
      * @param Closure|string|null $concrete
      * @param bool $shared
      * @return void
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function bindIf(string $abstract, $concrete = null, bool $shared = false): void
     {
@@ -329,7 +329,7 @@ class Container implements ArrayAccess, ContainerContract
      * @param string $abstract
      * @param Closure|string|null $concrete
      * @return void
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function singleton(string $abstract, $concrete = null): void
     {
@@ -341,7 +341,7 @@ class Container implements ArrayAccess, ContainerContract
      * @param string $abstract
      * @param Closure|string|null $concrete
      * @return void
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function singletonIf(string $abstract, $concrete = null): void
     {
@@ -356,7 +356,7 @@ class Container implements ArrayAccess, ContainerContract
      * @param Closure $closure
      * @return void
      * @throws InvalidArgumentException
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function extend(string $abstract, Closure $closure): void
     {
@@ -380,7 +380,7 @@ class Container implements ArrayAccess, ContainerContract
      * @param string $abstract
      * @param mixed $instance
      * @return mixed
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function instance(string $abstract, $instance)
     {
@@ -444,7 +444,7 @@ class Container implements ArrayAccess, ContainerContract
     }
 
     /**
-     * Resolve all of the bindings for a given tag.
+     * Resolve all the bindings for a given tag.
      * @param string $tag
      * @return iterable
      */
@@ -485,7 +485,7 @@ class Container implements ArrayAccess, ContainerContract
      * @param string $abstract
      * @param Closure $callback
      * @return mixed
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function rebinding(string $abstract, Closure $callback)
     {
@@ -494,6 +494,7 @@ class Container implements ArrayAccess, ContainerContract
         if ($this->bound($abstract)) {
             return $this->make($abstract);
         }
+        return null;
     }
 
     /**
@@ -502,7 +503,7 @@ class Container implements ArrayAccess, ContainerContract
      * @param mixed $target
      * @param string $method
      * @return mixed
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function refresh(string $abstract, object $target, string $method)
     {
@@ -515,7 +516,7 @@ class Container implements ArrayAccess, ContainerContract
      * Fire the "rebound" callbacks for the given abstract type.
      * @param string $abstract
      * @return void
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     protected function rebound(string $abstract): void
     {
@@ -580,7 +581,7 @@ class Container implements ArrayAccess, ContainerContract
      * @param string $abstract
      * @param array $parameters
      * @return mixed
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function makeWith(string $abstract, array $parameters = [])
     {
@@ -592,7 +593,7 @@ class Container implements ArrayAccess, ContainerContract
      * @param string $abstract
      * @param array $parameters
      * @return mixed
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function make(string $abstract, array $parameters = [])
     {
@@ -605,7 +606,7 @@ class Container implements ArrayAccess, ContainerContract
      * @throws EntryNotFoundException
      * @throws Exception
      */
-    public function get($id)
+    public function get(string $id)
     {
         try {
             return $this->resolve($id);
@@ -626,7 +627,7 @@ class Container implements ArrayAccess, ContainerContract
      * @return mixed
      * @throws BindingResolutionException|ReflectionException
      */
-    protected function resolve(string $abstract, $parameters = [], $raiseEvents = true)
+    protected function resolve(string $abstract, array $parameters = [], bool $raiseEvents = true)
     {
         $abstract = $this->getAlias($abstract);
 
@@ -676,7 +677,7 @@ class Container implements ArrayAccess, ContainerContract
 
         // Before returning, we will also set the resolved flag to "true" and pop off
         // the parameter overrides for this build. After those two things are done
-        // we will be ready to return back the fully constructed class instance.
+        // we will be ready to return the fully constructed class instance.
         $this->resolved[$abstract] = true;
 
         array_pop($this->with);
@@ -705,7 +706,7 @@ class Container implements ArrayAccess, ContainerContract
     /**
      * Get the contextual concrete binding for the given abstract.
      * @param string $abstract
-     * @return Closure|string|array|null
+     * @return Closure|string|null
      */
     protected function getContextualConcrete(string $abstract)
     {
@@ -717,7 +718,7 @@ class Container implements ArrayAccess, ContainerContract
         // given abstract type. So, we will need to check if any aliases exist with this
         // type and then spin through them and check for contextual bindings on these.
         if (empty($this->abstractAliases[$abstract])) {
-            return;
+            return null;
         }
 
         foreach ($this->abstractAliases[$abstract] as $alias) {
@@ -725,6 +726,7 @@ class Container implements ArrayAccess, ContainerContract
                 return $binding;
             }
         }
+        return null;
     }
 
     /**
@@ -774,7 +776,7 @@ class Container implements ArrayAccess, ContainerContract
         // no binding registered for the abstractions so we need to bail out.
         if (!$reflector->isInstantiable()) {
             $this->notInstantiable($concrete);
-            return;
+            return null;
         }
 
         $this->buildStack[] = $concrete;
@@ -809,7 +811,7 @@ class Container implements ArrayAccess, ContainerContract
     }
 
     /**
-     * Resolve all of the dependencies from the ReflectionParameters.
+     * Resolve all the dependencies from the ReflectionParameters.
      * @param ReflectionParameter[] $dependencies
      * @return array
      * @throws BindingResolutionException|ReflectionException
@@ -880,7 +882,7 @@ class Container implements ArrayAccess, ContainerContract
      * Resolve a non-class hinted primitive dependency.
      * @param ReflectionParameter $parameter
      * @return mixed
-     * @throws BindingResolutionException|ReflectionException
+     * @throws BindingResolutionException
      */
     protected function resolvePrimitive(ReflectionParameter $parameter)
     {
@@ -891,8 +893,8 @@ class Container implements ArrayAccess, ContainerContract
         if ($parameter->isDefaultValueAvailable()) {
             return $parameter->getDefaultValue();
         }
-
-//        $this->unresolvablePrimitive($parameter);
+        $this->unresolvablePrimitive($parameter);
+        return null;
     }
 
     /**
@@ -943,7 +945,7 @@ class Container implements ArrayAccess, ContainerContract
 
         return array_map(function ($abstract) {
             return $this->resolve($abstract);
-        }, $concrete);
+        }, (array)$concrete);
     }
 
     /**
@@ -985,13 +987,13 @@ class Container implements ArrayAccess, ContainerContract
      * @param Closure|null $callback
      * @return void
      */
-    public function resolving($abstract, Closure $callback = null): void
+    public function resolving($abstract, ?Closure $callback = null): void
     {
         if (is_string($abstract)) {
             $abstract = $this->getAlias($abstract);
         }
 
-        if (is_null($callback) && $abstract instanceof Closure) {
+        if ($abstract instanceof Closure && is_null($callback)) {
             $this->globalResolvingCallbacks[] = $abstract;
         } else {
             $this->resolvingCallbacks[$abstract][] = $callback;
@@ -1005,7 +1007,7 @@ class Container implements ArrayAccess, ContainerContract
      * @param Closure|null $callback
      * @return void
      */
-    public function afterResolving($abstract, Closure $callback = null): void
+    public function afterResolving($abstract, ?Closure $callback = null): void
     {
         if (is_string($abstract)) {
             $abstract = $this->getAlias($abstract);
@@ -1019,7 +1021,7 @@ class Container implements ArrayAccess, ContainerContract
     }
 
     /**
-     * Fire all of the resolving callbacks.
+     * Fire all the resolving callbacks.
      * @param string $abstract
      * @param mixed $object
      * @return void
@@ -1036,7 +1038,7 @@ class Container implements ArrayAccess, ContainerContract
     }
 
     /**
-     * Fire all of the after resolving callbacks.
+     * Fire all the after resolving callbacks.
      *
      * @param string $abstract
      * @param mixed $object
@@ -1126,7 +1128,7 @@ class Container implements ArrayAccess, ContainerContract
     }
 
     /**
-     * Remove all of the extender callbacks for a given type.
+     * Remove all the extender callbacks for a given type.
      *
      * @param string $abstract
      * @return void
@@ -1137,7 +1139,7 @@ class Container implements ArrayAccess, ContainerContract
     }
 
     /**
-     * Drop all of the stale instances and aliases.
+     * Drop all the stale instances and aliases.
      *
      * @param string $abstract
      * @return void
@@ -1159,7 +1161,7 @@ class Container implements ArrayAccess, ContainerContract
     }
 
     /**
-     * Clear all of the instances from the container.
+     * Clear all the instances from the container.
      *
      * @return void
      */
@@ -1223,7 +1225,7 @@ class Container implements ArrayAccess, ContainerContract
      *
      * @param string $key
      * @return mixed
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function offsetGet($key)
     {
@@ -1236,7 +1238,7 @@ class Container implements ArrayAccess, ContainerContract
      * @param string $key
      * @param mixed $value
      * @return void
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function offsetSet($key, $value): void
     {

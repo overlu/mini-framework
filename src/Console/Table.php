@@ -163,7 +163,7 @@ class Table
 
         $border = $leftIndent . str_pad($rowBorderChar, (int)($tableWidth + ($columnCount * 3) + 2), $rowBorderChar);
 
-        // output table top border
+        // output table-top border
         if ($showBorder) {
             $buf->write($border . "\n");
         } else {

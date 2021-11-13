@@ -9,11 +9,12 @@ namespace Mini\Events;
 
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Support\ServiceProvider;
+use ReflectionException;
 
 class EventServiceProvider extends ServiceProvider
 {
     /**
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function register(): void
     {

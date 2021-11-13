@@ -339,9 +339,9 @@ class Color
     /**
      * parse color tag e.g: <info>message</info>
      * @param string $text
-     * @return mixed|string
+     * @return string
      */
-    public static function parseTag(string $text)
+    public static function parseTag(string $text): string
     {
         return ColorTag::parse($text);
     }

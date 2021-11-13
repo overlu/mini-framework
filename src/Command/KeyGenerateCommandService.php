@@ -18,13 +18,14 @@ class KeyGenerateCommandService extends AbstractCommandService
     /**
      * @param Process $process
      * @return void
+     * @throws \Exception
      */
     public function handle(Process $process): void
     {
         $key = $this->generateRandomKey();
 
         if ($this->getOpt('show')) {
-            Command::line('<comment>' . $key . '</comment>');
+            $this->comment($key);
             return;
         }
 
@@ -42,8 +43,9 @@ class KeyGenerateCommandService extends AbstractCommandService
      * Generate a random key for the application.
      *
      * @return string
+     * @throws \Exception
      */
-    protected function generateRandomKey()
+    protected function generateRandomKey(): string
     {
         return 'base64:' . base64_encode(
                 Encrypter::generateKey(config('app.cipher'))
@@ -56,11 +58,11 @@ class KeyGenerateCommandService extends AbstractCommandService
      * @param string $key
      * @return bool
      */
-    protected function setKeyInEnvironmentFile($key)
+    protected function setKeyInEnvironmentFile(string $key): bool
     {
         $currentKey = config('app.key');
 
-        if (strlen($currentKey) !== 0 && (!$this->confirmToProceed())) {
+        if ($currentKey !== '' && (!$this->confirmToProceed())) {
             return false;
         }
 
@@ -75,7 +77,7 @@ class KeyGenerateCommandService extends AbstractCommandService
      * @param string $key
      * @return void
      */
-    protected function writeNewEnvironmentFileWith($key): void
+    protected function writeNewEnvironmentFileWith(string $key): void
     {
         env([
             'APP_KEY' => $key

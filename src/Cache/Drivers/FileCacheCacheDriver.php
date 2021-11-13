@@ -63,7 +63,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
         $filename = $this->getCacheKey($key);
         $new_data = serialize($data);
         $result = file_put_contents($filename, $new_data, LOCK_EX);
-        return $result ? true : false;
+        return (bool)$result;
     }
 
     /**
@@ -90,7 +90,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
         }
         $content = @file_get_contents($filename);
         if (false !== $content) {
-            $content = unserialize($content);
+            $content = unserialize($content, ["allowed_classes" => true]);
             if (isset($content['ttl']) && ($content['created_at'] + $content['ttl']) < time()) {
                 $this->unlink($filename);
                 return $default;
@@ -108,7 +108,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
     public function inc(string $key, int $step = 1): int
     {
         if ($value = (int)$this->getContent($key)) {
-            $value['content'] = $value['content'] + $step;
+            $value['content'] += $step;
         } else {
             $value = [
                 'content' => $step,
@@ -127,7 +127,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
     public function dec(string $key, int $step = 1): int
     {
         if ($value = (int)$this->getContent($key)) {
-            $value['content'] = $value['content'] - $step;
+            $value['content'] -= $step;
         } else {
             $value = [
                 'content' => -$step,
@@ -144,7 +144,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
      */
     public function has(string $key): bool
     {
-        return $this->getContent($key) ? true : false;
+        return (bool)$this->getContent($key);
     }
 
     /**
@@ -154,7 +154,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
     public function delete(string $key): bool
     {
         $filename = $this->getCacheKey($key);
-        return $this->unlink($filename) ? true : false;
+        return $this->unlink($filename);
     }
 
     /**
@@ -162,7 +162,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
      */
     public function clear(): bool
     {
-        return app('files')->cleanDirectory($this->path) ? true : false;
+        return (bool)app('files')->cleanDirectory($this->path);
     }
 
     /**
