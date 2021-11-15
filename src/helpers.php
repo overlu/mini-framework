@@ -858,7 +858,7 @@ if (!function_exists('view')) {
      *
      * @param string|null $view
      * @param array $data
-     * @return \Mini\View\Factory
+     * @return \Mini\View\Factory|\Mini\Contracts\View\View
      */
     function view(?string $view = null, array $data = [])
     {
