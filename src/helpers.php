@@ -1071,3 +1071,15 @@ if (!function_exists('mini_version')) {
         return app()->version();
     }
 }
+
+if (!function_exists('download')) {
+    /**
+     * @param string $file
+     * @param string $name
+     * @return ResponseInterface
+     */
+    function download(string $file, string $name = ''): ResponseInterface
+    {
+        return \response()->download($file, $name);
+    }
+}
