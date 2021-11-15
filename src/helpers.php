@@ -14,7 +14,6 @@ use Mini\Contracts\HttpMessage\WebsocketResponseInterface;
 use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\Support\Htmlable;
 use Mini\Contracts\Support\Jsonable;
-use Mini\Contracts\View\Factory;
 use Mini\Events\Dispatcher;
 use Mini\Exception\WebsocketException;
 use Mini\Facades\Url;
@@ -80,8 +79,9 @@ if (!function_exists('retry')) {
      * @param int $sleep
      * @param callable|null $when
      * @return mixed
+     * @throws Exception
      */
-    function retry(int $times, callable $callback, $sleep = 0, $when = null)
+    function retry(int $times, callable $callback, int $sleep = 0, ?callable $when = null)
     {
         $attempts = 0;
 
@@ -286,7 +286,6 @@ if (!function_exists('call')) {
      */
     function call($callback, array $args = [])
     {
-        $result = null;
         if ($callback instanceof \Closure) {
             $result = $callback(...$args);
         } elseif (is_object($callback) || (is_string($callback) && function_exists($callback))) {
@@ -304,24 +303,24 @@ if (!function_exists('call')) {
 if (!function_exists('go')) {
     /**
      * @param callable $callable
-     * @return bool|int
+     * @return int
      */
-    function go(callable $callable)
+    function go(callable $callable): int
     {
         $id = Coroutine::create($callable);
-        return $id > 0 ? $id : false;
+        return $id > 0 ? $id : 0;
     }
 }
 
 if (!function_exists('co')) {
     /**
      * @param callable $callable
-     * @return bool|int
+     * @return int
      */
-    function co(callable $callable)
+    function co(callable $callable): int
     {
         $id = Coroutine::create($callable);
-        return $id > 0 ? $id : false;
+        return $id > 0 ? $id : 0;
     }
 }
 
@@ -496,7 +495,6 @@ if (!function_exists('env')) {
         }
         if (is_array($key)) {
             Dotenv::getInstance()->setMany($key);
-            return;
         }
     }
 }
@@ -831,7 +829,7 @@ if (!function_exists('e')) {
      * @param bool $doubleEncode
      * @return string
      */
-    function e($value, $doubleEncode = false): string
+    function e($value, bool $doubleEncode = false): string
     {
         if ($value instanceof Htmlable) {
             return $value->toHtml();
@@ -860,7 +858,7 @@ if (!function_exists('view')) {
      *
      * @param string|null $view
      * @param array $data
-     * @return View|Factory
+     * @return \Mini\View\Factory
      */
     function view(?string $view = null, array $data = [])
     {
