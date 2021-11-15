@@ -82,7 +82,6 @@ class HttpServer extends AbstractServer
              * @var $resp Psr7Response
              */
             $resp = app('middleware')->bootAfterRequest($resp);
-            $resp = $resp->withStatus(200);
             if (request()->getMethod() === 'HEAD') {
                 $resp->send(false);
             } else {
