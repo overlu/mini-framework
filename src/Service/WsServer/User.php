@@ -44,6 +44,7 @@ class User
      */
     public static function joinIn(string $uid): array
     {
+        Group::bind($uid, Client::localClientHost());
         return Store::put(Socket::$userPrefix . 'all', $uid);
     }
 

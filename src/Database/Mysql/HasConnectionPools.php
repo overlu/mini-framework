@@ -24,7 +24,7 @@ trait HasConnectionPools
     /**
      * The redis pools.
      *
-     * @var array
+     * @var ConnectionPool[]
      */
     protected static $pools = [];
 
@@ -125,5 +125,22 @@ trait HasConnectionPools
     protected function isPoolConnection($name): bool
     {
         return Coroutine::getCid() > 0 && isset($this->poolsConfig[$name]);
+    }
+
+    /**
+     * 关闭连接池
+     * @return array|int[]|string[]
+     */
+    public function closePool(): array
+    {
+        if (empty(static::$pools)) {
+            return [];
+        }
+        foreach (static::$pools as $pool) {
+            $pool->close();
+        }
+        $keys = array_keys(static::$pools);
+        static::$pools = [];
+        return $keys;
     }
 }

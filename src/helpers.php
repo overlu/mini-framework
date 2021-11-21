@@ -40,6 +40,7 @@ use Mini\View\View;
 use Psr\Http\Message\ResponseInterface;
 use Swoole\Runtime;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
+use Symfony\Component\VarDumper\Dumper\ContextProvider\SourceContextProvider;
 use Symfony\Component\VarDumper\Dumper\HtmlDumper;
 
 if (!function_exists('value')) {
@@ -899,9 +900,13 @@ if (!function_exists('debug')) {
             $dumper = new HtmlDumper();
             $dumper->setTheme(\config('app.debug_theme', 'dark'));
             $output = fopen('php://memory', 'r+b');
-            $dumper->dump($cloner->cloneVar($var), $output);
+            $dumper->dump($cloner->cloneVar($var)->withContext([SourceContextProvider::class => (new SourceContextProvider)->getContext()]), $output, [
+                'fileLinkFormat' => "file://%f#L%l"
+            ]);
             foreach ($moreVars as $moreVar) {
-                $dumper->dump($cloner->cloneVar($moreVar), $output);
+                $dumper->dump($cloner->cloneVar($moreVar)->withContext([SourceContextProvider::class => (new SourceContextProvider)->getContext()]), $output, [
+                    'fileLinkFormat' => "file://%f#L%l"
+                ]);
             }
             $output = stream_get_contents($output, -1, 0);
             $swResponse->header('content-type', 'text/html;charset=UTF-8', true);

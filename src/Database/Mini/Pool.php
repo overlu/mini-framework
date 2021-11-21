@@ -17,6 +17,9 @@ use Swoole\Database\PDOProxy;
 
 class Pool
 {
+    /**
+     * @var PDOPool[]
+     */
     protected array $pools = [];
 
     protected array $config = [
@@ -37,9 +40,9 @@ class Pool
 
     public function __construct(array $config = [])
     {
-        if (empty($this->pools)) {
+        /*if (empty($this->pools)) {
             $this->initialize($config);
-        }
+        }*/
         $this->defaultConnection = config('database.default', 'mysql');
     }
 
@@ -157,5 +160,22 @@ class Pool
     {
         $key = $this->getConnectionKeyInContext($name);
         return Context::get($key);
+    }
+
+    /**
+     * 关闭连接池
+     * @return array|int[]|string[]
+     */
+    public function closePool(): array
+    {
+        if (empty($this->pools)) {
+            return [];
+        }
+        foreach ($this->pools as $pool) {
+            $pool->close();
+        }
+        $keys = array_keys($this->pools);
+        $this->pools = [];
+        return $keys;
     }
 }

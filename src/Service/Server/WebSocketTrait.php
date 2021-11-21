@@ -140,29 +140,32 @@ trait WebSocketTrait
      */
     public function onClose(Server $server, int $fd, int $reactorId): void
     {
-        try {
-            parent::onClose($server, $fd, $reactorId);
-            /**
-             * 解绑fd
-             */
-            $this->unbindFd($fd);
+        if ($server->isEstablished($fd)) {
+            try {
+                dump($fd);
+                parent::onClose($server, $fd, $reactorId);
+                /**
+                 * 解绑fd
+                 */
+                $this->unbindFd($fd);
 
-            if (!empty($this->handler['className'])) {
-                call([$this->handler['callable'], 'onClose'], [$server, $fd, $this->handler['data'], $reactorId]);
-            } elseif (!empty($this->handler['callable'])) {
-                call($this->handler['callable'], [
-                    'onClose',
-                    [
-                        'server' => $server,
-                        'fd' => $fd,
-                        'routeData' => $this->handler['data'],
-                        'reactorId' => $reactorId
-                    ]
-                ]);
+                if (!empty($this->handler['className'])) {
+                    call([$this->handler['callable'], 'onClose'], [$server, $fd, $this->handler['data'], $reactorId]);
+                } elseif (!empty($this->handler['callable'])) {
+                    call($this->handler['callable'], [
+                        'onClose',
+                        [
+                            'server' => $server,
+                            'fd' => $fd,
+                            'routeData' => $this->handler['data'],
+                            'reactorId' => $reactorId
+                        ]
+                    ]);
+                }
+                return;
+            } catch (Throwable $throwable) {
+                app('exception')->throw($throwable);
             }
-            return;
-        } catch (Throwable $throwable) {
-            app('exception')->throw($throwable);
         }
     }
 

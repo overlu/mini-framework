@@ -20,8 +20,8 @@ use Mini\Database\Mini\DB;
  */
 class MiniDB extends Facade
 {
-    protected static function getFacadeAccessor(): DB
+    protected static function getFacadeAccessor(): string
     {
-        return new DB();
+        return 'db.mini';
     }
 }

@@ -14,6 +14,9 @@ use Swoole\Database\RedisPool;
 
 class Redis
 {
+    /**
+     * @var RedisPool[]
+     */
     protected array $pools = [];
     protected array $config = [];
 
@@ -101,5 +104,22 @@ class Redis
             $redis->select((int)$conf['database']);
         }
         return $redis;
+    }
+
+    /**
+     * 关闭连接池
+     * @return array|int[]|string[]
+     */
+    public function closePool(): array
+    {
+        if (empty($this->pools)) {
+            return [];
+        }
+        foreach ($this->pools as $pool) {
+            $pool->close();
+        }
+        $keys = array_keys($this->pools);
+        $this->pools = [];
+        return $keys;
     }
 }

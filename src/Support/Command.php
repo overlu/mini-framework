@@ -114,7 +114,7 @@ class Command
      */
     public static function line(string $message = '', bool $newLine = true): void
     {
-        printf('%s', Color::render($message . PHP_EOL));
+        printf('%s', Color::render($message . ($newLine ? PHP_EOL : '')));
     }
 
     /**

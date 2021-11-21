@@ -23,7 +23,9 @@ class WebsocketDCSServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Client::register();
+        if ($this->worker_id === 1) {
+            Client::register();
+        }
         $this->app->singleton('dcs', function () {
             return Client::getInstance();
         });

@@ -9,18 +9,27 @@ namespace Mini\Service\Server;
 
 use JsonException;
 use Mini\Bootstrap;
+use Mini\Console\App;
 use Mini\Context;
 use Mini\Crontab\Crontab;
 use Mini\Exception\Handler;
+use Mini\Facades\DB;
+use Mini\Facades\Redis;
 use Mini\Listener;
 use Mini\RemoteShell;
 use Mini\Service\Watch\Runner;
+use Mini\Service\WsServer\Client;
+use Mini\Service\WsServer\Group;
+use Mini\Service\WsServer\Socket;
+use Mini\Service\WsServer\User;
 use Mini\Support\Command;
 use RuntimeException;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
+use Swoole\Process;
 use Swoole\Server;
 use Swoole\Table;
+use Swoole\Timer;
 use Swoole\WebSocket\Frame;
 use Throwable;
 
@@ -313,10 +322,54 @@ abstract class AbstractServer
         }
     }
 
+    public function onWorkerStop(Server $server, int $workerId): void
+    {
+        run(function () use ($server, $workerId) {
+            try {
+                $this->whenServerStop($server, $workerId);
+                Listener::getInstance()->listen('workerStop', $server, $workerId);
+            } catch (Throwable $throwable) {
+                Handler::getInstance()->throw($throwable);
+            }
+        });
+    }
+
+    public function onWorkerExit(Server $server, int $workerId): void
+    {
+        run(function () use ($server, $workerId) {
+            try {
+                $this->whenServerStop($server, $workerId);
+                Listener::getInstance()->listen('workerExit', $server, $workerId);
+            } catch (Throwable $throwable) {
+                Handler::getInstance()->throw($throwable);
+            }
+        });
+    }
+
+    /**
+     * @param Server $server
+     * @param int $workerId
+     */
+    private function whenServerStop(Server $server, int $workerId): void
+    {
+        //socket 处理
+        if (($workerId === 1) && app()->has('dcs')) {
+            $redis = Redis::connection(config('cache.drivers.redis.collection', 'cache'));
+            $it = NULL;
+            while ($keys = $redis->scan($it, 'socket*')) {
+                is_array($keys) && $redis->unlink($keys);
+            }
+        }
+        // 连接池关闭
+        app()->has('redis') && app('redis')->closePool();
+        app()->has('db') && app('db')->closePool();
+        app()->has('db.mini') && app('db.mini')->closePool();
+    }
+
 
     /**
      * @param $error_message
-     * @param int $code
+     * @param int|string $code
      * @return false|string
      * @throws JsonException
      */

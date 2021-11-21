@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini;
 
+use Mini\Console\App;
 use Mini\Console\Panel;
 use Mini\Service\Server\CustomServer;
 use Mini\Service\Server\HelpServer;
@@ -25,7 +26,7 @@ class Application
      * version
      * @var string
      */
-    public static string $version = '2.12.41';
+    public static string $version = '2.12.43';
 
     /**
      * @var array|string[]
@@ -71,16 +72,16 @@ EOL. '   ' . self::$version . PHP_EOL);
      */
     public static function run(): void
     {
-        global $argv;
         Bootstrap::initial();
         self::welcome();
-        if (!isset($argv[1]) || !in_array($argv[1], ['start', 'stop'])) {
+        $args = (new App())->getArgs();
+        if (!isset($args[0]) || !in_array($args[0], ['start', 'stop'])) {
             new HelpServer();
         }
-        if ($argv[1] === 'stop') {
-            new StopServer($argv[2] ?? '');
+        if ($args[0] === 'stop') {
+            new StopServer($args[1] ?? 'all');
         } else {
-            $key = $argv[2] ?? 'http';
+            $key = $args[1] ?? 'http';
             $server = static::$mapping[$key] ?? CustomServer::class;
             new $server($key);
         }

@@ -75,10 +75,27 @@ class Client
     }
 
     /**
+     * 获取本地socket服务地址
+     * @return string
+     */
+    public static function localClientHost(): string
+    {
+        return config('websocket.host', '127.0.0.1') . ':' . config('websocket.port', '9501');
+    }
+
+    /**
      * 注册
      */
     public static function register(): void
     {
-        Store::put(Socket::$host, config('websocket.host', '127.0.0.1') . ':' . config('websocket.port', '9501'));
+        Store::put(Socket::$host, self::localClientHost());
+    }
+
+    /**
+     * 注销
+     */
+    public static function unregister()
+    {
+        Store::remove(Socket::$host, self::localClientHost());
     }
 }

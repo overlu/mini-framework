@@ -90,7 +90,7 @@ class Store
         $index = array_search($value, $values, true);
         if ($index !== false) {
             unset($values[$index]);
-            return Cache::driver(config('websocket.cache_driver', 'redis'))->set($key, $values);
+            return Cache::driver(config('websocket.cache_driver', 'redis'))->set($key, [...$values]);
         }
         return false;
     }

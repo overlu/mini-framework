@@ -90,7 +90,7 @@ class Socket
      * @param $clients
      * @throws JsonException
      */
-    public static function close($clients): void
+    public static function close($clients, bool $onlyLocal = false): void
     {
         $clients = (array)$clients;
         foreach ($clients as $client) {
@@ -101,7 +101,7 @@ class Socket
                     $server->close($clientArr['fd']);
                 }
             } else {
-                static::closeByAntherServer($clientArr);
+                !$onlyLocal && static::closeByAntherServer($clientArr);
             }
         }
     }
