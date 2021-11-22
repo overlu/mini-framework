@@ -78,7 +78,7 @@ class Handler implements HandlerInterface
         if (!$throwable instanceof ExitException && $this->hasNoDontReport($throwable)) {
             $this->logError($throwable);
             Command::line();
-            Command::error($this->environment !== 'production' ? $this->formatException($throwable) : 'server is busy.');
+            Command::error($this->formatException($throwable));
             Command::line();
         }
     }
@@ -135,6 +135,12 @@ class Handler implements HandlerInterface
      */
     protected function formatResponseException(Throwable $throwable)
     {
+        if ($this->environment === 'production') {
+            return [
+                'code' => 1001,
+                'message' => 'server is busy, please wait for a moment.'
+            ];
+        }
         if ($this->debug) {
             return $this->format($throwable);
         }
