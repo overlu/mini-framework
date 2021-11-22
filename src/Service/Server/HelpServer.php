@@ -14,13 +14,9 @@ class HelpServer
     protected string $delimiter = '-------------------------------------------';
     protected array $commands = [
         '',
-        "start \t" => 'start mini http server',
-        'start all' => 'start mini all server',
-        'start {type}' => 'start mini custom server',
-        '',
-        "stop \t" => 'stop all mini server',
-        'stop all' => 'stop mini all server',
-        'stop {type}' => 'stop mini custom server',
+        "start|reload|stop \t" => 'start|reload|stop mini http server',
+        'start|reload|stop all' => 'start|reload|stop mini all server',
+        'start|reload|stop {type}' => 'start|reload|stop mini {type} server',
     ];
 
     public function __construct()
