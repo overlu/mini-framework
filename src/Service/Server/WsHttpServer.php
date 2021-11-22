@@ -17,7 +17,7 @@ class WsHttpServer extends HttpServer
 {
     use WebSocketTrait;
 
-    protected string $type = 'WebSocket And Http';
+    protected string $type = 'webSocket and http';
 
     /**
      * @var array|callable

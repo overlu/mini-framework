@@ -23,9 +23,9 @@ class DCS implements WebsocketControllerInterface
      * @param Server $server
      * @param \Swoole\Http\Request $request
      * @param array $routeData
-     * @return mixed|void
+     * @return void
      */
-    public function onOpen(Server $server, \Swoole\Http\Request $request, array $routeData)
+    public function onOpen(Server $server, \Swoole\Http\Request $request, array $routeData): void
     {
         if (!$this->checkAuthCode($routeData['authcode'], $routeData['host'])) {
             ws_abort(401);
@@ -54,7 +54,6 @@ class DCS implements WebsocketControllerInterface
             if ($data['dcs_action'] === 'close') {
                 User::unbind($data['uid'], (int)$data['fd']);
                 $server->close($data['fd']);
-                return;
             }
         }
     }
@@ -64,16 +63,15 @@ class DCS implements WebsocketControllerInterface
      * @param int $fd
      * @param array $routeData
      * @param int $reactorId
-     * @return mixed|void
+     * @return void
      * @throws JsonException
      */
-    public function onClose(Server $server, int $fd, array $routeData, int $reactorId)
+    public function onClose(Server $server, int $fd, array $routeData, int $reactorId):void
     {
         $uids = User::getUserByFd($fd);
         foreach ($uids as $uid) {
             User::unbind($uid, $fd);
         }
-//        return $reactorId;
     }
 
     /**

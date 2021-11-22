@@ -13,6 +13,7 @@ use Mini\Service\Server\CustomServer;
 use Mini\Service\Server\HelpServer;
 use Mini\Service\Server\HttpServer;
 use Mini\Service\Server\MiniServer;
+use Mini\Service\Server\ReloadServer;
 use Mini\Service\Server\StopServer;
 use Mini\Service\Server\WebSocket;
 use Mini\Service\Server\MqttServer;
@@ -26,7 +27,7 @@ class Application
      * version
      * @var string
      */
-    public static string $version = '2.12.43';
+    public static string $version = '2.12.45';
 
     /**
      * @var array|string[]
@@ -75,10 +76,12 @@ EOL. '   ' . self::$version . PHP_EOL);
         Bootstrap::initial();
         self::welcome();
         $args = (new App())->getArgs();
-        if (!isset($args[0]) || !in_array($args[0], ['start', 'stop'])) {
+        if (!isset($args[0]) || !in_array($args[0], ['start', 'stop', 'reload'])) {
             new HelpServer();
         }
-        if ($args[0] === 'stop') {
+        if ($args[0] === 'reload') {
+            new ReloadServer($args[1] ?? 'all');
+        } elseif ($args[0] === 'stop') {
             new StopServer($args[1] ?? 'all');
         } else {
             $key = $args[1] ?? 'http';

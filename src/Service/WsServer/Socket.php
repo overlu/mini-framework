@@ -88,6 +88,7 @@ class Socket
 
     /**
      * @param $clients
+     * @param bool $onlyLocal
      * @throws JsonException
      */
     public static function close($clients, bool $onlyLocal = false): void

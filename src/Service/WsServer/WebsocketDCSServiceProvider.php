@@ -19,7 +19,7 @@ class WebsocketDCSServiceProvider extends ServiceProvider
     }
 
     /**
-     * @throws BindingResolutionException
+     * @throws BindingResolutionException|\ReflectionException
      */
     public function boot(): void
     {

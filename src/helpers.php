@@ -36,12 +36,8 @@ use Mini\Support\Parallel;
 use Mini\Support\Str;
 use Mini\Support\Waiter;
 use Mini\Translate\Translate;
-use Mini\View\View;
 use Psr\Http\Message\ResponseInterface;
 use Swoole\Runtime;
-use Symfony\Component\VarDumper\Cloner\VarCloner;
-use Symfony\Component\VarDumper\Dumper\ContextProvider\SourceContextProvider;
-use Symfony\Component\VarDumper\Dumper\HtmlDumper;
 
 if (!function_exists('value')) {
     /**
@@ -884,35 +880,6 @@ if (!function_exists('is_json')) {
         }
         $string = json_decode($string, true);
         return json_last_error() === JSON_ERROR_NONE ? $string : false;
-    }
-}
-
-if (!function_exists('debug')) {
-    /**
-     * @param $var
-     * @param array $moreVars
-     */
-    function debug($var, ...$moreVars)
-    {
-        if (\config('app.debug') && Context::has('IsInRequestEvent') && $swResponse = response()->getSwooleResponse()) {
-            Context::set('hasWriteContent', true);
-            $cloner = new VarCloner();
-            $dumper = new HtmlDumper();
-            $dumper->setTheme(\config('app.debug_theme', 'dark'));
-            $output = fopen('php://memory', 'r+b');
-            $dumper->dump($cloner->cloneVar($var)->withContext([SourceContextProvider::class => (new SourceContextProvider)->getContext()]), $output, [
-                'fileLinkFormat' => "file://%f#L%l"
-            ]);
-            foreach ($moreVars as $moreVar) {
-                $dumper->dump($cloner->cloneVar($moreVar)->withContext([SourceContextProvider::class => (new SourceContextProvider)->getContext()]), $output, [
-                    'fileLinkFormat' => "file://%f#L%l"
-                ]);
-            }
-            $output = stream_get_contents($output, -1, 0);
-            $swResponse->header('content-type', 'text/html;charset=UTF-8', true);
-            $swResponse->header('Server', 'Mini', true);
-            $swResponse->write(new SwooleStream($output));
-        }
     }
 }
 

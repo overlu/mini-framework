@@ -50,5 +50,8 @@
         "files": [
             "src/_ide_helper.php"
         ]
+    },
+    "require-dev": {
+        "overlu/var-dumper": "^1.0"
     }
 }

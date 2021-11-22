@@ -9,7 +9,7 @@ namespace Mini\Service\Server;
 
 class MainServer extends AbstractServer
 {
-    protected string $type = 'Main';
+    protected string $type = 'main';
 
     public function initialize(): void
     {

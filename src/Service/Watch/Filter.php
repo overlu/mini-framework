@@ -15,9 +15,7 @@ class Filter extends \RecursiveFilterIterator
     public function accept()
     {
         if ($this->current()->isDir()) {
-            return 0 === strpos($this->current()->getFilename(), ".")
-                ? false
-                : !in_array($this->current()->getFilename(), $this->exclude_dir, true);
+            return !(0 === strpos($this->current()->getFilename(), ".")) && !in_array($this->current()->getFilename(), $this->exclude_dir, true);
         }
         $list = array_map(static function (string $item): string {
             return "\.$item";

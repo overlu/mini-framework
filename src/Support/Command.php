@@ -108,6 +108,14 @@ class Command
     }
 
     /**
+     * @param string $msg
+     */
+    public static function errorWithTime(string $msg): void
+    {
+        static::line(date('Y/m/d H:i:s') . " <danger>{$msg}</danger>");
+    }
+
+    /**
      * 打印普通消息
      * @param string $message
      * @param bool $newLine

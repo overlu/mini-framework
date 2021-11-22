@@ -32,7 +32,7 @@ class HttpServer extends AbstractServer
      */
     protected ?RouteService $route = null;
 
-    protected string $type = 'Http';
+    protected string $type = 'http';
 
     public function initialize(): void
     {

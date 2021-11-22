@@ -9,27 +9,19 @@ namespace Mini\Service\Server;
 
 use JsonException;
 use Mini\Bootstrap;
-use Mini\Console\App;
 use Mini\Context;
 use Mini\Crontab\Crontab;
 use Mini\Exception\Handler;
-use Mini\Facades\DB;
 use Mini\Facades\Redis;
 use Mini\Listener;
 use Mini\RemoteShell;
 use Mini\Service\Watch\Runner;
-use Mini\Service\WsServer\Client;
-use Mini\Service\WsServer\Group;
-use Mini\Service\WsServer\Socket;
-use Mini\Service\WsServer\User;
 use Mini\Support\Command;
 use RuntimeException;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
-use Swoole\Process;
 use Swoole\Server;
 use Swoole\Table;
-use Swoole\Timer;
 use Swoole\WebSocket\Frame;
 use Throwable;
 
@@ -178,8 +170,8 @@ abstract class AbstractServer
      */
     public function onStart(Server $server): void
     {
-        $type = ucfirst($this->type ?: $this->key);
-        Command::infoWithTime("🚀 Mini {$type} Server [{$this->worker_num} workers] running：{$this->config['ip']}:{$this->config['port']}...");
+        $type = $this->type ?: $this->key;
+        Command::infoWithTime("🚀 mini {$type} server [{$this->worker_num} workers] running：{$this->config['ip']}:{$this->config['port']}...");
         Listener::getInstance()->listen('start', $server);
         if (config('app.hot_reload') && config('app.env', 'local') !== 'production') {
             Runner::start();
@@ -206,8 +198,8 @@ abstract class AbstractServer
      */
     public function onManagerStart(Server $server): void
     {
-        $type = ucfirst($this->type ?: $this->key);
-        Command::infoWithTime("🚀 Mini {$type} Server [{$this->worker_num} workers] running：{$this->config['ip']}:{$this->config['port']}...\"");
+        $type = $this->type ?: $this->key;
+        Command::infoWithTime("🚀 mini {$type} server [{$this->worker_num} workers] running：{$this->config['ip']}:{$this->config['port']}...\"");
         Listener::getInstance()->listen('managerStart', $server);
         if (config('app.hot_reload') && config('app.env', 'local') !== 'production') {
             Runner::start();
@@ -322,6 +314,61 @@ abstract class AbstractServer
         }
     }
 
+    /**
+     * @param Server $server
+     * @throws JsonException
+     * @throws Throwable
+     */
+    public function onShutdown(Server $server): void
+    {
+        try {
+            $type = $this->type ?: $this->key;
+            Command::errorWithTime("⛔️ mini {$type} server [{$this->worker_num} workers] stopped.");
+            Listener::getInstance()->listen('shutdown', $server);
+        } catch (Throwable $throwable) {
+            Handler::getInstance()->throw($throwable);
+        }
+    }
+
+    /**
+     * @param Server $server
+     * @throws JsonException
+     * @throws Throwable
+     */
+    public function onBeforeReload(Server $server): void
+    {
+        try {
+            $type = $this->type ?: $this->key;
+            Command::infoWithTime("🔄 mini {$type} server [{$this->worker_num} workers] reloading.");
+            Listener::getInstance()->listen('beforeReload', $server);
+        } catch (Throwable $throwable) {
+            Handler::getInstance()->throw($throwable);
+        }
+    }
+
+    /**
+     * @param Server $server
+     * @throws JsonException
+     * @throws Throwable
+     */
+    public function onAfterReload(Server $server): void
+    {
+        try {
+            $type = $this->type ?: $this->key;
+            Command::infoWithTime("🔄 mini {$type} server [{$this->worker_num} workers] reloaded.");
+            Listener::getInstance()->listen('afterReload', $server);
+        } catch (Throwable $throwable) {
+            Handler::getInstance()->throw($throwable);
+        }
+    }
+
+
+    /**
+     * @param Server $server
+     * @param int $workerId
+     * @throws JsonException
+     * @throws Throwable
+     */
     public function onWorkerStop(Server $server, int $workerId): void
     {
         run(function () use ($server, $workerId) {
@@ -334,6 +381,12 @@ abstract class AbstractServer
         });
     }
 
+    /**
+     * @param Server $server
+     * @param int $workerId
+     * @throws JsonException
+     * @throws Throwable
+     */
     public function onWorkerExit(Server $server, int $workerId): void
     {
         run(function () use ($server, $workerId) {
@@ -356,7 +409,7 @@ abstract class AbstractServer
         if (($workerId === 1) && app()->has('dcs')) {
             $redis = Redis::connection(config('cache.drivers.redis.collection', 'cache'));
             $it = NULL;
-            while ($keys = $redis->scan($it, 'socket*')) {
+            while ($keys = $redis->scan($it, 'socket:*')) {
                 is_array($keys) && $redis->unlink($keys);
             }
         }

@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace Mini\Service\WsServer;
 
 use JsonException;
-use Mini\Facades\Cache;
 use Mini\Support\Store;
 
 /**

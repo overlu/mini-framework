@@ -9,7 +9,6 @@ namespace Mini\Service\Server;
 
 use Mini\Application;
 use Mini\Console\App;
-use Mini\Console\Cli;
 use Mini\Support\Command;
 use Swoole\Process;
 
@@ -35,7 +34,7 @@ class StopServer
      */
     public function stopServer(string $server): void
     {
-        if ($this->force || config('app.hot_reload', false)) {
+        if ($this->force || (is_dev_env(true) && config('app.hot_reload', false))) {
             $this->forceStopServer($server);
             return;
         }
@@ -50,7 +49,7 @@ class StopServer
                     usleep(1000);
                     if (!Process::kill($pid, 0)) {
                         if (is_file($pidFile)) {
-                            unlink($pidFile);
+                            @unlink($pidFile);
                         }
                         Command::infoWithTime('stop ' . $server . ' server succeed.');
                         break;
@@ -63,7 +62,7 @@ class StopServer
                 }
             } else {
                 Command::error('no ' . $server . ' server running.');
-                unlink($pidFile);
+                @unlink($pidFile);
             }
         } else {
             Command::error('no ' . $server . ' server running, check whether running in the daemon model.');
@@ -92,6 +91,10 @@ class StopServer
     private function forceStopServer(string $server): void
     {
         $process = 'bin/mini start ' . $server;
+        $pidFile = config('servers.' . $server . '.settings.pid_file', runtime_path($server . '.server.pid'));
+        if (file_exists($pidFile)) {
+            @unlink($pidFile);
+        }
         if ((!$server || isset(Application::$mapping[$server])) && Command::has($process)) {
             Command::kill($process);
             Command::infoWithTime('stop ' . $server . ' server succeed.');

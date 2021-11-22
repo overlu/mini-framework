@@ -16,7 +16,7 @@ class WebSocket extends AbstractServer
 {
     use WebSocketTrait;
 
-    protected string $type = 'WebSocket';
+    protected string $type = 'webSocket';
 
     /**
      * @var RouteService

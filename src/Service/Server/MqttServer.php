@@ -16,7 +16,7 @@ use Swoole\Server;
  */
 class MqttServer extends AbstractServer
 {
-    protected string $type = 'Mqtt';
+    protected string $type = 'mqtt';
 
     public function initialize(): void
     {
