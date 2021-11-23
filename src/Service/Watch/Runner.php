@@ -17,7 +17,7 @@ class Runner
     public static function start(): void
     {
         $serve = new WatchServer();
-        Command::infoWithTime( "👀 watching start...");
+        Command::infoWithTime( '👀 watching start...');
         $serve->state();
         Timer::tick(static::$scan_interval, [$serve, 'watch']);
     }

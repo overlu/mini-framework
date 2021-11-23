@@ -48,12 +48,12 @@ class WatchServer
         }
         $this->hashes = array_combine($files, array_map([$this, 'fileHash'], $files));
         $count = count($this->hashes);
-        Command::infoWithTime("📡 watching [{$count}] files...");
+        Command::infoWithTime('📡 watching [' . $count . '] files...');
     }
 
     protected function change(): void
     {
-        Command::infoWithTime("🔄 reload...");
+        Command::infoWithTime('🔄 reload...');
         Server::getInstance()->reload();
     }
 

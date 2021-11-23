@@ -11,17 +11,17 @@ use Mini\Support\Command;
 
 class HelpServer
 {
-    protected string $delimiter = '-------------------------------------------';
     protected array $commands = [
-        '',
         "start|reload|stop \t" => 'start|reload|stop mini http server',
-        'start|reload|stop all' => 'start|reload|stop mini all server',
         'start|reload|stop {type}' => 'start|reload|stop mini {type} server',
+        "start|reload|stop all \t" => 'start|reload|stop mini all server',
     ];
+    protected string $delimiter = '-------------------------------------------';
 
     public function __construct()
     {
-        Command::info("\033[32m" . 'mini commands' . "\033[0m \t" . 'mini commands description');
+        Command::line();
+        Command::info("\033[32m" . 'mini commands' . "\033[0m \t\t\t" . 'mini commands description');
         Command::line($this->delimiter);
         foreach ($this->commands as $command => $description) {
             Command::line(

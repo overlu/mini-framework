@@ -20,6 +20,7 @@ use Mini\Support\Command;
 use RuntimeException;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
+use Swoole\Process;
 use Swoole\Server;
 use Swoole\Table;
 use Swoole\WebSocket\Frame;
@@ -66,7 +67,7 @@ abstract class AbstractServer
      * @param string $key
      * @throws Throwable
      */
-    public function __construct($key = '')
+    public function __construct(string $key = '')
     {
         try {
             $this->key = $key;
@@ -157,7 +158,7 @@ abstract class AbstractServer
     private function crontabDispatch(): void
     {
         if (config('crontab.enable_crontab', false)) {
-            $process = new \Swoole\Process(function () {
+            $process = new Process(function () {
                 Crontab::run();
             });
             $this->server->addProcess($process);
@@ -171,7 +172,7 @@ abstract class AbstractServer
     public function onStart(Server $server): void
     {
         $type = $this->type ?: $this->key;
-        Command::infoWithTime("🚀 mini {$type} server [{$this->worker_num} workers] running：{$this->config['ip']}:{$this->config['port']}...");
+        Command::infoWithTime('🚀 mini ' . $type . ' server [' . $this->worker_num . ' workers] running：' . $this->config['ip'] . ':' . $this->config['port'] . '...');
         Listener::getInstance()->listen('start', $server);
         if (config('app.hot_reload') && config('app.env', 'local') !== 'production') {
             Runner::start();
@@ -199,7 +200,7 @@ abstract class AbstractServer
     public function onManagerStart(Server $server): void
     {
         $type = $this->type ?: $this->key;
-        Command::infoWithTime("🚀 mini {$type} server [{$this->worker_num} workers] running：{$this->config['ip']}:{$this->config['port']}...\"");
+        Command::infoWithTime('🚀 mini ' . $type . ' server [' . $this->worker_num . ' workers] running：' . $this->config['ip'] . ':' . $this->config['port'] . '...');
         Listener::getInstance()->listen('managerStart', $server);
         if (config('app.hot_reload') && config('app.env', 'local') !== 'production') {
             Runner::start();
@@ -246,7 +247,7 @@ abstract class AbstractServer
                     $response = app('events')->dispatch(...(array)$data['params']);
                 }
                 if ($data['type'] === 'callable') {
-                    $response = call_user_func_array(\Opis\Closure\unserialize($data['callable']), (array)$data['params']);
+                    $response = call_user_func_array(\Opis\Closure\unserialize($data['callable'], ["allowed_classes" => true]), (array)$data['params']);
                 }
                 return $task->finish($response);
             }
@@ -273,9 +274,9 @@ abstract class AbstractServer
 
     /**
      * @param \Swoole\WebSocket\Server $server
-     * @param \Swoole\Http\Request $request
+     * @param Request $request
      */
-    public function onOpen(\Swoole\WebSocket\Server $server, \Swoole\Http\Request $request): void
+    public function onOpen(\Swoole\WebSocket\Server $server, Request $request): void
     {
         try {
             Context::set('IsInWebsocketEvent', true);
@@ -323,7 +324,7 @@ abstract class AbstractServer
     {
         try {
             $type = $this->type ?: $this->key;
-            Command::errorWithTime("⛔️ mini {$type} server [{$this->worker_num} workers] stopped.");
+            Command::errorWithTime('⛔️ mini ' . $type . ' server [' . $this->worker_num . ' workers] stopped.');
             Listener::getInstance()->listen('shutdown', $server);
         } catch (Throwable $throwable) {
             Handler::getInstance()->throw($throwable);
@@ -339,7 +340,7 @@ abstract class AbstractServer
     {
         try {
             $type = $this->type ?: $this->key;
-            Command::infoWithTime("🔄 mini {$type} server [{$this->worker_num} workers] reloading.");
+            Command::infoWithTime('🔄 mini ' . $type . ' server [' . $this->worker_num . ' workers] reloading.');
             Listener::getInstance()->listen('beforeReload', $server);
         } catch (Throwable $throwable) {
             Handler::getInstance()->throw($throwable);
@@ -355,7 +356,7 @@ abstract class AbstractServer
     {
         try {
             $type = $this->type ?: $this->key;
-            Command::infoWithTime("🔄 mini {$type} server [{$this->worker_num} workers] reloaded.");
+            Command::infoWithTime('✅️ mini ' . $type . ' server [' . $this->worker_num . ' workers] reloaded.');
             Listener::getInstance()->listen('afterReload', $server);
         } catch (Throwable $throwable) {
             Handler::getInstance()->throw($throwable);

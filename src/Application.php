@@ -27,7 +27,7 @@ class Application
      * version
      * @var string
      */
-    public static string $version = '2.12.45';
+    public static string $version = '2.12.46';
 
     /**
      * @var array|string[]
@@ -74,7 +74,6 @@ EOL. '   ' . self::$version . PHP_EOL);
     public static function run(): void
     {
         Bootstrap::initial();
-        self::welcome();
         $args = (new App())->getArgs();
         if (!isset($args[0]) || !in_array($args[0], ['start', 'stop', 'reload'])) {
             new HelpServer();
@@ -84,6 +83,7 @@ EOL. '   ' . self::$version . PHP_EOL);
         } elseif ($args[0] === 'stop') {
             new StopServer($args[1] ?? 'all');
         } else {
+            self::welcome();
             $key = $args[1] ?? 'http';
             $server = static::$mapping[$key] ?? CustomServer::class;
             new $server($key);
