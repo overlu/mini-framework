@@ -142,7 +142,6 @@ trait WebSocketTrait
     {
         if ($server->isEstablished($fd)) {
             try {
-                dump($fd);
                 parent::onClose($server, $fd, $reactorId);
                 /**
                  * 解绑fd
