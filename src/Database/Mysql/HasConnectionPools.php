@@ -19,14 +19,14 @@ trait HasConnectionPools
      *
      * @var array
      */
-    protected $poolsConfig;
+    protected array $poolsConfig;
 
     /**
      * The redis pools.
      *
      * @var ConnectionPool[]
      */
-    protected static $pools = [];
+    protected static array $pools = [];
 
     /**
      * Get the connection from pool.
@@ -34,7 +34,7 @@ trait HasConnectionPools
      * @param string $name
      * @return mixed
      */
-    protected function getConnectionFromPool($name)
+    protected function getConnectionFromPool(string $name)
     {
         if (!isset(static::$pools[$name])) {
             $this->initializePool($name);
@@ -59,7 +59,7 @@ trait HasConnectionPools
      * @param string $name
      * @return void
      */
-    protected function initializePool($name): void
+    protected function initializePool(string $name): void
     {
         $capacity = (int)($this->poolsConfig[$name]['size'] ?? 64);
         $pool = new ConnectionPool(function () use ($name) {
@@ -86,7 +86,7 @@ trait HasConnectionPools
      * @param string $name
      * @return mixed
      */
-    protected function getConnectionFromContext($name)
+    protected function getConnectionFromContext(string $name)
     {
         $key = $this->getConnectionKeyInContext($name);
         return Context::get($key);
@@ -99,7 +99,7 @@ trait HasConnectionPools
      * @param mixed $connection
      * @return void
      */
-    protected function setConnectionToContext($name, $connection): void
+    protected function setConnectionToContext(string $name, $connection): void
     {
         $key = $this->getConnectionKeyInContext($name);
         Context::set($key, $connection);
@@ -111,7 +111,7 @@ trait HasConnectionPools
      * @param string $name
      * @return string
      */
-    protected function getConnectionKeyInContext($name): string
+    protected function getConnectionKeyInContext(string $name): string
     {
         return $name;
     }
@@ -122,7 +122,7 @@ trait HasConnectionPools
      * @param string $name
      * @return bool
      */
-    protected function isPoolConnection($name): bool
+    protected function isPoolConnection(string $name): bool
     {
         return Coroutine::getCid() > 0 && isset($this->poolsConfig[$name]);
     }

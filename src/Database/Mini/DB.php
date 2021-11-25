@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace Mini\Database\Mini;
 
 use PDO;
-use PDOException;
 use Swoole\Coroutine;
 use Swoole\Database\PDOProxy;
 use Throwable;
@@ -25,9 +24,9 @@ class DB
 
     protected string $key = '';
 
-    public function __construct(array $config = [], string $key = '')
+    public function __construct(string $key = '')
     {
-        $this->pool = Pool::getInstance($config);
+        $this->pool = app('db.mini.pool');
         $this->key = $key;
         $this->connection();
     }
@@ -48,28 +47,24 @@ class DB
      */
     private function initialize(string $query, array $parameters = []): void
     {
-        try {
-            $this->prepare = $this->connection->prepare($query);
-            $this->bindMore($parameters);
+        $this->prepare = $this->connection->prepare($query);
+        $this->bindMore($parameters);
 
-            if (!empty($this->parameters)) {
-                foreach ($this->parameters as $param => $value) {
-                    if (is_int($value[1])) {
-                        $type = PDO::PARAM_INT;
-                    } else if (is_bool($value[1])) {
-                        $type = PDO::PARAM_BOOL;
-                    } else if (is_null($value[1])) {
-                        $type = PDO::PARAM_NULL;
-                    } else {
-                        $type = PDO::PARAM_STR;
-                    }
-                    $this->prepare->bindValue($value[0], $value[1], $type);
+        if (!empty($this->parameters)) {
+            foreach ($this->parameters as $param => $value) {
+                if (is_int($value[1])) {
+                    $type = PDO::PARAM_INT;
+                } else if (is_bool($value[1])) {
+                    $type = PDO::PARAM_BOOL;
+                } else if (is_null($value[1])) {
+                    $type = PDO::PARAM_NULL;
+                } else {
+                    $type = PDO::PARAM_STR;
                 }
+                $this->prepare->bindValue($value[0], $value[1], $type);
             }
-            $this->prepare->execute();
-        } catch (PDOException $exception) {
-            throw $exception;
         }
+        $this->prepare->execute();
         $this->parameters = [];
     }
 
@@ -96,7 +91,7 @@ class DB
      * @param int $mode
      * @return null|mixed
      */
-    public function query($query, array $params = [], $mode = PDO::FETCH_ASSOC)
+    public function query($query, array $params = [], int $mode = PDO::FETCH_ASSOC)
     {
         $query = trim(str_replace("\r", " ", $query));
         $this->initialize($query, $params);

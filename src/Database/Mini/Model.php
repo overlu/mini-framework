@@ -26,7 +26,7 @@ class Model
 
     public function __construct($data = [])
     {
-        $this->db = new DB();
+        $this->db = app('db.mini');
         $this->variables = $data;
     }
 
@@ -75,7 +75,7 @@ class Model
      * @return mixed|null
      * @throws JsonException
      */
-    public function update($data = [])
+    public function update(array $data = [])
     {
         $this->variables = $data ?: $this->variables;
         $this->variables[$this->primaryKey] = (empty($this->variables[$this->primaryKey])) ? 'no_pk' : $this->variables[$this->primaryKey];
@@ -110,7 +110,7 @@ class Model
      * @return int|mixed|null
      * @throws JsonException
      */
-    public function save($data = [])
+    public function save(array $data = [])
     {
         $pk = $this->variables[$this->primaryKey] ?? null;
         return is_null($pk) ? $this->insert($data) : $this->update($data);
@@ -121,7 +121,7 @@ class Model
      * @return int|mixed
      * @throws JsonException
      */
-    public function insert($data = [])
+    public function insert(array $data = [])
     {
         $this->variables = $data ?: $this->variables;
 
@@ -146,7 +146,7 @@ class Model
      * @return mixed|null
      * @throws JsonException
      */
-    public function delete($id = '')
+    public function delete(string $id = '')
     {
         $id = (empty($this->variables[$this->primaryKey])) ? $id : $this->variables[$this->primaryKey];
 
@@ -160,7 +160,7 @@ class Model
      * @param string $id
      * @return array|mixed
      */
-    public function find($id = '')
+    public function find(string $id = '')
     {
         $id = (empty($this->variables[$this->primaryKey])) ? $id : $this->variables[$this->primaryKey];
         $result = [];
@@ -178,7 +178,7 @@ class Model
      * @param int $limit
      * @return array|null
      */
-    public function column($fields = '', $limit = 0): ?array
+    public function column($fields = '', int $limit = 0): ?array
     {
         $result = [];
         if ($fields) {
@@ -198,7 +198,7 @@ class Model
      * @return mixed|null
      * @throws JsonException
      */
-    public function search($wheres = [], $fields = ['*'], $sort = [])
+    public function search(array $wheres = [], $fields = ['*'], array $sort = [])
     {
         $this->variables = $wheres ?: $this->variables;
 
@@ -313,7 +313,7 @@ class Model
      * @return mixed|null
      * @throws Throwable
      */
-    public function transaction(callable $callable, $args = [])
+    public function transaction(callable $callable, array $args = [])
     {
         try {
             $this->db->beginTransaction();

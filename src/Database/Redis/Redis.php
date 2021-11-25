@@ -7,8 +7,9 @@ declare(strict_types=1);
 
 namespace Mini\Database\Redis;
 
-use Exception;
+use Mini\Context;
 use Mini\Support\Coroutine;
+use RuntimeException;
 use Swoole\Database\RedisConfig;
 use Swoole\Database\RedisPool;
 
@@ -23,48 +24,72 @@ class Redis
     public function __construct()
     {
         $this->config = config('redis', []);
+
     }
 
     /**
      * @param string $key
-     * @return RedisPool
-     * @throws Exception
      */
-    private function connection(string $key = 'default'): RedisPool
+    private function initialize(string $key): void
     {
-        if (empty($this->pools[$key])) {
-            $conf = $this->config[$key];
-            if (empty($conf)) {
-                throw new Exception('redis connection [' . $key . '] not exists');
-            }
-            $this->pools[$key] = new RedisPool(
-                (new RedisConfig())
-                    ->withHost($conf['host'])
-                    ->withPort((int)$conf['port'])
-                    ->withAuth((string)$conf['password'])
-                    ->withDbIndex((int)$conf['database'])
-                    ->withTimeout((float)$conf['time_out']),
-                (int)($conf['size'] ?? 64)
-            );
+        $conf = $this->config[$key];
+        if (empty($conf)) {
+            throw new RuntimeException('redis connection [' . $key . '] not exists');
         }
-        return $this->pools[$key];
+        $this->pools[$key] = new RedisPool(
+            (new RedisConfig())
+                ->withHost($conf['host'])
+                ->withPort((int)$conf['port'])
+                ->withAuth((string)$conf['password'])
+                ->withDbIndex((int)$conf['database'])
+                ->withTimeout((float)$conf['time_out']),
+            (int)($conf['size'] ?? 64)
+        );
     }
 
     /**
      * @param string $key
      * @return \Redis
-     * @throws Exception
      */
     public function getConnection(string $key = 'default'): \Redis
     {
         if (Coroutine::inCoroutine()) {
-            $connection = $this->connection($key)->get();
-            Coroutine::defer(function () use ($key, $connection) {
-                $this->close($key, $connection);
-            });
-            return $connection;
+            if ($connection = $this->getConnectionFromContext($key)) {
+                return $connection;
+            }
+            return $this->getConnectionFromPool($key);
         }
         return $this->getRedis($key);
+    }
+
+    /**
+     * @param string $key
+     * @return \Redis
+     */
+    protected function getConnectionFromPool(string $key): \Redis
+    {
+        if (empty($this->pools[$key])) {
+            $this->initialize($key);
+        }
+        $connection = $this->pools[$key]->get();
+        $this->setConnectionToContext($key, $connection);
+        Coroutine::defer(function () use ($key, $connection) {
+            $this->close($key, $connection);
+        });
+        return $connection;
+    }
+
+    /**
+     * Set the connection to coroutine context.
+     *
+     * @param string $name
+     * @param mixed $connection
+     * @return void
+     */
+    protected function setConnectionToContext(string $name, $connection): void
+    {
+        $key = $this->getConnectionKeyInContext($name);
+        Context::set($key, $connection);
     }
 
     /**
@@ -81,13 +106,12 @@ class Redis
     /**
      * @param string $key
      * @return \Redis
-     * @throws Exception
      */
     public function getRedis(string $key = 'default'): \Redis
     {
         $conf = $this->config[$key];
         if (empty($conf)) {
-            throw new Exception('redis connection [' . $key . '] not exists');
+            throw new RuntimeException('redis connection [' . $key . '] not exists');
         }
         $redis = new \Redis();
         /* Compatible with different versions of Redis extension as much as possible */
@@ -104,6 +128,29 @@ class Redis
             $redis->select((int)$conf['database']);
         }
         return $redis;
+    }
+
+    /**
+     * Get the connection from coroutine context.
+     *
+     * @param string $name
+     * @return mixed
+     */
+    protected function getConnectionFromContext(string $name)
+    {
+        $key = $this->getConnectionKeyInContext($name);
+        return Context::get($key);
+    }
+
+    /**
+     * Get the connection key in coroutine context.
+     *
+     * @param string $name
+     * @return string
+     */
+    protected function getConnectionKeyInContext(string $name): string
+    {
+        return 'redis.connections.' . $name;
     }
 
     /**

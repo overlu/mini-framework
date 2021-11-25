@@ -18,12 +18,12 @@ class MiniDBServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $config = config('database.connections', []);
-        if (!empty($config)) {
-            $this->app->singleton('db.mini', function () use ($config) {
-                return new Pool($config);
-            });
-        }
+        $this->app->singleton('db.mini.pool', function () {
+            return new Pool();
+        });
+        $this->app->singleton('db.mini', function () {
+            return new DB();
+        });
     }
 
     /**

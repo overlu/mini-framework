@@ -10,7 +10,6 @@ namespace Mini\Database\Mini;
 use Mini\Context;
 use Mini\Support\Coroutine;
 use PDO;
-use Mini\Singleton;
 use Swoole\Database\PDOConfig;
 use Swoole\Database\PDOPool;
 use Swoole\Database\PDOProxy;
@@ -38,11 +37,8 @@ class Pool
      */
     protected string $defaultConnection;
 
-    public function __construct(array $config = [])
+    public function __construct()
     {
-        /*if (empty($this->pools)) {
-            $this->initialize($config);
-        }*/
         $this->defaultConnection = config('database.default', 'mysql');
     }
 
@@ -133,7 +129,7 @@ class Pool
      * @param mixed $connection
      * @return void
      */
-    protected function setConnectionToContext($name, $connection): void
+    protected function setConnectionToContext(string $name, $connection): void
     {
         $key = $this->getConnectionKeyInContext($name);
         Context::set($key, $connection);
@@ -156,7 +152,7 @@ class Pool
      * @param string $name
      * @return mixed
      */
-    protected function getConnectionFromContext($name)
+    protected function getConnectionFromContext(string $name)
     {
         $key = $this->getConnectionKeyInContext($name);
         return Context::get($key);
