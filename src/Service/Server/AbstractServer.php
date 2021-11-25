@@ -174,7 +174,7 @@ abstract class AbstractServer
         $type = $this->type ?: $this->key;
         Command::infoWithTime('🚀 mini ' . $type . ' server [' . $this->worker_num . ' workers] running：' . $this->config['ip'] . ':' . $this->config['port'] . '...');
         Listener::getInstance()->listen('start', $server);
-        if (config('app.hot_reload') && config('app.env', 'local') !== 'production') {
+        if (config('app.hot_reload', false) && config('app.env', 'local') !== 'production') {
             Runner::start();
         }
     }
@@ -202,7 +202,7 @@ abstract class AbstractServer
         $type = $this->type ?: $this->key;
         Command::infoWithTime('🚀 mini ' . $type . ' server [' . $this->worker_num . ' workers] running：' . $this->config['ip'] . ':' . $this->config['port'] . '...');
         Listener::getInstance()->listen('managerStart', $server);
-        if (config('app.hot_reload') && config('app.env', 'local') !== 'production') {
+        if (config('app.hot_reload', false) && config('app.env', 'local') !== 'production') {
             Runner::start();
         }
     }
@@ -339,8 +339,10 @@ abstract class AbstractServer
     public function onBeforeReload(Server $server): void
     {
         try {
-            $type = $this->type ?: $this->key;
-            Command::infoWithTime('🔄 mini ' . $type . ' server [' . $this->worker_num . ' workers] reloading.');
+            if (!(config('app.hot_reload', false) && config('app.env', 'local') !== 'production')) {
+                $type = $this->type ?: $this->key;
+                Command::infoWithTime('🔄 mini ' . $type . ' server [' . $this->worker_num . ' workers] reloading.');
+            }
             Listener::getInstance()->listen('beforeReload', $server);
         } catch (Throwable $throwable) {
             Handler::getInstance()->throw($throwable);
@@ -355,8 +357,10 @@ abstract class AbstractServer
     public function onAfterReload(Server $server): void
     {
         try {
-            $type = $this->type ?: $this->key;
-            Command::infoWithTime('✅️ mini ' . $type . ' server [' . $this->worker_num . ' workers] reloaded.');
+            if (!(config('app.hot_reload', false) && config('app.env', 'local') !== 'production')) {
+                $type = $this->type ?: $this->key;
+                Command::infoWithTime('✅️ mini ' . $type . ' server [' . $this->worker_num . ' workers] reloaded.');
+            }
             Listener::getInstance()->listen('afterReload', $server);
         } catch (Throwable $throwable) {
             Handler::getInstance()->throw($throwable);
