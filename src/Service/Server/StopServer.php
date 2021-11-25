@@ -43,7 +43,6 @@ class StopServer
             $pid = (int)file_get_contents($pidFile);
             $result = Process::kill($pid, 0);
             if ($result) {
-                \Swoole\Timer::clearAll();
                 Process::kill($pid);
                 $time = time();
                 while (true) {

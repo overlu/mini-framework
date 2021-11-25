@@ -12,6 +12,7 @@ use Mini\Bootstrap;
 use Mini\Context;
 use Mini\Crontab\Crontab;
 use Mini\Exception\Handler;
+use Mini\Facades\Cache;
 use Mini\Facades\Redis;
 use Mini\Listener;
 use Mini\RemoteShell;
@@ -324,6 +325,7 @@ abstract class AbstractServer
     {
         try {
             $type = $this->type ?: $this->key;
+            $this->whenServerStop($server);
             Command::errorWithTime('⛔️ mini ' . $type . ' server [' . $this->worker_num . ' workers] stopped.');
             Listener::getInstance()->listen('shutdown', $server);
         } catch (Throwable $throwable) {
@@ -378,7 +380,6 @@ abstract class AbstractServer
     {
         run(function () use ($server, $workerId) {
             try {
-                $this->whenServerStop($server, $workerId);
                 Listener::getInstance()->listen('workerStop', $server, $workerId);
             } catch (Throwable $throwable) {
                 Handler::getInstance()->throw($throwable);
@@ -396,7 +397,6 @@ abstract class AbstractServer
     {
         run(function () use ($server, $workerId) {
             try {
-                $this->whenServerStop($server, $workerId);
                 Listener::getInstance()->listen('workerExit', $server, $workerId);
             } catch (Throwable $throwable) {
                 Handler::getInstance()->throw($throwable);
@@ -406,12 +406,11 @@ abstract class AbstractServer
 
     /**
      * @param Server $server
-     * @param int $workerId
      */
-    private function whenServerStop(Server $server, int $workerId): void
+    private function whenServerStop(Server $server): void
     {
         //socket 处理
-        if (($workerId === 1) && app()->has('dcs')) {
+        if (app()->has('dcs')) {
             $redis = Redis::connection(config('cache.drivers.redis.collection', 'cache'));
             $it = NULL;
             while ($keys = $redis->scan($it, 'socket:*')) {
@@ -421,7 +420,7 @@ abstract class AbstractServer
         // 连接池关闭
         app()->has('redis') && app('redis')->closePool();
         app()->has('db') && app('db')->closePool();
-        app()->has('db.mini') && app('db.mini')->closePool();
+        app()->has('db.mini.pool') && app('db.mini.pool')->closePool();
     }
 
 
