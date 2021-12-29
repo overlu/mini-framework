@@ -16,14 +16,19 @@ class RequestIdMiddleware implements MiddlewareInterface
     /**
      * @param string $method
      * @param string $className
-     * @return mixed|void
+     * @return void
      */
     public function before(string $method, string $className)
     {
         Seaslog::setRequestID(uniqid('mini.', true));
     }
 
-    public function after(ResponseInterface $response): ResponseInterface
+    /**
+     * @param ResponseInterface $response
+     * @param string $className
+     * @return ResponseInterface
+     */
+    public function after(ResponseInterface $response, string $className): ResponseInterface
     {
         return $response->withHeader('mini-request-id', Seaslog::getRequestID());
     }

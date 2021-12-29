@@ -20,7 +20,8 @@ interface MiddlewareInterface
 
     /**
      * @param ResponseInterface $response
-     * @return mixed
+     * @param string $className
+     * @return ResponseInterface
      */
-    public function after(ResponseInterface $response): ResponseInterface;
+    public function after(ResponseInterface $response, string $className): ResponseInterface;
 }

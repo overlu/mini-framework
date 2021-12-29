@@ -29,14 +29,17 @@ class Middleware
     }
 
     /**
-     * @param string $method
-     * @param string $className
+     * @param string|null $method
+     * @param object|null $class
      * @return mixed|null
      */
-    public function registerBeforeRequest(string $method, string $className)
+    public function registerBeforeRequest(?string $method, ?object $class)
     {
         foreach ($this->middleware as $item) {
-            if (!is_null($response = $item->before($method, $className))) {
+            if ($class && method_exists($class, 'disableMiddleware') && $class->disableMiddleware(get_class($item))) {
+                continue;
+            }
+            if (!is_null($response = $item->before($method ?: '', $class ? get_class($class) : ''))) {
                 return $response;
             }
         }
@@ -45,12 +48,17 @@ class Middleware
 
     /**
      * @param ResponseInterface $response
+     * @param object|null $class
      * @return ResponseInterface
      */
-    public function bootAfterRequest(ResponseInterface $response): ResponseInterface
+    public function bootAfterRequest(ResponseInterface $response, ?object $class): ResponseInterface
     {
-        foreach ($this->middleware as $item) {
-            $response = $item->after($response);
+        $middleware = array_reverse($this->middleware);
+        foreach ($middleware as $item) {
+            if ($class && method_exists($class, 'disableMiddleware') && $class->disableMiddleware(get_class($item))) {
+                continue;
+            }
+            $response = $item->after($response, $class ? get_class($class) : '');
         }
         return $response;
     }

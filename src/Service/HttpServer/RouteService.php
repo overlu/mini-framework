@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Service\HttpServer;
 
 use ArrayAccess;
+use Mini\Contracts\Container\BindingResolutionException;
 use MiniRoute\Dispatcher;
 use MiniRoute\RouteCollector;
 use Mini\BindsProvider;
@@ -37,6 +38,8 @@ class RouteService
      */
     private static Dispatcher $httpDispatcher;
     private static Dispatcher $wsDispatcher;
+
+    private ?object $controller = null;
 
     private function __construct()
     {
@@ -165,6 +168,7 @@ class RouteService
      */
     public function dispatch(Request $request)
     {
+        $this->controller = null;
         $method = $request->server['request_method'] ?? 'GET';
         $uri = $request->server['request_uri'] ?? '/';
         $routeInfo = self::$httpDispatcher->dispatch($method, rtrim($uri, '/') ?: '/');
@@ -204,23 +208,27 @@ class RouteService
                 }
             }
             $func = $handler[1];
-            $resp = app('middleware')->registerBeforeRequest($func, $className);
+            $this->controller = new $className($func, $params);
+            $resp = app('middleware')->registerBeforeRequest($func, $this->controller);
             if (!is_null($resp)) {
                 return $resp;
             }
-            $controller = new $className($func, $params);
-            if (!method_exists($controller, $func)) {
+            if (!method_exists($this->controller, $func)) {
                 throw new RuntimeException("Router {$uri} Defined {$className}->{$func} Method Not Found");
             }
-            $method = (new ReflectionMethod($controller, $func));
+            $method = (new ReflectionMethod($this->controller, $func));
             $data = $this->initialParams($method, $params);
-            if (method_exists($controller, 'beforeDispatch') && $resp = $controller->beforeDispatch($func, $className, $params)) {
+            if (method_exists($this->controller, 'beforeDispatch') && $resp = $this->controller->beforeDispatch($func, $className, $params)) {
                 return $resp;
             }
-            $resp = $method->invokeArgs($controller, $data);
-            return method_exists($controller, 'afterDispatch') ? $controller->afterDispatch($resp, $func, $className, $params) : $resp;
+            $resp = $method->invokeArgs($this->controller, $data);
+            return method_exists($this->controller, 'afterDispatch') ? $this->controller->afterDispatch($resp, $func, $className, $params) : $resp;
         }
         if (is_callable($handler)) {
+            $resp = app('middleware')->registerBeforeRequest(null, null);
+            if (!is_null($resp)) {
+                return $resp;
+            }
             $data = $this->initialParams(new ReflectionFunction($handler), $params);
             return call_user_func_array($handler, $data);
         }
@@ -234,6 +242,7 @@ class RouteService
      */
     public function dispatchWs(Request $request): array
     {
+        $this->controller = null;
         $uri = $request->server['request_uri'] ?? '/';
         $routeInfo = self::$wsDispatcher->dispatch('GET', rtrim($uri, '/') ?: '/');
         switch ($routeInfo[0]) {
@@ -279,10 +288,12 @@ class RouteService
     }
 
     /**
-     * @param $method
+     * @param ReflectionFunctionAbstract $method
      * @param $vars
      * @return array
+     * @throws ReflectionException
      * @throws Throwable
+     * @throws BindingResolutionException
      */
     protected function initialParams(ReflectionFunctionAbstract $method, $vars): array
     {
@@ -397,5 +408,14 @@ class RouteService
     public function wsRoute(string $key, $default = null)
     {
         return Arr::get($this->wsRoutes(), $key, $default);
+    }
+
+    /**
+     * 获取控制器
+     * @return object|null
+     */
+    public function getController(): ?object
+    {
+        return $this->controller;
     }
 }

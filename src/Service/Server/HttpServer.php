@@ -69,7 +69,7 @@ class HttpServer extends AbstractServer
             }
             $resp = $this->route->dispatch($request);
             if (!isset($resp)) {
-                return;
+                $resp = '';
             }
             if (!$resp instanceof \Psr\Http\Message\ResponseInterface) {
                 $resp = $this->transferToResponse($resp);
@@ -81,7 +81,7 @@ class HttpServer extends AbstractServer
             /**
              * @var $resp Psr7Response
              */
-            $resp = app('middleware')->bootAfterRequest($resp);
+            $resp = app('middleware')->bootAfterRequest($resp, $this->route->getController());
             if (request()->getMethod() === 'HEAD') {
                 $resp->send(false);
             } else {

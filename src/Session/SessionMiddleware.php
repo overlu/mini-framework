@@ -13,10 +13,7 @@ use Mini\Config;
 use Mini\Contracts\HttpMessage\SessionInterface;
 use Mini\Contracts\MiddlewareInterface;
 use Mini\Service\HttpMessage\Cookie\Cookie;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 
 class SessionMiddleware implements MiddlewareInterface
 {
@@ -56,7 +53,7 @@ class SessionMiddleware implements MiddlewareInterface
     /**
      * @param string $method
      * @param string $className
-     * @return mixed|void
+     * @return void
      * @throws Exception
      */
     public function before(string $method, string $className)
@@ -69,10 +66,10 @@ class SessionMiddleware implements MiddlewareInterface
 
     /**
      * @param ResponseInterface $response
-     * @return mixed|ResponseInterface
-     * @throws Exception
+     * @param string $className
+     * @return ResponseInterface
      */
-    public function after(ResponseInterface $response): ResponseInterface
+    public function after(ResponseInterface $response, string $className): ResponseInterface
     {
         if (!$this->isSessionAvailable()) {
             return $response;
