@@ -147,7 +147,7 @@ class CallQueuedListener implements ShouldQueue
     protected function prepareData(): void
     {
         if (is_string($this->data)) {
-            $this->data = unserialize($this->data);
+            $this->data = unserialize($this->data, ["allowed_classes" => true]);
         }
     }
 

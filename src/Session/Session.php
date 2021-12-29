@@ -70,7 +70,7 @@ class Session implements SessionInterface
      */
     public function isValidId(string $id): bool
     {
-        return is_string($id) && ctype_alnum($id) && strlen($id) === 40;
+        return ctype_alnum($id) && strlen($id) === 40;
     }
 
     /**
@@ -103,7 +103,7 @@ class Session implements SessionInterface
     protected function readFromHandler(): array
     {
         if ($data = $this->handler->read($this->getId())) {
-            $data = @unserialize($this->prepareForUnserialize($data));
+            $data = @unserialize($this->prepareForUnserialize($data), ["allowed_classes" => true]);
 
             if (is_array($data)) {
                 return $data;

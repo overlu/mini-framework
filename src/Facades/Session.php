@@ -29,6 +29,7 @@ namespace Mini\Facades;
  * @method static void forget(string|array $keys)
  * @method static void push(string $key, mixed $value)
  * @method static void put(string|array $key, $value = null)
+ * @method static void set(string $key, $value = null)
  * @method static void setId(string $id)
  * @method static void setPreviousUrl(string $url)
  *
@@ -41,7 +42,7 @@ class Session extends Facade
      *
      * @return string
      */
-    protected static function getFacadeAccessor()
+    protected static function getFacadeAccessor(): string
     {
         return 'session';
     }

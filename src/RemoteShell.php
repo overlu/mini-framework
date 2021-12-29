@@ -114,7 +114,7 @@ class RemoteShell
             return call_user_func(self::$oriPipeMessageCallback, $server, $src_worker_id, $message);
         }
 
-        $request = unserialize(substr($message, strlen(self::STX)));
+        $request = unserialize(substr($message, strlen(self::STX)), ["allowed_classes" => true]);
         self::call($request['fd'], $request['func'], $request['args']);
         return true;
     }
