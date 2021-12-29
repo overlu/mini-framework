@@ -20,7 +20,7 @@ class RedisSessionDriver implements SessionHandlerInterface
     /**
      * @var int
      */
-    protected int $gcMaxLifeTime = 1200;
+    protected int $gcMaxLifeTime = 120;
 
     public function __construct()
     {
@@ -99,6 +99,6 @@ class RedisSessionDriver implements SessionHandlerInterface
      */
     public function write($session_id, $session_data): bool
     {
-        return (bool)$this->redis->setEx($session_id, (int)$this->gcMaxLifeTime, $session_data);
+        return (bool)$this->redis->setEx($session_id, (int)$this->gcMaxLifeTime * 60, $session_data);
     }
 }
