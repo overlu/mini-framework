@@ -22,10 +22,10 @@ class RedisSessionDriver implements SessionHandlerInterface
      */
     protected int $gcMaxLifeTime = 1200;
 
-    public function __construct(int $gcMaxLifeTime)
+    public function __construct()
     {
         $this->redis = redis(config('session.connection', 'session'));
-        $this->gcMaxLifeTime = config('session.lifetime', 120);
+        $this->gcMaxLifeTime = (int)config('session.lifetime', 120);
     }
 
     /**
