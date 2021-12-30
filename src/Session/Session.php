@@ -94,7 +94,7 @@ class Session implements SessionInterface
      */
     protected function loadSession(): void
     {
-        $this->attributes = array_merge($this->attributes, $this->readFromHandler());
+        $this->attributes = $this->readFromHandler();
     }
 
     /**
@@ -136,6 +136,7 @@ class Session implements SessionInterface
         $this->handler->write($this->getId(), $this->prepareForStorage(serialize($this->attributes)));
 
         $this->started = false;
+        $this->attributes = [];
     }
 
     /**

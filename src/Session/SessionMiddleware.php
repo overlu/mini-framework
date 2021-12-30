@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Session;
 
-use Carbon\Carbon;
 use Exception;
 use Mini\Config;
 use Mini\Contracts\HttpMessage\SessionInterface;
@@ -45,7 +44,7 @@ class SessionMiddleware implements MiddlewareInterface
         if (config('session.options.expire_on_close')) {
             $expirationDate = 0;
         } else {
-            $expirationDate = Carbon::now()->addMinutes(config('session.lifetime', 120))->getTimestamp();
+            $expirationDate = time() + (int)config('session.lifetime', 120) * 60;
         }
         return $expirationDate;
     }
