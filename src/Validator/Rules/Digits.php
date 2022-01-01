@@ -27,6 +27,9 @@ class Digits extends Rule
      */
     public function check($value): bool
     {
+        if (!is_string($value)) {
+            return false;
+        }
         $this->requireParameters($this->fillableParams);
 
         $length = (int)$this->parameter('length');

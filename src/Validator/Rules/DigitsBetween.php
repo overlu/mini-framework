@@ -27,12 +27,15 @@ class DigitsBetween extends Rule
      */
     public function check($value): bool
     {
+        if (!is_string($value)) {
+            return false;
+        }
         $this->requireParameters($this->fillableParams);
 
         $min = (int)$this->parameter('min');
         $max = (int)$this->parameter('max');
 
-        $length = strlen((string)$value);
+        $length = strlen($value);
 
         return !preg_match('/\D/', $value)
             && $length >= $min && $length <= $max;

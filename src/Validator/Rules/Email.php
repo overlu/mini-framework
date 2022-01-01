@@ -22,6 +22,9 @@ class Email extends Rule
      */
     public function check($value): bool
     {
+        if (!is_string($value)) {
+            return false;
+        }
         return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
     }
 }

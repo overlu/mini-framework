@@ -32,6 +32,9 @@ class After extends Rule
      */
     public function check($value): bool
     {
+        if (!is_string($value)) {
+            return false;
+        }
         $this->requireParameters($this->fillableParams);
         $time = $this->parameter('date');
 

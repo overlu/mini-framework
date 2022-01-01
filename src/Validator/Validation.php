@@ -164,7 +164,7 @@ class Validation
                 $isEmptyValue = $this->isEmptyValue($value);
             }
 
-            $valid = isset($value) && $ruleValidator->check($value);
+            $valid = $ruleValidator->check($value);
 
             if ($isEmptyValue && $this->ruleIsOptional($attribute, $ruleValidator)) {
                 continue;

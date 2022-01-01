@@ -29,6 +29,9 @@ class Min extends Rule
      */
     public function check($value): bool
     {
+        if (is_null($value)) {
+            return false;
+        }
         $this->requireParameters($this->fillableParams);
 
         $min = $this->getBytesSize($this->parameter('min'));

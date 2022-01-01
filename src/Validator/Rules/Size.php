@@ -29,6 +29,9 @@ class Size extends Rule
      */
     public function check($value): bool
     {
+        if (is_null($value)) {
+            return false;
+        }
         $this->requireParameters($this->fillableParams);
 
         $size = $this->getBytesSize($this->parameter('size'));

@@ -25,6 +25,9 @@ class Accepted extends Rule
      */
     public function check($value): bool
     {
+        if (is_null($value)) {
+            return false;
+        }
         $acceptable = ['yes', 'on', '1', 1, true, 'true'];
         return in_array($value, $acceptable, true);
     }

@@ -27,6 +27,9 @@ class Required extends Rule
      */
     public function check($value): bool
     {
+        if (is_null($value)) {
+            return false;
+        }
         $this->setAttributeAsRequired();
 
         if ($this->attribute && $this->attribute->hasRule('uploaded_file')) {
@@ -39,7 +42,7 @@ class Required extends Rule
         if (is_array($value)) {
             return count($value) > 0;
         }
-        return !is_null($value);
+        return true;
     }
 
     /**

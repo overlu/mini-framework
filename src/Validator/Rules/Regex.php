@@ -27,6 +27,9 @@ class Regex extends Rule
      */
     public function check($value): bool
     {
+        if (!is_string($value)) {
+            return false;
+        }
         $this->requireParameters($this->fillableParams);
         $regex = $this->parameter('regex');
         return preg_match($regex, $value) > 0;

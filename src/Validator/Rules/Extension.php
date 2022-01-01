@@ -40,6 +40,9 @@ class Extension extends Rule
      */
     public function check($value): bool
     {
+        if (!is_string($value)) {
+            return false;
+        }
         $this->requireParameters(['allowed_extensions']);
         $allowedExtensions = $this->parameter('allowed_extensions');
         foreach ($allowedExtensions as $key => $ext) {

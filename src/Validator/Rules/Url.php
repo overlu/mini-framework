@@ -46,6 +46,9 @@ class Url extends Rule
      */
     public function check($value): bool
     {
+        if (is_null($value)) {
+            return false;
+        }
         $schemes = $this->parameter('schemes');
 
         if (!$schemes) {
