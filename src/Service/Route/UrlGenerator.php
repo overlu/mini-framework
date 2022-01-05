@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Service\HttpServer;
+namespace Mini\Service\Route;
 
 use Exception;
 use Mini\Context;
@@ -125,7 +125,7 @@ class UrlGenerator implements UrlGeneratorContract
      * @param string $scheme
      * @return Uri
      */
-    public function withScheme($uri, $scheme = ''): Uri
+    public function withScheme($uri, string $scheme = ''): Uri
     {
         if (is_string($uri)) {
             $uri = new Uri($uri);

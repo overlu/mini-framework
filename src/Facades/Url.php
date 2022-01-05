@@ -30,6 +30,6 @@ class Url extends Facade
      */
     protected static function getFacadeAccessor(): string
     {
-        return UrlGenerator::class;
+        return 'url';
     }
 }

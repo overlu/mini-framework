@@ -47,8 +47,6 @@ class Handler implements HandlerInterface
 
     /**
      * @param Throwable $throwable
-     * @throws Throwable
-     * @throws JsonException
      */
     public function throw(Throwable $throwable): void
     {

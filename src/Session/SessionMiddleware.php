@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace Mini\Session;
 
 use Exception;
-use Mini\Config;
 use Mini\Contracts\HttpMessage\SessionInterface;
 use Mini\Contracts\MiddlewareInterface;
 use Mini\Service\HttpMessage\Cookie\Cookie;
@@ -33,7 +32,7 @@ class SessionMiddleware implements MiddlewareInterface
 
     private function isSessionAvailable(): bool
     {
-        return Config::getInstance()->has('session.driver');
+        return app('config')->has('session.driver');
     }
 
     /**

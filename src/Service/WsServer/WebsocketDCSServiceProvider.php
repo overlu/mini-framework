@@ -8,14 +8,13 @@ declare(strict_types=1);
 namespace Mini\Service\WsServer;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Service\HttpServer\RouteService;
 use Mini\Support\ServiceProvider;
 
 class WebsocketDCSServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        RouteService::registerWsRoute(['/{authcode:[0-9a-zA-Z]{40}}/{host}', DCS::class]);
+        //
     }
 
     /**
@@ -23,11 +22,12 @@ class WebsocketDCSServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->app['route']->registerWsRoute(['/{authcode:[0-9a-zA-Z]{40}}/{host}', DCS::class]);
         if ($this->worker_id === 1) {
             Client::register();
         }
         $this->app->singleton('dcs', function () {
-            return Client::getInstance();
+            return new Client();
         });
     }
 }

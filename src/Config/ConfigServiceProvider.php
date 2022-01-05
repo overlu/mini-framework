@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Config;
 
-use Mini\Config;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Support\ServiceProvider;
 
@@ -19,7 +18,7 @@ class ConfigServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton('config', function () {
-            return Config::getInstance();
+            return new Factory();
         });
     }
 

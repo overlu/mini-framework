@@ -11,7 +11,6 @@ use Exception;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\HttpMessage\WebsocketRequestInterface;
 use Mini\Contracts\HttpMessage\WebsocketResponseInterface;
-use Mini\Service\HttpServer\RouteService;
 use Mini\Service\WsServer\Request;
 use Mini\Service\WsServer\Response;
 use Mini\Service\WsServer\User;
@@ -38,8 +37,8 @@ trait WebSocketTrait
      */
     public function onMessage(Server $server, Frame $frame): void
     {
+        parent::onMessage($server, $frame);
         try {
-            parent::onMessage($server, $frame);
             if ($this->handler) {
                 if (!empty($this->handler['className'])) {
                     $wsResponse = call([$this->handler['callable'], 'onMessage'], [$server, $frame, $this->handler['data']]);
@@ -85,11 +84,8 @@ trait WebSocketTrait
     {
         try {
             parent::onOpen($server, $request);
-            if (!$this->route) {
-                $this->route = RouteService::getInstance();
-            }
             $this->initWsRequestAndResponse($request, $server);
-            $resp = $this->route->dispatchWs($request);
+            $resp = app('route')->dispatchWs($request);
             if (is_array($resp) && isset($resp['class'])) {
                 if (method_exists($resp['class'], 'beforeDispatch') && $dispatchResp = $resp['class']->beforeDispatch($resp['className'], $resp['data'])) {
                     ws_response()->push($dispatchResp)->close();

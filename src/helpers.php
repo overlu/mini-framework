@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-use Mini\Config;
+use Mini\Config\Config;
 use Mini\Container\Container;
 use Mini\Context;
 use Mini\Contracts\HttpMessage\RequestInterface;
@@ -508,12 +508,13 @@ if (!function_exists('config')) {
      */
     function config($key, $default = null)
     {
+        $config = app()->has('config') ? app('config') : Config::getInstance();
         if (is_array($key)) {
-            Config::getInstance()->set($key);
+            $config->set($key);
             return;
         }
 
-        return Config::getInstance()->get($key, $default);
+        return $config->get($key, $default);
     }
 }
 

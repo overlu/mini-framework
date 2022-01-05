@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Service\HttpServer;
+namespace Mini\Service\Route;
 
 use ArrayAccess;
 use Mini\Contracts\Container\BindingResolutionException;
@@ -23,50 +23,64 @@ use ReflectionMethod;
 use RuntimeException;
 use Swoole\Http\Request;
 use Throwable;
-use function MiniRoute\cachedDispatcher;
+use function MiniRoute\simpleDispatcher;
 
-class RouteService
+class Route
 {
-    private static RouteService $instance;
-
-    private static array $routes = [];
-
-    private static bool $cached = false;
+    private array $routes = [];
 
     /**
      * @var Dispatcher
      */
-    private static Dispatcher $httpDispatcher;
-    private static Dispatcher $wsDispatcher;
+    private Dispatcher $httpDispatcher;
+    private Dispatcher $wsDispatcher;
 
     private ?object $controller = null;
 
-    private function __construct()
+    public function __construct()
     {
-        static::$cached = !config('app.route_cached', true);
         $routes = config('routes', []);
-        self::$routes['http'] = array_merge(self::$routes['http'] ?? [], $routes['http']);
-        self::$routes['ws'] = array_merge(self::$routes['ws'] ?? [], $routes['ws']);
-        self::$routes['default'] = $routes['default'] ?? null;
+        $this->routes['http'] = $routes['http'] ?? [];
+        $this->routes['ws'] = $routes['ws'] ?? [];
+        $this->routes['default'] = $routes['default'] ?? null;
     }
 
     /**
      * @param array $route
      */
-    public static function registerHttpRoute(array $route): void
+    public function registerHttpRoute(array $route): void
     {
-        self::$routes['http'][] = $route;
+        $this->routes['http'][] = $route;
+        $this->initRoutes();
     }
 
     /**
      * @param array $route
      */
-    public static function registerWsRoute(array $route): void
+    public function registerWsRoute(array $route): void
     {
-        self::$routes['ws'][] = $route;
+        $this->routes['ws'][] = $route;
+        $this->initRoutes();
     }
 
-    private static function parasMethod($method): array
+    /**
+     * initial routes
+     */
+    public function initRoutes(): void
+    {
+        $this->httpDispatcher = simpleDispatcher(
+            function (RouteCollector $routerCollector) {
+                $this->parseHttpRoutes(isset($this->routes['ws']) ? ($this->routes['http'] ?? []) : $this->routes, $routerCollector);
+            }
+        );
+        $this->wsDispatcher = simpleDispatcher(
+            function (RouteCollector $routerCollector) {
+                $this->parseWebSocketRoutes($this->routes['ws'], $routerCollector);
+            }
+        );
+    }
+
+    private function parasMethod($method): array
     {
         return strtoupper($method) === 'ANY' ? ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'PATCH', 'OPTIONS', 'LOCK', 'UNLOCK', 'PROPFIND', 'PURGE']
             : array_map(static function ($method) {
@@ -79,7 +93,7 @@ class RouteService
      * @param RouteCollector $routerCollector
      * @param array $namespace
      */
-    private static function parseHttpRoutes($httpRoutes, RouteCollector $routerCollector, array $namespace = []): void
+    private function parseHttpRoutes($httpRoutes, RouteCollector $routerCollector, array $namespace = []): void
     {
         foreach ($httpRoutes as $group => $route) {
             if (!is_array($route)) {
@@ -90,8 +104,8 @@ class RouteService
                 if (isset($explodeGroup[1])) {
                     $namespace[] = $explodeGroup[1];
                 }
-                $routerCollector->addGroup(trim($explodeGroup[0], '/'), static function (RouteCollector $routerCollector) use ($route, $namespace) {
-                    self::parseHttpRoutes($route, $routerCollector, $namespace);
+                $routerCollector->addGroup(trim($explodeGroup[0], '/'), function (RouteCollector $routerCollector) use ($route, $namespace) {
+                    $this->parseHttpRoutes($route, $routerCollector, $namespace);
                 });
                 if (isset($explodeGroup[1])) {
                     array_pop($namespace);
@@ -99,7 +113,7 @@ class RouteService
             } else if (isset($route[0]) && is_string($route[0])) {
                 $namespaceString = !empty($namespace) ? implode('\\', $namespace) . '\\' : '';
                 $handle = is_string($route[2]) ? $namespaceString . $route[2] : $route[2];
-                $routerCollector->addRoute(static::parasMethod($route[0]), trim($route[1], '/'), $handle);
+                $routerCollector->addRoute($this->parasMethod($route[0]), trim($route[1], '/'), $handle);
             }
         }
     }
@@ -109,7 +123,7 @@ class RouteService
      * @param RouteCollector $routerCollector
      * @param array $namespace
      */
-    private static function parseWebSocketRoutes($wsRoutes, RouteCollector $routerCollector, array $namespace = []): void
+    private function parseWebSocketRoutes($wsRoutes, RouteCollector $routerCollector, array $namespace = []): void
     {
         foreach ($wsRoutes as $group => $route) {
             if (!is_array($route)) {
@@ -120,8 +134,8 @@ class RouteService
                 if (isset($explodeGroup[1])) {
                     $namespace[] = $explodeGroup[1];
                 }
-                $routerCollector->addGroup(trim($explodeGroup[0], '/'), static function (RouteCollector $routerCollector) use ($route, $namespace) {
-                    self::parseWebSocketRoutes($route, $routerCollector, $namespace);
+                $routerCollector->addGroup(trim($explodeGroup[0], '/'), function (RouteCollector $routerCollector) use ($route, $namespace) {
+                    $this->parseWebSocketRoutes($route, $routerCollector, $namespace);
                 });
                 if (isset($explodeGroup[1])) {
                     array_pop($namespace);
@@ -132,32 +146,6 @@ class RouteService
                 $routerCollector->addRoute('GET', trim($route[0], '/'), $handle);
             }
         }
-    }
-
-    public static function getInstance(): RouteService
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new self();
-            self::$httpDispatcher = cachedDispatcher(
-                static function (RouteCollector $routerCollector) {
-                    self::parseHttpRoutes(isset(self::$routes['ws']) ? (self::$routes['http'] ?? []) : self::$routes, $routerCollector);
-                },
-                [
-                    'cacheFile' => BASE_PATH . '/storage/app/http.route.cache', /* required 缓存文件路径，必须设置 */
-                    'cacheDisabled' => static::$cached,     /* optional, enabled by default 是否缓存，可选参数，默认情况下开启 */
-                ]
-            );
-            self::$wsDispatcher = cachedDispatcher(
-                static function (RouteCollector $routerCollector) {
-                    self::parseWebSocketRoutes(self::$routes['ws'] ?? [], $routerCollector);
-                },
-                [
-                    'cacheFile' => BASE_PATH . '/storage/app/ws.route.cache', /* required 缓存文件路径，必须设置 */
-                    'cacheDisabled' => static::$cached,     /* optional, enabled by default 是否缓存，可选参数，默认情况下开启 */
-                ]
-            );
-        }
-        return self::$instance;
     }
 
     /**
@@ -171,7 +159,7 @@ class RouteService
         $this->controller = null;
         $method = $request->server['request_method'] ?? 'GET';
         $uri = $request->server['request_uri'] ?? '/';
-        $routeInfo = self::$httpDispatcher->dispatch($method, rtrim($uri, '/') ?: '/');
+        $routeInfo = $this->httpDispatcher->dispatch($method, rtrim($uri, '/') ?: '/');
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
                 return $this->defaultRouter();
@@ -244,7 +232,7 @@ class RouteService
     {
         $this->controller = null;
         $uri = $request->server['request_uri'] ?? '/';
-        $routeInfo = self::$wsDispatcher->dispatch('GET', rtrim($uri, '/') ?: '/');
+        $routeInfo = $this->wsDispatcher->dispatch('GET', rtrim($uri, '/') ?: '/');
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
                 ws_abort(404);
@@ -334,10 +322,10 @@ class RouteService
      */
     public function defaultRouter()
     {
-        if (empty(self::$routes['default'])) {
+        if (empty($this->routes['default'])) {
             throw new NotFoundHttpException();
         }
-        return $this->dispatchHandle(self::$routes['default'], []);
+        return $this->dispatchHandle($this->routes['default'], []);
     }
 
     /**
@@ -347,7 +335,7 @@ class RouteService
      */
     public function hasRoute(string $key): bool
     {
-        return Arr::has(self::$routes, $key);
+        return Arr::has($this->routes, $key);
     }
 
     /**
@@ -356,7 +344,7 @@ class RouteService
      */
     public function routes(): array
     {
-        return self::$routes;
+        return $this->routes;
     }
 
     /**
@@ -365,7 +353,7 @@ class RouteService
      */
     public function httpRoutes(): array
     {
-        return self::$routes['http'] ?? [];
+        return $this->routes['http'] ?? [];
     }
 
     /**
@@ -374,7 +362,7 @@ class RouteService
      */
     public function wsRoutes(): array
     {
-        return self::$routes['ws'] ?? [];
+        return $this->routes['ws'] ?? [];
     }
 
     /**
@@ -385,7 +373,7 @@ class RouteService
      */
     public function route(string $key, $default = null)
     {
-        return Arr::get(self::$routes, $key, $default);
+        return Arr::get($this->routes, $key, $default);
     }
 
     /**

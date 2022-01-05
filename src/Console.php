@@ -32,7 +32,6 @@ class Console
     private static array $systemCommandService = [
         HelloMiniCommandService::class,
         KeyGenerateCommandService::class,
-        RouteClearCommandService::class,
         RoutesAllCommandService::class,
         TestCommandService::class,
         LogStatusCommandService::class,

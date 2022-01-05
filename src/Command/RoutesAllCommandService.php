@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace Mini\Command;
 
 use Mini\Console\Table;
-use Mini\Service\HttpServer\RouteService;
 use Mini\Support\Command;
 use Swoole\Process;
 
@@ -23,7 +22,7 @@ class RoutesAllCommandService extends AbstractCommandService
      */
     public function handle(Process $process): void
     {
-        $routes = RouteService::getInstance()->routes();
+        $routes = app('route')->routes();
         $this->parseWebSocketRoutes($routes['ws']);
         $this->parseHttpRoutes($routes['http']);
         Command::line();

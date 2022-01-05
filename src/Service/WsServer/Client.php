@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Service\WsServer;
 
-use Mini\Singleton;
 use Mini\Support\Store;
 use Swoole\Coroutine\Http\Client as SwooleClient;
 
@@ -17,22 +16,21 @@ use Swoole\Coroutine\Http\Client as SwooleClient;
  */
 class Client
 {
-    use Singleton;
-
     /**
      * @var SwooleClient[]
      */
     private array $clients = [];
+    public string $path;
 
-    private function __construct()
+    public function __construct()
     {
         $this->path = DCS::generateUrlPath();
     }
 
     /**
-     * @param $client
-     * @param $dcs_action
-     * @param array $arrData
+     * @param array $client
+     * @param string $dcs_action
+     * @param mixed $arrData
      * @throws \JsonException
      */
     public function push(array $client, string $dcs_action, $arrData = []): void

@@ -16,42 +16,21 @@ use Mini\Contracts\HttpMessage\ResponseInterface;
 use Mini\Service\HttpMessage\Stream\SwooleStream;
 use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\Support\Jsonable;
-use Mini\Service\HttpServer\RouteService;
+use Mini\Service\Route\Route;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Http\Server;
-use Swoole\Server as HttpSwooleServer;
 use Mini\Service\HttpMessage\Server\Request as Psr7Request;
 use Mini\Service\HttpMessage\Server\Response as Psr7Response;
 use Throwable;
 
 class HttpServer extends AbstractServer
 {
-    /**
-     * @var RouteService|null
-     */
-    protected ?RouteService $route = null;
-
     protected string $type = 'http';
 
     public function initialize(): void
     {
         $this->server = new Server($this->config['ip'], $this->config['port'], $this->config['mode'], $this->config['sock_type']);
-    }
-
-    /**
-     * @param HttpSwooleServer $server
-     * @param int $workerId
-     * @throws Throwable
-     */
-    public function onWorkerStart(HttpSwooleServer $server, int $workerId): void
-    {
-        parent::onWorkerStart($server, $workerId);
-        try {
-            $this->route = RouteService::getInstance();
-        } catch (Throwable $throwable) {
-            app('exception')->throw($throwable);
-        }
     }
 
     /**
@@ -63,11 +42,12 @@ class HttpServer extends AbstractServer
     {
         parent::onRequest($request, $response);
         try {
+            /**
+             * @var $route Route
+             */
+            $route = app('route');
             $this->initRequestAndResponse($request, $response);
-            if (!$this->route) {
-                $this->route = RouteService::getInstance();
-            }
-            $resp = $this->route->dispatch($request);
+            $resp = $route->dispatch($request);
             if (!isset($resp)) {
                 $resp = '';
             }
@@ -81,7 +61,7 @@ class HttpServer extends AbstractServer
             /**
              * @var $resp Psr7Response
              */
-            $resp = app('middleware')->bootAfterRequest($resp, $this->route->getController());
+            $resp = app('middleware')->bootAfterRequest($resp, $route->getController());
             if (request()->getMethod() === 'HEAD') {
                 $resp->send(false);
             } else {

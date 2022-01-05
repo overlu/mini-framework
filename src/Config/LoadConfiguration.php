@@ -14,6 +14,8 @@ use Symfony\Component\Finder\Finder;
 
 trait LoadConfiguration
 {
+    protected array $repository = [];
+
     /**
      * Bootstrap the given application.
      *

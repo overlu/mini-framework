@@ -13,7 +13,6 @@ use Mini\Database\Mysql\Connectors\ConnectionFactory;
 use Mini\Database\Mysql\DatabaseManager;
 use Mini\Database\Mysql\Eloquent\Model as Eloquent;
 use Mini\Support\Traits\CapsuleManagerTrait;
-use Mini\Config;
 use PDO;
 
 class Manager

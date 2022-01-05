@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace Mini\Support;
 
 use Closure;
-use Mini\Config;
 use Mini\Contracts\Config\Repository;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\Container\Container;
@@ -58,13 +57,12 @@ abstract class Manager
      *
      * @param Container $container
      * @return void
-     * @throws BindingResolutionException
      */
     public function __construct(Container $container)
     {
         $this->app = $container;
         $this->container = $container;
-        $this->config = Config::getInstance();
+        $this->config = app('config');
     }
 
     /**
@@ -82,7 +80,7 @@ abstract class Manager
      *
      * @throws InvalidArgumentException
      */
-    public function driver($driver = null)
+    public function driver(?string $driver = null)
     {
         $driver = $driver ?: $this->getDefaultDriver();
 
@@ -110,7 +108,7 @@ abstract class Manager
      *
      * @throws InvalidArgumentException
      */
-    protected function createDriver($driver)
+    protected function createDriver(string $driver)
     {
         // First, we will determine if a custom driver creator exists for the given driver and
         // if it does not we will check for a creator method for the driver. Custom creator
@@ -134,7 +132,7 @@ abstract class Manager
      * @param string $driver
      * @return mixed
      */
-    protected function callCustomCreator($driver)
+    protected function callCustomCreator(string $driver)
     {
         return $this->customCreators[$driver]($this->container);
     }
@@ -170,7 +168,7 @@ abstract class Manager
      * @param array $parameters
      * @return mixed
      */
-    public function __call($method, $parameters)
+    public function __call(string $method, array $parameters = [])
     {
         return $this->driver()->$method(...$parameters);
     }
