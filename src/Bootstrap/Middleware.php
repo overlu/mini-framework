@@ -13,7 +13,7 @@ use RuntimeException;
 
 class Middleware
 {
-    private array $middleware;
+    private array $middleware = [];
 
     public function __construct(array $middleware = [])
     {
