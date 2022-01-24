@@ -26,9 +26,9 @@ class Session implements SessionInterface
     /**
      * @var string
      */
-    protected string $id;
+    protected string $id = '';
 
-    protected string $name;
+    protected string $name = '';
 
     /**
      * @var array
@@ -134,9 +134,6 @@ class Session implements SessionInterface
         $this->ageFlashData();
 
         $this->handler->write($this->getId(), $this->prepareForStorage(serialize($this->attributes)));
-
-        $this->started = false;
-        $this->attributes = [];
     }
 
     /**
@@ -570,5 +567,12 @@ class Session implements SessionInterface
         if ($this->handler instanceof ExistenceAwareInterface) {
             $this->handler->setExists($value);
         }
+    }
+
+    public function reset(): void
+    {
+        $this->id = '';
+        $this->started = false;
+        $this->attributes = [];
     }
 }

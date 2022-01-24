@@ -37,6 +37,8 @@ interface SessionInterface
      */
     public function getName(): string;
 
+    public function reset(): void;
+
     /**
      * Get the value of a given key and then forget it.
      *

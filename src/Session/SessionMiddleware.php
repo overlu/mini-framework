@@ -80,7 +80,7 @@ class SessionMiddleware implements MiddlewareInterface
         $this->sessionManager->end();
         $uri = $request->getUri();
         $domain = config('session.domain', $uri->getHost());
-        return $response->withCookie(new Cookie(
+        $resp = $response->withCookie(new Cookie(
             $session->getName(),
             $session->getId(),
             $this->getCookieExpirationDate(),
@@ -89,5 +89,7 @@ class SessionMiddleware implements MiddlewareInterface
             strtolower($uri->getScheme()) === 'https', true,
             config('session.http_only', true),
         ));
+        $session->reset();
+        return $resp;
     }
 }
