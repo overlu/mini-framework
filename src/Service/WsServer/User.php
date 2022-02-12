@@ -25,7 +25,8 @@ class User
      */
     public static function bind(string $uid, int $fd): array
     {
-        Store::put(Socket::$fdPrefix . $fd, $uid);
+        $fdc = Socket::packFd($fd);
+        Store::put(Socket::$fdPrefix . $fdc, $uid);
         $clientIds = Store::put(Socket::$userPrefix . $uid, Socket::packClientId($uid, $fd), config('websocket.max_num_of_uid_online', 0));
         if (!static::joined($uid)) {
             static::joinIn($uid);
@@ -77,8 +78,8 @@ class User
         /**
          * 删除（客户端-用户）缓存
          */
-        Store::drop(Socket::$fdPrefix . $fd);
-        if (empty(static::getFds($uid))) {
+        Store::drop(Socket::$fdPrefix . Socket::packFd($fd));
+        if (empty(static::getClients($uid))) {
             self::leaveOut($uid);
         }
         /**
@@ -106,7 +107,7 @@ class User
      * @param string $uid
      * @return array
      */
-    public static function getFds(string $uid): array
+    public static function getClients(string $uid): array
     {
         return Store::get(Socket::$userPrefix . $uid);
     }
@@ -118,7 +119,7 @@ class User
      */
     public static function getUserByFd($fd)
     {
-        return Store::get(Socket::$fdPrefix . $fd);
+        return Store::get(Socket::$fdPrefix . Socket::packFd($fd));
     }
 
     /**
@@ -134,14 +135,14 @@ class User
      * 获取所有的用户客户端
      * @return array
      */
-    public static function getAllFds(): array
+    public static function getAllClients(): array
     {
         $ids = static::getAll();
-        $fds = [];
+        $clients = [];
         foreach ($ids as $uid) {
-            $fds[] = [...$fds, ...static::getFds($uid)];
+            $clients[] = [...$clients, ...static::getClients($uid)];
         }
-        return $fds;
+        return $clients;
     }
 
     /**
@@ -170,7 +171,7 @@ class User
      */
     public static function getUserFdNum(string $uid): int
     {
-        return count(static::getFds($uid));
+        return count(static::getClients($uid));
     }
 
     public static function getUserGroups(string $uid): array

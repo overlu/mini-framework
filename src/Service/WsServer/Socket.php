@@ -41,7 +41,7 @@ class Socket
      */
     public static function pushToUser(string $uid, $data): void
     {
-        $clients = User::getFds($uid);
+        $clients = User::getClients($uid);
         $server = server();
         foreach ($clients as $client) {
             if (is_string($client)) {
@@ -145,6 +145,31 @@ class Socket
             'port' => config('websocket.port'),
             'fd' => $fd
         ], JSON_THROW_ON_ERROR));
+    }
+
+    /**
+     * @param $fd
+     * @return string
+     * @throws JsonException
+     */
+    public static function packFd($fd): string
+    {
+        return base64_encode(json_encode([
+            'host' => config('websocket.host'),
+            'port' => config('websocket.port'),
+            'fd' => $fd
+        ], JSON_THROW_ON_ERROR));
+    }
+
+    /**
+     * 解包
+     * @param string $fdc
+     * @return array
+     * @throws JsonException
+     */
+    public static function unPackFd(string $fdc): array
+    {
+        return json_decode(base64_decode($fdc), true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**

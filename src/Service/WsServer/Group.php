@@ -73,13 +73,13 @@ class Group
      * @param string $group
      * @return array
      */
-    public static function getFds(string $group): array
+    public static function getClients(string $group): array
     {
         $user_ids = static::getUsers($group);
-        $fds = [];
+        $clients = [];
         foreach ($user_ids as $uid) {
-            $fds[] = [...$fds, ...User::getFds($uid)];
+            $clients[] = [...$clients, ...User::getClients($uid)];
         }
-        return $fds;
+        return $clients;
     }
 }
