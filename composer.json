@@ -36,8 +36,7 @@
         "nesbot/carbon": "^2.36",
         "doctrine/inflector": "^2.0",
         "opis/closure": "^3.6",
-        "league/flysystem": "^2.0",
-        "doctrine/dbal": "^3.3"
+        "league/flysystem": "^2.0"
     },
     "autoload": {
         "psr-4": {
@@ -53,6 +52,7 @@
         ]
     },
     "require-dev": {
-        "overlu/var-dumper": "^1.0"
+        "overlu/var-dumper": "^1.0",
+        "doctrine/dbal": "^3.3"
     }
 }
