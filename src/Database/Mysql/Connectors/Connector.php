@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql\Connectors;
 
-use Doctrine\DBAL\Driver\PDOConnection;
+use Doctrine\DBAL\Driver\PDO\Connection as PDOConnection;
 use Exception;
 use Mini\Database\Mysql\DetectsLostConnections;
 use PDO;
