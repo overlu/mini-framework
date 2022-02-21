@@ -9,7 +9,7 @@ namespace Mini\Facades;
 
 /**
  * Class DB
- * @method static \Doctrine\DBAL\Driver\PDO\Connection getPdo()
+ * @method static \Doctrine\DBAL\Driver\PDOConnection getPdo()
  * @method static \Mini\Database\Mysql\ConnectionInterface connection(string $name = null)
  * @method static \Mini\Database\Mysql\Query\Builder table(string $table)
  * @method static \Mini\Database\Mysql\Query\Expression raw($value)

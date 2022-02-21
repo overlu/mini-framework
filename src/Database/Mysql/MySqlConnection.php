@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql;
 
-use Doctrine\DBAL\Driver\PDO\MySql\Driver as DoctrineDriver;
+use Doctrine\DBAL\Driver\PDOMySql\Driver as DoctrineDriver;
 use Mini\Database\Mysql\Query\Grammars\MySqlGrammar as QueryGrammar;
 use Mini\Database\Mysql\Query\Processors\MySqlProcessor;
 use Mini\Database\Mysql\Schema\Grammars\MySqlGrammar as SchemaGrammar;
