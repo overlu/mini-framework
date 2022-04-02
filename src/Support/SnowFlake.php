@@ -18,10 +18,10 @@ class SnowFlake
      * 生成基于雪花算法的随机编号
      * @param int $dataCenterID 数据中心ID 0-31
      * @param int $workerID 任务进程ID 0-31
-     * @return int 分布式ID
+     * @return string 分布式ID
      * @author : evalor <master@evalor.cn>
      */
-    public static function make($dataCenterID = 0, $workerID = 0): int
+    public static function make(int $dataCenterID = 0, int $workerID = 0): string
     {
         // 41bit timestamp + 5bit dataCenter + 5bit worker + 12bit
         $timestamp = self::timeGen();
@@ -34,7 +34,7 @@ class SnowFlake
             self::$lastSequence = 0;
         }
         self::$lastTimestamp = $timestamp;
-        return (($timestamp - self::$twepoch) << 22) | ($dataCenterID << 17) | ($workerID << 12) | self::$lastSequence;
+        return (string)((($timestamp - self::$twepoch) << 22) | ($dataCenterID << 17) | ($workerID << 12) | self::$lastSequence);
     }
 
     /**
