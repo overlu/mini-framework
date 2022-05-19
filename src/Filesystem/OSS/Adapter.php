@@ -267,7 +267,7 @@ class Adapter implements FilesystemAdapter
             // marker   用户设定结果从marker之后按字母排序的第一个开始返回。
             $options = [
                 'max-keys' => 1000,
-                'prefix' => $directory . '/',
+                'prefix' => $directory ? $directory . '/' : $directory,
                 'delimiter' => '/',
                 'marker' => $nextMarker,
             ];
