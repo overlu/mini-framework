@@ -445,7 +445,7 @@ class Validation
     protected function stringify($value): string
     {
         if (is_string($value) || is_numeric($value)) {
-            return $value;
+            return (string)$value;
         }
 
         if (is_array($value) || is_object($value)) {
