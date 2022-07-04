@@ -235,7 +235,7 @@ class Adapter implements FilesystemAdapter
     public function lastModified(string $path): FileAttributes
     {
         $response = $this->client->getObjectMeta($this->bucket, $path);
-        return new FileAttributes($path, null, null, $response['last-modified']);
+        return new FileAttributes($path, null, null, strtotime($response['last-modified']));
     }
 
     /**
@@ -245,7 +245,7 @@ class Adapter implements FilesystemAdapter
     public function fileSize(string $path): FileAttributes
     {
         $response = $this->client->getObjectMeta($this->bucket, $path);
-        return new FileAttributes($path, $response['content-length']);
+        return new FileAttributes($path, (int)$response['content-length']);
     }
 
     /**

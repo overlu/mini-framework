@@ -18,7 +18,6 @@ use SeasLog;
  * @method static void emergency($message, array $context = [], string $module = '')
  * @method static void error($message, array $context = [], string $module = '')
  * @method static void info($message, array $context = [], string $module = '')
- * @method static void log($level, $message, array $context = [], string $module = '')
  * @method static void notice($message, array $context = [], string $module = '')
  * @method static void warning($message, array $context = [], string $module = '')
  * @mixin SeasLog
@@ -38,7 +37,6 @@ class Log
     /**
      * @param $name
      * @param $arguments
-     * @return mixed
      * @throws JsonException
      */
     public static function __callStatic($name, $arguments)
@@ -46,12 +44,29 @@ class Log
         if (isset($arguments[0]) && is_array($arguments[0])) {
             $arguments[0] = json_encode($arguments, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
         }
-        if (env('APP_ENV') !== 'production' && config('logging.output', false)) {
-            go(static function () use ($name, $arguments) {
-                static::output($name, $arguments);
-            });
+        if (env('APP_ENV') !== 'production' && $types = config('logging.output', false)) {
+            $types = strtolower($types);
+            if ($types !== 'all') {
+                $logTypes = explode($types, ',');
+            }
+            if ($types === 'all' || in_array($name, $logTypes, true)) {
+                go(static function () use ($name, $arguments) {
+                    static::output($name, $arguments);
+                });
+            }
         }
-        return SeasLog::$name(...$arguments);
+        SeasLog::$name(...$arguments);
+    }
+
+    /**
+     * @param $level
+     * @param $message
+     * @param array $context
+     * @param string $module
+     */
+    public static function log($level, $message, array $context = [], string $module = ''): void
+    {
+        SeasLog::log($level, $message, $context, $module);
     }
 
     /**
@@ -65,6 +80,6 @@ class Log
         foreach ($data as $key => $value) {
             $message = str_replace('{' . $key . '}', $value, $message);
         }
-        Cli::clog($message, [], $name);
+        Cli::clog($message, [], self::$level[$name]);
     }
 }
