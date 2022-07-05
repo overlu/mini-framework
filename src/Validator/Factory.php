@@ -156,6 +156,7 @@ class Factory
             'size' => new Rules\Size,
             'regex' => new Rules\Regex,
             'date' => new Rules\Date,
+            'datetime' => new Rules\Datetime,
             'accepted' => new Rules\Accepted,
             'present' => new Rules\Present,
             'different' => new Rules\Different,
