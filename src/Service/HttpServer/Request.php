@@ -596,8 +596,8 @@ class Request implements RequestInterface
         if (!empty($ips = $this->getHeader('x-real-ip'))) {
             return $ips;
         }
-        if (!empty($ips = $this->getHeader('remote_addr'))) {
-            return $ips;
+        if (!empty($ips = $this->server('remote_addr'))) {
+            return (array)$ips;
         }
         return ['127.0.0.1'];
     }
