@@ -42,7 +42,6 @@ class Bootstrap
         \Mini\Session\SessionServiceProvider::class,
         \Mini\Hashing\HashServiceProvider::class,
         \Mini\View\ViewServiceProvider::class,
-        \Mini\Service\WsServer\WebsocketDCSServiceProvider::class,
         \Mini\Console\ConsoleServiceProvider::class,
         \Mini\Service\Route\RouteServiceProvider::class
     ];
