@@ -302,21 +302,6 @@ abstract class AbstractServer
     }
 
     /**
-     * @param \Swoole\WebSocket\Server $server
-     * @param int $fd
-     * @param int $reactorId
-     */
-    public function onClose(\Swoole\WebSocket\Server $server, int $fd, int $reactorId): void
-    {
-        try {
-            Context::set('IsInWebsocketEvent', true);
-            Listener::getInstance()->listen('close', $server, $fd);
-        } catch (Throwable $throwable) {
-            Handler::getInstance()->throw($throwable);
-        }
-    }
-
-    /**
      * @param Server $server
      * @throws JsonException
      * @throws Throwable

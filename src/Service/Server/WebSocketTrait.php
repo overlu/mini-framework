@@ -8,9 +8,11 @@ declare(strict_types=1);
 namespace Mini\Service\Server;
 
 use Exception;
+use Mini\Context;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\HttpMessage\WebsocketRequestInterface;
 use Mini\Contracts\HttpMessage\WebsocketResponseInterface;
+use Mini\Listener;
 use Mini\Service\WsServer\Request;
 use Mini\Service\WsServer\Response;
 use Mini\Service\WsServer\User;
@@ -138,7 +140,8 @@ trait WebSocketTrait
     {
         if ($server->isEstablished($fd)) {
             try {
-                parent::onClose($server, $fd, $reactorId);
+                Context::destroy('IsInWebsocketEvent');
+                Listener::getInstance()->listen('close', $server, $fd);
                 /**
                  * 解绑fd
                  */
