@@ -72,8 +72,11 @@ class SessionMiddleware implements MiddlewareInterface
         if (!$this->isSessionAvailable()) {
             return $response;
         }
-        $request = request();
         $session = $this->sessionManager->getSession();
+        if (!$session) {
+            return $response;
+        }
+        $request = request();
         if ($request->getMethod() === 'GET') {
             $session->setPreviousUrl((string)$request->getUri());
         }

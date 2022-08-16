@@ -37,10 +37,12 @@ class SessionManager
 
     public function end(): void
     {
-        $this->getSession()->save();
+        if ($session = $this->getSession()) {
+            $session->save();
+        }
     }
 
-    public function getSession(): SessionInterface
+    public function getSession(): ?SessionInterface
     {
         return Context::get(SessionInterface::class);
     }
