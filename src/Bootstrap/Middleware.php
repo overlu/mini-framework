@@ -33,7 +33,7 @@ class Middleware
      * @param object|null $class
      * @return mixed|null
      */
-    public function registerBeforeRequest(?string $method, ?object $class)
+    public function registerBeforeRequest(?string $method = null, ?object $class = null)
     {
         foreach ($this->middleware as $item) {
             if ($class && method_exists($class, 'disableMiddleware') && $class->disableMiddleware(get_class($item))) {
@@ -51,7 +51,7 @@ class Middleware
      * @param object|null $class
      * @return ResponseInterface
      */
-    public function bootAfterRequest(ResponseInterface $response, ?object $class): ResponseInterface
+    public function bootAfterRequest(ResponseInterface $response, ?object $class = null): ResponseInterface
     {
         $middleware = array_reverse($this->middleware);
         foreach ($middleware as $item) {

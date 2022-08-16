@@ -162,8 +162,16 @@ class Route
         $routeInfo = $this->httpDispatcher->dispatch($method, rtrim($uri, '/') ?: '/');
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
+                $resp = app('middleware')->registerBeforeRequest();
+                if (!is_null($resp)) {
+                    return $resp;
+                }
                 return $this->defaultRouter();
             case Dispatcher::METHOD_NOT_ALLOWED:
+                $resp = app('middleware')->registerBeforeRequest();
+                if (!is_null($resp)) {
+                    return $resp;
+                }
                 throw new MethodNotAllowedHttpException();
             case Dispatcher::FOUND:
                 $request->routes = $routeInfo[2] ?? [];
@@ -213,7 +221,7 @@ class Route
             return method_exists($this->controller, 'afterDispatch') ? $this->controller->afterDispatch($resp, $func, $className, $params) : $resp;
         }
         if (is_callable($handler)) {
-            $resp = app('middleware')->registerBeforeRequest(null, null);
+            $resp = app('middleware')->registerBeforeRequest();
             if (!is_null($resp)) {
                 return $resp;
             }
