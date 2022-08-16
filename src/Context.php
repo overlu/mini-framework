@@ -71,7 +71,7 @@ class Context
      */
     public static function destroy(string $id): void
     {
-        if (self::inCoroutine()) {
+        if (self::inCoroutine() && isset(Coroutine::getContext()[$id])) {
             unset(Coroutine::getContext()[$id]);
         } else {
             unset(static::$nonCoContext[$id]);
