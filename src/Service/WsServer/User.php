@@ -26,8 +26,9 @@ class User
     public static function bind(string $uid, int $fd): array
     {
         $fdc = Socket::packFd($fd);
-        Store::put(Socket::$fdPrefix . $fdc, $uid);
-        $clientIds = Store::put(Socket::$userPrefix . $uid, Socket::packClientId($uid, $fd), config('websocket.max_num_of_uid_online', 0));
+        $maxUidOnline = config('websocket.max_num_of_uid_online', 0);
+        Store::put(Socket::$fdPrefix . $fdc, $uid, $maxUidOnline);
+        $clientIds = Store::put(Socket::$userPrefix . $uid, Socket::packClientId($uid, $fd), $maxUidOnline);
         if (!static::joined($uid)) {
             static::joinIn($uid);
         }
