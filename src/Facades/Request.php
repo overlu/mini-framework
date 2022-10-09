@@ -42,6 +42,7 @@ use Mini\Context;
  * @method static string getProtocolVersion()
  * @method static \Mini\Contracts\HttpMessage\RequestInterface withProtocolVersion(string $version)
  * @method static array getHeaders()
+ * @method static array headers()
  * @method static \Mini\Contracts\HttpMessage\RequestInterface withHeaders(array $headers)
  * @method static bool hasHeader($name)
  * @method static array getHeader($name)
