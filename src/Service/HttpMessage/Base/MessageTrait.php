@@ -96,9 +96,16 @@ trait MessageTrait
         return $this->headers;
     }
 
+    /**
+     * @return array
+     */
     public function headers(): array
     {
-        return $this->headers;
+        $headers = [];
+        foreach ($this->headers as $key => $header) {
+            $headers[$key] = implode(',', $header);
+        }
+        return $headers;
     }
 
     /**
