@@ -96,6 +96,11 @@ trait MessageTrait
         return $this->headers;
     }
 
+    public function headers(): array
+    {
+        return $this->headers;
+    }
+
     /**
      * Checks if a header exists by the given case-insensitive name.
      *

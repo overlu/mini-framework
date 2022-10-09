@@ -436,6 +436,11 @@ class Request implements RequestInterface
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    public function headers(): array
+    {
+        return $this->call(__FUNCTION__, func_get_args());
+    }
+
     /**
      * @param string $name
      * @return bool
