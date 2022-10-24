@@ -31,7 +31,7 @@ class Log
         'error' => 'error',
         'info' => 'info',
         'notice' => 'warning',
-        'debug' => 'line',
+        'debug' => 'warning',
     ];
 
     /**
