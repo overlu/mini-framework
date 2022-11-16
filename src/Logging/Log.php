@@ -44,7 +44,7 @@ class Log
         if (isset($arguments[0]) && is_array($arguments[0])) {
             $arguments[0] = json_encode($arguments, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
         }
-        if (env('APP_ENV') !== 'production' && $types = config('logging.output', false)) {
+        if ($arguments[1] !== 'system' && env('APP_ENV') !== 'production' && $types = config('logging.output', false)) {
             $types = $types === true ? 'all' : strtolower($types);
             if ($types !== 'all') {
                 $logTypes = explode($types, ',');
