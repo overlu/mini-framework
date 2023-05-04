@@ -194,7 +194,7 @@ class Command
             $line_count += count(str_split($line, (int)$term_width));
         }
         static::removeLine($line_count);
-        print $message;
+        Cli::write($message);
     }
 
     /**
