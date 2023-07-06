@@ -36,4 +36,22 @@ interface WebsocketControllerInterface
      * @return mixed
      */
     public function onClose(Server $server, int $fd, array $routeData, int $reactorId);
+
+    /**
+     * @param string $action
+     * @param string $success_message
+     * @param mixed $data
+     * @param int $code
+     * @return array
+     */
+    public function success(string $action, $data = [], string $success_message = 'succeed', int $code = 200): array;
+
+    /**
+     * @param string $action
+     * @param mixed $data
+     * @param string $error_message
+     * @param int $code
+     * @return array
+     */
+    public function failed(string $action, $data = [], string $error_message = 'failed', int $code = 0): array;
 }
