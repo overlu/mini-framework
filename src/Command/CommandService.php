@@ -48,10 +48,14 @@ class CommandService
             $process = new Process(function () use ($app) {
                 $app->run();
             });
+            $currentCommand = trim($app->getArgs()[0] ?? '');
             foreach (static::$commands as $command => $instance) {
                 $app->addCommand($command, static function () use ($instance, $app, $process) {
                     $instance->setApp($app)->handle($process);
                 }, $instance->getCommandDescription());
+                if ($command === $currentCommand && $instance->enableCoroutine) {
+                    $process->set(['enable_coroutine' => true]);
+                }
             }
             $process->start();
             Process::wait(!($app->getOpt('d') || $app->getArg('daemonize')));

@@ -20,6 +20,8 @@ abstract class AbstractCommandService implements CommandInterface
 {
     protected App $app;
 
+    public bool $enableCoroutine = false;
+
     public function __construct()
     {
 
