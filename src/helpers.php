@@ -16,10 +16,8 @@ use Mini\Contracts\Support\Htmlable;
 use Mini\Contracts\Support\Jsonable;
 use Mini\Events\Dispatcher;
 use Mini\Exception\WebsocketException;
-use Mini\Facades\Url;
 use Mini\Server;
 use Mini\Service\HttpMessage\Cookie\Cookie;
-use Mini\Service\HttpMessage\Stream\SwooleStream;
 use Mini\Service\HttpMessage\Uri\Uri;
 use Mini\Service\WsServer\Request;
 use Mini\Service\WsServer\Response;
@@ -637,14 +635,17 @@ if (!function_exists('ws_response')) {
 if (!function_exists('url')) {
     /**
      * 动态生成url
-     * @param string $path
+     * @param ?string $path
      * @param array $params
      * @param string $fragment
-     * @return Uri
+     * @return Uri|string
      */
-    function url(string $path = '', array $params = [], string $fragment = ''): Uri
+    function url(?string $path = null, array $params = [], string $fragment = '')
     {
-        return Url::make($path, $params, $fragment);
+        if (is_null($path)) {
+            return app('url');
+        }
+        return app('url')->make($path, $params, $fragment)->getUrl();
     }
 }
 

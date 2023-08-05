@@ -127,6 +127,20 @@ class Uri implements UriInterface
     }
 
     /**
+     * @return string
+     */
+    public function getUrl(): string
+    {
+        return self::composeComponents(
+            $this->scheme,
+            $this->getAuthority(),
+            $this->path,
+            $this->query,
+            $this->fragment
+        );
+    }
+
+    /**
      * Retrieve the scheme component of the URI.
      * If no scheme is present, this method MUST return an empty string.
      * The value returned MUST be normalized to lowercase, per RFC 3986
