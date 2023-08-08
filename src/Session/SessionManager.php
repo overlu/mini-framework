@@ -9,10 +9,8 @@ namespace Mini\Session;
 
 use Exception;
 use Mini\Context;
-use Mini\Contract\ConfigInterface;
 use Mini\Contracts\HttpMessage\SessionInterface;
 use Mini\Support\Str;
-use Psr\Container\ContainerInterface;
 use RuntimeException;
 
 class SessionManager

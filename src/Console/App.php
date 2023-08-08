@@ -9,7 +9,7 @@ namespace Mini\Console;
 
 use InvalidArgumentException;
 use Mini\Application;
-use Mini\Facades\Log;
+use Mini\Facades\Logger;
 use Mini\Support\Command;
 use RuntimeException;
 use Throwable;
@@ -222,7 +222,7 @@ class App
     protected function handleException(Throwable $throwable): int
     {
         $code = $throwable->getCode() !== 0 ? $throwable->getCode() : -1;
-        Log::error([
+        Logger::error([
             'exception' => get_class($throwable),
             'exception code' => $throwable->getCode(),
             'exception message' => $throwable->getMessage() . ' in ' . $throwable->getFile() . ':' . $throwable->getLine(),

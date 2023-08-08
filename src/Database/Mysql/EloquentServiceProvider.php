@@ -16,7 +16,7 @@ use Mini\Database\Mysql\Eloquent\Model;
 use Mini\Database\Mysql\Eloquent\QueueEntityResolver;
 use Mini\Database\Mysql\Events\QueryExecuted;
 use Mini\Facades\Console;
-use Mini\Facades\Log;
+use Mini\Facades\Logger;
 use Mini\Support\ServiceProvider;
 use ReflectionException;
 
@@ -122,12 +122,12 @@ class EloquentServiceProvider extends ServiceProvider
             }
             if (Context::has('IsInRequestEvent')) {
                 $request = request();
-                Log::debug(sprintf('[%s] [%s] %s | %s: %s', $query->connection->getDatabaseName(), $duration, $realSql,
+                Logger::debug(sprintf('[%s] [%s] %s | %s: %s', $query->connection->getDatabaseName(), $duration, $realSql,
                     $request->getMethod(), $request->getRequestUri()), [], 'query');
                 return;
             }
             if (RUN_ENV === 'artisan') {
-                Log::debug(sprintf('[%s] [%s] %s | %s: %s', $query->connection->getDatabaseName(), $duration, $realSql,
+                Logger::debug(sprintf('[%s] [%s] %s | %s: %s', $query->connection->getDatabaseName(), $duration, $realSql,
                     'artisan', Console::getCommand()), [], 'query');
                 return;
             }

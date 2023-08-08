@@ -7,7 +7,9 @@ declare(strict_types=1);
 
 namespace Mini\Contracts\Events;
 
-interface Dispatcher
+use Psr\EventDispatcher\EventDispatcherInterface;
+
+interface Dispatcher extends EventDispatcherInterface
 {
     /**
      * Register an event listener with the dispatcher.

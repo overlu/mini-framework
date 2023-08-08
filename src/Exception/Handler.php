@@ -12,7 +12,7 @@ use JsonException;
 use Mini\Context;
 use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Contracts\HttpMessage\WebsocketRequestInterface;
-use Mini\Logging\Log;
+use Mini\Logging\Logger;
 use Mini\Singleton;
 use Mini\Support\Command;
 use Mini\Translate\Translate;
@@ -86,7 +86,7 @@ class Handler implements HandlerInterface
      */
     public function logError(Throwable $throwable): void
     {
-        Log::error($this->format($throwable), [], 'system');
+        Logger::error($this->format($throwable), [], 'system');
     }
 
     /**

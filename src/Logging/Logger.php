@@ -22,7 +22,7 @@ use SeasLog;
  * @method static void warning($message, array $context = [], string $module = '')
  * @mixin SeasLog
  */
-class Log
+class Logger
 {
     public static array $level = [
         'alert' => 'error',

@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Mini\Crontab;
 
 use Mini\Exception\CrontabException;
-use Mini\Logging\Log;
+use Mini\Logging\Logger;
 use Swoole\Event;
 use Swoole\Timer;
 
@@ -109,7 +109,7 @@ class Crontab
                             $task->handle();
                             return true;
                         }
-                        Log::info('[{name}] start.', [
+                        Logger::info('[{name}] start.', [
                             'name' => $task->name()
                         ], 'crontab');
                         $response = $task->handle();
@@ -117,13 +117,13 @@ class Crontab
                         if (is_array($response) || is_object($response)) {
                             $response = json_encode($response, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
                         }
-                        Log::info('[{name}] done. response: {response}', [
+                        Logger::info('[{name}] done. response: {response}', [
                             'name' => $task->name(),
                             'response' => (string)$response
                         ], 'crontab');
                         return true;
                     } catch (CrontabException $exception) {
-                        Log::error('[{name}] failed. {message} in {file} at line {line}', [
+                        Logger::error('[{name}] failed. {message} in {file} at line {line}', [
                             'name' => $task->name(),
                             'message' => $exception->getMessage(),
                             'file' => $exception->getFile(),
