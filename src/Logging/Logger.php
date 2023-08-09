@@ -24,7 +24,7 @@ use SeasLog;
  */
 class Logger
 {
-    public static array $level = [
+    public static array $cliLevel = [
         'alert' => 'error',
         'critical' => 'error',
         'emergency' => 'error',
@@ -32,6 +32,17 @@ class Logger
         'info' => 'info',
         'notice' => 'warning',
         'debug' => 'warning',
+    ];
+
+    private const RFC_5424_LEVELS = [
+        7 => 'debug',
+        6 => 'info',
+        5 => 'notice',
+        4 => 'warning',
+        3 => 'error',
+        2 => 'critical',
+        1 => 'alert',
+        0 => 'emergency',
     ];
 
     /**
@@ -80,6 +91,6 @@ class Logger
         foreach ($data as $key => $value) {
             $message = str_replace('{' . $key . '}', $value, $message);
         }
-        Cli::clog($message, [], self::$level[$name]);
+        Cli::clog($message, [], self::$cliLevel[$name]);
     }
 }

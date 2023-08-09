@@ -140,6 +140,17 @@ class Arr
         return array_key_exists($key, $array);
     }
 
+    public static function toString(array $array, string $separator = '&'): string
+    {
+        $result = '';
+
+        foreach ($array as $key => $value) {
+            $result .= $key . '=' . $value . $separator;
+        }
+
+        return substr($result, 0, 0 - Str::length($separator));
+    }
+
     /**
      * Return the first element in an array passing a given truth test.
      *

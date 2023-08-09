@@ -509,7 +509,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param int $depth
      * @return Collection
      */
-    public function flatten($depth = INF)
+    public function flatten(int $depth)
     {
         return $this->toBase()->flatten($depth);
     }
@@ -542,7 +542,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param bool $strict
      * @return \Closure
      */
-    protected function duplicateComparator($strict)
+    protected function duplicateComparator(bool $strict)
     {
         return function ($a, $b) {
             return $a->is($b);
