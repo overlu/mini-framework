@@ -517,11 +517,12 @@ class Arr
     /**
      * Convert the array into a query string.
      * @param array $array
+     * @param int $encodingType
      * @return string
      */
-    public static function query(array $array): string
+    public static function query(array $array, int $encodingType = PHP_QUERY_RFC1738): string
     {
-        return http_build_query($array, '', '&', PHP_QUERY_RFC3986);
+        return http_build_query($array, '', '&', $encodingType);
     }
 
     /**

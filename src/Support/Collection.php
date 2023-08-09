@@ -1352,4 +1352,9 @@ class Collection implements ArrayAccess, Enumerable
     {
         return Arr::toString($this->all(), $separator);
     }
+
+    public function query(int $encodingType = PHP_QUERY_RFC1738): string
+    {
+        return Arr::query($this->all(), $encodingType);
+    }
 }
