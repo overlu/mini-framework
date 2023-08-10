@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Events;
 
-use Mini\Container\Container;
-
 /**
  * @method static \Closure createClassListener(string $listener, bool $wildcard = false)
  * @method static \Closure makeListener(\Closure|string $listener, bool $wildcard = false)

@@ -9,7 +9,6 @@ namespace Mini;
 
 use Mini\Bootstrap\Middleware;
 use Mini\Bootstrap\ProviderService;
-use Mini\Command\CommandService;
 use SeasLog;
 use Swoole\Server;
 use Throwable;
@@ -78,6 +77,7 @@ class Bootstrap
         app('providers')->bootstrap($server, $workerId);
         Listener::getInstance()->listen('workerStart', $server, $workerId);
     }
+
 
     public function consoleStart(): void
     {
