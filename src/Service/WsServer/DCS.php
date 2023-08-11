@@ -7,14 +7,13 @@ declare(strict_types=1);
 
 namespace Mini\Service\WsServer;
 
-use JsonException;
 use Mini\Contracts\HttpMessage\WebsocketControllerInterface;
 use Mini\Support\Store;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 
 /**
- * Class DCS
+ * Class DCS[Data Center Service]
  * @package Mini\Service\WsServer
  */
 class DCS implements WebsocketControllerInterface
@@ -36,12 +35,11 @@ class DCS implements WebsocketControllerInterface
      * @param Server $server
      * @param Frame $frame
      * @param array $routeData
-     * @return mixed|void
-     * @throws JsonException
+     * @return void
      */
-    public function onMessage(Server $server, Frame $frame, array $routeData)
+    public function onMessage(Server $server, Frame $frame, array $routeData): void
     {
-        $data = json_decode($frame->data, true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode($frame->data, true);
         if (!empty($data['dcs_action'])) {
             if ($data['dcs_action'] === 'push') {
                 if ($server->exist($data['fd']) && $server->isEstablished($data['fd'])) {
@@ -64,9 +62,8 @@ class DCS implements WebsocketControllerInterface
      * @param array $routeData
      * @param int $reactorId
      * @return void
-     * @throws JsonException
      */
-    public function onClose(Server $server, int $fd, array $routeData, int $reactorId):void
+    public function onClose(Server $server, int $fd, array $routeData, int $reactorId): void
     {
         $uids = User::getUserByFd($fd);
         foreach ($uids as $uid) {
@@ -93,5 +90,15 @@ class DCS implements WebsocketControllerInterface
     public static function generateUrlPath(): string
     {
         return '/' . sha1(config('websocket.host') . ':' . config('websocket.port') . config('websocket.secret_key')) . '/' . base64_encode(config('websocket.host') . ':' . config('websocket.port'));
+    }
+
+    public function success(string $action, $data = [], string $success_message = 'succeed', int $code = 200): array
+    {
+        return [];
+    }
+
+    public function failed(string $action, $data = [], string $error_message = 'failed', int $code = 0): array
+    {
+        return [];
     }
 }

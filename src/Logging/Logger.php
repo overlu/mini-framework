@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Logging;
 
-use JsonException;
 use Mini\Console\Cli;
 use SeasLog;
 
@@ -48,13 +47,31 @@ class Logger
     /**
      * @param $name
      * @param $arguments
-     * @throws JsonException
      */
     public static function __callStatic($name, $arguments)
     {
         if (isset($arguments[0]) && is_array($arguments[0])) {
-            $arguments[0] = json_encode($arguments, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+            $arguments[0] = json_encode($arguments, JSON_UNESCAPED_UNICODE);
+        } else {
+            $arguments = self::parseData($arguments);
         }
+
+        self::output($name, $arguments);
+        if (!empty($arguments[1])) {
+            $arguments[0] .= PHP_EOL . json_encode($arguments[1], JSON_UNESCAPED_UNICODE);
+        }
+        if (!empty($arguments[2]) && $arguments[2] === 'system') {
+            $arguments[2] = '';
+        }
+        SeasLog::$name(...$arguments);
+    }
+
+    /**
+     * @param $name
+     * @param $arguments
+     */
+    private static function output($name, $arguments): void
+    {
         if ((empty($arguments[2]) || $arguments[2] !== 'system') && env('APP_ENV') !== 'production' && $types = config('logging.output', false)) {
             $types = $types === true ? 'all' : strtolower($types);
             if ($types !== 'all') {
@@ -62,11 +79,10 @@ class Logger
             }
             if ($types === 'all' || in_array($name, $logTypes, true)) {
                 go(static function () use ($name, $arguments) {
-                    static::output($name, $arguments);
+                    Cli::clog($arguments[0], $arguments[1], self::$cliLevel[$name]);
                 });
             }
         }
-        SeasLog::$name(...$arguments);
     }
 
     /**
@@ -77,20 +93,23 @@ class Logger
      */
     public static function log($level, $message, array $context = [], string $module = ''): void
     {
-        SeasLog::log($level, $message, $context, $module);
+        $arguments = self::parseData([
+            $message, $context, $module
+        ]);
+
+        SeasLog::log($level, ...$arguments);
     }
 
-    /**
-     * @param $name
-     * @param $arguments
-     */
-    private static function output($name, $arguments): void
+    private static function parseData($arguments)
     {
-        $message = SeasLog::getRequestID() . ': ' . $arguments[0];
-        $data = $arguments[1] ?? [];
-        foreach ($data as $key => $value) {
-            $message = str_replace('{' . $key . '}', $value, $message);
+        $arguments[0] = SeasLog::getRequestID() . ': ' . $arguments[0];
+        $arguments[1] = $arguments[1] ?? [];
+        foreach ($arguments[1] as $key => $value) {
+            if ((is_string($value) || is_numeric($value)) && preg_match("/\{" . $key . "\}/", $arguments[0])) {
+                $arguments[0] = preg_replace("/\{" . $key . "\}/", $value, $arguments[0]);
+                unset($arguments[1][$key]);
+            }
         }
-        Cli::clog($message, [], self::$cliLevel[$name]);
+        return $arguments;
     }
 }

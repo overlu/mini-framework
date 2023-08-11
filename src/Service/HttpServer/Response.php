@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Service\HttpServer;
 
 use BadMethodCallException;
+use Exception;
 use Mini\Container\Container;
 use Mini\Contracts\Support\Sendable;
 use Mini\Exception\EncodingException;
@@ -505,7 +506,7 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
      */
     protected function toJson($data): string
     {
-        return json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+        return json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
     /**
@@ -514,6 +515,7 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
      * @param mixed $root
      * @return string
      * @throws EncodingException when the data encoding error
+     * @throws Exception
      */
     protected function toXml($data, $parentNode = null, $root = 'root'): string
     {

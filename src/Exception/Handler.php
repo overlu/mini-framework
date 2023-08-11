@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace Mini\Exception;
 
 use Exception;
-use JsonException;
 use Mini\Context;
 use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Contracts\HttpMessage\WebsocketRequestInterface;
@@ -47,6 +46,7 @@ class Handler implements HandlerInterface
 
     /**
      * @param Throwable $throwable
+     * @throws Throwable
      */
     public function throw(Throwable $throwable): void
     {
@@ -117,7 +117,7 @@ class Handler implements HandlerInterface
 
     /**
      * @param Throwable $throwable
-     * @return mixed
+     * @return string|Throwable
      */
     protected function formatException(Throwable $throwable)
     {
@@ -129,9 +129,9 @@ class Handler implements HandlerInterface
 
     /**
      * @param Throwable $throwable
-     * @return string|array
+     * @return array
      */
-    protected function formatResponseException(Throwable $throwable)
+    protected function formatResponseException(Throwable $throwable): array
     {
         if ($this->environment === 'production') {
             return [
@@ -178,7 +178,6 @@ class Handler implements HandlerInterface
 
     /**
      * @param Throwable $throwable
-     * @throws JsonException
      * @throws Exception
      */
     protected function sendHttpException(Throwable $throwable): void
@@ -205,13 +204,12 @@ class Handler implements HandlerInterface
             foreach ($headers as $header => $value) {
                 $swResponse->setHeader($header, $value, true);
             }
-            $swResponse->end(json_encode($content, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE));
+            $swResponse->end(json_encode($content, JSON_UNESCAPED_UNICODE));
         }
     }
 
     /**
      * @param Throwable $throwable
-     * @throws JsonException
      */
     protected function sendWebsocketException(Throwable $throwable): void
     {
@@ -229,7 +227,7 @@ class Handler implements HandlerInterface
             } else {
                 $content = $this->formatResponseException($throwable);
             }
-            ws_response()->push(json_encode($content, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE));
+            ws_response()->push(json_encode($content, JSON_UNESCAPED_UNICODE));
             if ($shouldClose) {
                 ws_response()->close();
             }

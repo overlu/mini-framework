@@ -121,7 +121,7 @@ class HttpServer extends AbstractServer
         if (is_array($response)) {
             return $this->response()
                 ->withAddedHeader('content-type', 'application/json;charset=UTF-8')
-                ->withBody(new SwooleStream(json_encode($response, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)));
+                ->withBody(new SwooleStream(json_encode($response, JSON_UNESCAPED_UNICODE)));
         }
 
         if ($response instanceof Jsonable) {
@@ -137,7 +137,7 @@ class HttpServer extends AbstractServer
                     ->withBody(new SwooleStream((string)$response))
                 : $this->response()
                     ->withAddedHeader('content-type', 'application/json;charset=UTF-8')
-                    ->withBody(new SwooleStream(json_encode((array)$response, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)));
+                    ->withBody(new SwooleStream(json_encode((array)$response, JSON_UNESCAPED_UNICODE)));
         }
 
         return $this->response()->withAddedHeader('content-type', 'text/plain;charset=UTF-8')->withBody(new SwooleStream((string)$response));

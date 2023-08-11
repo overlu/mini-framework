@@ -18,7 +18,7 @@ class Json
      * @param int $options
      * @return string
      */
-    public static function encode($data, $options = JSON_UNESCAPED_UNICODE): string
+    public static function encode($data, int $options = JSON_UNESCAPED_UNICODE): string
     {
         if ($data instanceof Jsonable) {
             return $data->toJson();
@@ -26,7 +26,7 @@ class Json
         if ($data instanceof Arrayable) {
             $data = $data->toArray();
         }
-        $json = json_encode($data, JSON_THROW_ON_ERROR | $options);
+        $json = json_encode($data, $options);
         static::handleJsonError(json_last_error(), json_last_error_msg());
         return $json;
     }
@@ -36,9 +36,9 @@ class Json
      * @param bool $assoc
      * @return mixed
      */
-    public static function decode(string $json, $assoc = true)
+    public static function decode(string $json, bool $assoc = true)
     {
-        $decode = json_decode($json, $assoc, 512, JSON_THROW_ON_ERROR);
+        $decode = json_decode($json, $assoc);
         static::handleJsonError(json_last_error(), json_last_error_msg());
         return $decode;
     }
@@ -49,7 +49,7 @@ class Json
      */
     public static function pretty($data): string
     {
-        return static::encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        return static::encode($data, JSON_PRETTY_PRINT);
     }
 
     /**

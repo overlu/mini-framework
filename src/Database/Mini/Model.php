@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mini;
 
-use JsonException;
 use Throwable;
 
 /**
@@ -73,7 +72,6 @@ class Model
     /**
      * @param array $data
      * @return mixed|null
-     * @throws JsonException
      */
     public function update(array $data = [])
     {
@@ -108,7 +106,6 @@ class Model
     /**
      * @param array $data
      * @return int|mixed|null
-     * @throws JsonException
      */
     public function save(array $data = [])
     {
@@ -119,7 +116,6 @@ class Model
     /**
      * @param array $data
      * @return int|mixed
-     * @throws JsonException
      */
     public function insert(array $data = [])
     {
@@ -144,7 +140,6 @@ class Model
     /**
      * @param string $id
      * @return mixed|null
-     * @throws JsonException
      */
     public function delete(string $id = '')
     {
@@ -196,7 +191,6 @@ class Model
      * @param array|string $fields .
      * @param array $sort .
      * @return mixed|null
-     * @throws JsonException
      */
     public function search(array $wheres = [], $fields = ['*'], array $sort = [])
     {
@@ -291,7 +285,6 @@ class Model
      * @param $sql
      * @param null $array
      * @return mixed|null
-     * @throws JsonException
      */
     private function exec($sql, $array = null)
     {
@@ -299,7 +292,7 @@ class Model
         $array = $array ?: $this->variables;
         foreach ($array as $key => $value) {
             if (is_array($value)) {
-                $array[$key] = json_encode($value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+                $array[$key] = json_encode($value, JSON_UNESCAPED_UNICODE);
             }
         }
         $result = $this->db->query($sql, $array);

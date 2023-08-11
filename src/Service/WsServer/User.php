@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Service\WsServer;
 
-use JsonException;
 use Mini\Support\Store;
 
 /**
@@ -21,7 +20,6 @@ class User
      * @param string $uid
      * @param int $fd
      * @return array
-     * @throws JsonException
      */
     public static function bind(string $uid, int $fd): array
     {
@@ -64,7 +62,6 @@ class User
      * @param string $uid
      * @param int $fd
      * @return bool
-     * @throws JsonException
      */
     public static function unbind(string $uid, int $fd): bool
     {

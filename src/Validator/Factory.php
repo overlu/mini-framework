@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Validator;
 
-use JsonException;
 use Mini\Container\EntryNotFoundException;
 use Mini\Exception\MissingRequiredParameterException;
 use Mini\Exception\RuleNotFoundException;
@@ -70,7 +69,6 @@ class Factory
      * @param array $messages
      * @param bool $bail
      * @return Validation
-     * @throws JsonException
      * @throws EntryNotFoundException
      * @throws MissingRequiredParameterException|RuleNotFoundException
      */

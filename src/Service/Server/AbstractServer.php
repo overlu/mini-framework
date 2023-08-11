@@ -7,12 +7,10 @@ declare(strict_types=1);
 
 namespace Mini\Service\Server;
 
-use JsonException;
 use Mini\Bootstrap;
 use Mini\Context;
 use Mini\Crontab\Crontab;
 use Mini\Exception\Handler;
-use Mini\Facades\Cache;
 use Mini\Facades\Redis;
 use Mini\Listener;
 use Mini\RemoteShell;
@@ -303,7 +301,6 @@ abstract class AbstractServer
 
     /**
      * @param Server $server
-     * @throws JsonException
      * @throws Throwable
      */
     public function onShutdown(Server $server): void
@@ -320,7 +317,6 @@ abstract class AbstractServer
 
     /**
      * @param Server $server
-     * @throws JsonException
      * @throws Throwable
      */
     public function onBeforeReload(Server $server): void
@@ -338,7 +334,6 @@ abstract class AbstractServer
 
     /**
      * @param Server $server
-     * @throws JsonException
      * @throws Throwable
      */
     public function onAfterReload(Server $server): void
@@ -358,7 +353,6 @@ abstract class AbstractServer
     /**
      * @param Server $server
      * @param int $workerId
-     * @throws JsonException
      * @throws Throwable
      */
     public function onWorkerStop(Server $server, int $workerId): void
@@ -375,7 +369,6 @@ abstract class AbstractServer
     /**
      * @param Server $server
      * @param int $workerId
-     * @throws JsonException
      * @throws Throwable
      */
     public function onWorkerExit(Server $server, int $workerId): void
@@ -413,13 +406,12 @@ abstract class AbstractServer
      * @param $error_message
      * @param int|string $code
      * @return false|string
-     * @throws JsonException
      */
     protected function error($error_message, $code = 0)
     {
         return json_encode([
             'code' => $code,
             'message' => $error_message,
-        ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+        ], JSON_UNESCAPED_UNICODE);
     }
 }

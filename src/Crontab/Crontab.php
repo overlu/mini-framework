@@ -85,12 +85,12 @@ class Crontab
     }
 
     /**
-     * @return bool
+     * @return void
      */
-    private static function crontabHandle(): bool
+    private static function crontabHandle(): void
     {
         if (self::$isInitialed) {
-            return false;
+            return;
         }
         self::$isInitialed = true;
         $crontabTaskList = CrontabTaskList::getCrontabTaskList();
@@ -106,8 +106,7 @@ class Crontab
                 Timer::after((int)$time, function () use ($task, $enableCrontabLog) {
                     try {
                         if (!$enableCrontabLog) {
-                            $task->handle();
-                            return true;
+                            return $task->handle();
                         }
                         Logger::info('[{name}] start.', [
                             'name' => $task->name()
@@ -115,13 +114,12 @@ class Crontab
                         $response = $task->handle();
                         $response = $response ?? 'null';
                         if (is_array($response) || is_object($response)) {
-                            $response = json_encode($response, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+                            $response = json_encode($response, JSON_UNESCAPED_UNICODE);
                         }
                         Logger::info('[{name}] done. response: {response}', [
                             'name' => $task->name(),
                             'response' => (string)$response
                         ], 'crontab');
-                        return true;
                     } catch (CrontabException $exception) {
                         Logger::error('[{name}] failed. {message} in {file} at line {line}', [
                             'name' => $task->name(),
@@ -129,11 +127,9 @@ class Crontab
                             'file' => $exception->getFile(),
                             'line' => $exception->getLine()
                         ], 'crontab');
-                        return false;
                     }
                 });
             }
         }
-        return true;
     }
 }

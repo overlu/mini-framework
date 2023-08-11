@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace Mini\Validator;
 
 use Closure;
-use JsonException;
 use Mini\Container\EntryNotFoundException;
 use Mini\Contracts\Validator\BeforeValidate;
 use Mini\Contracts\Validator\ModifyValue;
@@ -98,7 +97,6 @@ class Validation
      * @param bool $bail
      * @return void
      * @throws EntryNotFoundException
-     * @throws JsonException
      * @throws MissingRequiredParameterException
      */
     public function validate(array $inputs = [], bool $bail = true): void
@@ -136,7 +134,6 @@ class Validation
      * Validate attribute
      * @param Attribute $attribute
      * @throws EntryNotFoundException
-     * @throws JsonException
      * @throws MissingRequiredParameterException
      */
     protected function validateAttribute(Attribute $attribute): void
@@ -319,7 +316,6 @@ class Validation
      * @param $value
      * @param Rule $ruleValidator
      * @throws EntryNotFoundException
-     * @throws JsonException
      */
     protected function addError(Attribute $attribute, $value, Rule $ruleValidator): void
     {
@@ -371,7 +367,6 @@ class Validation
      * @param mixed $value
      * @param Rule $validator
      * @return mixed
-     * @throws JsonException
      * @throws EntryNotFoundException
      */
     protected function resolveMessage(Attribute $attribute, $value, Rule $validator): string
@@ -449,7 +444,7 @@ class Validation
         }
 
         if (is_array($value) || is_object($value)) {
-            return json_encode($value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+            return json_encode($value, JSON_UNESCAPED_UNICODE);
         }
 
         return '';

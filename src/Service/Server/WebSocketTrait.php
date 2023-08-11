@@ -16,6 +16,7 @@ use Mini\Listener;
 use Mini\Service\WsServer\Request;
 use Mini\Service\WsServer\Response;
 use Mini\Service\WsServer\User;
+use ReflectionException;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 use Throwable;
@@ -66,9 +67,10 @@ trait WebSocketTrait
     }
 
     /**
-     * @param $request
+     * @param \Swoole\Http\Request $request
      * @param Server $server
      * @throws BindingResolutionException
+     * @throws ReflectionException
      */
     protected function initWsRequestAndResponse(\Swoole\Http\Request $request, Server $server): void
     {
@@ -79,8 +81,7 @@ trait WebSocketTrait
 
     /**
      * @param Server $server
-     * @param $request
-     * @throws Throwable
+     * @param \Swoole\Http\Request $request
      */
     public function onOpen(Server $server, \Swoole\Http\Request $request): void
     {
@@ -134,7 +135,7 @@ trait WebSocketTrait
     /**
      * @param Server $server
      * @param int $fd
-     * @throws Throwable
+     * @param int $reactorId
      */
     public function onClose(Server $server, int $fd, int $reactorId): void
     {
@@ -170,7 +171,6 @@ trait WebSocketTrait
     /**
      * 解绑fd
      * @param int $fd
-     * @throws \JsonException
      */
     private function unbindFd(int $fd): void
     {

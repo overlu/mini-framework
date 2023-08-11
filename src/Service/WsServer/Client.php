@@ -31,7 +31,6 @@ class Client
      * @param array $client
      * @param string $dcs_action
      * @param mixed $arrData
-     * @throws \JsonException
      */
     public function push(array $client, string $dcs_action, $arrData = []): void
     {
@@ -40,7 +39,7 @@ class Client
             'uid' => $client['uid'],
             'dcs_action' => $dcs_action,
             'data' => $arrData
-        ], JSON_THROW_ON_ERROR);
+        ]);
         $status = $this->getClient($client['host'], $client['port'])->push($data);
         if (!$status) {
             $this->setClient($client['host'], $client['port']);

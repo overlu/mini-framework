@@ -835,7 +835,7 @@ if (!function_exists('e')) {
         }
 
         if ($value instanceof Arrayable) {
-            return json_encode($value->toArray(), JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+            return json_encode($value->toArray(), JSON_UNESCAPED_UNICODE);
         }
 
         if ($value instanceof Jsonable) {
@@ -845,7 +845,7 @@ if (!function_exists('e')) {
         if (is_object($value)) {
             return method_exists($value, '__toString')
                 ? (string)$value
-                : json_encode((array)$value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+                : json_encode((array)$value, JSON_UNESCAPED_UNICODE);
         }
         return htmlspecialchars($value, ENT_QUOTES, 'UTF-8', $doubleEncode);
     }
@@ -928,7 +928,7 @@ if (!function_exists('cookie')) {
      */
     function cookie(string $name, $value, int $minutes = 0, string $path = '/', string $domain = '', bool $secure = false, bool $httpOnly = true): Cookie
     {
-        $value = is_array($value) ? json_encode($value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE) : $value;
+        $value = is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value;
         return new Mini\Service\HttpMessage\Cookie\Cookie($name, $value, $minutes, $path, $domain, $secure, $httpOnly);
     }
 }

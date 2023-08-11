@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Service\WsServer;
 
-use JsonException;
 use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\Support\Jsonable;
 
@@ -37,7 +36,6 @@ class Socket
      * 推送给用户
      * @param string $uid
      * @param $data
-     * @throws JsonException
      */
     public static function pushToUser(string $uid, $data): void
     {
@@ -63,7 +61,6 @@ class Socket
      * 推送给组
      * @param string $group
      * @param $data
-     * @throws JsonException
      */
     public static function pushToGroup(string $group, $data): void
     {
@@ -76,7 +73,6 @@ class Socket
     /**
      * 推送全局
      * @param $data
-     * @throws JsonException
      */
     public static function pushToAll($data): void
     {
@@ -89,7 +85,6 @@ class Socket
     /**
      * @param $clients
      * @param bool $onlyLocal
-     * @throws JsonException
      */
     public static function close($clients, bool $onlyLocal = false): void
     {
@@ -111,7 +106,6 @@ class Socket
      * 格式化数据
      * @param $response
      * @return false|string
-     * @throws JsonException
      */
     public static function transferToResponse($response)
     {
@@ -119,13 +113,13 @@ class Socket
             $response = $response->toArray();
         }
         if (is_array($response)) {
-            return json_encode($response, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+            return json_encode($response, JSON_UNESCAPED_UNICODE);
         }
         if ($response instanceof Jsonable) {
             return $response->toJson();
         }
         if (is_object($response)) {
-            return method_exists($response, '__toString') ? (string)$response : json_encode((array)$response, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+            return method_exists($response, '__toString') ? (string)$response : json_encode((array)$response, JSON_UNESCAPED_UNICODE);
         }
         return (string)$response;
     }
@@ -135,7 +129,6 @@ class Socket
      * @param string $uid
      * @param $fd
      * @return string
-     * @throws JsonException
      */
     public static function packClientId(string $uid, $fd): string
     {
@@ -144,13 +137,12 @@ class Socket
             'host' => config('websocket.host'),
             'port' => config('websocket.port'),
             'fd' => $fd
-        ], JSON_THROW_ON_ERROR));
+        ], JSON_UNESCAPED_UNICODE));
     }
 
     /**
      * @param $fd
      * @return string
-     * @throws JsonException
      */
     public static function packFd($fd): string
     {
@@ -158,28 +150,26 @@ class Socket
             'host' => config('websocket.host'),
             'port' => config('websocket.port'),
             'fd' => $fd
-        ], JSON_THROW_ON_ERROR));
+        ], JSON_UNESCAPED_UNICODE));
     }
 
     /**
      * 解包
      * @param string $fdc
      * @return array
-     * @throws JsonException
      */
     public static function unPackFd(string $fdc): array
     {
-        return json_decode(base64_decode($fdc), true, 512, JSON_THROW_ON_ERROR);
+        return json_decode(base64_decode($fdc), true);
     }
 
     /**
      * 解包链接客户端
      * @param string $client
      * @return array
-     * @throws JsonException
      */
     public static function unPackClientId(string $client): array
     {
-        return json_decode(base64_decode($client), true, 512, JSON_THROW_ON_ERROR);
+        return json_decode(base64_decode($client), true);
     }
 }

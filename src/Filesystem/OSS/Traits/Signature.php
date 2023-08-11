@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\Filesystem\OSS\Traits;
 
+use Exception;
+
 /**
  * Class Signature
  * @package Mini\Filesystem\OSS\Traits
@@ -22,7 +24,7 @@ trait Signature
      * @param int $contentLengthRangeValue
      * @param array $systemData
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function getOssSignatureConfig(string $prefix = '', ?string $callBackUrl = null, array $customData = [], int $expire = 30, int $contentLengthRangeValue = 1048576000, array $systemData = []): array
     {
@@ -58,7 +60,7 @@ trait Signature
             'callbackBody' => urldecode(http_build_query(array_merge($system, $data))),
             'callbackBodyType' => 'application/x-www-form-urlencoded',
         ];
-        $callbackString = json_encode($callbackParam, JSON_THROW_ON_ERROR);
+        $callbackString = json_encode($callbackParam, JSON_UNESCAPED_UNICODE);
         $base64CallbackBody = base64_encode($callbackString);
 
         $end = time() + $expire;
@@ -81,7 +83,7 @@ trait Signature
         $base64Policy = base64_encode(json_encode([
             'expiration' => $expiration,
             'conditions' => $conditions,
-        ], JSON_THROW_ON_ERROR));
+        ], JSON_UNESCAPED_UNICODE));
 
         return [
             'access_id' => $this->accessKeyId,
@@ -99,7 +101,7 @@ trait Signature
      * gmt.
      * @param $time
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function gmt_iso8601($time): string
     {

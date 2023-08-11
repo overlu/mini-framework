@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Service\WsServer;
 
-use JsonException;
 use Mini\Contracts\HttpMessage\WebsocketResponseInterface;
 use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\Support\Jsonable;
@@ -35,7 +34,6 @@ class Response implements WebsocketResponseInterface
      * @param $data
      * @param null $fd
      * @return $this
-     * @throws JsonException
      */
     public function push($data, $fd = null): WebsocketResponseInterface
     {
@@ -57,7 +55,6 @@ class Response implements WebsocketResponseInterface
     /**
      * @param $response
      * @return false|string
-     * @throws JsonException
      */
     private function transferToResponse($response)
     {
@@ -65,13 +62,13 @@ class Response implements WebsocketResponseInterface
             $response = $response->toArray();
         }
         if (is_array($response)) {
-            return json_encode($response, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+            return json_encode($response, JSON_UNESCAPED_UNICODE);
         }
         if ($response instanceof Jsonable) {
             return $response->toJson();
         }
         if (is_object($response)) {
-            return method_exists($response, '__toString') ? (string)$response : json_encode((array)$response, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+            return method_exists($response, '__toString') ? (string)$response : json_encode((array)$response, JSON_UNESCAPED_UNICODE);
         }
         return (string)$response;
     }
