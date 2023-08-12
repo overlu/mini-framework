@@ -101,7 +101,9 @@ class Command
             static::out("\033[1;37m" . $message->getMessage() . "\033[0m\n");
             static::out("\e[0;1min\e[0m \e[33;4m" . $message->getFile() . ':' . $message->getLine() . "\033[0m");
             static::out(Highlighter::getInstance()->highlightSnippet(file_get_contents($message->getFile()), $message->getLine(), 3, 3));
-            static::out($message->getTraceAsString());
+            if (config('app.exception.show_trace', false)) {
+                static::out($message->getTraceAsString());
+            }
         } else {
             static::out($message, 'error');
         }

@@ -9,7 +9,6 @@ namespace Mini\Console;
 
 use InvalidArgumentException;
 use Mini\Application;
-use Mini\Facades\Logger;
 use Mini\Support\Command;
 use RuntimeException;
 use Throwable;
@@ -222,16 +221,7 @@ class App
     protected function handleException(Throwable $throwable): int
     {
         $code = $throwable->getCode() !== 0 ? $throwable->getCode() : -1;
-        Logger::error([
-            'exception' => get_class($throwable),
-            'exception code' => $throwable->getCode(),
-            'exception message' => $throwable->getMessage() . ' in ' . $throwable->getFile() . ':' . $throwable->getLine(),
-            'exception trace detail' => $throwable->getTrace()
-        ]);
-        Command::line();
-        Command::error($throwable);
-        Command::line();
-
+        app('exception')->report($throwable);
         return $code;
     }
 
@@ -241,7 +231,7 @@ class App
      */
     public function addObject(callable $handler, array $config = []): void
     {
-        if (is_object($handler) && method_exists($handler, '__invoke')) {
+        if (method_exists($handler, '__invoke')) {
             // has config method
             if (method_exists($handler, 'getHelpConfig')) {
                 $config = $handler->getHelpConfig();
@@ -284,7 +274,7 @@ class App
      */
     public function addCommand(string $command, callable $handler, $config = null): void
     {
-        if (!$command || !$handler) {
+        if (!$command) {
             throw new InvalidArgumentException('Invalid arguments for add command');
         }
 

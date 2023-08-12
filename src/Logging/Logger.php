@@ -33,16 +33,7 @@ class Logger
         'debug' => 'warning',
     ];
 
-    private const RFC_5424_LEVELS = [
-        7 => 'debug',
-        6 => 'info',
-        5 => 'notice',
-        4 => 'warning',
-        3 => 'error',
-        2 => 'critical',
-        1 => 'alert',
-        0 => 'emergency',
-    ];
+    private static array $notOutPutErrorModules = ['system', 'pay', 'crontab'];
 
     /**
      * @param $name
@@ -51,7 +42,7 @@ class Logger
     public static function __callStatic($name, $arguments)
     {
         if (isset($arguments[0]) && is_array($arguments[0])) {
-            $arguments[0] = json_encode($arguments, JSON_UNESCAPED_UNICODE);
+            $arguments[0] = json_encode($arguments[0], JSON_UNESCAPED_UNICODE);
         } else {
             $arguments = self::parseData($arguments);
         }
@@ -62,6 +53,7 @@ class Logger
         }
         if (!empty($arguments[2]) && $arguments[2] === 'system') {
             $arguments[2] = '';
+            $arguments[1] = [];
         }
         SeasLog::$name(...$arguments);
     }
@@ -72,7 +64,7 @@ class Logger
      */
     private static function output($name, $arguments): void
     {
-        if ((empty($arguments[2]) || $arguments[2] !== 'system') && env('APP_ENV') !== 'production' && $types = config('logging.output', false)) {
+        if (env('APP_ENV') !== 'production' && (empty($arguments[2]) || !in_array($arguments[2], self::$notOutPutErrorModules, true)) && $types = config('logging.output', false)) {
             $types = $types === true ? 'all' : strtolower($types);
             if ($types !== 'all') {
                 $logTypes = explode($types, ',');

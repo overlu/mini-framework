@@ -154,12 +154,15 @@ class Handler implements HandlerInterface
      */
     protected function format(Throwable $throwable): array
     {
-        return [
+        $res = [
             'exception' => get_class($throwable),
             'exception code' => $throwable->getCode(),
-            'exception message' => $throwable->getMessage() . ' in ' . $throwable->getFile() . ':' . $throwable->getLine(),
-            'exception trace detail' => $throwable->getTrace()
+            'exception message' => $throwable->getMessage() . ' in ' . $throwable->getFile() . ':' . $throwable->getLine()
         ];
+        if (config('app.exception.show_trace', false)) {
+            $res['exception trace detail'] = $throwable->getTrace();
+        }
+        return $res;
     }
 
     /**
