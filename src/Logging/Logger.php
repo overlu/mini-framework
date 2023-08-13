@@ -53,8 +53,9 @@ class Logger
         }
         if (!empty($arguments[2]) && $arguments[2] === 'system') {
             $arguments[2] = '';
-            $arguments[1] = [];
         }
+        $arguments[1] = [];
+
         SeasLog::$name(...$arguments);
     }
 
