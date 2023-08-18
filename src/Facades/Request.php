@@ -28,6 +28,7 @@ use Mini\Context;
  * @method static bool isXmlHttpRequest()
  * @method static string decodedPath()
  * @method static string getRequestUri()
+ * @method static \Mini\Service\HttpServer\Request | \Mini\Service\HttpMessage\Server\Request getRequest()
  * @method static string url()
  * @method static string fullUrl()
  * @method static string getQueryString()

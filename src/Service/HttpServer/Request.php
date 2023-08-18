@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Service\HttpServer;
 
-use Mini\Container\Container;
 use Mini\Service\HttpMessage\Upload\UploadedFile;
 use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Session\Session;
