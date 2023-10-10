@@ -48,7 +48,7 @@ class RedisSessionDriver implements SessionHandlerInterface
      */
     public function destroy($session_id): bool
     {
-        $this->redis->del($session_id);
+        $this->redis->unlink($session_id);
         return true;
     }
 

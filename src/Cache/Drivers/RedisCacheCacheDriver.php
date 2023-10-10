@@ -81,7 +81,7 @@ class RedisCacheCacheDriver extends AbstractCacheDriver
      */
     public function delete(string $key): bool
     {
-        return (bool)Redis::connection($this->connection)->del($this->prefix . $key);
+        return (bool)Redis::connection($this->connection)->unlink($this->prefix . $key);
     }
 
     /**
