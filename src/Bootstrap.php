@@ -9,6 +9,7 @@ namespace Mini;
 
 use Mini\Bootstrap\Middleware;
 use Mini\Bootstrap\ProviderService;
+use ReflectionException;
 use SeasLog;
 use Swoole\Server;
 use Throwable;
@@ -53,16 +54,35 @@ class Bootstrap
     }
 
     /**
-     * Bootstrap constructor.
      * @throws Contracts\Container\BindingResolutionException
+     * @throws ReflectionException
      */
     private function __construct()
     {
-        $app = app();
-        $app->singleton('middleware', function () {
+        $this->initMiddleware();
+        $this->initProviderService();
+    }
+
+    /**
+     * @return void
+     * @throws Contracts\Container\BindingResolutionException
+     * @throws ReflectionException
+     */
+    public function initMiddleware(): void
+    {
+        app()->singleton('middleware', function () {
             return new Middleware(config('app.middleware', []));
         });
-        $app->singleton('providers', function () {
+    }
+
+    /**
+     * @return void
+     * @throws Contracts\Container\BindingResolutionException
+     * @throws ReflectionException
+     */
+    public function initProviderService(): void
+    {
+        app()->singleton('providers', function () {
             return new ProviderService([...$this->providers, ...config('app.providers', [])]);
         });
     }

@@ -158,6 +158,8 @@ abstract class AbstractServer
     {
         if (config('crontab.enable_crontab', false)) {
             $process = new Process(function () {
+                Bootstrap::getInstance()->initProviderService();
+                app('providers')->bootstrap($this->server, getmypid());
                 Crontab::run();
             });
             $this->server->addProcess($process);
