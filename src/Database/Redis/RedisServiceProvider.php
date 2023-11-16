@@ -18,6 +18,9 @@ class RedisServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        if (!extension_loaded('redis')) {
+            throw new \Exception('Missing php-redis extension');
+        }
         $this->app->singleton('redis', function () {
             return new Redis();
         });
