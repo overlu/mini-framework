@@ -58,15 +58,9 @@ class HttpServer extends AbstractServer
                 return;
             }
             $resp = $resp->withHeader('Server', 'Mini');
-            /**
-             * @var $resp Psr7Response
-             */
-            $resp = app('middleware')->bootAfterRequest($resp, $route->getController());
-            if (request()->getMethod() === 'HEAD') {
-                $resp->send(false);
-            } else {
-                $resp->send(true);
-            }
+            app('middleware')
+                ->bootAfterRequest($resp, $route->getController())
+                ->send($request->getMethod() !== 'HEAD');
         } catch (Throwable $throwable) {
             app('exception')->throw($throwable);
         }
@@ -100,6 +94,8 @@ class HttpServer extends AbstractServer
      * @param $response
      * @return \Psr\Http\Message\ResponseInterface
      * @throws Throwable
+     * @noinspection JsonEncodingApiUsageInspection
+     * @noinspection PhpComposerExtensionStubsInspection
      */
     protected function transferToResponse($response): \Psr\Http\Message\ResponseInterface
     {
