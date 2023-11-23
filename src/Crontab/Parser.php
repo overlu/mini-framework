@@ -34,7 +34,7 @@ class Parser
      * @return int[]
      * @throws InvalidArgumentException
      */
-    public static function parse($crontab_string, ?int $start_time = null): array
+    public static function parse(string $crontab_string, ?int $start_time = null): array
     {
         if (!self::isValid($crontab_string)) {
             throw new InvalidArgumentException('Invalid cron string: ' . $crontab_string);
@@ -89,7 +89,7 @@ class Parser
         } elseif (strpos($string, ',') !== false) {
             $exploded = explode(',', $string);
             foreach ($exploded as $value) {
-                if (!self::between((int)$value, (int)($min > $start ? $min : $start), (int)$max)) {
+                if (!self::between((int)$value, max($min, $start), $max)) {
                     continue;
                 }
                 $result[] = (int)$value;
@@ -106,14 +106,14 @@ class Parser
                 $result[] = $i;
                 $i += $exploded[1];
             }
-        } elseif (self::between((int)$string, $min > $start ? $min : $start, $max)) {
+        } elseif (self::between((int)$string, max($min, $start), $max)) {
             $result[] = (int)$string;
         }
         return $result;
     }
 
     /**
-     * Determire if the $value is between in $min and $max ?
+     * Determine if the $value is between in $min and $max ?
      * @param int $value
      * @param int $min
      * @param int $max

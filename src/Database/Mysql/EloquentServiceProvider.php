@@ -17,10 +17,10 @@ use Mini\Database\Mysql\Eloquent\QueueEntityResolver;
 use Mini\Database\Mysql\Events\QueryExecuted;
 use Mini\Facades\Console;
 use Mini\Facades\Logger;
-use Mini\Support\ServiceProvider;
+use Mini\Service\AbstractServiceProvider;
 use ReflectionException;
 
-class EloquentServiceProvider extends ServiceProvider
+class EloquentServiceProvider extends AbstractServiceProvider
 {
     /**
      * @throws BindingResolutionException

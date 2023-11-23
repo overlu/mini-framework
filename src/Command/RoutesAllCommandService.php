@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace Mini\Command;
 
 use Mini\Console\Table;
-use Mini\Support\Command;
 use Swoole\Process;
 
 class RoutesAllCommandService extends AbstractCommandService
@@ -25,11 +24,11 @@ class RoutesAllCommandService extends AbstractCommandService
         $routes = app('route')->routes();
         $this->parseWebSocketRoutes($routes['ws']);
         $this->parseHttpRoutes($routes['http']);
-        Command::line();
+        $this->line();
         $defaultRoute = [[
-            'Handler' => empty($routes['default']) ? '<red>404</red>' : $this->paraseHandler($routes['default'])
+            'Handler' => empty($routes['default']) ? '<red>404</red>' : $this->parasHandler($routes['default'])
         ]];
-        Command::info('  Default Route:');
+        $this->info('  Default Route:');
         Table::show($defaultRoute, '');
         if (empty($this->wsRoutes)) {
             $wsRoutes = [[
@@ -41,11 +40,11 @@ class RoutesAllCommandService extends AbstractCommandService
             foreach ($this->wsRoutes as $wsRoute) {
                 $wsRoutes[] = [
                     'Url' => '<underscore>' . $wsRoute['url'] . '</underscore>',
-                    'Handler' => $this->paraseHandler($wsRoute['handler'])
+                    'Handler' => $this->parasHandler($wsRoute['handler'])
                 ];
             }
         }
-        Command::info('  Websocket Routes:');
+        $this->info('  Websocket Routes:');
         Table::show($wsRoutes, '');
         if (empty($this->httpRoutes)) {
             $httpRoutes = [[
@@ -77,21 +76,21 @@ class RoutesAllCommandService extends AbstractCommandService
                 $httpRoutes[] = [
                     'Url' => '<underscore>' . $httpRoute['url'] . '</underscore>',
                     'Method' => $method,
-                    'Handler' => $this->paraseHandler($httpRoute['handler'])
+                    'Handler' => $this->parasHandler($httpRoute['handler'])
                 ];
             }
         }
-        Command::info('  Http Routes:');
+        $this->info('  Http Routes:');
         Table::show($httpRoutes, '');
     }
 
     /**
-     * @param $hander
+     * @param $handler
      * @return string
      */
-    private function paraseHandler($hander): string
+    private function parasHandler($handler): string
     {
-        return is_string($hander) ? '<light_blue>' . $hander . '</light_blue>' : (is_callable($hander) ? '<yellow>Callable</yellow>' : '<red>Error: </red>' . ucfirst(gettype($hander)));
+        return is_string($handler) ? '<light_blue>' . $handler . '</light_blue>' : (is_callable($handler) ? '<yellow>Callable</yellow>' : '<red>Error: </red>' . ucfirst(gettype($handler)));
     }
 
     private function parseWebSocketRoutes($wsRoutes, array $prefix = [], array $namespace = []): void

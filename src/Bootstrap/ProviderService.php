@@ -7,14 +7,14 @@ declare(strict_types=1);
 
 namespace Mini\Bootstrap;
 
-use Mini\Support\ServiceProvider;
+use Mini\Service\AbstractServiceProvider;
 use RuntimeException;
 use Swoole\Server;
 
 class ProviderService
 {
     /**
-     * @var ServiceProvider[]
+     * @var AbstractServiceProvider[]
      */
     private array $serviceProviders;
     private array $bootedServiceProviders = [];
@@ -38,10 +38,10 @@ class ProviderService
                 throw new RuntimeException('class ' . $serviceProvider . ' not exists.');
             }
             /**
-             * @var $serviceProviderObj ServiceProvider
+             * @var $serviceProviderObj AbstractServiceProvider
              */
-            if (!($serviceProviderObj = new $serviceProvider($app, $server, $workerId)) instanceof ServiceProvider) {
-                throw new RuntimeException($serviceProvider . ' should instanceof ' . ServiceProvider::class);
+            if (!($serviceProviderObj = new $serviceProvider($app, $server, $workerId)) instanceof AbstractServiceProvider) {
+                throw new RuntimeException($serviceProvider . ' should instanceof ' . AbstractServiceProvider::class);
             }
             if ($this->serviceProviderWasNotBooted($serviceProvider)) {
                 $booted[] = $serviceProviderObj;
@@ -51,7 +51,7 @@ class ProviderService
         }
         foreach ($booted as $serviceProviderBooted) {
             /**
-             * @var $serviceProviderBooted ServiceProvider
+             * @var $serviceProviderBooted AbstractServiceProvider
              */
             $serviceProviderBooted->boot();
         }
@@ -63,8 +63,8 @@ class ProviderService
      */
     public function addServiceProvider(string $serviceProvider): void
     {
-        if (!new $serviceProvider instanceof ServiceProvider) {
-            throw new RuntimeException($serviceProvider . ' should instanceof ' . ServiceProvider::class);
+        if (!new $serviceProvider instanceof AbstractServiceProvider) {
+            throw new RuntimeException($serviceProvider . ' should instanceof ' . AbstractServiceProvider::class);
         }
         $this->serviceProviders[] = $serviceProvider;
     }
@@ -90,7 +90,7 @@ class ProviderService
     }
 
     /**
-     * @return ServiceProvider[]
+     * @return AbstractServiceProvider[]
      */
     public function getServiceProviders(): array
     {

@@ -16,13 +16,13 @@ use InvalidArgumentException;
 class CrontabTaskList
 {
     /**
-     * @var CrontabTaskInterface[]
+     * @var AbstractCrontabTask[]
      */
     private static array $crontabTaskList = [];
 
     /**
      * Get all crontab tasks
-     * @return CrontabTaskInterface[]
+     * @return AbstractCrontabTask[]
      */
     public static function getCrontabTaskList(): array
     {
@@ -32,9 +32,9 @@ class CrontabTaskList
     /**
      * Get crontab task
      * @param string $name
-     * @return CrontabTaskInterface|null
+     * @return AbstractCrontabTask|null
      */
-    public static function getTask(string $name): ?CrontabTaskInterface
+    public static function getTask(string $name): ?AbstractCrontabTask
     {
         return self::$crontabTaskList[$name] ?? null;
     }
@@ -42,9 +42,9 @@ class CrontabTaskList
     /**
      * Add crontab task (not override)
      * @param string $name
-     * @param CrontabTaskInterface $handle
+     * @param AbstractCrontabTask $handle
      */
-    public static function addTask(string $name, CrontabTaskInterface $handle): void
+    public static function addTask(string $name, AbstractCrontabTask $handle): void
     {
         isset(self::$crontabTaskList[$name]) || self::$crontabTaskList[$name] = $handle;
     }
@@ -52,9 +52,9 @@ class CrontabTaskList
     /**
      * Set crontab task (override)
      * @param string $name
-     * @param CrontabTaskInterface $handle
+     * @param AbstractCrontabTask $handle
      */
-    public static function setTask(string $name, CrontabTaskInterface $handle): void
+    public static function setTask(string $name, AbstractCrontabTask $handle): void
     {
         self::$crontabTaskList[$name] = $handle;
     }
@@ -89,8 +89,8 @@ class CrontabTaskList
                 throw new InvalidArgumentException('Class ' . $crontabTask . ' not exists.');
             }
             $taskObj = new $crontabTask;
-            if (!($taskObj instanceof CrontabTaskInterface)) {
-                throw new InvalidArgumentException('Task ' . $crontabTask . ' should instanceof ' . CrontabTaskInterface::class);
+            if (!($taskObj instanceof AbstractCrontabTask)) {
+                throw new InvalidArgumentException('Task ' . $crontabTask . ' should instanceof ' . AbstractCrontabTask::class);
             }
             self::addTask($crontabTask, $taskObj);
         }

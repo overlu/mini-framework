@@ -8,14 +8,14 @@ declare(strict_types=1);
 namespace Mini\View;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Support\ServiceProvider;
+use Mini\Service\AbstractServiceProvider;
 use Mini\View\Compilers\BladeCompiler;
 use Mini\View\Engines\CompilerEngine;
 use Mini\View\Engines\EngineResolver;
 use Mini\View\Engines\FileEngine;
 use Mini\View\Engines\PhpEngine;
 
-class ViewServiceProvider extends ServiceProvider
+class ViewServiceProvider extends AbstractServiceProvider
 {
     /**
      * Register the service provider.

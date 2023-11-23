@@ -11,13 +11,21 @@ use Mini\Command\CommandService;
 use Mini\Command\HelloMiniCommandService;
 use Mini\Command\KeyGenerateCommandService;
 use Mini\Command\LogStatusCommandService;
+use Mini\Command\MakeCommandCommandService;
+use Mini\Command\MakeControllerCommandService;
+use Mini\Command\MakeCrontabCommandService;
+use Mini\Command\MakeEventCommandService;
+use Mini\Command\MakeListenerCommandService;
+use Mini\Command\MakeMiddlewareCommandService;
 use Mini\Command\MakeMigrationCommandService;
+use Mini\Command\MakeModelCommandService;
+use Mini\Command\MakeObserverCommandService;
+use Mini\Command\MakeProviderCommandService;
 use Mini\Command\MigrateCommandService;
 use Mini\Command\MigrateInstallCommandService;
 use Mini\Command\MigrateRefreshCommandService;
 use Mini\Command\MigrateResetCommandService;
 use Mini\Command\MigrateRollbackCommandService;
-use Mini\Command\RouteClearCommandService;
 use Mini\Command\RoutesAllCommandService;
 use Mini\Command\RunCrontabCommandService;
 use Mini\Command\SocketResetCommandService;
@@ -41,6 +49,15 @@ class Console
         MigrateRollbackCommandService::class,
         MigrateRefreshCommandService::class,
         MakeMigrationCommandService::class,
+        MakeCommandCommandService::class,
+        MakeControllerCommandService::class,
+        MakeCrontabCommandService::class,
+        MakeEventCommandService::class,
+        MakeListenerCommandService::class,
+        MakeMiddlewareCommandService::class,
+        MakeModelCommandService::class,
+        MakeObserverCommandService::class,
+        MakeProviderCommandService::class,
         StorageLinkCommandService::class,
         RunCrontabCommandService::class,
         StatusCrontabCommandService::class,

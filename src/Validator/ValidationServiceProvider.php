@@ -8,16 +8,17 @@ declare(strict_types=1);
 namespace Mini\Validator;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Support\ServiceProvider;
+use Mini\Service\AbstractServiceProvider;
+use ReflectionException;
 
-class ValidationServiceProvider extends ServiceProvider
+class ValidationServiceProvider extends AbstractServiceProvider
 {
     public function register(): void
     {
     }
 
     /**
-     * @throws BindingResolutionException|\ReflectionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function boot(): void
     {

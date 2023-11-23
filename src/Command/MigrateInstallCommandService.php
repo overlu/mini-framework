@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
-use Mini\Support\Command;
 use Swoole\Process;
 
 class MigrateInstallCommandService extends AbstractCommandService
@@ -24,7 +23,7 @@ class MigrateInstallCommandService extends AbstractCommandService
 
             $this->repository->createRepository();
 
-            Command::info('Migration table created successfully.');
+            $this->info('Migration table created successfully.');
         });
     }
 

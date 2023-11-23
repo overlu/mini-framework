@@ -104,9 +104,9 @@ interface Application extends Container
     /**
      * Register a service provider with the application.
      *
-     * @param \Mini\Support\ServiceProvider|string $provider
+     * @param \Mini\Service\AbstractServiceProvider|string $provider
      * @param bool $force
-     * @return \Mini\Support\ServiceProvider
+     * @return \Mini\Service\AbstractServiceProvider
      */
     public function register($provider, $force = false);
 
@@ -123,7 +123,7 @@ interface Application extends Container
      * Resolve a service provider instance from the class name.
      *
      * @param string $provider
-     * @return \Mini\Support\ServiceProvider
+     * @return \Mini\Service\AbstractServiceProvider
      */
     public function resolveProvider($provider);
 
@@ -177,7 +177,7 @@ interface Application extends Container
     /**
      * Get the registered service provider instances if any exist.
      *
-     * @param \Mini\Support\ServiceProvider|string $provider
+     * @param \Mini\Service\AbstractServiceProvider|string $provider
      * @return array
      */
     public function getProviders($provider);

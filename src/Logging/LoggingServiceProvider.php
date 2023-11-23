@@ -7,11 +7,11 @@ declare(strict_types=1);
 
 namespace Mini\Logging;
 
-use Mini\Support\ServiceProvider;
-use \Seaslog;
+use Mini\Service\AbstractServiceProvider;
+use Seaslog;
 use Throwable;
 
-class LoggingServiceProvider extends ServiceProvider
+class LoggingServiceProvider extends AbstractServiceProvider
 {
     public function register(): void
     {

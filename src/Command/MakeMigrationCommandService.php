@@ -9,13 +9,14 @@ namespace Mini\Command;
 
 use Exception;
 use Mini\Database\Mysql\Migrations\TableGuesser;
-use Mini\Support\Command;
 use Mini\Support\Str;
 use Swoole\Process;
 
 class MakeMigrationCommandService extends AbstractCommandService
 {
     use Migration;
+
+    protected string $type = 'migration';
 
     /**
      * @param Process $process
@@ -25,12 +26,11 @@ class MakeMigrationCommandService extends AbstractCommandService
     public function handle(Process $process): void
     {
         run(function () {
-            $argFirst = $this->getArgs()[0] ?? null;
-            if (!$argFirst) {
-                Command::error('no migration file name');
+            $name = trim($this->argument('name', $this->getArg(0, '')));
+            if (empty($name)) {
+                $this->error("Miss {$this->type} name");
                 return;
             }
-            $name = Str::snake(trim($this->getArg('name', $argFirst)));
             $table = $this->getOpt('table');
             $create = $this->getOpt('create', false);
 
@@ -38,6 +38,8 @@ class MakeMigrationCommandService extends AbstractCommandService
                 $table = $create;
                 $create = true;
             }
+
+            $name = Str::snake($name);
 
             if (!$table) {
                 [$table, $create] = TableGuesser::guess($name);
@@ -63,7 +65,7 @@ class MakeMigrationCommandService extends AbstractCommandService
             $file = pathinfo($file, PATHINFO_FILENAME);
         }
 
-        Command::info("Created Migration: {$file}");
+        $this->info("Created Migration: {$file}");
     }
 
     /**

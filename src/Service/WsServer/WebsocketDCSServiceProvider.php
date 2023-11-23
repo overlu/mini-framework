@@ -8,9 +8,10 @@ declare(strict_types=1);
 namespace Mini\Service\WsServer;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Support\ServiceProvider;
+use Mini\Service\AbstractServiceProvider;
+use ReflectionException;
 
-class WebsocketDCSServiceProvider extends ServiceProvider
+class WebsocketDCSServiceProvider extends AbstractServiceProvider
 {
     public function register(): void
     {
@@ -18,7 +19,7 @@ class WebsocketDCSServiceProvider extends ServiceProvider
     }
 
     /**
-     * @throws BindingResolutionException|\ReflectionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function boot(): void
     {

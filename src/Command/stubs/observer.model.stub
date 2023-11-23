@@ -1,0 +1,49 @@
+<?php
+declare(strict_types=1);
+
+namespace App\Observers;
+
+use App\Models\{{ model }};
+
+class {{ class }}
+{
+    /**
+     * 处理 {{ model }}「created」事件
+     * @param {{ model }} ${{ modelVar }}
+     * @return void
+     */
+    public function created({{ model }} ${{ modelVar }})
+    {
+        //
+    }
+
+    /**
+     * 处理 {{ model }}「updated」事件
+     * @param {{ model }} ${{ modelVar }}
+     * @return void
+     */
+    public function updated({{ model }} ${{ modelVar }})
+    {
+        //
+    }
+
+    /**
+     * 处理 {{ model }}「deleted」事件
+     * @param {{ model }} ${{ modelVar }}
+     * @return void
+     */
+    public function deleted({{ model }} ${{ modelVar }})
+    {
+        //
+    }
+
+    /**
+     * 处理 {{ model }}「forceDeleted」事件
+     * @param {{ model }} ${{ modelVar }}
+     * @return void
+     */
+    public function forceDeleted({{ model }} ${{ modelVar }})
+    {
+        //
+    }
+}

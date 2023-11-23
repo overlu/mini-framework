@@ -8,15 +8,16 @@ declare(strict_types=1);
 namespace Mini\Hashing;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Support\ServiceProvider;
+use Mini\Service\AbstractServiceProvider;
+use ReflectionException;
 
-class HashServiceProvider extends ServiceProvider
+class HashServiceProvider extends AbstractServiceProvider
 {
     /**
      * Register the service provider.
      *
      * @return void
-     * @throws BindingResolutionException|\ReflectionException
+     * @throws BindingResolutionException|ReflectionException
      */
     public function register(): void
     {

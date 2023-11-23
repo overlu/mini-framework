@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Crontab;
 
-use Mini\Exception\CrontabException;
+use Exception;
 use Mini\Logging\Logger;
 use Swoole\Event;
 use Swoole\Timer;
@@ -25,6 +25,20 @@ class Crontab
      * @var int
      */
     private static int $timeId = 0;
+
+    /**
+     * The array of filter callbacks.
+     *
+     * @var array
+     */
+    protected array $filters = [];
+
+    /**
+     * The array of reject callbacks.
+     *
+     * @var array
+     */
+    protected array $rejects = [];
 
     /**
      * run crontab
@@ -106,13 +120,19 @@ class Crontab
                 Timer::after((int)$time, function () use ($task, $enableCrontabLog) {
                     try {
                         if (!$enableCrontabLog) {
-                            return $task->handle();
+                            $response = $task->handle();
+                            if (method_exists($task, 'success')) {
+                                $task->success($response);
+                            }
+                            return;
                         }
                         Logger::info('[{name}] start.', [
                             'name' => $task->name()
                         ], 'crontab');
                         $response = $task->handle();
-                        $response = $response ?? 'null';
+                        if (method_exists($task, 'success')) {
+                            $task->success($response);
+                        }
                         if (is_array($response) || is_object($response)) {
                             $response = json_encode($response, JSON_UNESCAPED_UNICODE);
                         }
@@ -120,7 +140,10 @@ class Crontab
                             'name' => $task->name(),
                             'response' => (string)$response
                         ], 'crontab');
-                    } catch (CrontabException $exception) {
+                    } catch (Exception $exception) {
+                        if (method_exists($task, 'fail')) {
+                            $task->fail($exception);
+                        }
                         Logger::error('[{name}] failed. {message} in {file} at line {line}', [
                             'name' => $task->name(),
                             'message' => $exception->getMessage(),

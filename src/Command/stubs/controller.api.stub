@@ -1,0 +1,57 @@
+<?php
+/**
+ * This file is part of Mini.
+ * @auth {auth}
+ */
+declare(strict_types=1);
+
+namespace App\Controllers\Http;
+
+use Mini\Contracts\HttpMessage\RequestInterface;
+
+class {{ class }} extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     * @param RequestInterface $request
+     */
+    public function store(RequestInterface $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     * @param $id
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @param $id
+     */
+    public function update(RequestInterface $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     * @param $id
+     */
+    public function destroy($id)
+    {
+        //
+    }
+}

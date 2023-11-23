@@ -1,0 +1,41 @@
+<?php
+/**
+ * This file is part of Mini.
+ * @auth {auth}
+ */
+declare(strict_types=1);
+
+namespace App\Console;
+
+use Mini\Command\AbstractCommandService;
+use Swoole\Process;
+
+class {{ class }} extends AbstractCommandService
+{
+    /**
+     * @param Process $process
+     * @return void
+     */
+    public function handle(Process $process): void
+    {
+        // $this->info('do something.');
+    }
+
+    /**
+     * command
+     * @return string
+     */
+    public function getCommand(): string
+    {
+        // return '{model}:{action}';
+    }
+
+    /**
+     * command service description
+     * @return string
+     */
+    public function getCommandDescription(): string
+    {
+        // return '{command service description}';
+    }
+}

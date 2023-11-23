@@ -19,7 +19,7 @@ class TestCommandService extends AbstractCommandService
     public function handle(Process $process): void
     {
         run(static function () {
-            Command::info(Command::exec(BASE_PATH . '/vendor/phpunit/phpunit/phpunit ./tests'));
+            $this->info(Command::exec(BASE_PATH . '/vendor/phpunit/phpunit/phpunit ./tests'));
         });
     }
 

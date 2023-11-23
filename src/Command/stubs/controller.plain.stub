@@ -1,0 +1,15 @@
+<?php
+/**
+ * This file is part of Mini.
+ * @auth {auth}
+ */
+declare(strict_types=1);
+
+namespace App\Controllers\Http;
+
+use Mini\Contracts\HttpMessage\RequestInterface;
+
+class {{ class }} extends Controller
+{
+
+}

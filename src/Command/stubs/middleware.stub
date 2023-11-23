@@ -1,0 +1,26 @@
+<?php
+declare(strict_types=1);
+
+namespace App\Middlewares;
+
+use Mini\Contracts\MiddlewareInterface;
+use Psr\Http\Message\ResponseInterface;
+
+class {{ class }} implements MiddlewareInterface
+{
+
+    public function before(string $method, string $className): ?string
+    {
+        return null;
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @param string $className
+     * @return ResponseInterface
+     */
+    public function after(ResponseInterface $response, string $className): ResponseInterface
+    {
+        return $response;
+    }
+}

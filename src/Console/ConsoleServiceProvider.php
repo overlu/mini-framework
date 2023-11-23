@@ -8,14 +8,14 @@ declare(strict_types=1);
 namespace Mini\Console;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Support\ServiceProvider;
+use Mini\Service\AbstractServiceProvider;
 use ReflectionException;
 
 /**
  * Class ConsoleServiceProvider
  * @package Mini\Console
  */
-class ConsoleServiceProvider extends ServiceProvider
+class ConsoleServiceProvider extends AbstractServiceProvider
 {
     /**
      * @throws BindingResolutionException|ReflectionException

@@ -1,0 +1,43 @@
+<?php
+declare(strict_types=1);
+
+namespace App\Observers;
+
+class {{ class }}
+{
+    /**
+     * 处理「created」事件
+     * @return void
+     */
+    public function created()
+    {
+        //
+    }
+
+    /**
+     * 处理「updated」事件
+     * @return void
+     */
+    public function updated()
+    {
+        //
+    }
+
+    /**
+     * 处理「deleted」事件
+     * @return void
+     */
+    public function deleted()
+    {
+        //
+    }
+
+    /**
+     * 处理「forceDeleted」事件
+     * @return void
+     */
+    public function forceDeleted()
+    {
+        //
+    }
+}

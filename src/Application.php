@@ -27,7 +27,7 @@ class Application
      * version
      * @var string
      */
-    public static string $version = '2.13.36';
+    public const VERSION = '2.15.1';
 
     /**
      * @var array|string[]
@@ -53,7 +53,7 @@ class Application
  _______ _____ __   _ _____
  |  |  |   |   | \  |   |  
  |  |  | __|__ |  \_| __|__
-EOL. '   ' . self::$version . PHP_EOL);
+EOL. '   ' . self::VERSION . PHP_EOL);
         Panel::show([
             'App Information' => [
                 'Name' => config('app.name', 'Mini'),

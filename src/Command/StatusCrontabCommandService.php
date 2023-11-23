@@ -9,7 +9,6 @@ namespace Mini\Command;
 
 use Mini\Console\Table;
 use Mini\Crontab\CrontabTaskList;
-use Mini\Support\Command;
 use Swoole\Process;
 
 class StatusCrontabCommandService extends AbstractCommandService
@@ -29,7 +28,7 @@ class StatusCrontabCommandService extends AbstractCommandService
             ];
         }
         empty($data)
-            ? Command::line('no crontab.')
+            ? $this->line('no crontab.')
             : Table::show($data, 'Mini Crontab List');
     }
 

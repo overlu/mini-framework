@@ -9,11 +9,11 @@ namespace Mini\Encryption;
 
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Exception\MissingAppKeyException;
-use Mini\Support\ServiceProvider;
+use Mini\Service\AbstractServiceProvider;
 use Mini\Support\Str;
 use Opis\Closure\SerializableClosure;
 
-class EncryptionServiceProvider extends ServiceProvider
+class EncryptionServiceProvider extends AbstractServiceProvider
 {
     /**
      * Register the service provider.

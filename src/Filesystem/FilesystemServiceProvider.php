@@ -8,9 +8,9 @@ declare(strict_types=1);
 namespace Mini\Filesystem;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Support\ServiceProvider;
+use Mini\Service\AbstractServiceProvider;
 
-class FilesystemServiceProvider extends ServiceProvider
+class FilesystemServiceProvider extends AbstractServiceProvider
 {
     /**
      * Register the service provider.

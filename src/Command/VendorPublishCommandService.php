@@ -7,13 +7,12 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
+use League\Flysystem\Filesystem as Flysystem;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\Local\LocalFilesystemAdapter;
-use League\Flysystem\Filesystem as Flysystem;
 use League\Flysystem\MountManager;
 use Mini\Filesystem\Filesystem;
-use Mini\Support\Command;
-use Mini\Support\ServiceProvider;
+use Mini\Service\AbstractServiceProvider;
 use Swoole\Process;
 
 class VendorPublishCommandService extends AbstractCommandService
@@ -57,7 +56,7 @@ class VendorPublishCommandService extends AbstractCommandService
         foreach ($tags as $tag) {
             $this->publishTag($tag);
         }
-        Command::info('Publishing complete.');
+        $this->info('Publishing complete.');
     }
 
     /**
@@ -96,7 +95,7 @@ class VendorPublishCommandService extends AbstractCommandService
         }
 
         if ($published === false) {
-            Command::error('Unable to locate publishable resources.');
+            $this->error('Unable to locate publishable resources.');
         }
     }
 
@@ -120,7 +119,7 @@ class VendorPublishCommandService extends AbstractCommandService
             return;
         }
 
-        Command::error("Can't locate path: <{$from}>");
+        $this->error("Can't locate path: <{$from}>");
     }
 
     /**
@@ -171,7 +170,7 @@ class VendorPublishCommandService extends AbstractCommandService
 
         $to = str_replace(base_path(), '', realpath($to));
 
-        Command::line('<info>Copied ' . $type . '</info> <comment>[' . $from . ']</comment> <info>To</info> <comment>[' . $to . ']</comment>');
+        $this->line('<info>Copied ' . $type . '</info> <comment>[' . $from . ']</comment> <info>To</info> <comment>[' . $to . ']</comment>');
     }
 
     /**
@@ -213,7 +212,7 @@ class VendorPublishCommandService extends AbstractCommandService
      */
     protected function getPathsToPublish(?string $tag): array
     {
-        return ServiceProvider::pathsToPublish(
+        return AbstractServiceProvider::pathsToPublish(
             $this->provider, $tag
         );
     }
@@ -226,8 +225,8 @@ class VendorPublishCommandService extends AbstractCommandService
     public function getCommandDescription(): string
     {
         return 'Publish any publishable assets from vendor packages.
-                   <blue>{--force : Overwrite any existing files}
-                   {--all : Publish assets for all service providers without prompt}
-                   {--provider= : The service provider that has assets you want to publish}</blue>';
+                   <blue>{--force : Overwrite any existing files.}
+                   {--all : Publish assets for all service providers without prompt.}
+                   {--provider= : The service provider that has assets you want to publish.}</blue>';
     }
 }

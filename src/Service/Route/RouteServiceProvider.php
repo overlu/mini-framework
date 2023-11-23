@@ -9,9 +9,9 @@ declare(strict_types=1);
 namespace Mini\Service\Route;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Support\ServiceProvider;
+use Mini\Service\AbstractServiceProvider;
 
-class RouteServiceProvider extends ServiceProvider
+class RouteServiceProvider extends AbstractServiceProvider
 {
     /**
      * @throws BindingResolutionException

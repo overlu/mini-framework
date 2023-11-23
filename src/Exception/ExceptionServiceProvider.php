@@ -9,13 +9,13 @@ namespace Mini\Exception;
 
 use App\Exceptions\Handler;
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Support\ServiceProvider;
+use Mini\Service\AbstractServiceProvider;
 
 /**
  * Class ExceptionServiceProvider
  * @package Mini\Exception
  */
-class ExceptionServiceProvider extends ServiceProvider
+class ExceptionServiceProvider extends AbstractServiceProvider
 {
     /**
      * @throws BindingResolutionException

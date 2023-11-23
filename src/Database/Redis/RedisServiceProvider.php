@@ -8,10 +8,10 @@ declare(strict_types=1);
 namespace Mini\Database\Redis;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Support\ServiceProvider;
+use Mini\Service\AbstractServiceProvider;
 use ReflectionException;
 
-class RedisServiceProvider extends ServiceProvider
+class RedisServiceProvider extends AbstractServiceProvider
 {
     /**
      * @throws BindingResolutionException|ReflectionException

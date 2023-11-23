@@ -1,0 +1,50 @@
+<?php
+declare(strict_types=1);
+
+namespace App\Crontab;
+
+use Exception;
+use Mini\Crontab\AbstractCrontabTask;
+
+class {{ class }} extends AbstractCrontabTask
+{
+
+    public function handle()
+    {
+        // do something
+    }
+
+    public function name(): string
+    {
+        // return '{crontab name}';
+        return '';
+    }
+
+    public function description(): string
+    {
+        // return '{crontab description}';
+        return '';
+    }
+
+    public function rule(): string
+    {
+        // return $this->everyFiveSeconds();
+        // return '* * * * *';
+        return '* * * * * *';
+    }
+
+    public function status(): bool
+    {
+        return true;
+    }
+
+    // public function success($result)
+    // {
+    //    // dump($result);
+    // }
+
+    // public function fail(Exception $exception)
+    // {
+    //     // dump($exception);
+    // }
+}

@@ -22,9 +22,10 @@ abstract class AbstractCommandService implements CommandInterface
 
     public bool $enableCoroutine = false;
 
+    protected string $type = '';
+
     public function __construct()
     {
-
     }
 
     /**

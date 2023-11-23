@@ -11,14 +11,14 @@ use Mini\Cache\Drivers\FileCacheCacheDriver;
 use Mini\Cache\Drivers\RedisCacheCacheDriver;
 use Mini\Cache\Drivers\SwooleCacheCacheDriver;
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Support\ServiceProvider;
+use Mini\Service\AbstractServiceProvider;
 use ReflectionException;
 
 /**
  * Class CacheServiceProviders
  * @package Mini\Cache
  */
-class CacheServiceProviders extends ServiceProvider
+class CacheServiceProviders extends AbstractServiceProvider
 {
     public function register(): void
     {

@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
-use Mini\Support\Command;
 use Swoole\Process;
 
 class MigrateResetCommandService extends AbstractCommandService
@@ -22,7 +21,7 @@ class MigrateResetCommandService extends AbstractCommandService
             }
             $this->migrator->setConnection($this->getOpt('database'));
             if (!$this->migrator->repositoryExists()) {
-                Command::line('Migration table not found.');
+                $this->line('Migration table not found.');
                 return;
             }
             $this->migrator->reset(

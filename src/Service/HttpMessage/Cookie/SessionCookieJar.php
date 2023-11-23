@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\Service\HttpMessage\Cookie;
 
+use Mini\Facades\Session;
+
 /**
  * Persists cookies in the client session.
  */
@@ -58,7 +60,7 @@ class SessionCookieJar extends CookieJar
             }
         }
 
-        $_SESSION[$this->sessionKey] = json_encode($json);
+        Session::set($this->sessionKey, json_encode($json));
     }
 
     /**
@@ -66,10 +68,10 @@ class SessionCookieJar extends CookieJar
      */
     protected function load()
     {
-        if (!isset($_SESSION[$this->sessionKey])) {
+        if (!Session::exists($this->sessionKey)) {
             return;
         }
-        $data = json_decode($_SESSION[$this->sessionKey], true);
+        $data = json_decode(Session::get($this->sessionKey), true);
         if (is_array($data)) {
             foreach ($data as $cookie) {
                 $this->setCookie(new SetCookie($cookie));

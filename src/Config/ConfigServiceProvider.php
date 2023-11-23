@@ -8,9 +8,9 @@ declare(strict_types=1);
 namespace Mini\Config;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Support\ServiceProvider;
+use Mini\Service\AbstractServiceProvider;
 
-class ConfigServiceProvider extends ServiceProvider
+class ConfigServiceProvider extends AbstractServiceProvider
 {
     /**
      * @throws BindingResolutionException|\ReflectionException

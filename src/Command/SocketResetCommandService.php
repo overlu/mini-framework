@@ -24,17 +24,17 @@ class SocketResetCommandService extends AbstractCommandService
     public function handle(Process $process): void
     {
         if (Command::has('bin/mini')) {
-            Command::error('server is running, stop the mini server first!');
+            $this->error('server is running, stop the mini server first!');
             return;
         }
-        Command::info('resetting...');
+        $this->info('resetting...');
         $redis = Redis::connection(config('cache.drivers.redis.collection', 'cache'));
         Store::drop(Socket::$host);
         $this->removeKeys($redis, Socket::$fdPrefix);
         $this->removeKeys($redis, Socket::$groupPrefix);
         $this->removeKeys($redis, Socket::$userPrefix);
         $this->removeKeys($redis, Socket::$userGroupPrefix);
-        Command::info('done.');
+        $this->info('done.');
     }
 
     /**

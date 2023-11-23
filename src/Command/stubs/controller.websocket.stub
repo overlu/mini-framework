@@ -1,0 +1,45 @@
+<?php
+declare(strict_types=1);
+
+namespace App\Controllers\Websocket;
+
+use Swoole\Http\Request;
+use Swoole\WebSocket\Frame;
+use Swoole\WebSocket\Server;
+
+class {{ class }} extends Controller
+{
+    /**
+     * @param Server $server
+     * @param Request $request
+     * @param array $routeData
+     */
+    public function onOpen(Server $server, Request $request, array $routeData)
+    {
+        // dump('open');
+    }
+
+    /**
+     * @param Server $server
+     * @param Frame $frame
+     * @param array $routeData
+     * @return string
+     */
+    public function onMessage(Server $server, Frame $frame, array $routeData)
+    {
+        // return 'This is mini server, routeData: ' . json_encode($routeData, JSON_UNESCAPED_UNICODE) . ', message: ' . $frame->data;
+        return '';
+    }
+
+    /**
+     * @param Server $server
+     * @param int $fd
+     * @param array $routeData
+     * @param int $reactorId
+     * @return void
+     */
+    public function onClose(Server $server, int $fd, array $routeData, int $reactorId): void
+    {
+        // dump('close');
+    }
+}

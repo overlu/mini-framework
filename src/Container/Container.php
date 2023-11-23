@@ -148,6 +148,13 @@ class Container implements ArrayAccess, ContainerContract
     protected array $afterResolvingCallbacks = [];
 
     /**
+     * The application namespace.
+     *
+     * @var ?string
+     */
+    protected ?string $namespace = null;
+
+    /**
      * Define a contextual binding.
      * @param array|string $concrete
      * @return \Mini\Contracts\Container\ContextualBindingBuilder
@@ -1400,7 +1407,7 @@ class Container implements ArrayAccess, ContainerContract
      */
     public function version(): string
     {
-        return Application::$version;
+        return Application::VERSION;
     }
 
     /**
@@ -1409,6 +1416,31 @@ class Container implements ArrayAccess, ContainerContract
     public function environment(): string
     {
         return env('APP_ENV', 'local');
+    }
+
+    /**
+     * Get the application namespace.
+     *
+     * @return string
+     *
+     * @throws \RuntimeException
+     */
+    public function getNamespace()
+    {
+        if (!is_null($this->namespace)) {
+            return $this->namespace;
+        }
+        $composer = json_decode(file_get_contents(base_path('composer.json')), true);
+
+        foreach ((array)data_get($composer, 'autoload.psr-4') as $namespace => $path) {
+            foreach ((array)$path as $pathChoice) {
+                if (realpath(base_path('app')) === realpath(base_path($pathChoice))) {
+                    return $this->namespace = $namespace;
+                }
+            }
+        }
+
+        throw new \RuntimeException('Unable to detect application namespace.');
     }
 
     /**

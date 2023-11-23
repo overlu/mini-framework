@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
-use Mini\Support\Command;
 use Swoole\Process;
 
 class HelloMiniCommandService extends AbstractCommandService
@@ -25,7 +24,7 @@ class HelloMiniCommandService extends AbstractCommandService
 |  _  | |___| |___| |__| |_| |    | |  | || || |\  || | 
 |_| |_|_____|_____|_____\___/     |_|  |_|___|_| \_|___|\n
 EOL;
-        Command::info($info);
+        $this->info($info);
     }
 
     public function getCommand(): string

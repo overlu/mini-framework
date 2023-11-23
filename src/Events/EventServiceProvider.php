@@ -8,10 +8,10 @@ declare(strict_types=1);
 namespace Mini\Events;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Support\ServiceProvider;
+use Mini\Service\AbstractServiceProvider;
 use ReflectionException;
 
-class EventServiceProvider extends ServiceProvider
+class EventServiceProvider extends AbstractServiceProvider
 {
     /**
      * @throws BindingResolutionException|ReflectionException

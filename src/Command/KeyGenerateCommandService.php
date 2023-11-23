@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace Mini\Command;
 
 use Mini\Encryption\Encrypter;
-use Mini\Support\Command;
 use Swoole\Process;
 
 class KeyGenerateCommandService extends AbstractCommandService
@@ -28,15 +27,11 @@ class KeyGenerateCommandService extends AbstractCommandService
             $this->comment($key);
             return;
         }
-
-        // Next, we will replace the application key in the environment file so it is
-        // automatically setup for this developer. This key gets generated using a
-        // secure random byte generator and is later base64 encoded for storage.
         if (!$this->setKeyInEnvironmentFile($key)) {
             return;
         }
 
-        Command::info('Application key set successfully.');
+        $this->info('Application key set successfully.');
     }
 
     /**
@@ -92,7 +87,7 @@ class KeyGenerateCommandService extends AbstractCommandService
     public function getCommandDescription(): string
     {
         return 'Set the application key.
-                   <blue>{--show : Display the key instead of modifying files}
-                   {--force : Force the operation to run when in production}</blue>';
+                   <blue>{--show : Display the key instead of modifying files.}
+                   {--force : Force the operation to run when in production.}</blue>';
     }
 }

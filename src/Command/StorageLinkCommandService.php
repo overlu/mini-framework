@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
-use Mini\Support\Command;
 use Swoole\Process;
 
 class StorageLinkCommandService extends AbstractCommandService
@@ -18,7 +17,7 @@ class StorageLinkCommandService extends AbstractCommandService
 
         foreach ($this->links() as $link => $target) {
             if (file_exists($link)) {
-                Command::error("The [$link] link already exists.");
+                $this->error("The [$link] link already exists.");
                 continue;
             }
 
@@ -28,10 +27,10 @@ class StorageLinkCommandService extends AbstractCommandService
                 app('files')->link($target, $link);
             }
 
-            Command::info("The [$link] link has been connected to [$target].");
+            $this->info("The [$link] link has been connected to [$target].");
         }
 
-        Command::info('The links have been created.');
+        $this->info('The links have been created.');
     }
 
     protected function links()
@@ -53,6 +52,7 @@ class StorageLinkCommandService extends AbstractCommandService
      */
     public function getCommandDescription(): string
     {
-        return 'Create the symbolic links configured for the application. [ --relative : Create the symbolic link using relative paths ]';
+        return 'Create the symbolic links configured for the application.
+                   <blue>{--relative : Create the symbolic link using relative paths.}</blue>';
     }
 }

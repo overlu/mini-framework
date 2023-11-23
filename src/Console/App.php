@@ -333,7 +333,7 @@ class App
 
         // help
         $help = ucfirst($this->metas['desc']);
-        $help .= "(<red>" . Application::$version . "</red>)";
+        $help .= "(<red>" . Application::VERSION . "</red>)";
 
         $usage = "<cyan>{$this->script} command [options] [arguments]</cyan>";
 
@@ -688,6 +688,11 @@ class App
     public function info(string $string): void
     {
         Cli::writeln('<info>' . $string . '</info>');
+    }
+
+    public function line(string $message = '', bool $newLine = true): void
+    {
+        printf('%s', Color::render($message . ($newLine ? PHP_EOL : '')));
     }
 
     /**

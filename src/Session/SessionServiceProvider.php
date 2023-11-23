@@ -8,17 +8,17 @@ declare(strict_types=1);
 namespace Mini\Session;
 
 use Mini\Contracts\Container\BindingResolutionException;
+use Mini\Service\AbstractServiceProvider;
 use Mini\Session\Drivers\FileSessionDriver;
 use Mini\Session\Drivers\NullSessionHandler;
 use Mini\Session\Drivers\RedisSessionDriver;
-use Mini\Support\ServiceProvider;
 use SessionHandlerInterface;
 
 /**
  * Class SessionServiceProvider
  * @package Mini\Session
  */
-class SessionServiceProvider extends ServiceProvider
+class SessionServiceProvider extends AbstractServiceProvider
 {
     /**
      * @var array|string[]

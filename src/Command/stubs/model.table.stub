@@ -1,0 +1,15 @@
+<?php
+declare(strict_types=1);
+
+namespace App\Models;
+
+use Mini\Database\Mysql\Eloquent as Model;
+
+/**
+ * Class {{ class }}
+ * @package App\Models
+ */
+class {{ class }} extends Model
+{
+    protected string $table = '{{ table }}';
+}

@@ -8,9 +8,9 @@ declare(strict_types=1);
 namespace Mini\Translate;
 
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Support\ServiceProvider;
+use Mini\Service\AbstractServiceProvider;
 
-class TranslateServiceProvider extends ServiceProvider
+class TranslateServiceProvider extends AbstractServiceProvider
 {
     public function register(): void
     {
