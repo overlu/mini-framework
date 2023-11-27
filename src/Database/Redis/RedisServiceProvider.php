@@ -10,6 +10,7 @@ namespace Mini\Database\Redis;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Service\AbstractServiceProvider;
 use ReflectionException;
+use RuntimeException;
 
 class RedisServiceProvider extends AbstractServiceProvider
 {
@@ -19,7 +20,7 @@ class RedisServiceProvider extends AbstractServiceProvider
     public function register(): void
     {
         if (!extension_loaded('redis')) {
-            throw new \Exception('Missing php-redis extension');
+            throw new RuntimeException('Missing php-redis extension');
         }
         $this->app->singleton('redis', function () {
             return new Redis();

@@ -507,7 +507,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * Get a flattened array of the items in the collection.
      *
      * @param int $depth
-     * @return Collection
+     * @return BaseCollection
      */
     public function flatten(int $depth)
     {

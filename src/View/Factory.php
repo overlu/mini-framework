@@ -418,7 +418,7 @@ class Factory implements FactoryContract
      * @param \Closure|null $resolver
      * @return void
      */
-    public function addExtension(string $extension, self $engine, ?\Closure $resolver = null): void
+    public function addExtension(string $extension, string $engine, ?\Closure $resolver = null): void
     {
         $this->finder->addExtension($extension);
 
