@@ -690,7 +690,12 @@ class App
         Cli::writeln('<info>' . $string . '</info>');
     }
 
-    public function line(string $message = '', bool $newLine = true): void
+    public function line(int $line = 1): void
+    {
+        printf(str_pad(PHP_EOL, $line));
+    }
+
+    public function message(string $message = '', bool $newLine = true): void
     {
         printf('%s', Color::render($message . ($newLine ? PHP_EOL : '')));
     }

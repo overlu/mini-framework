@@ -28,7 +28,7 @@ class StatusCrontabCommandService extends AbstractCommandService
             ];
         }
         empty($data)
-            ? $this->line('no crontab.')
+            ? $this->message('no crontab.')
             : Table::show($data, 'Mini Crontab List');
     }
 

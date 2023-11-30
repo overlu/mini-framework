@@ -200,7 +200,7 @@ class Migrator
             return;
         }
 
-        Command::line("Migrating: {$name}");
+        Command::message("Migrating: {$name}");
 
         $startTime = microtime(true);
 
@@ -359,7 +359,7 @@ class Migrator
             $name = $this->getMigrationName($file)
         );
 
-        Command::line("Rolling back: {$name}");
+        Command::message("Rolling back: {$name}");
 
         if ($pretend) {
             $this->pretendToRun($instance, 'down');

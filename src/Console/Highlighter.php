@@ -298,7 +298,7 @@ class Highlighter
             $lineStr = (string)($lineNum);
             $numText = str_pad($lineStr, $lineLen, ' ', STR_PAD_LEFT) . '| ';
             if ($markLine !== null) {
-                $snippet .= ($markLine === $lineNum ? Color::apply($lmStyle, '  > ') : '    ');
+                $snippet .= ($markLine === $lineNum ? Color::apply($lmStyle, '> ') : '  ');
                 $snippet .= Color::apply($markLine === $lineNum ? $lmStyle : $lnStyle, $numText);
             } else {
                 $snippet .= Color::apply($lnStyle, $numText);

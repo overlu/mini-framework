@@ -21,7 +21,7 @@ class MigrateResetCommandService extends AbstractCommandService
             }
             $this->migrator->setConnection($this->getOpt('database'));
             if (!$this->migrator->repositoryExists()) {
-                $this->line('Migration table not found.');
+                $this->message('Migration table not found.');
                 return;
             }
             $this->migrator->reset(

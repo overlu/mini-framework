@@ -49,7 +49,7 @@ class Application
 
     public static function welcome(): void
     {
-        Command::line(<<<EOL
+        Command::message(<<<EOL
  _______ _____ __   _ _____
  |  |  |   |   | \  |   |  
  |  |  | __|__ |  \_| __|__

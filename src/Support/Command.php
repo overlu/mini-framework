@@ -12,6 +12,7 @@ use Mini\Console\Cli;
 use Mini\Console\Color;
 use Mini\Console\Highlighter;
 use Mini\Console\Terminal;
+use Mini\Exception\ShellException;
 use Swoole\Coroutine\System;
 
 class Command
@@ -56,6 +57,9 @@ class Command
                 return rtrim($result);
             }
         }
+        if (is_null($result)) {
+            throw new ShellException('shell: ' . $shell . ' run error');
+        }
         return '';
     }
 
@@ -86,7 +90,7 @@ class Command
      */
     public static function infoWithTime(string $msg): void
     {
-        static::line(date('Y/m/d H:i:s') . " \033[32m{$msg}\033[0m");
+        static::message(date('Y/m/d H:i:s') . " \033[32m{$msg}\033[0m");
     }
 
     /**
@@ -97,11 +101,13 @@ class Command
     {
         if ($message instanceof \Throwable) {
             static::out(get_class($message), 'error');
-            static::out(PHP_EOL);
-            static::out("\033[1;37m" . $message->getMessage() . "\033[0m\n");
+            static::line();
+            static::out("\033[1;37m" . $message->getMessage() . "\033[0m");
             static::out("\e[0;1min\e[0m \e[33;4m" . $message->getFile() . ':' . $message->getLine() . "\033[0m");
-            static::out(Highlighter::getInstance()->highlightSnippet(file_get_contents($message->getFile()), $message->getLine(), 3, 3));
+            static::line();
+            static::out(Highlighter::getInstance()->highlightSnippet(file_get_contents($message->getFile()), $message->getLine(), 3, 3), null, false);
             if (config('app.exception.show_trace', false)) {
+                static::line();
                 static::out($message->getTraceAsString());
             }
         } else {
@@ -114,7 +120,15 @@ class Command
      */
     public static function errorWithTime(string $msg): void
     {
-        static::line(date('Y/m/d H:i:s') . " <danger>{$msg}</danger>");
+        static::message(date('Y/m/d H:i:s') . " <danger>{$msg}</danger>");
+    }
+
+    /**
+     * 打印空行
+     */
+    public static function line(int $line = 1): void
+    {
+        printf(str_pad(PHP_EOL, $line));
     }
 
     /**
@@ -122,7 +136,7 @@ class Command
      * @param string $message
      * @param bool $newLine
      */
-    public static function line(string $message = '', bool $newLine = true): void
+    public static function message(string $message = '', bool $newLine = true): void
     {
         printf('%s', Color::render($message . ($newLine ? PHP_EOL : '')));
     }

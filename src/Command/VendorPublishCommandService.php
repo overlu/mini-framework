@@ -170,7 +170,7 @@ class VendorPublishCommandService extends AbstractCommandService
 
         $to = str_replace(base_path(), '', realpath($to));
 
-        $this->line('<info>Copied ' . $type . '</info> <comment>[' . $from . ']</comment> <info>To</info> <comment>[' . $to . ']</comment>');
+        $this->message('<info>Copied ' . $type . '</info> <comment>[' . $from . ']</comment> <info>To</info> <comment>[' . $to . ']</comment>');
     }
 
     /**

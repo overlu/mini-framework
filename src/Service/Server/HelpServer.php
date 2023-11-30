@@ -22,9 +22,9 @@ class HelpServer
     {
         Command::line();
         Command::info("\033[32m" . 'mini commands' . "\033[0m \t\t\t" . 'mini commands description');
-        Command::line($this->delimiter);
+        Command::message($this->delimiter);
         foreach ($this->commands as $command => $description) {
-            Command::line(
+            Command::message(
                 trim($description)
                     ? "\033[32m{$command}\033[0m\t$description"
                     : '');
