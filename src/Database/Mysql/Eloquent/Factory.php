@@ -246,6 +246,7 @@ class Factory implements ArrayAccess
      * @param string $offset
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->make($offset);

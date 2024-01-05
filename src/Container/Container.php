@@ -1370,7 +1370,7 @@ class Container implements ArrayAccess, ContainerContract
      * @throws BindingResolutionException
      * @throws ReflectionException
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->make($offset);
     }
@@ -1383,7 +1383,7 @@ class Container implements ArrayAccess, ContainerContract
      * @return void
      * @throws BindingResolutionException|ReflectionException
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet($offset, mixed $value): void
     {
         $this->bind($offset, $value instanceof Closure ? $value : static function () use ($value) {
             return $value;

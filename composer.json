@@ -12,7 +12,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.0",
         "ext-swoole": ">=4.5",
         "ext-seaslog": ">=2.1",
         "overlu/mini-route": "^2.1",

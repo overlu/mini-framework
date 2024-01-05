@@ -322,7 +322,7 @@ class View implements ArrayAccess, Htmlable, ViewContract
      * @param string $key
      * @return mixed
      */
-    public function offsetGet($key)
+    public function offsetGet($key): mixed
     {
         return $this->data[$key];
     }
@@ -334,7 +334,7 @@ class View implements ArrayAccess, Htmlable, ViewContract
      * @param mixed $value
      * @return void
      */
-    public function offsetSet($key, $value): void
+    public function offsetSet($key, mixed $value): void
     {
         $this->with($key, $value);
     }

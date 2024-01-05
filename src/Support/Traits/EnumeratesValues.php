@@ -775,6 +775,7 @@ trait EnumeratesValues
      *
      * @return array
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize(): array
     {
         return array_map(static function ($value) {

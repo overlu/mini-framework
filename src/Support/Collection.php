@@ -1305,7 +1305,7 @@ class Collection implements ArrayAccess, Enumerable
      * @param mixed $offset
      * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         return array_key_exists($offset, $this->items);
     }
@@ -1316,7 +1316,7 @@ class Collection implements ArrayAccess, Enumerable
      * @param mixed $offset
      * @return mixed
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->items[$offset];
     }
@@ -1328,7 +1328,7 @@ class Collection implements ArrayAccess, Enumerable
      * @param mixed $value
      * @return void
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if (is_null($offset)) {
             $this->items[] = $value;
@@ -1343,7 +1343,7 @@ class Collection implements ArrayAccess, Enumerable
      * @param string $offset
      * @return void
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->items[$offset]);
     }
