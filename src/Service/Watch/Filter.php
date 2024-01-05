@@ -12,15 +12,15 @@ class Filter extends \RecursiveFilterIterator
     protected string $watch_ext = 'php,env';
     protected array $exclude_dir = ['vendor', 'runtime', 'public'];
 
-    public function accept()
+    public function accept(): bool
     {
         if ($this->current()->isDir()) {
-            return !(0 === strpos($this->current()->getFilename(), ".")) && !in_array($this->current()->getFilename(), $this->exclude_dir, true);
+            return !(str_starts_with($this->current()->getFilename(), ".")) && !in_array($this->current()->getFilename(), $this->exclude_dir, true);
         }
         $list = array_map(static function (string $item): string {
             return "\.$item";
         }, explode(',', $this->watch_ext));
         $list = implode('|', $list);
-        return preg_match("/($list)$/", $this->current()->getFilename());
+        return (bool)preg_match("/($list)$/", $this->current()->getFilename());
     }
 }
