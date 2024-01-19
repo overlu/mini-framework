@@ -94,7 +94,7 @@ class Handler implements HandlerInterface
      * @param Throwable $throwable
      * @throws Exception
      */
-    public function render($request, Throwable $throwable): void
+    public function render(RequestInterface|WebsocketRequestInterface $request, Throwable $throwable): void
     {
         if ($this->hasNoDontReport($throwable)) {
             if (Context::has('IsInRequestEvent')) {
@@ -119,7 +119,7 @@ class Handler implements HandlerInterface
      * @param Throwable $throwable
      * @return string|Throwable
      */
-    protected function formatException(Throwable $throwable)
+    protected function formatException(Throwable $throwable): Throwable|string
     {
         if ($this->debug) {
             return $throwable;
@@ -156,11 +156,11 @@ class Handler implements HandlerInterface
     {
         $res = [
             'exception' => get_class($throwable),
-            'exception code' => $throwable->getCode(),
-            'exception message' => $throwable->getMessage() . ' in ' . $throwable->getFile() . ':' . $throwable->getLine()
+            'exception_code' => $throwable->getCode(),
+            'exception_message' => $throwable->getMessage() . ' in ' . $throwable->getFile() . ':' . $throwable->getLine()
         ];
-        if (config('app.exception.show_trace', false)) {
-            $res['exception trace detail'] = $throwable->getTrace();
+        if (config('debugger.exception.show_trace', false)) {
+            $res['exception_trace'] = $throwable->getTrace();
         }
         return $res;
     }

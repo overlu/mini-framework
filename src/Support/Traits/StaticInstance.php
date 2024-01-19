@@ -13,13 +13,13 @@ trait StaticInstance
 {
     public static function getInstance($params = [], $refresh = false)
     {
-        $key = get_called_class();
+        $key = static::class;
         $instance = null;
         if (Context::has($key)) {
             $instance = Context::get($key);
         }
 
-        if ($refresh || is_null($instance) || !$instance instanceof static) {
+        if ($refresh || !$instance instanceof static) {
             $instance = new static(...$params);
             Context::set($key, $instance);
         }

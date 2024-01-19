@@ -20,7 +20,7 @@ class MorphOne extends MorphOneOrMany
      *
      * @return mixed
      */
-    public function getResults()
+    public function getResults(): mixed
     {
         if (is_null($this->getParentKey())) {
             return $this->getDefaultFor($this->parent);
@@ -36,7 +36,7 @@ class MorphOne extends MorphOneOrMany
      * @param string $relation
      * @return array
      */
-    public function initRelation(array $models, $relation)
+    public function initRelation(array $models, string $relation): array
     {
         foreach ($models as $model) {
             $model->setRelation($relation, $this->getDefaultFor($model));
@@ -49,11 +49,11 @@ class MorphOne extends MorphOneOrMany
      * Match the eagerly loaded results to their parents.
      *
      * @param array $models
-     * @param \Mini\Database\Mysql\Eloquent\Collection $results
+     * @param Collection $results
      * @param string $relation
      * @return array
      */
-    public function match(array $models, Collection $results, $relation)
+    public function match(array $models, Collection $results, string $relation): array
     {
         return $this->matchOne($models, $results, $relation);
     }
@@ -61,10 +61,10 @@ class MorphOne extends MorphOneOrMany
     /**
      * Make a new related instance for the given model.
      *
-     * @param \Mini\Database\Mysql\Eloquent\Model $parent
-     * @return \Mini\Database\Mysql\Eloquent\Model
+     * @param Model $parent
+     * @return Model
      */
-    public function newRelatedInstanceFor(Model $parent)
+    public function newRelatedInstanceFor(Model $parent): Model
     {
         return $this->related->newInstance()
             ->setAttribute($this->getForeignKeyName(), $parent->{$this->localKey})

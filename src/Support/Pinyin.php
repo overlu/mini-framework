@@ -6958,10 +6958,10 @@ class Pinyin
 
     /**
      * 字符串拆分成单个字的数组
-     * @param $string
+     * @param string $string
      * @return array
      */
-    private static function mbStringToArray($string): array
+    private static function mbStringToArray(string $string): array
     {
         $stop = mb_strlen($string, 'utf-8');
         $result = array();
@@ -6975,10 +6975,10 @@ class Pinyin
 
     /**
      * 汉字转拼音
-     * @param $string
+     * @param string $string
      * @param $encoding
      */
-    private static function chineseToPinyin($string, $encoding): void
+    private static function chineseToPinyin(string $string, $encoding): void
     {
         $words = self::mbStringToArray(mb_convert_encoding($string, 'utf-8', $encoding));
         self::$string = $string;
@@ -6998,7 +6998,7 @@ class Pinyin
      * @param string $encoding
      * @return string
      */
-    public static function getPinyin($string, $encoding = 'utf-8'): string
+    public static function getPinyin($string, string $encoding = 'utf-8'): string
     {
         if ($string !== self::$string || $encoding !== self::$encoding) {
             self::chineseToPinyin($string, $encoding);
@@ -7012,7 +7012,7 @@ class Pinyin
      * @param string $encoding
      * @return string
      */
-    public static function getShortPinyin($string, $encoding = 'utf-8'): string
+    public static function getShortPinyin($string, string $encoding = 'utf-8'): string
     {
         if ($string !== self::$string || $encoding !== self::$encoding) {
             self::chineseToPinyin($string, $encoding);
@@ -7022,22 +7022,22 @@ class Pinyin
 
     /**
      * 获取首字拼音
-     * @param $string
+     * @param string $string
      * @param string $encoding
      * @return string
      */
-    public static function getFirstPinyin($string, $encoding = 'utf-8'): string
+    public static function getFirstPinyin(string $string, string $encoding = 'utf-8'): string
     {
         return self::getPinyin(mb_substr($string, 0, 1, $encoding), $encoding);
     }
 
     /**
      * 获取首字缩写
-     * @param $string
+     * @param string $string
      * @param string $encoding
      * @return string
      */
-    public static function getFirstShortPinyin($string, $encoding = 'utf-8'): string
+    public static function getFirstShortPinyin(string $string, string $encoding = 'utf-8'): string
     {
         return self::getShortPinyin(mb_substr($string, 0, 1, $encoding), $encoding);
     }

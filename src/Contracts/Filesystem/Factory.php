@@ -12,8 +12,8 @@ interface Factory
     /**
      * Get a filesystem implementation.
      *
-     * @param  string|null  $name
-     * @return \Mini\Contracts\Filesystem\Filesystem
+     * @param string|null $name
+     * @return Filesystem
      */
-    public function disk($name = null);
+    public function disk(string $name = null): Filesystem;
 }

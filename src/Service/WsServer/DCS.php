@@ -92,12 +92,12 @@ class DCS implements WebsocketControllerInterface
         return '/' . sha1(config('websocket.host') . ':' . config('websocket.port') . config('websocket.secret_key')) . '/' . base64_encode(config('websocket.host') . ':' . config('websocket.port'));
     }
 
-    public function success(string $action, $data = [], string $success_message = 'succeed', int $code = 200): array
+    public function success(string $action, mixed $data = [], string $success_message = 'succeed', int $code = 200): array
     {
         return [];
     }
 
-    public function failed(string $action, $data = [], string $error_message = 'failed', int $code = 0): array
+    public function failed(string $action, mixed $data = [], string $error_message = 'failed', int $code = 0): array
     {
         return [];
     }

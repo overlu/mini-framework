@@ -30,10 +30,10 @@ class RewindableGenerator implements Countable, IteratorAggregate
      * Create a new generator instance.
      *
      * @param  callable  $generator
-     * @param  callable|int  $count
+     * @param callable|int $count
      * @return void
      */
-    public function __construct(callable $generator, $count)
+    public function __construct(callable $generator, callable|int $count)
     {
         $this->count = $count;
         $this->generator = $generator;
@@ -44,17 +44,16 @@ class RewindableGenerator implements Countable, IteratorAggregate
      *
      * @return mixed
      */
-    public function getIterator()
+    public function getIterator(): mixed
     {
         return ($this->generator)();
     }
 
     /**
      * Get the total number of tagged services.
-     *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         if (is_callable($count = $this->count)) {
             $this->count = $count();

@@ -28,7 +28,7 @@ class Table
     public array $columns = [];
 
     /** @var string|array */
-    public $body;
+    public string|array $body;
 
     /** @var string */
     public string $title = '';

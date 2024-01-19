@@ -110,7 +110,7 @@ class Response implements ResponseInterface
      *
      * @return array attributes derived from the request
      */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
@@ -124,11 +124,11 @@ class Response implements ResponseInterface
      * specifying a default value to return if the attribute is not found.
      *
      * @param string $name the attribute name
-     * @param mixed $default default value to return if the attribute does not exist
+     * @param mixed|null $default default value to return if the attribute does not exist
      * @return mixed
      * @see getAttributes()
      */
-    public function getAttribute($name, $default = null)
+    public function getAttribute(string $name, mixed $default = null): mixed
     {
         return array_key_exists($name, $this->attributes) ? $this->attributes[$name] : $default;
     }
@@ -146,7 +146,7 @@ class Response implements ResponseInterface
      * @return static
      * @see getAttributes()
      */
-    public function withAttribute($name, $value)
+    public function withAttribute(string $name, mixed $value): static
     {
         $clone = clone $this;
         $clone->attributes[$name] = $value;
@@ -180,10 +180,9 @@ class Response implements ResponseInterface
      * @param string $reasonPhrase the reason phrase to use with the
      *                             provided status code; if none is provided, implementations MAY
      *                             use the defaults as suggested in the HTTP specification
-     * @throws \InvalidArgumentException for invalid status code arguments
-     * @return static
+     * @return ResponseInterface
      */
-    public function withStatus($code, $reasonPhrase = '')
+    public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
     {
         $clone = clone $this;
         $clone->statusCode = (int) $code;
@@ -210,7 +209,7 @@ class Response implements ResponseInterface
      * @param string $charset
      * @return static
      */
-    public function withCharset(string $charset)
+    public function withCharset(string $charset): static
     {
         return $this->withAddedHeader('Content-Type', sprintf('charset=%s', $charset));
     }
@@ -331,7 +330,7 @@ class Response implements ResponseInterface
             303,
             307,
             308,
-        ]) && ($location === null ?: $location == $this->getHeaderLine('Location'));
+        ]) && ($location === null || $location === $this->getHeaderLine('Location'));
     }
 
     /**

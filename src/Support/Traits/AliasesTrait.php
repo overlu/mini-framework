@@ -17,7 +17,7 @@ trait AliasesTrait
      * Given $key and $alias to set alias
      * @param mixed $key
      * @param mixed $alias
-     * @return static
+     * @return $this
      */
     public function setAlias(string $key, string $alias): self
     {
@@ -28,7 +28,7 @@ trait AliasesTrait
     /**
      * Given $aliases and set multiple aliases
      * @param array $aliases
-     * @return static
+     * @return $this
      */
     public function setAliases(array $aliases): self
     {

@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\Support;
 
+use GdImage;
+
 /**
  *  根据字符串生成头像类
  */
@@ -15,6 +17,9 @@ class Avatar
     public string $Char;
     public int $AvatarSize;
     public float $Padding;
+    /**
+     * @var resource|GdImage|false
+     */
     public $Avatar;
     public string $FontFile;
     public bool $IsNotLetter;
@@ -39,7 +44,7 @@ class Avatar
      * @return Avatar
      * @throws \Exception
      */
-    public function create($Char, $AvatarSize = 256): Avatar
+    public function create($Char, int $AvatarSize = 256): Avatar
     {
         $this->Char = strtoupper(mb_substr($Char, 0, 1, "UTF-8"));
         $this->AvatarSize = $AvatarSize;
@@ -56,31 +61,77 @@ class Avatar
             //如果是中文，并且没有中文字体包，则按拼音首字母对其进行转换
             $CNByte = iconv("UTF-8", "gb2312", $this->Char);
             $Code = ord($CNByte[0]) * 256 + ord($CNByte[1]) - 65536;//求其偏移量
-            if ($Code >= -20319 and $Code <= -20284) $this->Char = "A";
-            if ($Code >= -20283 and $Code <= -19776) $this->Char = "B";
-            if ($Code >= -19775 and $Code <= -19219) $this->Char = "C";
-            if ($Code >= -19218 and $Code <= -18711) $this->Char = "D";
-            if ($Code >= -18710 and $Code <= -18527) $this->Char = "E";
-            if ($Code >= -18526 and $Code <= -18240) $this->Char = "F";
-            if ($Code >= -18239 and $Code <= -17923) $this->Char = "G";
-            if ($Code >= -17922 and $Code <= -17418) $this->Char = "H";
-            if ($Code >= -17417 and $Code <= -16475) $this->Char = "J";
-            if ($Code >= -16474 and $Code <= -16213) $this->Char = "K";
-            if ($Code >= -16212 and $Code <= -15641) $this->Char = "L";
-            if ($Code >= -15640 and $Code <= -15166) $this->Char = "M";
-            if ($Code >= -15165 and $Code <= -14923) $this->Char = "N";
-            if ($Code >= -14922 and $Code <= -14915) $this->Char = "O";
-            if ($Code >= -14914 and $Code <= -14631) $this->Char = "P";
-            if ($Code >= -14630 and $Code <= -14150) $this->Char = "Q";
-            if ($Code >= -14149 and $Code <= -14091) $this->Char = "R";
-            if ($Code >= -14090 and $Code <= -13319) $this->Char = "S";
-            if ($Code >= -13318 and $Code <= -12839) $this->Char = "T";
-            if ($Code >= -12838 and $Code <= -12557) $this->Char = "W";
-            if ($Code >= -12556 and $Code <= -11848) $this->Char = "X";
-            if ($Code >= -11847 and $Code <= -11056) $this->Char = "Y";
-            if ($Code >= -11055 and $Code <= -10247) $this->Char = "Z";
+            if ($Code >= -20319 && $Code <= -20284) {
+                $this->Char = "A";
+            }
+            if ($Code >= -20283 && $Code <= -19776) {
+                $this->Char = "B";
+            }
+            if ($Code >= -19775 && $Code <= -19219) {
+                $this->Char = "C";
+            }
+            if ($Code >= -19218 && $Code <= -18711) {
+                $this->Char = "D";
+            }
+            if ($Code >= -18710 && $Code <= -18527) {
+                $this->Char = "E";
+            }
+            if ($Code >= -18526 && $Code <= -18240) {
+                $this->Char = "F";
+            }
+            if ($Code >= -18239 && $Code <= -17923) {
+                $this->Char = "G";
+            }
+            if ($Code >= -17922 && $Code <= -17418) {
+                $this->Char = "H";
+            }
+            if ($Code >= -17417 && $Code <= -16475) {
+                $this->Char = "J";
+            }
+            if ($Code >= -16474 && $Code <= -16213) {
+                $this->Char = "K";
+            }
+            if ($Code >= -16212 && $Code <= -15641) {
+                $this->Char = "L";
+            }
+            if ($Code >= -15640 && $Code <= -15166) {
+                $this->Char = "M";
+            }
+            if ($Code >= -15165 && $Code <= -14923) {
+                $this->Char = "N";
+            }
+            if ($Code >= -14922 && $Code <= -14915) {
+                $this->Char = "O";
+            }
+            if ($Code >= -14914 && $Code <= -14631) {
+                $this->Char = "P";
+            }
+            if ($Code >= -14630 && $Code <= -14150) {
+                $this->Char = "Q";
+            }
+            if ($Code >= -14149 && $Code <= -14091) {
+                $this->Char = "R";
+            }
+            if ($Code >= -14090 && $Code <= -13319) {
+                $this->Char = "S";
+            }
+            if ($Code >= -13318 && $Code <= -12839) {
+                $this->Char = "T";
+            }
+            if ($Code >= -12838 && $Code <= -12557) {
+                $this->Char = "W";
+            }
+            if ($Code >= -12556 && $Code <= -11848) {
+                $this->Char = "X";
+            }
+            if ($Code >= -11847 && $Code <= -11056) {
+                $this->Char = "Y";
+            }
+            if ($Code >= -11055 && $Code <= -10247) {
+                $this->Char = "Z";
+            }
         }
-        if (in_array($this->Char, str_split('QWERTYUIOPASDFGHJKLZXCVBNM0123456789', 1))) {
+        if (in_array($this->Char, str_split('QWERTYUIOPASDFGHJKLZXCVBNM0123456789', 1), true)) {
             $this->IsNotLetter = false;
             $this->FontFile = $this->LetterFont;
         } else {
@@ -92,10 +143,10 @@ class Avatar
     }
 
     /**
-     * @return Avatar
+     * @return void
      * @throws \Exception
      */
-    private function _initialize(): Avatar
+    private function _initialize(): void
     {
         //extension_loaded('gd')
         $Width = $this->AvatarSize;//Width of avatar
@@ -414,16 +465,15 @@ class Avatar
             $this->FontFile,
             $this->Char
         );
-        return $this;
     }
 
-    private function resize($TargetSize)
+    private function resize($TargetSize): GdImage|bool
     {
         if (isset($this->Avatar)) {
             if ($this->AvatarSize > $TargetSize) {
                 $Percent = $TargetSize / $this->AvatarSize;
-                $TargetWidth = round($this->AvatarSize * $Percent);
-                $TargetHeight = round($this->AvatarSize * $Percent);
+                $TargetWidth = (int)round($this->AvatarSize * $Percent);
+                $TargetHeight = (int)round($this->AvatarSize * $Percent);
                 $TargetImageData = imagecreatetruecolor($TargetWidth, $TargetHeight);
                 //全透明背景
                 imageSaveAlpha($TargetImageData, true);
@@ -433,9 +483,9 @@ class Avatar
                 return $TargetImageData;
             }
             return $this->Avatar;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**

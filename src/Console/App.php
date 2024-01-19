@@ -22,7 +22,7 @@ class App
     ];
 
     /** @var string Current dir */
-    private string $pwd;
+    private string $pwd = '';
 
     /**
      * @var array
@@ -35,17 +35,17 @@ class App
     /**
      * @var array Parsed from `arg0 name=val var2=val2`
      */
-    private array $args;
+    private array $args = [];
 
     /**
      * @var array Parsed from `--name=val --var2=val2 -d`
      */
-    private array $opts;
+    private array $opts = [];
 
     /**
      * @var string
      */
-    private string $script;
+    private string $script = '';
 
     /**
      * @var string
@@ -174,7 +174,7 @@ class App
     /**
      * @param mixed $code
      */
-    public function stop($code = 0): void
+    public function stop(mixed $code = 0): void
     {
         if ($code) {
             Command::error('error code: ' . $code);
@@ -188,7 +188,7 @@ class App
      * @return mixed
      * @throws InvalidArgumentException
      */
-    public function runHandler(string $command, $handler)
+    public function runHandler(string $command, mixed $handler): mixed
     {
         if (is_string($handler)) {
             // function name
@@ -260,9 +260,9 @@ class App
     /**
      * @param string $command
      * @param callable $handler
-     * @param null|array|string $config
+     * @param array|string|null $config
      */
-    public function add(string $command, callable $handler, $config = null): void
+    public function add(string $command, callable $handler, array|string $config = null): void
     {
         $this->addCommand($command, $handler, $config);
     }
@@ -270,9 +270,9 @@ class App
     /**
      * @param string $command
      * @param callable $handler
-     * @param null|array|string $config
+     * @param array|string|null $config
      */
-    public function addCommand(string $command, callable $handler, $config = null): void
+    public function addCommand(string $command, callable $handler, array|string $config = null): void
     {
         if (!$command) {
             throw new InvalidArgumentException('Invalid arguments for add command');
@@ -397,22 +397,22 @@ class App
     }
 
     /**
-     * @param string|int $name
-     * @param mixed $default
+     * @param int|string $name
+     * @param mixed|null $default
      *
      * @return mixed|null
      */
-    public function getArg($name, $default = null)
+    public function getArg(int|string $name, mixed $default = null): mixed
     {
         return $this->args[$name] ?? $default;
     }
 
     /**
-     * @param $name
+     * @param int|string $name
      * @param null $default
-     * @return mixed|null
+     * @return mixed
      */
-    public function argument($name, $default = null)
+    public function argument(int|string $name, $default = null): mixed
     {
         return $this->getArg($name, $default);
     }
@@ -423,7 +423,7 @@ class App
      *
      * @return int
      */
-    public function getIntArg($name, int $default = 0): int
+    public function getIntArg(int|string $name, int $default = 0): int
     {
         return (int)$this->getArg($name, $default);
     }
@@ -434,28 +434,28 @@ class App
      *
      * @return string
      */
-    public function getStrArg($name, string $default = ''): string
+    public function getStrArg(int|string $name, string $default = ''): string
     {
         return (string)$this->getArg($name, $default);
     }
 
     /**
      * @param string $name
-     * @param mixed $default
+     * @param mixed|null $default
      *
      * @return mixed|null
      */
-    public function getOpt(string $name, $default = null)
+    public function getOpt(string $name, mixed $default = null): mixed
     {
         return $this->opts[$name] ?? $default;
     }
 
     /**
      * @param string $name
-     * @param null $default
+     * @param mixed|null $default
      * @return mixed|null
      */
-    public function option(string $name, $default = null)
+    public function option(string $name, mixed $default = null): mixed
     {
         return $this->getOpt($name, $default);
     }
@@ -744,9 +744,9 @@ class App
      * @param string $question
      * @param null $default
      * @param string $type
-     * @return mixed
+     * @return string|null
      */
-    public function ask(string $question, $default = null, string $type = 'info')
+    public function ask(string $question, $default = null, string $type = 'info'): ?string
     {
         $question = '<' . $type . '>' . $question . '</' . $type . '>';
         $result = Cli::read($question . ($default ? ' (' . $default . ')' : ''));
@@ -757,9 +757,9 @@ class App
      * @param string $question
      * @param null $default
      * @param string $type
-     * @return mixed
+     * @return string|null
      */
-    public function askLn(string $question, $default = null, string $type = 'info')
+    public function askLn(string $question, $default = null, string $type = 'info'): ?string
     {
         $question = '<' . $type . '>' . $question . '</' . $type . '>';
         $result = Cli::read($question . ($default ? ' (' . $default . ')' : ''), true);

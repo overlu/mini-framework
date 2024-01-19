@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql\Eloquent\Relations\Concerns;
 
+use Closure;
 use Mini\Database\Mysql\Eloquent\Model;
 
 trait SupportsDefaultModels
@@ -16,25 +17,25 @@ trait SupportsDefaultModels
      *
      * Alternatively, may be a Closure or array.
      *
-     * @var \Closure|array|bool
+     * @var Closure|array|bool
      */
-    protected $withDefault;
+    protected Closure|array|bool $withDefault = [];
 
     /**
      * Make a new related instance for the given model.
      *
-     * @param \Mini\Database\Mysql\Eloquent\Model $parent
-     * @return \Mini\Database\Mysql\Eloquent\Model
+     * @param Model $parent
+     * @return Model
      */
-    abstract protected function newRelatedInstanceFor(Model $parent);
+    abstract protected function newRelatedInstanceFor(Model $parent): Model;
 
     /**
      * Return a new model instance in case the relationship does not exist.
      *
-     * @param \Closure|array|bool $callback
+     * @param bool|array|Closure $callback
      * @return $this
      */
-    public function withDefault($callback = true)
+    public function withDefault(bool|array|Closure $callback = true): self
     {
         $this->withDefault = $callback;
 
@@ -44,13 +45,13 @@ trait SupportsDefaultModels
     /**
      * Get the default value for this relation.
      *
-     * @param \Mini\Database\Mysql\Eloquent\Model $parent
-     * @return \Mini\Database\Mysql\Eloquent\Model|null
+     * @param Model $parent
+     * @return Model|null
      */
-    protected function getDefaultFor(Model $parent)
+    protected function getDefaultFor(Model $parent): ?Model
     {
         if (!$this->withDefault) {
-            return;
+            return null;
         }
 
         $instance = $this->newRelatedInstanceFor($parent);

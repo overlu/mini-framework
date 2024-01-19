@@ -37,7 +37,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
      * @param int|null $ttl
      * @return bool
      */
-    public function set(string $key, $value, ?int $ttl = null): bool
+    public function set(string $key, mixed $value, ?int $ttl = null): bool
     {
         $created_at = time();
         if ($ttl <= 0 && !is_null($ttl)) {
@@ -68,10 +68,10 @@ class FileCacheCacheDriver extends AbstractCacheDriver
 
     /**
      * @param string $key
-     * @param null $default
-     * @return bool|mixed|string|null
+     * @param mixed|null $default
+     * @return mixed
      */
-    public function get(string $key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         $data = $this->getContent($key, $default);
         return $data === $default ? $data : $data['content'];
@@ -79,10 +79,10 @@ class FileCacheCacheDriver extends AbstractCacheDriver
 
     /**
      * @param string $key
-     * @param null $default
-     * @return bool|mixed|string|null
+     * @param mixed|null $default
+     * @return mixed
      */
-    protected function getContent(string $key, $default = null)
+    protected function getContent(string $key, mixed $default = null): mixed
     {
         $filename = $this->getCacheKey($key);
         if (!is_file($filename)) {
@@ -107,7 +107,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
      */
     public function inc(string $key, int $step = 1): int
     {
-        if ($value = (int)$this->getContent($key)) {
+        if (($value = $this->getContent($key)) && is_int($value['content'])) {
             $value['content'] += $step;
         } else {
             $value = [
@@ -126,7 +126,7 @@ class FileCacheCacheDriver extends AbstractCacheDriver
      */
     public function dec(string $key, int $step = 1): int
     {
-        if ($value = (int)$this->getContent($key)) {
+        if (($value = $this->getContent($key)) && is_int($value['content'])) {
             $value['content'] -= $step;
         } else {
             $value = [

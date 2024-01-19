@@ -791,7 +791,7 @@ class MimeTypeExtensionGuesser
     /**
      * Reversed from $defaultExtensions property in constructor.
      */
-    private $defaultMineTypes;
+    private array $defaultMineTypes;
 
     public function __construct()
     {

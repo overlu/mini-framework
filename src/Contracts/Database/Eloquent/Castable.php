@@ -14,5 +14,5 @@ interface Castable
      *
      * @return string|CastsAttributes|CastsInboundAttributes
      */
-    public static function castUsing();
+    public static function castUsing(): CastsInboundAttributes|string|CastsAttributes;
 }

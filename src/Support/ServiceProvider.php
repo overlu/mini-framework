@@ -12,7 +12,7 @@ use Mini\Command\AbstractCommandService;
 use Mini\Command\CommandService;
 use Mini\Container\Container;
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Contracts\ServiceProviderInterface;
+use Mini\Contracts\Service\ServiceProviderInterface;
 use Mini\Contracts\Support\DeferrableProvider;
 use Mini\View\Compilers\BladeCompiler;
 use Mini\View\Factory;
@@ -146,7 +146,6 @@ abstract class ServiceProvider implements ServiceProviderInterface
      * @param string $path
      * @param string $key
      * @return void
-     * @throws BindingResolutionException
      */
     protected function mergeConfigFrom(string $path, string $key): void
     {
@@ -160,11 +159,11 @@ abstract class ServiceProvider implements ServiceProviderInterface
     /**
      * Register a view file namespace.
      *
-     * @param string|array $path
+     * @param array|string $path
      * @param string $namespace
      * @return void
      */
-    protected function loadViewsFrom($path, string $namespace): void
+    protected function loadViewsFrom(array|string $path, string $namespace): void
     {
         $this->callAfterResolving('view', function (Factory $view) use ($path, $namespace) {
             if (isset($this->app->config['view']['paths']) &&
@@ -229,7 +228,7 @@ abstract class ServiceProvider implements ServiceProviderInterface
      * @param array|string $paths
      * @return void
      */
-    protected function loadMigrationsFrom($paths): void
+    protected function loadMigrationsFrom(array|string $paths): void
     {
         $this->callAfterResolving('migrator', function ($migrator) use ($paths) {
             foreach ((array)$paths as $path) {
@@ -244,7 +243,6 @@ abstract class ServiceProvider implements ServiceProviderInterface
      * @param string $name
      * @param Closure $callback
      * @return void
-     * @throws BindingResolutionException
      */
     protected function callAfterResolving(string $name, Closure $callback): void
     {
@@ -259,10 +257,10 @@ abstract class ServiceProvider implements ServiceProviderInterface
      * Register paths to be published by the publish command.
      *
      * @param array $paths
-     * @param mixed $groups
+     * @param mixed|null $groups
      * @return void
      */
-    protected function publishes(array $paths, $groups = null): void
+    protected function publishes(array $paths, mixed $groups = null): void
     {
         $this->ensurePublishArrayInitialized($class = static::class);
 
@@ -311,7 +309,7 @@ abstract class ServiceProvider implements ServiceProviderInterface
      * @param string|null $group
      * @return array
      */
-    public static function pathsToPublish($provider = null, $group = null): array
+    public static function pathsToPublish(string $provider = null, string $group = null): array
     {
         if (!is_null($paths = static::pathsForProviderOrGroup($provider, $group))) {
             return $paths;
@@ -388,10 +386,10 @@ abstract class ServiceProvider implements ServiceProviderInterface
     /**
      * Register the package's custom Artisan commands.
      *
-     * @param AbstractCommandService[]|AbstractCommandService $commands
+     * @param AbstractCommandService|AbstractCommandService[] $commands
      * @return void
      */
-    public function commands($commands): void
+    public function commands(array|AbstractCommandService $commands): void
     {
         CommandService::register($commands);
     }

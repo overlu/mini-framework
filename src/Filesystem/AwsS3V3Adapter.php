@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Filesystem;
 
 use Aws\S3\S3Client;
+use DateTimeInterface;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter as S3Adapter;
 use League\Flysystem\FilesystemOperator;
 
@@ -22,7 +23,7 @@ class AwsS3V3Adapter extends FilesystemAdapter
      *
      * @var S3Client
      */
-    protected $client;
+    protected S3Client $client;
 
     /**
      * Create a new AwsS3V3FilesystemAdapter instance.
@@ -43,12 +44,12 @@ class AwsS3V3Adapter extends FilesystemAdapter
     /**
      * Get the URL for the file at the given path.
      *
-     * @param  string  $path
+     * @param string $path
      * @return string
      *
      * @throws \RuntimeException
      */
-    public function url($path)
+    public function url(string $path): string
     {
         // If an explicit base URL has been set on the disk configuration then we will use
         // it as the base URL instead of the default path. This allows the developer to
@@ -65,12 +66,12 @@ class AwsS3V3Adapter extends FilesystemAdapter
     /**
      * Get a temporary URL for the file at the given path.
      *
-     * @param  string  $path
-     * @param  \DateTimeInterface  $expiration
+     * @param string $path
+     * @param DateTimeInterface $expiration
      * @param  array  $options
      * @return string
      */
-    public function temporaryUrl($path, $expiration, array $options = [])
+    public function temporaryUrl(string $path, DateTimeInterface $expiration, array $options = []): string
     {
         $command = $this->client->getCommand('GetObject', array_merge([
             'Bucket' => $this->config['bucket'],

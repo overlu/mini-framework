@@ -32,7 +32,7 @@ class Client
      * @param string $dcs_action
      * @param mixed $arrData
      */
-    public function push(array $client, string $dcs_action, $arrData = []): void
+    public function push(array $client, string $dcs_action, mixed $arrData = []): void
     {
         $data = json_encode([
             'fd' => $client['fd'],

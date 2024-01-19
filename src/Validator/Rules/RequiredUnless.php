@@ -34,7 +34,6 @@ class RequiredUnless extends Required
      * Check the $value is valid
      * @param mixed $value
      * @return bool
-     * @throws MissingRequiredParameterException|\Mini\Exception\RuleNotFoundException
      */
     public function check($value): bool
     {

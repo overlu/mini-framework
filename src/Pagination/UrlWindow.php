@@ -14,14 +14,14 @@ class UrlWindow
     /**
      * The paginator implementation.
      *
-     * @var \Mini\Contracts\Pagination\LengthAwarePaginator
+     * @var PaginatorContract
      */
-    protected $paginator;
+    protected PaginatorContract $paginator;
 
     /**
      * Create a new URL window instance.
      *
-     * @param \Mini\Contracts\Pagination\LengthAwarePaginator $paginator
+     * @param PaginatorContract $paginator
      * @return void
      */
     public function __construct(PaginatorContract $paginator)
@@ -32,10 +32,10 @@ class UrlWindow
     /**
      * Create a new URL window instance.
      *
-     * @param \Mini\Contracts\Pagination\LengthAwarePaginator $paginator
+     * @param PaginatorContract $paginator
      * @return array
      */
-    public static function make(PaginatorContract $paginator): ?array
+    public static function make(PaginatorContract $paginator): array
     {
         return (new static($paginator))->get();
     }
@@ -45,7 +45,7 @@ class UrlWindow
      *
      * @return array
      */
-    public function get(): ?array
+    public function get(): array
     {
         $onEachSide = $this->paginator->onEachSide;
 
@@ -76,7 +76,7 @@ class UrlWindow
      * @param int $onEachSide
      * @return array
      */
-    protected function getUrlSlider($onEachSide): array
+    protected function getUrlSlider(int $onEachSide): array
     {
         $window = $onEachSide + 4;
 
@@ -91,12 +91,13 @@ class UrlWindow
             return $this->getSliderTooCloseToBeginning($window, $onEachSide);
         }
 
+        if ($this->currentPage() > ($this->lastPage() - $window)) {
+            return $this->getSliderTooCloseToEnding($window, $onEachSide);
+        }
+
         // If the current page is close to the ending of the page range we will just get
         // this first couple pages, followed by a larger window of these ending pages
         // since we're too close to the end of the list to create a full on slider.
-        elseif ($this->currentPage() > ($this->lastPage() - $window)) {
-            return $this->getSliderTooCloseToEnding($window, $onEachSide);
-        }
 
         // If we have enough room on both sides of the current page to build a slider we
         // will surround it with both the beginning and ending caps, with this window
@@ -111,7 +112,7 @@ class UrlWindow
      * @param int $onEachSide
      * @return array
      */
-    protected function getSliderTooCloseToBeginning($window, $onEachSide): array
+    protected function getSliderTooCloseToBeginning(int $window, int $onEachSide): array
     {
         return [
             'first' => $this->paginator->getUrlRange(1, $window + $onEachSide),
@@ -127,7 +128,7 @@ class UrlWindow
      * @param int $onEachSide
      * @return array
      */
-    protected function getSliderTooCloseToEnding($window, $onEachSide): array
+    protected function getSliderTooCloseToEnding(int $window, int $onEachSide): array
     {
         $last = $this->paginator->getUrlRange(
             $this->lastPage() - ($window + ($onEachSide - 1)),
@@ -147,7 +148,7 @@ class UrlWindow
      * @param int $onEachSide
      * @return array
      */
-    protected function getFullSlider($onEachSide): array
+    protected function getFullSlider(int $onEachSide): array
     {
         return [
             'first' => $this->getStart(),
@@ -162,7 +163,7 @@ class UrlWindow
      * @param int $onEachSide
      * @return array
      */
-    public function getAdjacentUrlRange($onEachSide): array
+    public function getAdjacentUrlRange(int $onEachSide): array
     {
         return $this->paginator->getUrlRange(
             $this->currentPage() - $onEachSide,

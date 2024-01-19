@@ -9,7 +9,7 @@ namespace Mini\Session;
 
 use Exception;
 use Mini\Contracts\HttpMessage\SessionInterface;
-use Mini\Contracts\MiddlewareInterface;
+use Mini\Contracts\Middleware\MiddlewareInterface;
 use Mini\Service\HttpMessage\Cookie\Cookie;
 use Psr\Http\Message\ResponseInterface;
 

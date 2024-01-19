@@ -48,15 +48,11 @@ class Bootstrap
 
     public static function initial(): void
     {
-        ini_set('display_errors', config('app.debug') === true ? 'on' : 'off');
+        ini_set('display_errors', config('debugger.debug') === true ? 'on' : 'off');
         ini_set('display_startup_errors', 'on');
         ini_set('date.timezone', config('app.timezone', 'UTC'));
     }
 
-    /**
-     * @throws Contracts\Container\BindingResolutionException
-     * @throws ReflectionException
-     */
     private function __construct()
     {
         $this->initMiddleware();
@@ -65,8 +61,6 @@ class Bootstrap
 
     /**
      * @return void
-     * @throws Contracts\Container\BindingResolutionException
-     * @throws ReflectionException
      */
     public function initMiddleware(): void
     {
@@ -77,8 +71,6 @@ class Bootstrap
 
     /**
      * @return void
-     * @throws Contracts\Container\BindingResolutionException
-     * @throws ReflectionException
      */
     public function initProviderService(): void
     {

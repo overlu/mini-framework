@@ -15,7 +15,7 @@ trait Singleton
      * @param mixed ...$args
      * @return Singleton|static
      */
-    public static function getInstance(...$args): self
+    public static function getInstance(...$args): static
     {
         return static::$instance ?? (static::$instance = new static(...$args));
     }

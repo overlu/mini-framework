@@ -21,9 +21,9 @@ final class StrBuffer
     /**
      * @param string $content
      *
-     * @return static
+     * @return StrBuffer
      */
-    public static function new(string $content): self
+    public static function new(string $content): StrBuffer
     {
         return new self($content);
     }

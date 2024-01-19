@@ -17,7 +17,7 @@ trait TranslationsTrait
      * Given $key and $translation to set translation
      * @param mixed $key
      * @param mixed $translation
-     * @return static
+     * @return $this
      */
     public function setTranslation(string $key, string $translation): self
     {
@@ -28,7 +28,7 @@ trait TranslationsTrait
     /**
      * Given $translations and set multiple translations
      * @param array $translations
-     * @return static
+     * @return $this
      */
     public function setTranslations(array $translations): self
     {

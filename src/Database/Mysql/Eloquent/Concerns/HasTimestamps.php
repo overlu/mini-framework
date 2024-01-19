@@ -3,6 +3,7 @@
  * This file is part of Mini.
  * @auth lupeng
  */
+
 namespace Mini\Database\Mysql\Eloquent\Concerns;
 
 use Carbon\Carbon;
@@ -21,9 +22,9 @@ trait HasTimestamps
      *
      * @return bool
      */
-    public function touch()
+    public function touch(): bool
     {
-        if (! $this->usesTimestamps()) {
+        if (!$this->usesTimestamps()) {
             return false;
         }
 
@@ -37,19 +38,19 @@ trait HasTimestamps
      *
      * @return void
      */
-    protected function updateTimestamps()
+    protected function updateTimestamps(): void
     {
         $time = $this->freshTimestamp();
 
         $updatedAtColumn = $this->getUpdatedAtColumn();
 
-        if (! is_null($updatedAtColumn) && ! $this->isDirty($updatedAtColumn)) {
+        if (!is_null($updatedAtColumn) && !$this->isDirty($updatedAtColumn)) {
             $this->setUpdatedAt($time);
         }
 
         $createdAtColumn = $this->getCreatedAtColumn();
 
-        if (! $this->exists && ! is_null($createdAtColumn) && ! $this->isDirty($createdAtColumn)) {
+        if (!$this->exists && !is_null($createdAtColumn) && !$this->isDirty($createdAtColumn)) {
             $this->setCreatedAt($time);
         }
     }
@@ -57,10 +58,10 @@ trait HasTimestamps
     /**
      * Set the value of the "created at" attribute.
      *
-     * @param  mixed  $value
+     * @param mixed $value
      * @return $this
      */
-    public function setCreatedAt($value)
+    public function setCreatedAt(mixed $value): self
     {
         $this->{$this->getCreatedAtColumn()} = $value;
 
@@ -70,10 +71,10 @@ trait HasTimestamps
     /**
      * Set the value of the "updated at" attribute.
      *
-     * @param  mixed  $value
+     * @param mixed $value
      * @return $this
      */
-    public function setUpdatedAt($value)
+    public function setUpdatedAt(mixed $value): self
     {
         $this->{$this->getUpdatedAtColumn()} = $value;
 
@@ -85,7 +86,7 @@ trait HasTimestamps
      *
      * @return Carbon
      */
-    public function freshTimestamp()
+    public function freshTimestamp(): Carbon
     {
         return Carbon::now();
     }
@@ -95,7 +96,7 @@ trait HasTimestamps
      *
      * @return string
      */
-    public function freshTimestampString()
+    public function freshTimestampString(): string
     {
         return $this->fromDateTime($this->freshTimestamp());
     }
@@ -105,7 +106,7 @@ trait HasTimestamps
      *
      * @return bool
      */
-    public function usesTimestamps()
+    public function usesTimestamps(): bool
     {
         return $this->timestamps;
     }
@@ -115,7 +116,7 @@ trait HasTimestamps
      *
      * @return string
      */
-    public function getCreatedAtColumn()
+    public function getCreatedAtColumn(): string
     {
         return static::CREATED_AT;
     }
@@ -125,7 +126,7 @@ trait HasTimestamps
      *
      * @return string
      */
-    public function getUpdatedAtColumn()
+    public function getUpdatedAtColumn(): string
     {
         return static::UPDATED_AT;
     }
@@ -135,7 +136,7 @@ trait HasTimestamps
      *
      * @return string
      */
-    public function getQualifiedCreatedAtColumn()
+    public function getQualifiedCreatedAtColumn(): string
     {
         return $this->qualifyColumn($this->getCreatedAtColumn());
     }
@@ -145,7 +146,7 @@ trait HasTimestamps
      *
      * @return string
      */
-    public function getQualifiedUpdatedAtColumn()
+    public function getQualifiedUpdatedAtColumn(): string
     {
         return $this->qualifyColumn($this->getUpdatedAtColumn());
     }

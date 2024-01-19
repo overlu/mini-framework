@@ -15,9 +15,8 @@ class MissingAppKeyException extends RuntimeException
      * Create a new exception instance.
      *
      * @param string $message
-     * @return void
      */
-    public function __construct($message = 'No application encryption key has been specified.')
+    public function __construct(string $message = 'No application encryption key has been specified.')
     {
         parent::__construct($message);
     }

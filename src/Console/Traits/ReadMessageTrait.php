@@ -22,13 +22,13 @@ trait ReadMessageTrait
     /**
      * Read message from STDIN
      *
-     * @param mixed $message
+     * @param mixed|null $message
      * @param bool $nl
      * @param array $opts
      *
      * @return string
      */
-    public static function read($message = null, bool $nl = false, array $opts = []): string
+    public static function read(mixed $message = null, bool $nl = false, array $opts = []): string
     {
         if ($message) {
             self::write($message, $nl);

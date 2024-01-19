@@ -15,7 +15,7 @@ class Format
      * @param mixed $val
      * @return string
      */
-    public static function typeToString($val): string
+    public static function typeToString(mixed $val): string
     {
         if (null === $val) {
             return '(Null)';
@@ -213,7 +213,6 @@ class Format
             if (is_array($value)) {
                 $temp = '[';
 
-                /** @var array $value */
                 foreach ($value as $k => $val) {
                     if (is_bool($val)) {
                         $val = $val ? '(True)' : '(False)';
@@ -241,7 +240,7 @@ class Format
     /**
      * @return array|bool
      */
-    public static function getScreenSize()
+    public static function getScreenSize(): array|bool
     {
         $stty = [];
         if (exec('stty -a 2>&1', $stty) && preg_match('/rows\s+(\d+);\s*columns\s+(\d+);/mi', implode(' ', $stty), $matches)) {
@@ -274,7 +273,7 @@ class Format
             // key is not an integer
             if (!$expectInt || !is_numeric($key)) {
                 $width = mb_strlen((string)$key, 'UTF-8');
-                $keyMaxWidth = $width > $keyMaxWidth ? $width : $keyMaxWidth;
+                $keyMaxWidth = max($width, $keyMaxWidth);
             }
         }
         return $keyMaxWidth;

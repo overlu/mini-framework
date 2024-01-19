@@ -20,23 +20,23 @@ interface RequestInterface extends ServerRequestInterface
     /**
      * Retrieve the data from query parameters, if $key is null, will return all query parameters.
      * @param string|null $key
-     * @param mixed $default
+     * @param mixed|null $default
      */
-    public function query(?string $key = null, $default = null);
+    public function query(?string $key = null, mixed $default = null);
 
     /**
      * Retrieve the data from parsed body, if $key is null, will return all parsed body.
      * @param string|null $key
      * @param mixed $default
      */
-    public function post(?string $key = null, $default = null);
+    public function post(?string $key = null, mixed $default = null): mixed;
 
     /**
      * Retrieve the input data from request, include query parameters, parsed body and json body.
      * @param string $key
      * @param mixed $default
      */
-    public function input(string $key, $default = null);
+    public function input(string $key, mixed $default = null): mixed;
 
     /**
      * Retrieve the input data from request via multi keys, include query parameters, parsed body and json body.
@@ -44,7 +44,7 @@ interface RequestInterface extends ServerRequestInterface
      * @param mixed $default
      * @return array
      */
-    public function inputs(array $keys, $default = null): array;
+    public function inputs(array $keys, mixed $default = null): array;
 
     /**
      * Determine if the $keys is exist in parameters.
@@ -59,14 +59,14 @@ interface RequestInterface extends ServerRequestInterface
      * @param array|string $keys
      * @return bool
      */
-    public function has($keys): bool;
+    public function has(array|string $keys): bool;
 
     /**
      * Retrieve the data from request headers.
      * @param string $key
      * @param mixed $default
      */
-    public function header(string $key, $default = null);
+    public function header(string $key, mixed $default = null);
 
     /**
      * Returns the path being requested relative to the executed script.
@@ -99,7 +99,7 @@ interface RequestInterface extends ServerRequestInterface
      *
      * @return string The raw URI (i.e. not URI decoded)
      */
-    public function getRequestUri();
+    public function getRequestUri(): string;
 
     /**
      * Get the URL (no query string) for the request.
@@ -137,7 +137,7 @@ interface RequestInterface extends ServerRequestInterface
      * @param string $key
      * @param null|mixed $default
      */
-    public function cookie(string $key, $default = null);
+    public function cookie(string $key, mixed $default = null): mixed;
 
     /**
      * Determine if a cookie is set on the request.
@@ -153,7 +153,7 @@ interface RequestInterface extends ServerRequestInterface
      * @param null|mixed $default
      * @return null|array|string
      */
-    public function server(string $key, $default = null);
+    public function server(string $key, mixed $default = null): mixed;
 
     /**
      * Checks if the request method is of specified type.
@@ -167,10 +167,10 @@ interface RequestInterface extends ServerRequestInterface
      * Retrieve a file from the request.
      *
      * @param string $key
-     * @param null|mixed $default
+     * @param mixed|null $default
      * @return null|UploadedFile|UploadedFile[]
      */
-    public function file(string $key, $default = null);
+    public function file(string $key, mixed $default = null): UploadedFile|array|null;
 
     /**
      * Determine if the uploaded data contains a file.

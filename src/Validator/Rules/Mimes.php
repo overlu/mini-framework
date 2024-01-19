@@ -19,11 +19,11 @@ class Mimes extends Rule
     /** @var string */
     protected string $message = "The :attribute file type must be :allowed_types";
 
-    /** @var string|int */
-    protected ?int $maxSize = null;
+    /** @var int|string|null */
+    protected int|string|null $maxSize = null;
 
-    /** @var string|int */
-    protected ?int $minSize = null;
+    /** @var int|string|null */
+    protected int|string|null $minSize = null;
 
     /** @var array */
     protected array $allowedTypes = [];
@@ -44,7 +44,7 @@ class Mimes extends Rule
      * @param mixed $types
      * @return self
      */
-    public function allowTypes($types): Rule
+    public function allowTypes(mixed $types): Rule
     {
         if (is_string($types)) {
             $types = explode('|', $types);

@@ -53,10 +53,10 @@ class Helper
      * Get an item from an array using "dot" notation.
      * @param array $array
      * @param string|null $key
-     * @param mixed $default
+     * @param mixed|null $default
      * @return mixed
      */
-    public static function arrayGet(array $array, $key, $default = null)
+    public static function arrayGet(array $array, ?string $key, mixed $default = null): mixed
     {
         if (is_null($key)) {
             return $array;
@@ -101,12 +101,12 @@ class Helper
     /**
      * Set an item on an array or object using dot notation.
      * @param mixed $target
-     * @param string|array|null $key
+     * @param array|string|null $key
      * @param mixed $value
      * @param bool $overwrite
-     * @return mixed
+     * @return array
      */
-    public static function arraySet(&$target, $key, $value, $overwrite = true): array
+    public static function arraySet(mixed &$target, array|string|null $key, mixed $value, bool $overwrite = true): array
     {
         if (is_null($key)) {
             if ($overwrite) {
@@ -157,10 +157,10 @@ class Helper
     /**
      * Unset an item on an array or object using dot notation.
      * @param mixed $target
-     * @param string|array $key
+     * @param array|string $key
      * @return mixed
      */
-    public static function arrayUnset(&$target, $key)
+    public static function arrayUnset(mixed &$target, array|string $key): mixed
     {
         if (!is_array($target)) {
             return $target;
@@ -214,14 +214,11 @@ class Helper
 
         $last = array_pop($pieces);
 
-        switch (count($pieces)) {
-            case 0:
-                return $last ?: '';
-            case 1:
-                return $pieces[0] . $lastSeparator . $last;
-            default:
-                return implode($separator, $pieces) . $lastSeparator . $last;
-        }
+        return match (count($pieces)) {
+            0 => $last ?: '',
+            1 => $pieces[0] . $lastSeparator . $last,
+            default => implode($separator, $pieces) . $lastSeparator . $last,
+        };
     }
 
     /**

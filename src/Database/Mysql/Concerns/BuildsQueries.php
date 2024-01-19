@@ -8,8 +8,11 @@ declare(strict_types=1);
 namespace Mini\Database\Mysql\Concerns;
 
 use Mini\Container\Container;
+use Mini\Database\Mysql\Eloquent\Builder;
+use Mini\Database\Mysql\Eloquent\Model;
 use Mini\Pagination\LengthAwarePaginator;
 use Mini\Pagination\Paginator;
+use Mini\Support\Collection;
 
 trait BuildsQueries
 {
@@ -20,7 +23,7 @@ trait BuildsQueries
      * @param callable $callback
      * @return bool
      */
-    public function chunk($count, callable $callback): bool
+    public function chunk(int $count, callable $callback): bool
     {
         $this->enforceOrderBy();
 
@@ -60,7 +63,7 @@ trait BuildsQueries
      * @param int $count
      * @return bool
      */
-    public function each(callable $callback, $count = 1000): bool
+    public function each(callable $callback, int $count = 1000): bool
     {
         return $this->chunk($count, static function ($results) use ($callback) {
             foreach ($results as $key => $value) {
@@ -80,7 +83,7 @@ trait BuildsQueries
      * @param string|null $alias
      * @return bool
      */
-    public function chunkById($count, callable $callback, $column = null, $alias = null): bool
+    public function chunkById(int $count, callable $callback, string $column = null, string $alias = null): bool
     {
         $column = $column ?? $this->defaultKeyName();
 
@@ -126,7 +129,7 @@ trait BuildsQueries
      * @param string|null $alias
      * @return bool
      */
-    public function eachById(callable $callback, $count = 1000, $column = null, $alias = null): bool
+    public function eachById(callable $callback, int $count = 1000, string $column = null, string $alias = null): bool
     {
         return $this->chunkById($count, static function ($results) use ($callback) {
             foreach ($results as $key => $value) {
@@ -141,9 +144,9 @@ trait BuildsQueries
      * Execute the query and get the first result.
      *
      * @param array|string $columns
-     * @return \Mini\Database\Mysql\Eloquent\Model|object|static|null
+     * @return Model|object|static|null
      */
-    public function first($columns = ['*'])
+    public function first(array|string $columns = ['*']): mixed
     {
         return $this->take(1)->get($columns)->first();
     }
@@ -156,7 +159,7 @@ trait BuildsQueries
      * @param callable|null $default
      * @return mixed|$this
      */
-    public function when($value, $callback, $default = null)
+    public function when(mixed $value, callable $callback, callable $default = null): mixed
     {
         if ($value) {
             return $callback($this, $value) ?: $this;
@@ -173,9 +176,9 @@ trait BuildsQueries
      * Pass the query to a given callback.
      *
      * @param callable $callback
-     * @return $this
+     * @return BuildsQueries|Builder|\Mini\Database\Mysql\Query\Builder
      */
-    public function tap($callback): self
+    public function tap(callable $callback): self
     {
         return $this->when(true, $callback);
     }
@@ -188,7 +191,7 @@ trait BuildsQueries
      * @param callable|null $default
      * @return mixed|$this
      */
-    public function unless($value, $callback, $default = null)
+    public function unless(mixed $value, callable $callback, callable $default = null): mixed
     {
         if (!$value) {
             return $callback($this, $value) ?: $this;
@@ -204,15 +207,14 @@ trait BuildsQueries
     /**
      * Create a new length-aware paginator instance.
      *
-     * @param \Mini\Support\Collection $items
+     * @param Collection $items
      * @param int $total
      * @param int $perPage
      * @param int $currentPage
      * @param array $options
-     * @return \Mini\Pagination\LengthAwarePaginator
-     * @throws \Mini\Contracts\Container\BindingResolutionException
+     * @return LengthAwarePaginator
      */
-    protected function paginator($items, $total, $perPage, $currentPage, $options): LengthAwarePaginator
+    protected function paginator(Collection $items, int $total, int $perPage, int $currentPage, array $options): LengthAwarePaginator
     {
         return Container::getInstance()->makeWith(LengthAwarePaginator::class, compact(
             'items', 'total', 'perPage', 'currentPage', 'options'
@@ -222,14 +224,13 @@ trait BuildsQueries
     /**
      * Create a new simple paginator instance.
      *
-     * @param \Mini\Support\Collection $items
+     * @param Collection $items
      * @param int $perPage
      * @param int $currentPage
      * @param array $options
-     * @return \Mini\Pagination\Paginator
-     * @throws \Mini\Contracts\Container\BindingResolutionException
+     * @return Paginator
      */
-    protected function simplePaginator($items, $perPage, $currentPage, $options): Paginator
+    protected function simplePaginator(Collection $items, int $perPage, int $currentPage, array $options): Paginator
     {
         return Container::getInstance()->makeWith(Paginator::class, compact(
             'items', 'perPage', 'currentPage', 'options'

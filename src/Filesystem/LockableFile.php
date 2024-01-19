@@ -27,14 +27,14 @@ class LockableFile
      *
      * @var string
      */
-    protected $path;
+    protected string $path;
 
     /**
      * Indicates if the file is locked.
      *
      * @var bool
      */
-    protected $isLocked = false;
+    protected bool $isLocked = false;
 
     /**
      * Create a new File instance.
@@ -43,7 +43,7 @@ class LockableFile
      * @param string $mode
      * @return void
      */
-    public function __construct($path, $mode)
+    public function __construct(string $path, string $mode)
     {
         $this->path = $path;
 
@@ -57,7 +57,7 @@ class LockableFile
      * @param string $path
      * @return void
      */
-    protected function ensureDirectoryExists($path)
+    protected function ensureDirectoryExists(string $path): void
     {
         if (!file_exists(dirname($path))) {
             @mkdir(dirname($path), 0777, true);
@@ -71,7 +71,7 @@ class LockableFile
      * @param string $mode
      * @return void
      */
-    protected function createResource($path, $mode)
+    protected function createResource(string $path, string $mode): void
     {
         $this->handle = @fopen($path, $mode);
     }
@@ -82,7 +82,7 @@ class LockableFile
      * @param int|null $length
      * @return string
      */
-    public function read($length = null)
+    public function read(int $length = null): string
     {
         clearstatcache(true, $this->path);
 
@@ -94,7 +94,7 @@ class LockableFile
      *
      * @return int
      */
-    public function size()
+    public function size(): int
     {
         return filesize($this->path);
     }
@@ -103,9 +103,8 @@ class LockableFile
      * Write to the file.
      *
      * @param string $contents
-     * @return string
      */
-    public function write($contents)
+    public function write(string $contents): self
     {
         fwrite($this->handle, $contents);
 
@@ -119,7 +118,7 @@ class LockableFile
      *
      * @return $this
      */
-    public function truncate()
+    public function truncate(): self
     {
         rewind($this->handle);
 
@@ -134,7 +133,7 @@ class LockableFile
      * @param bool $block
      * @return $this
      */
-    public function getSharedLock($block = false)
+    public function getSharedLock(bool $block = false): self
     {
         if (!flock($this->handle, LOCK_SH | ($block ? 0 : LOCK_NB))) {
             throw new LockTimeoutException("Unable to acquire file lock at path [{$this->path}].");
@@ -149,9 +148,10 @@ class LockableFile
      * Get an exclusive lock on the file.
      *
      * @param bool $block
-     * @return bool
+     * @return LockableFile
+     * @throws LockTimeoutException
      */
-    public function getExclusiveLock($block = false)
+    public function getExclusiveLock(bool $block = false): self
     {
         if (!flock($this->handle, LOCK_EX | ($block ? 0 : LOCK_NB))) {
             throw new LockTimeoutException("Unable to acquire file lock at path [{$this->path}].");
@@ -167,7 +167,7 @@ class LockableFile
      *
      * @return $this
      */
-    public function releaseLock()
+    public function releaseLock(): self
     {
         flock($this->handle, LOCK_UN);
 
@@ -181,7 +181,7 @@ class LockableFile
      *
      * @return bool
      */
-    public function close()
+    public function close(): bool
     {
         if ($this->isLocked) {
             $this->releaseLock();

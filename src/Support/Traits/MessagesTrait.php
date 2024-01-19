@@ -17,7 +17,7 @@ trait MessagesTrait
      * Given $key and $message to set message
      * @param mixed $key
      * @param mixed $message
-     * @return static
+     * @return $this
      */
     public function setMessage(string $key, string $message): self
     {
@@ -28,7 +28,7 @@ trait MessagesTrait
     /**
      * Given $messages and set multiple messages
      * @param array $messages
-     * @return static
+     * @return $this
      */
     public function setMessages(array $messages): self
     {

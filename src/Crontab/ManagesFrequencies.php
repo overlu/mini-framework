@@ -15,7 +15,7 @@ trait ManagesFrequencies
      * The Cron expression representing the event's frequency.
      *
      * @param string $expression
-     * @return $this
+     * @return ManagesFrequencies|AbstractCrontabTask
      */
     public function cron(string $expression): self
     {
@@ -180,10 +180,10 @@ trait ManagesFrequencies
     /**
      * Schedule the event to run hourly at a given offset in the hour.
      *
-     * @param array|int $offset
+     * @param int|array $offset
      * @return string
      */
-    public function hourlyAt($offset): string
+    public function hourlyAt(int|array $offset): string
     {
         $time = is_array($offset) ? implode(',', $offset) : $offset;
 
@@ -390,7 +390,7 @@ trait ManagesFrequencies
      * @param string $time
      * @return string
      */
-    public function weeklyOn($dayOfWeek, string $time = '0:0'): string
+    public function weeklyOn(mixed $dayOfWeek, string $time = '0:0'): string
     {
         $this->dailyAt($time);
 
@@ -489,7 +489,7 @@ trait ManagesFrequencies
      * @param string $time
      * @return string
      */
-    public function yearlyOn(int $month = 1, $dayOfMonth = 1, string $time = '0:0'): string
+    public function yearlyOn(int $month = 1, int|string $dayOfMonth = 1, string $time = '0:0'): string
     {
         $this->dailyAt($time);
 
@@ -503,7 +503,7 @@ trait ManagesFrequencies
      *
      * @param array|mixed $days
      */
-    public function days($days): string
+    public function days(mixed $days): string
     {
         $days = is_array($days) ? $days : func_get_args();
 
@@ -514,10 +514,10 @@ trait ManagesFrequencies
      * Splice the given value into the given position of the expression.
      *
      * @param int $position
-     * @param string|int $value
-     * @return $this
+     * @param int|string $value
+     * @return ManagesFrequencies|AbstractCrontabTask
      */
-    protected function spliceIntoPosition(int $position, $value): self
+    protected function spliceIntoPosition(int $position, int|string $value): self
     {
         $segments = explode(' ', $this->expression);
 

@@ -43,10 +43,10 @@ interface SessionInterface
      * Get the value of a given key and then forget it.
      *
      * @param string $key
-     * @param mixed $default
+     * @param mixed|null $default
      * @return mixed
      */
-    public function pull(string $key, $default = null);
+    public function pull(string $key, mixed $default = null): mixed;
 
     /**
      * Sets the session name.
@@ -67,7 +67,7 @@ interface SessionInterface
      * @param bool $destroy
      * @return bool
      */
-    public function migrate($destroy = false): bool;
+    public function migrate(bool $destroy = false): bool;
 
     /**
      * Force the session to be saved and closed.
@@ -81,33 +81,33 @@ interface SessionInterface
     /**
      * Checks if a key is present and not null.
      *
-     * @param string|array $key
+     * @param array|string $key
      * @return bool
      */
-    public function has($key): bool;
+    public function has(array|string $key): bool;
 
     /**
      * Returns an attribute.
      *
      * @param string $name The attribute name
-     * @param mixed $default The default value if not found
+     * @param mixed|null $default The default value if not found
      */
-    public function get(string $name, $default = null);
+    public function get(string $name, mixed $default = null): mixed;
 
     /**
      * Sets an attribute.
      * @param string $name
      * @param mixed $value
      */
-    public function set(string $name, $value): void;
+    public function set(string $name, mixed $value): void;
 
     /**
      * Put a key / value pair or array of key / value pairs in the session.
      *
      * @param array|string $key
-     * @param null|mixed $value
+     * @param mixed|null $value
      */
-    public function put($key, $value = null): void;
+    public function put(array|string $key, mixed $value = null): void;
 
     /**
      * Returns attributes.
@@ -126,14 +126,14 @@ interface SessionInterface
      * @param string $name
      * @return mixed The removed value or null when it does not exist
      */
-    public function remove(string $name);
+    public function remove(string $name): mixed;
 
     /**
      * Remove one or many items from the session.
      *
      * @param array|string $keys
      */
-    public function forget($keys): void;
+    public function forget(array|string $keys): void;
 
     /**
      * Clears all attributes.

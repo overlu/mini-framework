@@ -59,7 +59,7 @@ class Adapter implements FilesystemAdapter
     protected array $config;
 
     /**
-     * @param $config = [
+     * @param array $config = [
      *     'access_id' => '',
      *     'access_secret' => '',
      *     'bucket' => '',
@@ -72,7 +72,7 @@ class Adapter implements FilesystemAdapter
      * ]
      * @throws BindingResolutionException
      */
-    public function __construct($config = [])
+    public function __construct(array $config = [])
     {
         $this->config = $config;
         $this->bucket = $this->config['bucket'];
@@ -377,7 +377,7 @@ class Adapter implements FilesystemAdapter
      * @param $method
      * @return bool|string
      */
-    public function signUrl($path, $timeout, array $options = [], $method = OssClient::OSS_HTTP_GET)
+    public function signUrl($path, $timeout, array $options = [], $method = OssClient::OSS_HTTP_GET): bool|string
     {
         return $this->client->signUrl($this->bucket, $path, $timeout, $method, $options);
     }
@@ -391,7 +391,7 @@ class Adapter implements FilesystemAdapter
      * @param $method
      * @return bool|string
      */
-    public function getTemporaryUrl($path, $expiration, array $options = [], $method = OssClient::OSS_HTTP_GET)
+    public function getTemporaryUrl($path, $expiration, array $options = [], $method = OssClient::OSS_HTTP_GET): bool|string
     {
         return $this->signUrl($path, Carbon::now()->diffInSeconds($expiration), $options, $method);
     }
@@ -421,10 +421,10 @@ class Adapter implements FilesystemAdapter
      */
     protected function checkEndpoint(): void
     {
-        if (0 === strpos($this->endpoint, 'http://')) {
+        if (str_starts_with($this->endpoint, 'http://')) {
             $this->endpoint = substr($this->endpoint, strlen('http://'));
             $this->useSSL = false;
-        } elseif (0 === strpos($this->endpoint, 'https://')) {
+        } elseif (str_starts_with($this->endpoint, 'https://')) {
             $this->endpoint = substr($this->endpoint, strlen('https://'));
             $this->useSSL = true;
         }

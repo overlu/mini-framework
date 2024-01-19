@@ -17,7 +17,7 @@ class Di
 
 
     /**
-     * @param $key
+     * @param string $key
      * @param $obj
      * @param mixed ...$arg
      */
@@ -35,7 +35,7 @@ class Di
     }
 
     /**
-     * @param $key
+     * @param string $key
      */
     public function delete(string $key): void
     {
@@ -53,7 +53,7 @@ class Di
      * @param array $params
      * @return mixed|null
      */
-    public function make(string $key, array $params = [])
+    public function make(string $key, array $params = []): mixed
     {
         $key = $this->aliases[$key] ?? $key;
         if (isset($this->container[$key])) {

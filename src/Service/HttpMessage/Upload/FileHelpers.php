@@ -14,16 +14,16 @@ trait FileHelpers
     /**
      * The cache copy of the file's hash name.
      *
-     * @var string
+     * @var string|null
      */
-    protected $hashName = null;
+    protected ?string $hashName = null;
 
     /**
      * Get the fully qualified path to the file.
      *
      * @return string
      */
-    public function path()
+    public function path(): string
     {
         return $this->getRealPath();
     }
@@ -33,7 +33,7 @@ trait FileHelpers
      *
      * @return string
      */
-    public function extension()
+    public function extension(): string
     {
         return $this->getExtension();
     }
@@ -44,7 +44,7 @@ trait FileHelpers
      * @param string|null $path
      * @return string
      */
-    public function hashName($path = null)
+    public function hashName(string $path = null): string
     {
         if ($path) {
             $path = rtrim($path, '/') . '/';

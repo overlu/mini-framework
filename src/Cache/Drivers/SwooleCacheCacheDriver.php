@@ -50,10 +50,10 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
 
     /**
      * @param string $key
-     * @param null $default
-     * @return mixed|null
+     * @param mixed|null $default
+     * @return mixed
      */
-    public function get(string $key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         $value = $this->table->get($this->prefix . $key);
         return $value === false ? $default : unserialize($value['value'], ["allowed_classes" => true]);
@@ -66,7 +66,7 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
      * @param int|null $ttl
      * @return bool
      */
-    public function set(string $key, $value, ?int $ttl = null): bool
+    public function set(string $key, mixed $value, ?int $ttl = null): bool
     {
         if ($ttl <= 0 && !is_null($ttl)) {
             return $this->delete($key);
@@ -91,10 +91,8 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
      */
     public function clear(): bool
     {
-        if ($this->table instanceof Table) {
-            $this->table->destroy();
-            unset($this->table);
-        }
+        $this->table->destroy();
+        unset($this->table);
         $this->initTable();
         return true;
     }
@@ -111,7 +109,7 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
     /**
      * @param string $key
      * @param int $step
-     * @return bool|mixed
+     * @return int
      */
     public function inc(string $key, int $step = 1): int
     {

@@ -20,7 +20,7 @@ interface CastsAttributes
      * @param array $attributes
      * @return mixed
      */
-    public function get($model, string $key, $value, array $attributes);
+    public function get(Model $model, string $key, mixed $value, array $attributes): mixed;
 
     /**
      * Transform the attribute to its underlying model values.
@@ -31,5 +31,5 @@ interface CastsAttributes
      * @param array $attributes
      * @return array|string
      */
-    public function set($model, string $key, $value, array $attributes);
+    public function set(Model $model, string $key, mixed $value, array $attributes): array|string;
 }

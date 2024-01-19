@@ -14,8 +14,7 @@ class Server
     private \Swoole\Server $server;
 
     /**
-     * @param $key
-     * @param $server
+     * @param \Swoole\Server $server
      */
     public function set(\Swoole\Server $server): void
     {

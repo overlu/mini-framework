@@ -15,5 +15,5 @@ interface Factory
      * @param string|null $name
      * @return Broadcaster
      */
-    public function connection($name = null);
+    public function connection(string $name = null): Broadcaster;
 }

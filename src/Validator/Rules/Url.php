@@ -33,7 +33,7 @@ class Url extends Rule
      * @param array $schemes
      * @return self
      */
-    public function forScheme($schemes): Rule
+    public function forScheme(array $schemes): Rule
     {
         $this->params['schemes'] = (array)$schemes;
         return $this;
@@ -74,7 +74,7 @@ class Url extends Rule
      * @param mixed $value
      * @return bool
      */
-    public function validateBasic($value): bool
+    public function validateBasic(mixed $value): bool
     {
         return filter_var($value, FILTER_VALIDATE_URL) !== false;
     }
@@ -85,7 +85,7 @@ class Url extends Rule
      * @param null $scheme
      * @return bool
      */
-    public function validateCommonScheme($value, $scheme = null): bool
+    public function validateCommonScheme(mixed $value, $scheme = null): bool
     {
         if (!$scheme) {
             return $this->validateBasic($value) && (bool)preg_match("/^\w+:\/\//i", $value);
@@ -99,9 +99,9 @@ class Url extends Rule
      * @param mixed $value
      * @return bool
      */
-    public function validateMailtoScheme($value): bool
+    public function validateMailtoScheme(mixed $value): bool
     {
-        return $this->validateBasic($value) && preg_match("/^mailto:/", $value);
+        return $this->validateBasic($value) && str_starts_with($value, "mailto:");
     }
 
     /**
@@ -109,7 +109,7 @@ class Url extends Rule
      * @param mixed $value
      * @return bool
      */
-    public function validateJdbcScheme($value): bool
+    public function validateJdbcScheme(mixed $value): bool
     {
         return (bool)preg_match("/^jdbc:\w+:\/\//", $value);
     }

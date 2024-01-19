@@ -12,7 +12,7 @@ trait CompilesAuthorizations
     /**
      * Compile the can statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileCan(?string $expression): string
@@ -23,7 +23,7 @@ trait CompilesAuthorizations
     /**
      * Compile the cannot statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileCannot(?string $expression): string
@@ -34,7 +34,7 @@ trait CompilesAuthorizations
     /**
      * Compile the canany statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileCanany(?string $expression): string
@@ -45,7 +45,7 @@ trait CompilesAuthorizations
     /**
      * Compile the else-can statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileElsecan(?string $expression): string
@@ -56,7 +56,7 @@ trait CompilesAuthorizations
     /**
      * Compile the else-cannot statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileElsecannot(?string $expression): string
@@ -67,7 +67,7 @@ trait CompilesAuthorizations
     /**
      * Compile the else-canany statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileElsecanany(?string $expression): string

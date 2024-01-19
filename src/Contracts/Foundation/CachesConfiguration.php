@@ -14,19 +14,19 @@ interface CachesConfiguration
      *
      * @return bool
      */
-    public function configurationIsCached();
+    public function configurationIsCached(): bool;
 
     /**
      * Get the path to the configuration cache file.
      *
      * @return string
      */
-    public function getCachedConfigPath();
+    public function getCachedConfigPath(): string;
 
     /**
      * Get the path to the cached services.php file.
      *
      * @return string
      */
-    public function getCachedServicesPath();
+    public function getCachedServicesPath(): string;
 }

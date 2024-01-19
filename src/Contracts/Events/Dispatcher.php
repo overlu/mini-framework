@@ -14,11 +14,11 @@ interface Dispatcher extends EventDispatcherInterface
     /**
      * Register an event listener with the dispatcher.
      *
-     * @param string|array $events
-     * @param \Closure|string $listener
+     * @param array|string $events
+     * @param string|\Closure $listener
      * @return void
      */
-    public function listen($events, $listener);
+    public function listen(array|string $events, string|\Closure $listener): void;
 
     /**
      * Determine if a given event has listeners.
@@ -26,7 +26,7 @@ interface Dispatcher extends EventDispatcherInterface
      * @param string $eventName
      * @return bool
      */
-    public function hasListeners($eventName);
+    public function hasListeners(string $eventName): bool;
 
     /**
      * Register an event subscriber with the dispatcher.
@@ -34,26 +34,28 @@ interface Dispatcher extends EventDispatcherInterface
      * @param object|string $subscriber
      * @return void
      */
-    public function subscribe($subscriber);
+    public function subscribe(object|string $subscriber): void;
 
     /**
      * Dispatch an event until the first non-null response is returned.
      *
-     * @param string|object $event
+     * @param object|string $event
      * @param mixed $payload
      * @return array|null
      */
-    public function until($event, $payload = []);
+    public function until(object|string $event, mixed $payload = []): ?array;
 
     /**
      * Dispatch an event and call the listeners.
      *
-     * @param string|object $event
+     * @param object|string $event
      * @param mixed $payload
      * @param bool $halt
      * @return array|null
      */
-    public function dispatch($event, $payload = [], $halt = false);
+    public function dispatch(object|string $event, mixed $payload = [], bool $halt = false): ?array;
+
+    public function task($event, mixed $payload = [], bool $halt = false): int|bool;
 
     /**
      * Register an event and payload to be fired later.
@@ -62,7 +64,7 @@ interface Dispatcher extends EventDispatcherInterface
      * @param array $payload
      * @return void
      */
-    public function push($event, $payload = []);
+    public function push(string $event, array $payload = []): void;
 
     /**
      * Flush a set of pushed events.
@@ -70,7 +72,7 @@ interface Dispatcher extends EventDispatcherInterface
      * @param string $event
      * @return void
      */
-    public function flush($event);
+    public function flush(string $event): void;
 
     /**
      * Remove a set of listeners from the dispatcher.
@@ -78,12 +80,12 @@ interface Dispatcher extends EventDispatcherInterface
      * @param string $event
      * @return void
      */
-    public function forget($event);
+    public function forget(string $event): void;
 
     /**
      * Forget all of the queued listeners.
      *
      * @return void
      */
-    public function forgetPushed();
+    public function forgetPushed(): void;
 }

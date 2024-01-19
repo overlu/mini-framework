@@ -12,14 +12,12 @@ use Mini\Service\AbstractServiceProvider;
 
 class ConfigServiceProvider extends AbstractServiceProvider
 {
-    /**
-     * @throws BindingResolutionException|\ReflectionException
-     */
     public function register(): void
     {
-        $this->app->singleton('config', function () {
+        $this->app->singleton(\Mini\Contracts\Config::class, function () {
             return new Factory();
         });
+        $this->app->alias(\Mini\Contracts\Config::class, 'config');
     }
 
     public function boot(): void

@@ -16,5 +16,5 @@ interface ModifyValue
      * @param mixed $value
      * @return mixed
      */
-    public function modifyValue($value);
+    public function modifyValue(mixed $value): mixed;
 }

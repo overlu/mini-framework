@@ -16,7 +16,6 @@ class FilesystemServiceProvider extends AbstractServiceProvider
      * Register the service provider.
      *
      * @return void
-     * @throws BindingResolutionException|\ReflectionException
      */
     public function register(): void
     {
@@ -29,7 +28,6 @@ class FilesystemServiceProvider extends AbstractServiceProvider
      * Register the native filesystem implementation.
      *
      * @return void
-     * @throws BindingResolutionException|\ReflectionException
      */
     protected function registerNativeFilesystem(): void
     {
@@ -42,7 +40,6 @@ class FilesystemServiceProvider extends AbstractServiceProvider
      * Register the driver based filesystem.
      *
      * @return void
-     * @throws BindingResolutionException
      */
     protected function registerFlysystem(): void
     {
@@ -61,7 +58,6 @@ class FilesystemServiceProvider extends AbstractServiceProvider
      * Register the filesystem manager.
      *
      * @return void
-     * @throws BindingResolutionException
      */
     protected function registerManager(): void
     {
@@ -92,6 +88,5 @@ class FilesystemServiceProvider extends AbstractServiceProvider
 
     public function boot(): void
     {
-        //
     }
 }

@@ -75,7 +75,7 @@ class ErrorBag
      * @param string $key
      * @return mixed
      */
-    public function first(string $key)
+    public function first(string $key): mixed
     {
         [$key, $ruleName] = $this->parsekey($key);
         if ($this->isWildcardKey($key)) {
@@ -191,16 +191,16 @@ class ErrorBag
      */
     protected function isWildcardKey(string $key): bool
     {
-        return false !== strpos($key, '*');
+        return str_contains($key, '*');
     }
 
     /**
      * Filter messages with wildcard key
      * @param string $key
-     * @param mixed $ruleName
+     * @param mixed|null $ruleName
      * @return array
      */
-    protected function filterMessagesForWildcardKey(string $key, $ruleName = null): array
+    protected function filterMessagesForWildcardKey(string $key, mixed $ruleName = null): array
     {
         $messages = $this->messages;
         $pattern = preg_quote($key, '#');

@@ -17,10 +17,10 @@ trait ConfirmableTrait
      * This method only asks for confirmation in production.
      *
      * @param string $warning
-     * @param Closure|bool|null $callback
+     * @param bool|Closure|null $callback
      * @return bool
      */
-    public function confirmToProceed(string $warning = 'Application In Production!', $callback = null): bool
+    public function confirmToProceed(string $warning = 'Application In Production!', bool|Closure $callback = null): bool
     {
         $callback = is_null($callback) ? $this->getDefaultConfirmCallback() : $callback;
 

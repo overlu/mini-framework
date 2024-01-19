@@ -17,10 +17,10 @@ trait ManagesEvents
      * Register a view creator event.
      *
      * @param array|string $views
-     * @param \Closure|string $callback
+     * @param string|Closure $callback
      * @return array
      */
-    public function creator($views, $callback): array
+    public function creator(array|string $views, string|Closure $callback): array
     {
         $creators = [];
 
@@ -52,10 +52,10 @@ trait ManagesEvents
      * Register a view composer event.
      *
      * @param array|string $views
-     * @param \Closure|string $callback
+     * @param string|Closure $callback
      * @return array
      */
-    public function composer($views, $callback): array
+    public function composer(array|string $views, string|Closure $callback): array
     {
         $composers = [];
 

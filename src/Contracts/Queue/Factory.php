@@ -13,7 +13,7 @@ interface Factory
      * Resolve a queue connection instance.
      *
      * @param string|null $name
-     * @return \Mini\Contracts\Queue\Queue
+     * @return Queue
      */
-    public function connection($name = null);
+    public function connection(string $name = null): Queue;
 }

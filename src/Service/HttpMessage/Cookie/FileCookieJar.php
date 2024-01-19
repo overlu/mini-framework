@@ -29,7 +29,7 @@ class FileCookieJar extends CookieJar
      *
      * @throws RuntimeException if the file cannot be found or created
      */
-    public function __construct($cookieFile, $storeSessionCookies = false)
+    public function __construct(string $cookieFile, bool $storeSessionCookies = false)
     {
         $this->filename = $cookieFile;
         $this->storeSessionCookies = $storeSessionCookies;
@@ -53,7 +53,7 @@ class FileCookieJar extends CookieJar
      * @param string $filename File to save
      * @throws RuntimeException if the file cannot be found or created
      */
-    public function save($filename)
+    public function save(string $filename): void
     {
         $json = [];
         foreach ($this as $cookie) {
@@ -77,7 +77,7 @@ class FileCookieJar extends CookieJar
      * @param string $filename cookie file to load
      * @throws RuntimeException if the file cannot be loaded
      */
-    public function load($filename)
+    public function load(string $filename): void
     {
         $json = file_get_contents($filename);
         if ($json === false) {
@@ -92,7 +92,7 @@ class FileCookieJar extends CookieJar
             foreach (json_decode($json, true) as $cookie) {
                 $this->setCookie(new SetCookie($cookie));
             }
-        } elseif (strlen($data)) {
+        } elseif ($data !== '') {
             throw new RuntimeException("Invalid cookie file: {$filename}");
         }
     }

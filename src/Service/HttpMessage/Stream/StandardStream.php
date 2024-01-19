@@ -88,7 +88,7 @@ final class StandardStream implements StreamInterface
      * @return StreamInterface
      * @throws InvalidArgumentException
      */
-    public static function create($body = ''): StreamInterface
+    public static function create(mixed $body = ''): StreamInterface
     {
         if ($body instanceof StreamInterface) {
             return $body;

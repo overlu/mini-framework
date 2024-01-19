@@ -21,7 +21,7 @@ class Reflector
      * @param bool $syntaxOnly
      * @return bool
      */
-    public static function isCallable($var, bool $syntaxOnly = false): bool
+    public static function isCallable(mixed $var, bool $syntaxOnly = false): bool
     {
         if (!is_array($var)) {
             return is_callable($var, $syntaxOnly);
@@ -66,7 +66,7 @@ class Reflector
      * @param ReflectionParameter $parameter
      * @return string|null
      */
-    public static function getParameterClassName($parameter): ?string
+    public static function getParameterClassName(ReflectionParameter $parameter): ?string
     {
         $type = $parameter->getType();
 
@@ -90,12 +90,10 @@ class Reflector
      * @param string $className
      * @return bool
      */
-    public static function isParameterSubclassOf($parameter, $className): bool
+    public static function isParameterSubclassOf(ReflectionParameter $parameter, string $className): bool
     {
         $paramClassName = static::getParameterClassName($parameter);
 
-        return ($paramClassName && class_exists($paramClassName))
-            ? (new ReflectionClass($paramClassName))->isSubclassOf($className)
-            : false;
+        return $paramClassName && class_exists($paramClassName) && (new ReflectionClass($paramClassName))->isSubclassOf($className);
     }
 }

@@ -17,9 +17,6 @@ use ReflectionException;
  */
 class ConsoleServiceProvider extends AbstractServiceProvider
 {
-    /**
-     * @throws BindingResolutionException|ReflectionException
-     */
     public function register(): void
     {
         $this->app->singleton('console', function () {

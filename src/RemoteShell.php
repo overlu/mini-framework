@@ -142,17 +142,17 @@ class RemoteShell
         }
     }
 
-    public static function getCoros()
+    public static function getCoros(): array
     {
         return iterator_to_array(Coroutine::listCoroutines());
     }
 
-    public static function getCoStats()
+    public static function getCoStats(): array
     {
         return Coroutine::stats();
     }
 
-    public static function getCoElapsed($cid)
+    public static function getCoElapsed($cid): int|string
     {
         if (!defined('SWOOLE_VERSION_ID') || SWOOLE_VERSION_ID < 40500) {
             return "require swoole-4.5.0 or later.";
@@ -160,7 +160,7 @@ class RemoteShell
         return Coroutine::getElapsed($cid);
     }
 
-    public static function getTimerList()
+    public static function getTimerList(): array|string
     {
         if (!defined('SWOOLE_VERSION_ID') || SWOOLE_VERSION_ID < 40400) {
             return "require swoole-4.4.0 or later.";
@@ -168,7 +168,7 @@ class RemoteShell
         return iterator_to_array(Timer::list());
     }
 
-    public static function getTimerInfo($timer_id)
+    public static function getTimerInfo($timer_id): array|string|null
     {
         if (!defined('SWOOLE_VERSION_ID') || SWOOLE_VERSION_ID < 40400) {
             return "require swoole-4.4.0 or later.";
@@ -176,7 +176,7 @@ class RemoteShell
         return Timer::info($timer_id);
     }
 
-    public static function getTimerStats()
+    public static function getTimerStats(): array|string
     {
         if (!defined('SWOOLE_VERSION_ID') || SWOOLE_VERSION_ID < 40400) {
             return "require swoole-4.4.0 or later.";
@@ -184,7 +184,7 @@ class RemoteShell
         return Timer::stats();
     }
 
-    public static function getBackTrace($_cid)
+    public static function getBackTrace($_cid): string
     {
         $info = Coroutine::getBackTrace($_cid);
         if (!$info) {
@@ -199,7 +199,7 @@ class RemoteShell
      * @param $var
      * @return mixed
      */
-    public static function printVariant($var)
+    public static function printVariant($var): mixed
     {
         return $var;
     }
@@ -209,7 +209,7 @@ class RemoteShell
      * @param $code
      * @return mixed|string
      */
-    public static function evalCode($code)
+    public static function evalCode($code): mixed
     {
         try {
             $code = Str::startsWith(trim($code), 'return') ? $code : 'return ' . $code;
@@ -349,10 +349,10 @@ class RemoteShell
             case 'l':
             case 'list':
                 $tmp = array();
-                foreach ($server->connections as $fd) {
-                    $tmp[] = $fd;
+                foreach ($server->connections as $f) {
+                    $tmp[] = $f;
                     if (count($tmp) > self::PAGESIZE) {
-                        self::output($fd, $tmp);
+                        self::output($f, $tmp);
                         $tmp = array();
                     }
                 }

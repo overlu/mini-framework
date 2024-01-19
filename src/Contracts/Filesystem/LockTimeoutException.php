@@ -11,5 +11,4 @@ use Exception;
 
 class LockTimeoutException extends Exception
 {
-    //
 }

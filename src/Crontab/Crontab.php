@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Crontab;
 
 use Exception;
+use InvalidArgumentException;
 use Mini\Logging\Logger;
 use Swoole\Event;
 use Swoole\Timer;
@@ -68,7 +69,7 @@ class Crontab
         $crontabTaskList = CrontabTaskList::getCrontabTaskList();
         foreach ($crontabTaskList as $crontabTask) {
             if (!Parser::isValid($crontabRule = $crontabTask->rule())) {
-                throw new \InvalidArgumentException('Invalid crontab rule: [' . $crontabRule . '] at crontab: ' . get_class($crontabTask));
+                throw new InvalidArgumentException('Invalid crontab rule: [' . $crontabRule . '] at crontab: ' . get_class($crontabTask));
             }
         }
     }

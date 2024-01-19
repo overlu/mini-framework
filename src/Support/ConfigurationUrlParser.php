@@ -30,7 +30,7 @@ class ConfigurationUrlParser
      * @param array|string $config
      * @return array
      */
-    public function parseConfiguration($config)
+    public function parseConfiguration(array|string $config): array
     {
         if (is_string($config)) {
             $config = ['url' => $config];
@@ -57,7 +57,7 @@ class ConfigurationUrlParser
      * @param array $url
      * @return array
      */
-    protected function getPrimaryOptions($url): array
+    protected function getPrimaryOptions(array $url): array
     {
         return array_filter([
             'driver' => $this->getDriver($url),
@@ -77,7 +77,7 @@ class ConfigurationUrlParser
      * @param array $url
      * @return string|null
      */
-    protected function getDriver($url): ?string
+    protected function getDriver(array $url): ?string
     {
         $alias = $url['scheme'] ?? null;
 
@@ -94,7 +94,7 @@ class ConfigurationUrlParser
      * @param array $url
      * @return string|null
      */
-    protected function getDatabase($url): ?string
+    protected function getDatabase(array $url): ?string
     {
         $path = $url['path'] ?? null;
 
@@ -107,7 +107,7 @@ class ConfigurationUrlParser
      * @param array $url
      * @return array
      */
-    protected function getQueryOptions($url)
+    protected function getQueryOptions(array $url): array
     {
         $queryString = $url['query'] ?? null;
 
@@ -130,7 +130,7 @@ class ConfigurationUrlParser
      *
      * @throws \InvalidArgumentException
      */
-    protected function parseUrl($url)
+    protected function parseUrl(string $url): array
     {
         $url = preg_replace('#^(sqlite3?):///#', '$1://null/', $url);
 
@@ -151,7 +151,7 @@ class ConfigurationUrlParser
      * @param mixed $value
      * @return mixed
      */
-    protected function parseStringsToNativeTypes($value)
+    protected function parseStringsToNativeTypes(mixed $value): mixed
     {
         if (is_array($value)) {
             return array_map([$this, 'parseStringsToNativeTypes'], $value);
@@ -187,7 +187,7 @@ class ConfigurationUrlParser
      * @param string $driver
      * @return void
      */
-    public static function addDriverAlias($alias, $driver): void
+    public static function addDriverAlias(string $alias, string $driver): void
     {
         static::$driverAliases[$alias] = $driver;
     }

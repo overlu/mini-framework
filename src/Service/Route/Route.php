@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Service\Route;
 
 use ArrayAccess;
+use Mini\Contracts\App;
 use Mini\Contracts\Container\BindingResolutionException;
 use MiniRoute\Dispatcher;
 use MiniRoute\RouteCollector;
@@ -154,7 +155,7 @@ class Route
      * @throws ReflectionException
      * @throws Throwable
      */
-    public function dispatch(Request $request)
+    public function dispatch(Request $request): mixed
     {
         $this->controller = null;
         $method = $request->server['request_method'] ?? 'GET';
@@ -188,7 +189,7 @@ class Route
      * @throws ReflectionException
      * @throws Throwable
      */
-    public function dispatchHandle($handler, array $params = [], string $uri = '')
+    public function dispatchHandle($handler, array $params = [], string $uri = ''): mixed
     {
         if (is_string($handler)) {
             $handler = explode('@', $handler);
@@ -280,7 +281,6 @@ class Route
                 break;
         }
         ws_abort(404);
-        return [];
     }
 
     /**
@@ -293,16 +293,18 @@ class Route
      */
     protected function initialParams(ReflectionFunctionAbstract $method, $vars): array
     {
+        $app = app();
         $params = $method->getParameters();
         $data = [];
         foreach ($params as $param) {
             $name = $param->getName();
             if ($type = $param->getType()) {
                 $key = $type->getName();
-                if (class_exists($key) && !$obj = app()->make($key)) {
-                    $obj = $this->getConfigProvider($key);
+                if ($key === App::class) {
+                    $data[$name] = $app;
+                } else {
+                    $data[$name] = $app->has($key) ? $app->get($key) : $this->getConfigProvider($key);
                 }
-                $data[$name] = $obj;
             } else {
                 $data[$name] = $vars[$name] ?? ($param->isDefaultValueAvailable() ? $param->getDefaultValue() : null);
             }
@@ -315,12 +317,12 @@ class Route
      * @return mixed|null
      * @throws Throwable
      */
-    protected function getConfigProvider($key)
+    protected function getConfigProvider($key): mixed
     {
         $map = BindsProvider::binds() + config('app.bind', []);
         $value = $map[$key] ?? $key;
         app()->bind($key, $value);
-        return app()->make($key);
+        return app($key);
     }
 
     /**
@@ -328,7 +330,7 @@ class Route
      * @throws ReflectionException
      * @throws Throwable
      */
-    public function defaultRouter()
+    public function defaultRouter(): mixed
     {
         if (empty($this->routes['default'])) {
             throw new NotFoundHttpException();
@@ -338,7 +340,7 @@ class Route
 
     /**
      * 是否存在路由
-     * @param $key
+     * @param string $key
      * @return bool
      */
     public function hasRoute(string $key): bool

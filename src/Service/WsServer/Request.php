@@ -28,10 +28,10 @@ class Request implements WebsocketRequestInterface
     /**
      * Retrieve the data from query parameters, if $key is null, will return all query parameters.
      * @param string|null $key
-     * @param mixed $default
+     * @param mixed|null $default
      * @return mixed
      */
-    public function query(?string $key = null, $default = null)
+    public function query(?string $key = null, mixed $default = null): mixed
     {
         return $key === null ? $this->request->get : ($this->request->get[$key] ?? $default);
     }
@@ -39,10 +39,10 @@ class Request implements WebsocketRequestInterface
     /**
      * Retrieve the data from parsed body, if $key is null, will return all parsed body.
      * @param string|null $key
-     * @param mixed $default
+     * @param mixed|null $default
      * @return mixed
      */
-    public function post(?string $key = null, $default = null)
+    public function post(?string $key = null, mixed $default = null): mixed
     {
         return $key === null ? $this->request->post : ($this->request->post[$key] ?? $default);
     }
@@ -58,10 +58,10 @@ class Request implements WebsocketRequestInterface
     /**
      * Retrieve the input data from request, include query parameters, parsed body and json body.
      * @param string|null $key
-     * @param mixed $default
+     * @param mixed|null $default
      * @return mixed
      */
-    public function input(?string $key = null, $default = null)
+    public function input(?string $key = null, mixed $default = null): mixed
     {
         $data = $this->all();
         return $data[$key] ?? $default;

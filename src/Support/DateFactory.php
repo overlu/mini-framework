@@ -99,7 +99,7 @@ class DateFactory
     /**
      * The type (class) of dates that should be created.
      *
-     * @var string
+     * @var string|null
      */
     protected static ?string $dateClass;
 
@@ -113,7 +113,7 @@ class DateFactory
     /**
      * The Carbon factory that should be used when creating dates.
      *
-     * @var object
+     * @var object|null
      */
     protected static ?object $factory;
 
@@ -125,7 +125,7 @@ class DateFactory
      *
      * @throws \InvalidArgumentException
      */
-    public static function use($handler)
+    public static function use(mixed $handler): void
     {
         if (is_callable($handler) && is_object($handler)) {
             static::useCallable($handler);
@@ -177,7 +177,7 @@ class DateFactory
      * @param string $dateClass
      * @return void
      */
-    public static function useClass($dateClass): void
+    public static function useClass(string $dateClass): void
     {
         static::$dateClass = $dateClass;
 
@@ -191,7 +191,7 @@ class DateFactory
      * @param object $factory
      * @return void
      */
-    public static function useFactory($factory): void
+    public static function useFactory(object $factory): void
     {
         static::$factory = $factory;
 
@@ -208,7 +208,7 @@ class DateFactory
      *
      * @throws \RuntimeException
      */
-    public function __call($method, $parameters)
+    public function __call(string $method, array $parameters)
     {
         $defaultClassName = static::DEFAULT_CLASS_NAME;
 

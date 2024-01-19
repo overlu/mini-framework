@@ -11,6 +11,7 @@ use ArrayAccess;
 use Countable;
 use Mini\Contracts\Pagination\LengthAwarePaginator as LengthAwarePaginatorContract;
 use Mini\Contracts\Support\Arrayable;
+use Mini\Contracts\Support\Htmlable;
 use Mini\Contracts\Support\Jsonable;
 use Mini\Support\Collection;
 use IteratorAggregate;
@@ -21,14 +22,14 @@ class LengthAwarePaginator extends AbstractPaginator implements Arrayable, Array
     /**
      * The total number of items before slicing.
      *
-     * @var int
+     * @var int|null
      */
     protected ?int $total;
 
     /**
      * The last available page.
      *
-     * @var int
+     * @var int|null
      */
     protected ?int $lastPage;
 
@@ -42,7 +43,7 @@ class LengthAwarePaginator extends AbstractPaginator implements Arrayable, Array
      * @param array $options (path, query, fragment, pageName)
      * @return void
      */
-    public function __construct($items, $total, $perPage, $currentPage = null, array $options = [])
+    public function __construct(mixed $items, int $total, int $perPage, int $currentPage = null, array $options = [])
     {
         $this->options = $options;
 
@@ -65,7 +66,7 @@ class LengthAwarePaginator extends AbstractPaginator implements Arrayable, Array
      * @param string $pageName
      * @return int
      */
-    protected function setCurrentPage($currentPage, $pageName): int
+    protected function setCurrentPage(int $currentPage, string $pageName): int
     {
         $currentPage = $currentPage ?: static::resolveCurrentPage($pageName);
 
@@ -77,9 +78,9 @@ class LengthAwarePaginator extends AbstractPaginator implements Arrayable, Array
      *
      * @param string|null $view
      * @param array $data
-     * @return \Mini\Contracts\Support\Htmlable
+     * @return Htmlable
      */
-    public function links($view = null, $data = [])
+    public function links(string $view = null, array $data = []): Htmlable
     {
         return $this->render($view, $data);
     }
@@ -89,9 +90,9 @@ class LengthAwarePaginator extends AbstractPaginator implements Arrayable, Array
      *
      * @param string|null $view
      * @param array $data
-     * @return \Mini\Contracts\Support\Htmlable
+     * @return Htmlable|string
      */
-    public function render($view = null, $data = [])
+    public function render(string $view = null, array $data = []): Htmlable|string
     {
         return static::viewFactory()->make($view ?: static::$defaultView, array_merge($data, [
             'paginator' => $this,
@@ -122,7 +123,7 @@ class LengthAwarePaginator extends AbstractPaginator implements Arrayable, Array
      *
      * @return int
      */
-    public function total(): ?int
+    public function total(): int
     {
         return $this->total;
     }
@@ -155,7 +156,7 @@ class LengthAwarePaginator extends AbstractPaginator implements Arrayable, Array
      *
      * @return int
      */
-    public function lastPage(): ?int
+    public function lastPage(): int
     {
         return $this->lastPage;
     }
@@ -200,7 +201,7 @@ class LengthAwarePaginator extends AbstractPaginator implements Arrayable, Array
      * @param int $options
      * @return string
      */
-    public function toJson($options = 0): string
+    public function toJson(int $options = 0): string
     {
         return json_encode($this->jsonSerialize(), $options);
     }

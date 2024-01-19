@@ -7,9 +7,9 @@ declare(strict_types=1);
 
 namespace Mini\Logging;
 
-use Mini\Contracts\MiddlewareInterface;
+use Mini\Contracts\Middleware\MiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
-use \Seaslog;
+use Seaslog;
 
 class RequestIdMiddleware implements MiddlewareInterface
 {
@@ -18,7 +18,7 @@ class RequestIdMiddleware implements MiddlewareInterface
      * @param string $className
      * @return void
      */
-    public function before(string $method, string $className)
+    public function before(string $method, string $className): void
     {
         Seaslog::setRequestID(uniqid('mini.', true));
     }

@@ -28,7 +28,7 @@ class Panel
     public string $titleAlign = self::ALIGN_LEFT;
 
     /** @var string|array */
-    public $data;
+    public string|array $data;
 
     /** @var string */
     public string $bodyAlign = self::ALIGN_LEFT;
@@ -73,7 +73,7 @@ EOF;
      * @param array $opts
      * @return int
      */
-    public static function show($data, string $title = 'Information Panel', array $opts = []): int
+    public static function show(mixed $data, string $title = 'Information Panel', array $opts = []): int
     {
         if (!$data) {
             Cli::write('<info>No data to display!</info>');
@@ -97,8 +97,8 @@ EOF;
         foreach ($data as $label => $value) {
             // label exists
             if (!is_numeric($label)) {
-                $width = mb_strlen($label, 'UTF-8');
-                $labelMaxWidth = $width > $labelMaxWidth ? $width : $labelMaxWidth;
+                $width = mb_strlen((string)$label, 'UTF-8');
+                $labelMaxWidth = max($width, $labelMaxWidth);
             }
             // translate array to string
             if (is_array($value)) {
@@ -122,7 +122,7 @@ EOF;
             $value = trim($value);
             $width = mb_strlen(strip_tags($value), 'UTF-8'); // must clear style tag
 
-            $valueMaxWidth = $width > $valueMaxWidth ? $width : $valueMaxWidth;
+            $valueMaxWidth = max($width, $valueMaxWidth);
             $panelData[$label] = $value;
         }
         $border = null;
@@ -133,7 +133,7 @@ EOF;
             $title = ucwords($title);
 
             $titleLength = mb_strlen($title, 'UTF-8');
-            $panelWidth = $panelWidth > $titleLength ? $panelWidth : $titleLength;
+            $panelWidth = max($panelWidth, $titleLength);
             $indentSpace = str_pad(' ', (int)(ceil($panelWidth / 2) - ceil($titleLength / 2) + 4), ' ');
             Cli::write("{$indentSpace}<bold>{$title}</bold>");
         }
@@ -185,9 +185,9 @@ EOF;
         foreach ($data as $label => $value) {
             // label exists
             if (!is_numeric($label)) {
-                $width = mb_strlen($label, 'UTF-8');
+                $width = mb_strlen((string)$label, 'UTF-8');
 
-                $labelMaxWidth = $width > $labelMaxWidth ? $width : $labelMaxWidth;
+                $labelMaxWidth = max($width, $labelMaxWidth);
             }
 
             // translate array to string
@@ -226,7 +226,7 @@ EOF;
         if ($title) {
             $title = ucwords($title);
             $titleLength = mb_strlen($title, 'UTF-8');
-            $panelWidth = $panelWidth > $titleLength ? $panelWidth : $titleLength;
+            $panelWidth = max($panelWidth, $titleLength);
             $indentSpace = str_pad(' ', (int)(ceil($panelWidth / 2) - ceil($titleLength / 2) + 4), ' ');
             $buffer->write("  {$indentSpace}<bold>{$title}</bold>\n");
         }

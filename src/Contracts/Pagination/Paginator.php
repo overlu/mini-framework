@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\Contracts\Pagination;
 
+use Mini\Contracts\Support\Htmlable;
+
 interface Paginator
 {
     /**
@@ -15,115 +17,115 @@ interface Paginator
      * @param int $page
      * @return string
      */
-    public function url($page);
+    public function url(int $page): string;
 
     /**
      * Add a set of query string values to the paginator.
      *
-     * @param array|string $key
+     * @param array|string|null $key
      * @param string|null $value
      * @return $this
      */
-    public function appends($key, $value = null);
+    public function appends(array|string|null $key, string $value = null): self;
 
     /**
      * Get / set the URL fragment to be appended to URLs.
      *
      * @param string|null $fragment
-     * @return $this|string
+     * @return $this|string|null
      */
-    public function fragment($fragment = null);
+    public function fragment(string $fragment = null): string|static|null;
 
     /**
      * The URL for the next page, or null.
      *
      * @return string|null
      */
-    public function nextPageUrl();
+    public function nextPageUrl(): ?string;
 
     /**
      * Get the URL for the previous page, or null.
      *
      * @return string|null
      */
-    public function previousPageUrl();
+    public function previousPageUrl(): ?string;
 
     /**
      * Get all of the items being paginated.
      *
      * @return array
      */
-    public function items();
+    public function items(): array;
 
     /**
      * Get the "index" of the first item being paginated.
      *
      * @return int
      */
-    public function firstItem();
+    public function firstItem(): int;
 
     /**
      * Get the "index" of the last item being paginated.
      *
      * @return int
      */
-    public function lastItem();
+    public function lastItem(): int;
 
     /**
      * Determine how many items are being shown per page.
      *
      * @return int
      */
-    public function perPage();
+    public function perPage(): int;
 
     /**
      * Determine the current page being paginated.
      *
      * @return int
      */
-    public function currentPage();
+    public function currentPage(): int;
 
     /**
      * Determine if there are enough items to split into multiple pages.
      *
      * @return bool
      */
-    public function hasPages();
+    public function hasPages(): bool;
 
     /**
      * Determine if there is more items in the data store.
      *
      * @return bool
      */
-    public function hasMorePages();
+    public function hasMorePages(): bool;
 
     /**
      * Get the base path for paginator generated URLs.
      *
      * @return string|null
      */
-    public function path();
+    public function path(): ?string;
 
     /**
      * Determine if the list of items is empty or not.
      *
      * @return bool
      */
-    public function isEmpty();
+    public function isEmpty(): bool;
 
     /**
      * Determine if the list of items is not empty.
      *
      * @return bool
      */
-    public function isNotEmpty();
+    public function isNotEmpty(): bool;
 
     /**
      * Render the paginator using a given view.
      *
      * @param string|null $view
      * @param array $data
-     * @return string
+     * @return string|Htmlable
      */
-    public function render($view = null, $data = []);
+    public function render(string $view = null, array $data = []): string|Htmlable;
 }

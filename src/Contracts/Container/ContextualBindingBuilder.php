@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\Contracts\Container;
 
+use Closure;
+
 interface ContextualBindingBuilder
 {
     /**
@@ -15,13 +17,13 @@ interface ContextualBindingBuilder
      * @param string $abstract
      * @return $this
      */
-    public function needs($abstract);
+    public function needs(string $abstract): static;
 
     /**
      * Define the implementation for the contextual binding.
      *
-     * @param \Closure|string $implementation
+     * @param string|Closure $implementation
      * @return void
      */
-    public function give($implementation);
+    public function give(string|Closure $implementation): void;
 }

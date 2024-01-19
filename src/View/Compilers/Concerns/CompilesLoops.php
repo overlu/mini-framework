@@ -42,7 +42,7 @@ trait CompilesLoops
     /**
      * Compile the for-else-empty and empty statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileEmpty(?string $expression): string
@@ -111,7 +111,7 @@ trait CompilesLoops
     /**
      * Compile the break statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileBreak(?string $expression): string
@@ -128,7 +128,7 @@ trait CompilesLoops
     /**
      * Compile the continue statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileContinue(?string $expression): string

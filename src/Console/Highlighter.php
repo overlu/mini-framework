@@ -107,7 +107,7 @@ class Highlighter
      * @param int $linesAfter
      * @return string
      */
-    public function highlightSnippet(string $source, int $lineNumber, $linesBefore = 2, $linesAfter = 2): string
+    public function highlightSnippet(string $source, int $lineNumber, int $linesBefore = 2, int $linesAfter = 2): string
     {
         $tokenLines = $this->getHighlightedLines($source);
 

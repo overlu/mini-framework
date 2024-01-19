@@ -27,7 +27,7 @@ class Flags
         $args = $opts = [];
         foreach ($argv as $key => $value) {
             // opts
-            if (strpos($value, '-') === 0) {
+            if (str_starts_with($value, '-')) {
                 $value = trim($value, '-');
 
                 // invalid
@@ -120,12 +120,12 @@ class Flags
                 $isLong = false;
 
                 // long-opt: (--<opt>)
-                if (strpos($option, '-') === 0) {
+                if (str_starts_with($option, '-')) {
                     $option = substr($option, 1);
                     $isLong = true;
 
                     // long-opt: value specified inline (--<opt>=<value>)
-                    if (strpos($option, '=') !== false) {
+                    if (str_contains($option, '=')) {
                         [$option, $value] = explode('=', $option, 2);
                     }
 
@@ -173,7 +173,7 @@ class Flags
             // - param doesn't belong to any option, define it is args
 
             // value specified inline (<arg>=<value>)
-            if (strpos($p, '=') !== false) {
+            if (str_contains($p, '=')) {
                 [$name, $value] = explode('=', $p, 2);
 
                 if (self::isValidArgName($name)) {
@@ -225,9 +225,9 @@ class Flags
                 continue;
             }
 
-            if (0 === strpos($key, '--')) { // long option
+            if (str_starts_with($key, '--')) { // long option
                 $lOpts[$cleanKey] = $val;
-            } elseif (0 === strpos($key, '-')) { // short option
+            } elseif (str_starts_with($key, '-')) { // short option
                 $sOpts[$cleanKey] = $val;
             } else {
                 $args[$key] = $val;
@@ -258,7 +258,7 @@ class Flags
      *
      * @return bool|mixed
      */
-    public static function filterBool($val, bool $enable = true)
+    public static function filterBool(mixed $val, bool $enable = true): mixed
     {
         if ($enable) {
             if (is_bool($val) || is_numeric($val)) {
@@ -283,7 +283,7 @@ class Flags
      *
      * @return bool
      */
-    public static function nextIsValue($val): bool
+    public static function nextIsValue(mixed $val): bool
     {
         // current() fetch error, will return FALSE
         if ($val === false) {
@@ -296,7 +296,7 @@ class Flags
         }
 
         // it isn't option or named argument
-        return $val[0] !== '-' && false === strpos($val, '=');
+        return $val[0] !== '-' && !str_contains($val, '=');
     }
 
     /**

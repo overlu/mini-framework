@@ -20,7 +20,7 @@ use Mini\Support\Dotenv;
  */
 class Env extends Facade
 {
-    protected static function getFacadeAccessor()
+    protected static function getFacadeAccessor(): Dotenv
     {
         return Dotenv::getInstance();
     }

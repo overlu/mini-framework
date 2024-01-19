@@ -44,14 +44,14 @@ class Factory implements FactoryContract
     /**
      * The event dispatcher instance.
      *
-     * @var \Mini\Contracts\Events\Dispatcher
+     * @var Dispatcher
      */
     protected Dispatcher $events;
 
     /**
      * The IoC container instance.
      *
-     * @var \Mini\Contracts\Container\Container
+     * @var Container
      */
     protected Container $container;
 
@@ -93,8 +93,7 @@ class Factory implements FactoryContract
      *
      * @param EngineResolver $engines
      * @param ViewFinderInterface $finder
-     * @param \Mini\Contracts\Events\Dispatcher $events
-     * @return void
+     * @param Dispatcher|null $events
      */
     public function __construct(EngineResolver $engines, ViewFinderInterface $finder, ?Dispatcher $events)
     {
@@ -109,11 +108,11 @@ class Factory implements FactoryContract
      * Get the evaluated view contents for the given view.
      *
      * @param string $path
-     * @param \Mini\Contracts\Support\Arrayable|array $data
+     * @param array $data
      * @param array $mergeData
      * @return \Mini\Contracts\View\View |mixed
      */
-    public function file(string $path, array $data = [], array $mergeData = [])
+    public function file(string $path, array $data = [], array $mergeData = []): mixed
     {
         $data = array_merge($mergeData, $this->parseData($data));
 
@@ -126,11 +125,11 @@ class Factory implements FactoryContract
      * Get the evaluated view contents for the given view.
      *
      * @param string $view
-     * @param \Mini\Contracts\Support\Arrayable|array $data
+     * @param array $data
      * @param array $mergeData
      * @return \Mini\Contracts\View\View|mixed
      */
-    public function make(string $view, array $data = [], array $mergeData = [])
+    public function make(string $view, array $data = [], array $mergeData = []): mixed
     {
         $path = $this->finder->find(
             $view = $this->normalizeName($view)
@@ -150,13 +149,12 @@ class Factory implements FactoryContract
      * Get the first view that actually exists from the given list.
      *
      * @param array $views
-     * @param \Mini\Contracts\Support\Arrayable|array $data
+     * @param array $data
      * @param array $mergeData
      * @return \Mini\Contracts\View\View|mixed
      *
-     * @throws \InvalidArgumentException
      */
-    public function first(array $views, array $data = [], array $mergeData = [])
+    public function first(array $views, array $data = [], array $mergeData = []): mixed
     {
         $view = Arr::first($views, function ($view) {
             return $this->exists($view);
@@ -174,11 +172,11 @@ class Factory implements FactoryContract
      *
      * @param bool $condition
      * @param string $view
-     * @param \Mini\Contracts\Support\Arrayable|array $data
+     * @param array|Arrayable $data
      * @param array $mergeData
      * @return string|mixed
      */
-    public function renderWhen(bool $condition, string $view, $data = [], array $mergeData = [])
+    public function renderWhen(bool $condition, string $view, Arrayable|array $data = [], array $mergeData = []): mixed
     {
         if (!$condition) {
             return '';
@@ -250,7 +248,7 @@ class Factory implements FactoryContract
      *
      * @param string $view
      * @param string $path
-     * @param \Mini\Contracts\Support\Arrayable|array $data
+     * @param Arrayable|array $data
      * @return \Mini\Contracts\View\View
      */
     protected function viewInstance(string $view, string $path, $data): \Mini\Contracts\View\View
@@ -316,7 +314,7 @@ class Factory implements FactoryContract
      * @param mixed|null $value
      * @return mixed
      */
-    public function share($key, $value = null)
+    public function share(array|string $key, mixed $value = null): mixed
     {
         $keys = is_array($key) ? $key : [$key => $value];
 
@@ -372,10 +370,10 @@ class Factory implements FactoryContract
      * Add a new namespace to the loader.
      *
      * @param string $namespace
-     * @param string|array $hints
+     * @param array|string $hints
      * @return $this
      */
-    public function addNamespace(string $namespace, $hints): self
+    public function addNamespace(string $namespace, array|string $hints): self
     {
         $this->finder->addNamespace($namespace, $hints);
 
@@ -400,10 +398,10 @@ class Factory implements FactoryContract
      * Replace the namespace hints for the given namespace.
      *
      * @param string $namespace
-     * @param string|array $hints
+     * @param array|string $hints
      * @return $this
      */
-    public function replaceNamespace(string $namespace, $hints): self
+    public function replaceNamespace(string $namespace, array|string $hints): self
     {
         $this->finder->replaceNamespace($namespace, $hints);
 
@@ -510,7 +508,7 @@ class Factory implements FactoryContract
     /**
      * Get the event dispatcher instance.
      *
-     * @return \Mini\Contracts\Events\Dispatcher
+     * @return Dispatcher
      */
     public function getDispatcher(): Dispatcher
     {
@@ -520,7 +518,7 @@ class Factory implements FactoryContract
     /**
      * Set the event dispatcher instance.
      *
-     * @param \Mini\Contracts\Events\Dispatcher $events
+     * @param Dispatcher $events
      * @return void
      */
     public function setDispatcher(Dispatcher $events): void
@@ -531,7 +529,7 @@ class Factory implements FactoryContract
     /**
      * Get the IoC container instance.
      *
-     * @return \Mini\Contracts\Container\Container
+     * @return Container
      */
     public function getContainer(): Container
     {
@@ -541,7 +539,7 @@ class Factory implements FactoryContract
     /**
      * Set the IoC container instance.
      *
-     * @param \Mini\Contracts\Container\Container $container
+     * @param Container $container
      * @return void
      */
     public function setContainer(Container $container): void

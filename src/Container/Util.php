@@ -20,7 +20,7 @@ class Util
      * @param  mixed  $value
      * @return array
      */
-    public static function arrayWrap($value): array
+    public static function arrayWrap(mixed $value): array
     {
         if (is_null($value)) {
             return [];
@@ -37,7 +37,7 @@ class Util
      * @param  mixed  $value
      * @return mixed
      */
-    public static function unwrapIfClosure($value)
+    public static function unwrapIfClosure(mixed $value): mixed
     {
         return $value instanceof Closure ? $value() : $value;
     }

@@ -23,7 +23,7 @@ use Symfony\Component\Mime\MimeTypes;
  * Class Filesystem
  * @package Mini\Filesystem
  */
-class Filesystem
+class Filesystem implements \Mini\Contracts\Filesystem\Filesystem
 {
     use Macroable;
 
@@ -58,7 +58,7 @@ class Filesystem
      *
      * @throws FileNotFoundException
      */
-    public function get(string $path, $lock = false): string
+    public function get(string $path, bool $lock = false): string
     {
         if ($this->isFile($path)) {
             return $lock ? $this->sharedGet($path) : file_get_contents($path);
@@ -103,7 +103,7 @@ class Filesystem
      *
      * @throws FileNotFoundException
      */
-    public function getRequire(string $path, array $data = [])
+    public function getRequire(string $path, array $data = []): mixed
     {
         if ($this->isFile($path)) {
             $__path = $path;
@@ -127,7 +127,7 @@ class Filesystem
      * @return mixed
      * @throws FileNotFoundException
      */
-    public function requireOnce(string $path, array $data = [])
+    public function requireOnce(string $path, array $data = []): mixed
     {
         if ($this->isFile($path)) {
             $__path = $path;
@@ -161,11 +161,11 @@ class Filesystem
             );
         }
 
-        $start = $start > 1 ? $start : 1;
+        $start = max($start, 1);
         $file = new SplFileObject($path, 'rb');
         $file->seek($start - 1);
         $file->setFlags(SplFileObject::DROP_NEW_LINE);
-        return LazyCollection::make(function () use ($file, $num) {
+        return LazyCollection::make(static function () use ($file, $num) {
             $i = 0;
             while ($num === null ? (!$file->eof()) : ($i < $num)) {
                 ++$i;
@@ -189,8 +189,8 @@ class Filesystem
             );
         }
 
-        $num = $num < 1 ? 1 : $num;
-        return LazyCollection::make(function () use ($path, $num) {
+        $num = max($num, 1);
+        return LazyCollection::make(static function () use ($path, $num) {
             $file = new SplFileObject($path, 'rb');
             $file->setFlags(SplFileObject::DROP_NEW_LINE);
             $pos = -2;
@@ -228,11 +228,11 @@ class Filesystem
      * @param string $path
      * @param string $contents
      * @param bool $lock
-     * @return int|bool
+     * @return bool
      */
-    public function put(string $path, string $contents, $lock = false)
+    public function put(string $path, $contents, $lock = false): bool
     {
-        return file_put_contents($path, $contents, $lock ? LOCK_EX : 0);
+        return (bool)file_put_contents($path, $contents, $lock ? LOCK_EX : 0);
     }
 
     /**
@@ -264,16 +264,16 @@ class Filesystem
      *
      * @param string $path
      * @param string $data
-     * @return int
+     * @return bool
      * @throws FileNotFoundException
      */
-    public function prepend(string $path, string $data)
+    public function prepend(string $path, string $data, string $separator = ''): bool
     {
         if ($this->exists($path)) {
-            return $this->put($path, $data . $this->get($path));
+            return $this->put($path, $data . $separator . $this->get($path));
         }
 
-        return $this->put($path, $data);
+        return $this->put($path, $data . $separator);
     }
 
     /**
@@ -281,11 +281,12 @@ class Filesystem
      *
      * @param string $path
      * @param string $data
-     * @return int
+     * @param string $separator
+     * @return bool
      */
-    public function append(string $path, string $data): int
+    public function append(string $path, string $data, string $separator = ''): bool
     {
-        return file_put_contents($path, $data, FILE_APPEND);
+        return file_put_contents($path, $data . $separator, FILE_APPEND);
     }
 
     /**
@@ -293,9 +294,9 @@ class Filesystem
      *
      * @param string $path
      * @param int|null $mode
-     * @return mixed
+     * @return bool|string
      */
-    public function chmod(string $path, ?int $mode = null)
+    public function chmod(string $path, ?int $mode = null): bool|string
     {
         if ($mode) {
             return chmod($path, $mode);
@@ -307,10 +308,10 @@ class Filesystem
     /**
      * Delete the file at a given path.
      *
-     * @param string|array $paths
+     * @param array|string $paths
      * @return bool
      */
-    public function delete($paths): bool
+    public function delete(array|string $paths): bool
     {
         $paths = is_array($paths) ? $paths : func_get_args();
 
@@ -332,25 +333,25 @@ class Filesystem
     /**
      * Move a file to a new location.
      *
-     * @param string $path
-     * @param string $target
+     * @param string $from
+     * @param string $to
      * @return bool
      */
-    public function move(string $path, string $target): bool
+    public function move(string $from, string $to): bool
     {
-        return rename($path, $target);
+        return rename($from, $to);
     }
 
     /**
      * Copy a file to a new location.
      *
-     * @param string $path
-     * @param string $target
+     * @param string $from
+     * @param string $to
      * @return bool
      */
-    public function copy(string $path, string $target): bool
+    public function copy(string $from, string $to): bool
     {
-        return copy($path, $target);
+        return copy($from, $to);
     }
 
     /**
@@ -470,7 +471,7 @@ class Filesystem
      * @param string $path
      * @return string|false
      */
-    public function mimeType(string $path)
+    public function mimeType(string $path): bool|string
     {
         return finfo_file(finfo_open(FILEINFO_MIME_TYPE), $path);
     }
@@ -558,26 +559,26 @@ class Filesystem
      *
      * @param string $directory
      * @param bool $hidden
-     * @return SplFileInfo[]
+     * @return Finder
      */
-    public function filesToArray(string $directory, bool $hidden = false): array
+    public function filesAsIterator(string $directory, bool $hidden = false): Finder
     {
-        return iterator_to_array(
-            Finder::create()->files()->ignoreDotFiles(!$hidden)->in($directory)->depth(0)->sortByName(),
-            false
-        );
+        return Finder::create()->files()->ignoreDotFiles(!$hidden)->in($directory)->depth(0)->sortByName();
     }
 
     /**
      * Get an array of all files in a directory.
      *
-     * @param string $directory
+     * @param string|null $directory
      * @param bool $hidden
-     * @return Finder
+     * @return SplFileInfo[]
      */
-    public function files(string $directory, bool $hidden = false): Finder
+    public function files(string $directory = null, bool $hidden = false): array
     {
-        return Finder::create()->files()->ignoreDotFiles(!$hidden)->in($directory)->depth(0)->sortByName();
+        return iterator_to_array(
+            $this->filesAsIterator($directory, $hidden),
+            false
+        );
     }
 
     /**
@@ -587,7 +588,7 @@ class Filesystem
      * @param bool $hidden
      * @return SplFileInfo[]
      */
-    public function allFilesToArray(string $directory, bool $hidden = false): array
+    public function allFilesAsIterator(string $directory, bool $hidden = false): array
     {
         return iterator_to_array(
             Finder::create()->files()->ignoreDotFiles(!$hidden)->in($directory)->sortByName(),
@@ -660,8 +661,7 @@ class Filesystem
     /**
      * Get all of the directories count from the given directory (recursive).
      *
-     * @param $directory
-     * @param bool $hidden
+     * @param string $directory
      * @return int
      */
     public function allDirectoriesCount(string $directory): int
@@ -850,5 +850,44 @@ class Filesystem
     public function cleanDirectory(string $directory): bool
     {
         return $this->deleteDirectory($directory, true);
+    }
+
+    /**
+     * @param string $path
+     * @return resource|null
+     */
+    public function readStream(string $path)
+    {
+        // TODO: Implement readStream() method.
+    }
+
+    /**
+     * @param string $path
+     * @param $resource
+     * @param array $options
+     * @return bool
+     */
+    public function writeStream(string $path, $resource, array $options = []): bool
+    {
+        // TODO: Implement writeStream() method.
+    }
+
+    /**
+     * @param string $path
+     * @return string
+     */
+    public function getVisibility(string $path): string
+    {
+        // TODO: Implement getVisibility() method.
+    }
+
+    /**
+     * @param string $path
+     * @param string $visibility
+     * @return bool
+     */
+    public function setVisibility(string $path, string $visibility): bool
+    {
+        // TODO: Implement setVisibility() method.
     }
 }

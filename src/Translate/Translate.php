@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Translate;
 
-use Mini\Singleton;
 use Mini\Support\Arr;
 use Symfony\Component\Translation\Loader\ArrayLoader;
 use Symfony\Component\Translation\Translator;
@@ -81,9 +80,9 @@ class Translate
      */
     public function trans(?string $key = null, array $parameters = [], ?string $domain = null, ?string $locale = null): string
     {
-        foreach ($parameters as $key => $parameter) {
-            $parameters[':' . $key] = $parameter;
-            unset($parameters[$key]);
+        foreach ($parameters as $k => $parameter) {
+            $parameters[':' . $k] = $parameter;
+            unset($parameters[$k]);
         }
         return $this->translator->trans($key, $parameters, $domain, $locale);
     }

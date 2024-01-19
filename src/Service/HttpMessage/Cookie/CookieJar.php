@@ -31,7 +31,7 @@ class CookieJar implements CookieJarInterface
      *                           arrays that can be used with the SetCookie
      *                           constructor
      */
-    public function __construct($strictMode = false, $cookieArray = [])
+    public function __construct(bool $strictMode = false, array $cookieArray = [])
     {
         $this->strictMode = $strictMode;
 
@@ -51,7 +51,7 @@ class CookieJar implements CookieJarInterface
      *
      * @return self
      */
-    public static function fromArray(array $cookies, $domain)
+    public static function fromArray(array $cookies, string $domain): self
     {
         $cookieJar = new self();
         foreach ($cookies as $name => $value) {
@@ -75,11 +75,10 @@ class CookieJar implements CookieJarInterface
      * @return bool
      */
     public static function shouldPersist(
-        SetCookie $cookie,
-        $allowSessionCookies = false
-    )
+        SetCookie $cookie, bool $allowSessionCookies = false
+    ): bool
     {
-        if ($cookie->getExpires() || $allowSessionCookies) {
+        if ($allowSessionCookies || $cookie->getExpires()) {
             if (!$cookie->getDiscard()) {
                 return true;
             }
@@ -91,10 +90,10 @@ class CookieJar implements CookieJarInterface
     /**
      * Finds and returns the cookie based on the name.
      *
-     * @param string $name cookie name to search for
+     * @param ?string $name cookie name to search for
      * @return null|SetCookie cookie that was found or null if not found
      */
-    public function getCookieByName($name)
+    public function getCookieByName(?string $name): ?SetCookie
     {
         // don't allow a null name
         if ($name === null) {
@@ -115,7 +114,7 @@ class CookieJar implements CookieJarInterface
         }, $this->getIterator()->getArrayCopy());
     }
 
-    public function clear($domain = null, $path = null, $name = null)
+    public function clear(string $domain = null, string $path = null, string $name = null): void
     {
         if (!$domain) {
             $this->cookies = [];
@@ -140,7 +139,7 @@ class CookieJar implements CookieJarInterface
             $this->cookies = array_filter(
                 $this->cookies,
                 function (SetCookie $cookie) use ($path, $domain, $name) {
-                    return !($cookie->getName() == $name &&
+                    return !($cookie->getName() === $name &&
                         $cookie->matchesPath($path) &&
                         $cookie->matchesDomain($domain));
                 }
@@ -148,7 +147,7 @@ class CookieJar implements CookieJarInterface
         }
     }
 
-    public function clearSessionCookies()
+    public function clearSessionCookies(): void
     {
         $this->cookies = array_filter(
             $this->cookies,
@@ -158,7 +157,7 @@ class CookieJar implements CookieJarInterface
         );
     }
 
-    public function setCookie(SetCookie $cookie)
+    public function setCookie(SetCookie $cookie): bool
     {
         // If the name string is empty (but not 0), ignore the set-cookie
         // string entirely.
@@ -181,9 +180,9 @@ class CookieJar implements CookieJarInterface
         foreach ($this->cookies as $i => $c) {
             // Two cookies are identical, when their path, and domain are
             // identical.
-            if ($c->getPath() != $cookie->getPath() ||
-                $c->getDomain() != $cookie->getDomain() ||
-                $c->getName() != $cookie->getName()
+            if ($c->getPath() !== $cookie->getPath() ||
+                $c->getDomain() !== $cookie->getDomain() ||
+                $c->getName() !== $cookie->getName()
             ) {
                 continue;
             }
@@ -217,20 +216,20 @@ class CookieJar implements CookieJarInterface
         return true;
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->cookies);
     }
 
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator(array_values($this->cookies));
     }
 
     public function extractCookies(
-        RequestInterface $request,
+        RequestInterface  $request,
         ResponseInterface $response
-    )
+    ): void
     {
         if ($cookieHeader = $response->getHeader('Set-Cookie')) {
             foreach ($cookieHeader as $cookie) {
@@ -238,7 +237,7 @@ class CookieJar implements CookieJarInterface
                 if (!$sc->getDomain()) {
                     $sc->setDomain($request->getUri()->getHost());
                 }
-                if (strpos($sc->getPath(), '/') !== 0) {
+                if (!str_starts_with($sc->getPath(), '/')) {
                     $sc->setPath($this->getCookiePathFromRequest($request));
                 }
                 $this->setCookie($sc);
@@ -246,7 +245,7 @@ class CookieJar implements CookieJarInterface
         }
     }
 
-    public function withCookieHeader(RequestInterface $request)
+    public function withCookieHeader(RequestInterface $request): RequestInterface
     {
         $values = [];
         $uri = $request->getUri();
@@ -278,13 +277,13 @@ class CookieJar implements CookieJarInterface
      * @param RequestInterface $request
      * @return string
      */
-    private function getCookiePathFromRequest(RequestInterface $request)
+    private function getCookiePathFromRequest(RequestInterface $request): string
     {
         $uriPath = $request->getUri()->getPath();
         if ($uriPath === '') {
             return '/';
         }
-        if (strpos($uriPath, '/') !== 0) {
+        if (!str_starts_with($uriPath, '/')) {
             return '/';
         }
         if ($uriPath === '/') {
@@ -302,7 +301,7 @@ class CookieJar implements CookieJarInterface
      * null value, the cookie must be deleted.
      * @param SetCookie $cookie
      */
-    private function removeCookieIfEmpty(SetCookie $cookie)
+    private function removeCookieIfEmpty(SetCookie $cookie): void
     {
         $cookieValue = $cookie->getValue();
         if ($cookieValue === null || $cookieValue === '') {

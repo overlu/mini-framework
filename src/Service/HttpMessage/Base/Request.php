@@ -24,9 +24,9 @@ class Request implements RequestInterface
     protected array $server = [];
 
     /**
-     * @var UriInterface
+     * @var UriInterface|string|Uri
      */
-    protected $uri;
+    protected string|Uri|UriInterface $uri;
 
     /**
      * Http Method.
@@ -48,11 +48,11 @@ class Request implements RequestInterface
      * @param string $version Protocol version
      */
     public function __construct(
-        string $method,
-        $uri,
-        array $headers = [],
-        $body = null,
-        string $version = '1.1'
+        string              $method,
+        UriInterface|string $uri,
+        array               $headers = [],
+                            $body = null,
+        string              $version = '1.1'
     )
     {
         if (!$uri instanceof UriInterface) {
@@ -118,7 +118,7 @@ class Request implements RequestInterface
      * @param mixed $requestTarget
      * @return static
      */
-    public function withRequestTarget($requestTarget): Request
+    public function withRequestTarget(mixed $requestTarget): Request
     {
         if (preg_match('#\s#', $requestTarget)) {
             throw new InvalidArgumentException('Invalid request target provided; cannot contain whitespace');
@@ -152,7 +152,7 @@ class Request implements RequestInterface
      * @return static
      * @throws InvalidArgumentException for invalid HTTP methods
      */
-    public function withMethod($method): Request
+    public function withMethod(string $method): Request
     {
         $method = strtoupper($method);
         $methods = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'HEAD'];
@@ -203,7 +203,7 @@ class Request implements RequestInterface
      * @param bool $preserveHost preserve the original state of the Host header
      * @return static
      */
-    public function withUri(UriInterface $uri, $preserveHost = false): self
+    public function withUri(UriInterface $uri, bool $preserveHost = false): self
     {
         if ($uri === $this->uri) {
             return $this;

@@ -11,12 +11,13 @@ use Mini\Service\HttpMessage\Cookie\Cookie;
 use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\Support\Jsonable;
 use Mini\Contracts\Support\Xmlable;
+use Mini\Service\HttpServer\Response;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 
 /**
  * Interface ResponseInterface
  * @package Mini\Contracts\HttpMessage
- * @mixin \Mini\Service\HttpServer\Response | \Mini\Service\HttpMessage\Server\Response
+ * @mixin Response | \Mini\Service\HttpMessage\Server\Response
  */
 interface ResponseInterface
 {
@@ -26,7 +27,7 @@ interface ResponseInterface
      * @param array|Arrayable|Jsonable $data
      * @return PsrResponseInterface
      */
-    public function json($data): PsrResponseInterface;
+    public function json(Arrayable|array|Jsonable $data): PsrResponseInterface;
 
     /**
      * Format data to XML and return data with Content-Type:application/xml header.
@@ -35,14 +36,14 @@ interface ResponseInterface
      * @param string $root the name of the root node
      * @return PsrResponseInterface
      */
-    public function xml($data, string $root = 'root'): PsrResponseInterface;
+    public function xml(Arrayable|Xmlable|array $data, string $root = 'root'): PsrResponseInterface;
 
     /**
      * Format data to a string and return data with Content-Type:text/plain header.
      * @param mixed $data
      * @return PsrResponseInterface
      */
-    public function raw($data): PsrResponseInterface;
+    public function raw(mixed $data): PsrResponseInterface;
 
     /**
      * Redirect to a URL.

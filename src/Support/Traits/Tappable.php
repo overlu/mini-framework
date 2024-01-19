@@ -12,10 +12,10 @@ trait Tappable
     /**
      * Call the given Closure with this instance then return the instance.
      *
-     * @param  callable|null  $callback
+     * @param callable|null $callback
      * @return mixed
      */
-    public function tap($callback = null)
+    public function tap(callable $callback = null): mixed
     {
         return tap($this, $callback);
     }

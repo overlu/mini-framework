@@ -31,7 +31,7 @@ class Cache
     public function __construct()
     {
         $this->default = config('cache.default', 'file');
-        $this->drivers = array_keys(config('cache.drivers'));
+        $this->drivers = array_keys(config('cache.drivers', $this->drivers));
     }
 
     /**

@@ -54,7 +54,7 @@ if (!function_exists('app')) {
     /**
      * @param string|null $abstract
      * @param array $parameters
-     * @return object|mixed|Container
+     * @return mixed|Container
      */
     function app(?string $abstract = null, array $parameters = [])
     {
@@ -520,7 +520,7 @@ if (!function_exists('redis')) {
     /**
      * 获取redis实例
      * @param string $connection
-     * @return \Swoole\Coroutine\Redis | Redis
+     * @return \Redis
      */
     function redis(string $connection = 'default')
     {
@@ -668,7 +668,7 @@ if (!function_exists('base_path')) {
      */
     function base_path(string $path = ''): string
     {
-        return BASE_PATH . DIRECTORY_SEPARATOR . trim($path, DIRECTORY_SEPARATOR);
+        return BASE_PATH . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
 }
 
@@ -704,7 +704,7 @@ if (!function_exists('storage_path')) {
      */
     function storage_path(string $path = ''): string
     {
-        return BASE_PATH . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . trim($path, DIRECTORY_SEPARATOR);
+        return BASE_PATH . DIRECTORY_SEPARATOR . 'storage' . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
 }
 
@@ -716,7 +716,7 @@ if (!function_exists('config_path')) {
      */
     function config_path(string $path = ''): string
     {
-        return BASE_PATH . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . trim($path, DIRECTORY_SEPARATOR);
+        return BASE_PATH . DIRECTORY_SEPARATOR . 'config' . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
 }
 
@@ -728,7 +728,7 @@ if (!function_exists('public_path')) {
      */
     function public_path(string $path = ''): string
     {
-        return BASE_PATH . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . trim($path, DIRECTORY_SEPARATOR);
+        return BASE_PATH . DIRECTORY_SEPARATOR . 'public' . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
 }
 
@@ -752,7 +752,20 @@ if (!function_exists('resource_path')) {
      */
     function resource_path(string $path = ''): string
     {
-        return BASE_PATH . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . trim($path, DIRECTORY_SEPARATOR);
+        return BASE_PATH . DIRECTORY_SEPARATOR . 'resources' . ($path ? DIRECTORY_SEPARATOR . $path : $path);
+    }
+}
+
+if (!function_exists('database_path')) {
+    /**
+     * Get the database path.
+     *
+     * @param string $path
+     * @return string
+     */
+    function database_path(string $path = '')
+    {
+        return BASE_PATH . DIRECTORY_SEPARATOR . 'database' . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
 }
 
@@ -857,7 +870,7 @@ if (!function_exists('view')) {
      *
      * @param string|null $view
      * @param array $data
-     * @return \Mini\View\Factory|\Mini\Contracts\View\View
+     * @return \Mini\Contracts\View\View
      */
     function view(?string $view = null, array $data = [])
     {

@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
+use Exception;
 use Mini\Encryption\Encrypter;
 use Swoole\Process;
 
@@ -17,7 +18,7 @@ class KeyGenerateCommandService extends AbstractCommandService
     /**
      * @param Process $process
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function handle(Process $process): void
     {
@@ -38,7 +39,7 @@ class KeyGenerateCommandService extends AbstractCommandService
      * Generate a random key for the application.
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     protected function generateRandomKey(): string
     {

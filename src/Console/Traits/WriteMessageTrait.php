@@ -65,14 +65,14 @@ trait WriteMessageTrait
     /**
      * Write raw data to stdout, will disable color render.
      *
-     * @param string|array $message
+     * @param array|string $message
      * @param bool $nl
      * @param bool|int $quit
      * @param array $opts
      *
      * @return int
      */
-    public static function writeRaw($message, bool $nl = true, $quit = false, array $opts = []): int
+    public static function writeRaw(array|string $message, bool $nl = true, bool|int $quit = false, array $opts = []): int
     {
         $opts['color'] = false;
         return self::write($message, $nl, $quit, $opts);
@@ -81,13 +81,13 @@ trait WriteMessageTrait
     /**
      * Write data to stdout with newline.
      *
-     * @param string|array $message
+     * @param array|string $message
      * @param array $opts
      * @param bool|int $quit
      *
      * @return int
      */
-    public static function writeln($message, $quit = false, array $opts = []): int
+    public static function writeln(array|string $message, bool|int $quit = false, array $opts = []): int
     {
         return self::write($message, true, $quit, $opts);
     }
@@ -95,13 +95,13 @@ trait WriteMessageTrait
     /**
      * Write data to stdout with newline.
      *
-     * @param string|array $message
+     * @param array|string $message
      * @param array $opts
      * @param bool|int $quit
      *
      * @return int
      */
-    public static function println($message, $quit = false, array $opts = []): int
+    public static function println(array|string $message, bool|int $quit = false, array $opts = []): int
     {
         return self::write($message, true, $quit, $opts);
     }
@@ -109,13 +109,13 @@ trait WriteMessageTrait
     /**
      * Write message to stdout.
      *
-     * @param string|array $message
+     * @param array|string $message
      * @param array $opts
      * @param bool|int $quit
      *
      * @return int
      */
-    public static function print($message, $quit = false, array $opts = []): int
+    public static function print(array|string $message, bool|int $quit = false, array $opts = []): int
     {
         return self::write($message, false, $quit, $opts);
     }
@@ -123,9 +123,9 @@ trait WriteMessageTrait
     /**
      * Write a message to standard output stream.
      *
-     * @param string|array $messages Output message
+     * @param array|string $messages Output message
      * @param boolean $nl True Will add line breaks, False Raw output.
-     * @param int|boolean $quit If is Int, setting it is exit code.
+     * @param boolean|int $quit If is Int, setting it is exit code.
      *                               'True' translate as code 0 and exit
      *                               'False' will not exit.
      * @param array $opts Some options for write
@@ -137,7 +137,7 @@ trait WriteMessageTrait
      *
      * @return int
      */
-    public static function write($messages, bool $nl = true, $quit = false, array $opts = []): int
+    public static function write(array|string $messages, bool $nl = true, bool|int $quit = false, array $opts = []): int
     {
         if (is_array($messages)) {
             $messages = implode($nl ? PHP_EOL : '', $messages);
@@ -184,11 +184,11 @@ trait WriteMessageTrait
     /**
      * Logs data to stdout
      *
-     * @param string|array $text
+     * @param array|string $text
      * @param bool $nl
      * @param bool|int $quit
      */
-    public static function stdout($text, bool $nl = true, $quit = false): void
+    public static function stdout(array|string $text, bool $nl = true, bool|int $quit = false): void
     {
         self::write($text, $nl, $quit);
     }
@@ -196,11 +196,11 @@ trait WriteMessageTrait
     /**
      * Logs data to stderr
      *
-     * @param string|array $text
+     * @param array|string $text
      * @param bool $nl
      * @param bool|int $quit
      */
-    public static function stderr($text, bool $nl = true, $quit = -2): void
+    public static function stderr(array|string $text, bool $nl = true, bool|int $quit = -2): void
     {
         self::write($text, $nl, $quit, [
             'stream' => self::$errorStream,

@@ -21,7 +21,7 @@ interface Encrypter
      *
      * @throws EncryptException
      */
-    public function encrypt($value, bool $serialize = true): string;
+    public function encrypt(mixed $value, bool $serialize = true): string;
 
     /**
      * Decrypt the given value.
@@ -32,5 +32,5 @@ interface Encrypter
      *
      * @throws DecryptException
      */
-    public function decrypt(string $payload, bool $unserialize = true);
+    public function decrypt(string $payload, bool $unserialize = true): mixed;
 }

@@ -12,8 +12,8 @@ interface Cloud extends Filesystem
     /**
      * Get the URL for the file at the given path.
      *
-     * @param  string  $path
+     * @param string $path
      * @return string
      */
-    public function url($path);
+    public function url(string $path): string;
 }

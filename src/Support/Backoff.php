@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\Support;
 
+use InvalidArgumentException;
+
 class Backoff
 {
     /**
@@ -31,13 +33,13 @@ class Backoff
     public function __construct(int $firstMs = 0)
     {
         if ($firstMs < 0) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'first backoff interval must be greater or equal than 0'
             );
         }
 
         if ($firstMs > self::CAP) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf(
                     'first backoff interval must be less or equal than %d milliseconds',
                     self::CAP
@@ -62,7 +64,7 @@ class Backoff
 
         // update backoff using Decorrelated Jitter
         // see: https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
-        $this->currentMs = rand($this->firstMs, $this->currentMs * 3);
+        $this->currentMs = random_int($this->firstMs, $this->currentMs * 3);
 
         if ($this->currentMs > self::CAP) {
             $this->currentMs = self::CAP;

@@ -11,7 +11,7 @@ use ArrayAccess;
 use Exception;
 use Mini\Config\LoadConfiguration;
 use Mini\Config\Repository;
-use Mini\Contracts\Config\Repository as ConfigContract;
+use Mini\Contracts\Config as ConfigContract;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -21,8 +21,6 @@ use Symfony\Component\Finder\Finder;
 class Config implements ArrayAccess, ConfigContract
 {
     use Singleton, LoadConfiguration, Repository;
-
-    protected array $repository = [];
 
     /**
      * Config constructor.

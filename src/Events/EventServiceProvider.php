@@ -7,19 +7,14 @@ declare(strict_types=1);
 
 namespace Mini\Events;
 
-use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Service\AbstractServiceProvider;
-use ReflectionException;
 
 class EventServiceProvider extends AbstractServiceProvider
 {
-    /**
-     * @throws BindingResolutionException|ReflectionException
-     */
     public function register(): void
     {
-        $this->app->alias(Dispatcher::class, 'events');
-        $this->app->singleton(Dispatcher::class, Dispatcher::class);
+        $this->app->singleton(\Mini\Contracts\Event::class, Dispatcher::class);
+        $this->app->alias(\Mini\Contracts\Event::class, 'events');
     }
 
     public function boot(): void

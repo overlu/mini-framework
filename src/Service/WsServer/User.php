@@ -115,7 +115,7 @@ class User
      * @param $fd
      * @return mixed
      */
-    public static function getUserByFd($fd)
+    public static function getUserByFd($fd): mixed
     {
         return Store::get(Socket::$fdPrefix . Socket::packFd($fd));
     }

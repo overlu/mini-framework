@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Debugger {
 
-    function get_debug_print_backtrace($traces)
+    function get_debug_print_backtrace($traces): string
     {
         $ret = array();
         foreach ($traces as $i => $call) {
@@ -35,7 +35,7 @@ namespace Mini\Debugger {
             $arr = (array)$arg;
             $args = array();
             foreach ($arr as $key => $value) {
-                if (strpos($key, chr(0)) !== false) {
+                if (str_contains($key, chr(0))) {
                     $key = '';    // Private variable found
                 }
                 $args[] = '[' . $key . '] => ' . get_arg($value);

@@ -16,14 +16,14 @@ interface UrlRoutable
      *
      * @return mixed
      */
-    public function getRouteKey();
+    public function getRouteKey(): mixed;
 
     /**
      * Get the route key for the model.
      *
      * @return string
      */
-    public function getRouteKeyName();
+    public function getRouteKeyName(): string;
 
     /**
      * Retrieve the model for a bound value.
@@ -32,7 +32,7 @@ interface UrlRoutable
      * @param string|null $field
      * @return Model|null
      */
-    public function resolveRouteBinding($value, $field = null);
+    public function resolveRouteBinding(mixed $value, string $field = null): ?Model;
 
     /**
      * Retrieve the child model for a bound value.
@@ -42,5 +42,5 @@ interface UrlRoutable
      * @param string|null $field
      * @return Model|null
      */
-    public function resolveChildRouteBinding($childType, $value, $field);
+    public function resolveChildRouteBinding(string $childType, mixed $value, ?string $field): ?Model;
 }

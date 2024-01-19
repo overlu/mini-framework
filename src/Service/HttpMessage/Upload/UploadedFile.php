@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Service\HttpMessage\Upload;
 
-use Mini\Container\Container;
-use Mini\Contracts\Filesystem\Factory as FilesystemFactory;
 use Mini\Exception\FileNotFoundException;
 use Mini\Support\Arr;
 use InvalidArgumentException;
@@ -17,7 +15,6 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
 use SplFileInfo;
-use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 
 class UploadedFile extends SplFileInfo implements UploadedFileInterface
 {
@@ -73,9 +70,9 @@ class UploadedFile extends SplFileInfo implements UploadedFileInterface
     private string $mimeType;
 
     public function __construct(
-        string $tmpFile,
-        ?int $size,
-        int $errorStatus,
+        string  $tmpFile,
+        ?int    $size,
+        int     $errorStatus,
         ?string $clientFilename = null,
         ?string $clientMediaType = null
     )
@@ -91,7 +88,7 @@ class UploadedFile extends SplFileInfo implements UploadedFileInterface
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return json_encode($this->toArray());
     }
@@ -100,7 +97,7 @@ class UploadedFile extends SplFileInfo implements UploadedFileInterface
     {
         $clientName = $this->getClientFilename();
         $segments = explode('.', $clientName);
-        return end($segments) ?? null;
+        return end($segments);
     }
 
     public function getMimeType(): string
@@ -145,7 +142,7 @@ class UploadedFile extends SplFileInfo implements UploadedFileInterface
      * @throws RuntimeException in cases when no stream is available or can be
      *                           created
      */
-    public function getStream()
+    public function getStream(): StreamInterface
     {
         if ($this->moved) {
             throw new RuntimeException('uploaded file is moved');
@@ -179,7 +176,7 @@ class UploadedFile extends SplFileInfo implements UploadedFileInterface
      * @throws RuntimeException on any error during the move operation, or on
      *                           the second or subsequent call to the method
      */
-    public function moveTo($targetPath)
+    public function moveTo(string $targetPath): void
     {
         $this->validateActive();
 
@@ -188,7 +185,7 @@ class UploadedFile extends SplFileInfo implements UploadedFileInterface
         }
 
         if ($this->tmpFile) {
-            $this->moved = php_sapi_name() == 'cli' ? rename($this->tmpFile, $targetPath) : move_uploaded_file($this->tmpFile, $targetPath);
+            $this->moved = PHP_SAPI === 'cli' ? rename($this->tmpFile, $targetPath) : move_uploaded_file($this->tmpFile, $targetPath);
         }
 
         if (!$this->moved) {
@@ -294,11 +291,11 @@ class UploadedFile extends SplFileInfo implements UploadedFileInterface
     }
 
     /**
-     * @param null|int $size the file size in bytes or null if unknown
+     * @param int|null $size the file size in bytes or null if unknown
      * @return UploadedFile
      * @throws InvalidArgumentException if the size is not a interger
      */
-    private function setSize($size): self
+    private function setSize(?int $size): self
     {
         if (is_int($size) === false) {
             throw new InvalidArgumentException('Upload file size must be an integer');
@@ -357,7 +354,7 @@ class UploadedFile extends SplFileInfo implements UploadedFileInterface
     /**
      * @throws RuntimeException if is moved or not ok
      */
-    private function validateActive()
+    private function validateActive(): void
     {
         if ($this->isOk() === false) {
             throw new RuntimeException('Cannot retrieve stream due to upload error');
@@ -375,7 +372,7 @@ class UploadedFile extends SplFileInfo implements UploadedFileInterface
      * @param array|string $options
      * @return string|false
      */
-    public function store($path, $options = [])
+    public function store(string $path, array|string $options = []): bool|string
     {
         return $this->storeAs($path, $this->hashName(), $this->parseOptions($options));
     }
@@ -387,7 +384,7 @@ class UploadedFile extends SplFileInfo implements UploadedFileInterface
      * @param array|string $options
      * @return string|false
      */
-    public function storePublicly($path, $options = [])
+    public function storePublicly(string $path, array|string $options = []): bool|string
     {
         $options = $this->parseOptions($options);
 
@@ -404,7 +401,7 @@ class UploadedFile extends SplFileInfo implements UploadedFileInterface
      * @param array|string $options
      * @return string|false
      */
-    public function storePubliclyAs($path, $name, $options = [])
+    public function storePubliclyAs(string $path, string $name, array|string $options = []): bool|string
     {
         $options = $this->parseOptions($options);
 
@@ -421,7 +418,7 @@ class UploadedFile extends SplFileInfo implements UploadedFileInterface
      * @param array|string $options
      * @return string|false
      */
-    public function storeAs($path, $name, $options = [])
+    public function storeAs(string $path, string $name, array|string $options = []): bool|string
     {
         $options = $this->parseOptions($options);
 
@@ -439,7 +436,7 @@ class UploadedFile extends SplFileInfo implements UploadedFileInterface
      *
      * @throws FileNotFoundException
      */
-    public function get()
+    public function get(): bool|string
     {
         if (!$this->isValid()) {
             throw new FileNotFoundException("File does not exist at path {$this->getPathname()}.");
@@ -454,7 +451,7 @@ class UploadedFile extends SplFileInfo implements UploadedFileInterface
      * @param array|string $options
      * @return array
      */
-    protected function parseOptions($options)
+    protected function parseOptions(array|string $options): array
     {
         if (is_string($options)) {
             $options = ['disk' => $options];

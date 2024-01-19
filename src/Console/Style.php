@@ -157,7 +157,7 @@ class Style
      * @param string $text
      * @return mixed
      */
-    public function t(string $text)
+    public function t(string $text): mixed
     {
         return $this->format($text);
     }
@@ -169,7 +169,7 @@ class Style
      *
      * @return mixed
      */
-    public function render(string $text)
+    public function render(string $text): mixed
     {
         return $this->format($text);
     }
@@ -179,9 +179,9 @@ class Style
      *
      * @return mixed|string
      */
-    public function format(string $text)
+    public function format(string $text): mixed
     {
-        if (!$text || false === strpos($text, '</')) {
+        if (!$text || !str_contains($text, '</')) {
             return $text;
         }
 
@@ -230,7 +230,7 @@ class Style
      * Add a style.
      *
      * @param string $name
-     * @param string|ColorCode|array $fg 前景色|Color对象|也可以是style配置数组(@see self::addByArray())
+     * @param array|string|ColorCode $fg 前景色|Color对象|也可以是style配置数组(@see self::addByArray())
      *                                        当它为Color对象或配置数组时，后面两个参数无效
      * @param string $bg 背景色
      * @param array $options 其它选项
@@ -238,12 +238,12 @@ class Style
      *
      * @return $this
      */
-    public function add(string $name, $fg = '', string $bg = '', array $options = [], bool $extra = false): self
+    public function add(string $name, ColorCode|array|string $fg = '', string $bg = '', array $options = [], bool $extra = false): self
     {
         if (is_array($fg)) {
             return $this->addByArray($name, $fg);
         }
-        if (is_object($fg) && $fg instanceof ColorCode) {
+        if ($fg instanceof ColorCode) {
             $this->styles[$name] = $fg;
         } else {
             $this->styles[$name] = ColorCode::make($fg, $bg, $options, $extra);

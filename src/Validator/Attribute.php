@@ -42,7 +42,7 @@ class Attribute
      * @param array $rules
      * @return void
      */
-    public function __construct(Validation $validation, string $key, $alias = null, array $rules = [])
+    public function __construct(Validation $validation, string $key, string $alias = null, array $rules = [])
     {
         $this->validation = $validation;
         $this->alias = $alias;
@@ -130,7 +130,7 @@ class Attribute
      * @param string $ruleKey
      * @return mixed|null
      */
-    public function getRule(string $ruleKey)
+    public function getRule(string $ruleKey): mixed
     {
         return $this->hasRule($ruleKey) ? $this->rules[$ruleKey] : null;
     }
@@ -196,7 +196,7 @@ class Attribute
      * @param string|null $key
      * @return mixed
      */
-    public function getValue(string $key = null)
+    public function getValue(string $key = null): mixed
     {
         if ($key && $this->isArrayAttribute()) {
             $key = $this->resolveSiblingKey($key);
@@ -224,7 +224,7 @@ class Attribute
      */
     public function isUsingDotNotation(): bool
     {
-        return strpos($this->getKey(), '.') !== false;
+        return str_contains($this->getKey(), '.');
     }
 
     /**

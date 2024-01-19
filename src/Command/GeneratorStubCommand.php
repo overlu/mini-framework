@@ -130,9 +130,8 @@ abstract class GeneratorStubCommand extends AbstractCommandService
         $path = $this->getPath($name);
 
 
-        if ((!$this->hasOption('force') ||
-                !$this->option('force')) &&
-            $this->alreadyExists($name)) {
+        if ($this->alreadyExists($name) && (!$this->hasOption('force') ||
+                !$this->option('force'))) {
             $this->error($this->type . ' already exists! use --force overwrite the file.');
             return;
         }

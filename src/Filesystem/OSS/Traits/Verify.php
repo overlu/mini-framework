@@ -53,7 +53,7 @@ trait Verify
         if (false === $pos) {
             $authStr = urldecode($path) . "\n" . $body;
         } else {
-            $authStr = urldecode(substr($path, 0, $pos)) . substr($path, $pos, strlen($path) - $pos) . "\n" . $body;
+            $authStr = urldecode(substr($path, 0, $pos)) . substr($path, $pos) . "\n" . $body;
         }
         // 验证签名
         $ok = openssl_verify($authStr, $authorization, $pubKey, OPENSSL_ALGO_MD5);

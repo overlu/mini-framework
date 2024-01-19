@@ -16,5 +16,5 @@ interface EntityResolver
      * @param mixed $id
      * @return mixed
      */
-    public function resolve($type, $id);
+    public function resolve(string $type, mixed $id): mixed;
 }

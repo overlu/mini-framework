@@ -22,12 +22,13 @@ class CacheServiceProviders extends AbstractServiceProvider
 {
     public function register(): void
     {
-        //
+        $drivers = array_keys(config('cache.drivers', []));
+        in_array('file', $drivers, true) && $this->registerFileCacheDriver();
+        in_array('redis', $drivers, true) && $this->registerRedisCacheDriver();
+        in_array('swoole', $drivers, true) && $this->registerSwooleCacheDriver();
+        $this->registerCache();
     }
 
-    /**
-     * @throws BindingResolutionException|ReflectionException
-     */
     private function registerFileCacheDriver(): void
     {
         $this->app->singleton('cache.driver.file', function () {
@@ -35,9 +36,6 @@ class CacheServiceProviders extends AbstractServiceProvider
         });
     }
 
-    /**
-     * @throws BindingResolutionException|ReflectionException
-     */
     private function registerSwooleCacheDriver(): void
     {
         $this->app->singleton('cache.driver.swoole', function () {
@@ -45,9 +43,6 @@ class CacheServiceProviders extends AbstractServiceProvider
         });
     }
 
-    /**
-     * @throws BindingResolutionException|ReflectionException
-     */
     private function registerRedisCacheDriver(): void
     {
         $this->app->singleton('cache.driver.redis', function () {
@@ -55,24 +50,18 @@ class CacheServiceProviders extends AbstractServiceProvider
         });
     }
 
-    /**
-     * @throws BindingResolutionException|ReflectionException
-     */
     private function registerCache(): void
     {
-        $this->app->singleton('cache', function () {
+        $this->app->singleton(\Mini\Cache\Cache::class, function () {
             return new Cache();
+        });
+        $this->app->alias(\Mini\Cache\Cache::class, 'cache');
+        $this->app->singleton(\Mini\Contracts\Cache::class, function () {
+            return $this->app['cache.driver.' . config('cache.default', 'file')];
         });
     }
 
-    /**
-     * @throws BindingResolutionException|ReflectionException
-     */
     public function boot(): void
     {
-        $this->registerFileCacheDriver();
-        $this->registerRedisCacheDriver();
-        $this->registerSwooleCacheDriver();
-        $this->registerCache();
     }
 }

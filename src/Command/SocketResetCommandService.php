@@ -41,7 +41,7 @@ class SocketResetCommandService extends AbstractCommandService
      * @param \Redis $redis
      * @param $prefix
      */
-    public function removeKeys($redis, $prefix): void
+    public function removeKeys(\Redis $redis, $prefix): void
     {
         $it = NULL;
         while ($keys = $redis->scan($it, $prefix . '*')) {

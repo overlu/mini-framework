@@ -15,5 +15,4 @@ use Mini\Support\Carbon;
  */
 class Date extends Carbon
 {
-
 }

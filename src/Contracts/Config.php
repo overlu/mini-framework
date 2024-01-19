@@ -5,9 +5,9 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Contracts\Config;
+namespace Mini\Contracts;
 
-interface Repository
+interface Config
 {
     /**
      * Determine if the given configuration value exists.
@@ -21,10 +21,10 @@ interface Repository
      * Get the specified configuration value.
      *
      * @param array|string $key
-     * @param mixed $default
+     * @param mixed|null $default
      * @return mixed
      */
-    public function get($key, $default = null);
+    public function get(array|string $key, mixed $default = null): mixed;
 
     /**
      * Get all of the configuration items for the application.
@@ -37,10 +37,10 @@ interface Repository
      * Set a given configuration value.
      *
      * @param array|string $key
-     * @param mixed $value
+     * @param mixed|null $value
      * @return void
      */
-    public function set($key, $value = null): void;
+    public function set(array|string $key, mixed $value = null): void;
 
     /**
      * Prepend a value onto an array configuration value.
@@ -49,7 +49,7 @@ interface Repository
      * @param mixed $value
      * @return void
      */
-    public function prepend(string $key, $value): void;
+    public function prepend(string $key, mixed $value): void;
 
     /**
      * Push a value onto an array configuration value.
@@ -58,5 +58,5 @@ interface Repository
      * @param mixed $value
      * @return void
      */
-    public function push(string $key, $value): void;
+    public function push(string $key, mixed $value): void;
 }

@@ -12,7 +12,7 @@ use Mini\Facades\Redis;
 
 class Store
 {
-    public static $lockPrefix = 'store_lock:';
+    public static string $lockPrefix = 'store_lock:';
 
     /**
      * 获取数据仓库
@@ -28,7 +28,7 @@ class Store
      * 加入数据
      * @param string $key
      * @param $value
-     * @param int|null $length
+     * @param int $length
      * @return array
      */
     public static function put(string $key, $value, int $length = 0): array
@@ -51,9 +51,9 @@ class Store
                 'remove_values' => $remove_values,
                 'new_values' => $new_values
             ];
-        } else {
-            return [];
         }
+
+        return [];
 
     }
 

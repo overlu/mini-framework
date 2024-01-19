@@ -26,9 +26,9 @@ class Dotenv
 
     /**
      * Dotenv constructor.
-     * @param $path
+     * @param string $path
      */
-    private function __construct($path = '')
+    private function __construct(string $path = '')
     {
         $this->environmentFile = $path ?: BASE_PATH . '/.env';
         if (!is_file($this->environmentFile)) {
@@ -42,7 +42,7 @@ class Dotenv
      * @param null $default
      * @return mixed|null
      */
-    public function get(string $key, $default = null)
+    public function get(string $key, $default = null): mixed
     {
         return $this->environmentVariables[$key] ?? $default;
     }
@@ -137,7 +137,7 @@ class Dotenv
      * @param $value
      * @return bool|mixed|string|null
      */
-    protected function praseEnvironmentVariable($value)
+    protected function praseEnvironmentVariable($value): mixed
     {
         switch (strtolower($value)) {
             case 'true':

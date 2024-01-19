@@ -10,13 +10,14 @@ namespace Mini\Filesystem;
 use Mini\Exception\FileException;
 use Mini\Exception\FileNotFoundException;
 use Mini\Service\HttpMessage\Upload\FileHelpers;
+use SplFileInfo;
 
 /**
  * Class File
  * @package Mini\Filesystem
  * A file in the file system.
  */
-class File extends \SplFileInfo
+class File extends SplFileInfo
 {
     use FileHelpers;
     /**
@@ -37,20 +38,20 @@ class File extends \SplFileInfo
     }
 
 
-    public function move(string $directory, string $name = null)
+    public function move(string $directory, string $name = null): File
     {
         $target = $this->getTargetFile($directory, $name);
 
         set_error_handler(function ($type, $msg) use (&$error) {
             $error = $msg;
         });
-        $renamed = rename($this->getPathname(), $target);
+        $renamed = rename($this->getPathname(), (string)$target);
         restore_error_handler();
         if (!$renamed) {
             throw new FileException(sprintf('Could not move the file "%s" to "%s" (%s).', $this->getPathname(), $target, strip_tags($error)));
         }
 
-        @chmod($target, 0666 & ~umask());
+        @chmod((string)$target, 0666 & ~umask());
 
         return $target;
     }
@@ -58,7 +59,7 @@ class File extends \SplFileInfo
     /**
      * @return self
      */
-    protected function getTargetFile(string $directory, string $name = null)
+    protected function getTargetFile(string $directory, string $name = null): self
     {
         if (!is_dir($directory)) {
             if (false === @mkdir($directory, 0777, true) && !is_dir($directory)) {
@@ -78,12 +79,10 @@ class File extends \SplFileInfo
      *
      * @return string
      */
-    protected function getName(string $name)
+    protected function getName(string $name): string
     {
         $originalName = str_replace('\\', '/', $name);
         $pos = strrpos($originalName, '/');
-        $originalName = false === $pos ? $originalName : substr($originalName, $pos + 1);
-
-        return $originalName;
+        return false === $pos ? $originalName : substr($originalName, $pos + 1);
     }
 }

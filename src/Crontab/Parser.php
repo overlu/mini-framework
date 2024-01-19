@@ -86,7 +86,7 @@ class Parser
             for ($i = $start; $i <= $max; ++$i) {
                 $result[] = $i;
             }
-        } elseif (strpos($string, ',') !== false) {
+        } elseif (str_contains($string, ',')) {
             $exploded = explode(',', $string);
             foreach ($exploded as $value) {
                 if (!self::between((int)$value, max($min, $start), $max)) {
@@ -94,9 +94,9 @@ class Parser
                 }
                 $result[] = (int)$value;
             }
-        } elseif (strpos($string, '/') !== false) {
+        } elseif (str_contains($string, '/')) {
             $exploded = explode('/', $string);
-            if (strpos($exploded[0], '-') !== false) {
+            if (str_contains($exploded[0], '-')) {
                 [$nMin, $nMax] = explode('-', $exploded[0]);
                 $nMin > $min && $min = (int)$nMin;
                 $nMax < $max && $max = (int)$nMax;

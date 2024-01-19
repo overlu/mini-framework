@@ -100,7 +100,7 @@ class Pool
         return $this->getConnectionFromPool($key);
     }
 
-    protected function getConnectionFromPool($key)
+    protected function getConnectionFromPool($key): PDO|PDOProxy
     {
         if (empty($this->pools)) {
             $this->initialize(config('database.connections', []));
@@ -129,7 +129,7 @@ class Pool
      * @param mixed $connection
      * @return void
      */
-    protected function setConnectionToContext(string $name, $connection): void
+    protected function setConnectionToContext(string $name, mixed $connection): void
     {
         $key = $this->getConnectionKeyInContext($name);
         Context::set($key, $connection);
@@ -152,7 +152,7 @@ class Pool
      * @param string $name
      * @return mixed
      */
-    protected function getConnectionFromContext(string $name)
+    protected function getConnectionFromContext(string $name): mixed
     {
         $key = $this->getConnectionKeyInContext($name);
         return Context::get($key);
@@ -160,7 +160,7 @@ class Pool
 
     /**
      * 关闭连接池
-     * @return array|int[]|string[]
+     * @return array
      */
     public function closePool(): array
     {

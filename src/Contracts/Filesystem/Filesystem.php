@@ -14,190 +14,192 @@ interface Filesystem
      *
      * @var string
      */
-    const VISIBILITY_PUBLIC = 'public';
+    public const VISIBILITY_PUBLIC = 'public';
 
     /**
      * The private visibility setting.
      *
      * @var string
      */
-    const VISIBILITY_PRIVATE = 'private';
+    public const VISIBILITY_PRIVATE = 'private';
 
     /**
      * Determine if a file exists.
      *
-     * @param  string  $path
+     * @param string $path
      * @return bool
      */
-    public function exists($path);
+    public function exists(string $path): bool;
 
     /**
      * Get the contents of a file.
      *
-     * @param  string  $path
+     * @param string $path
      * @return string
      *
      * @throws \Mini\Exception\FileNotFoundException
      */
-    public function get($path);
+    public function get(string $path): string;
 
     /**
      * Get a resource to read the file.
      *
-     * @param  string  $path
+     * @param string $path
      * @return resource|null The path resource or null on failure.
      *
      * @throws \Mini\Exception\FileNotFoundException
      */
-    public function readStream($path);
+    public function readStream(string $path);
 
     /**
      * Write the contents of a file.
      *
-     * @param  string  $path
-     * @param  string|resource  $contents
-     * @param  mixed  $options
+     * @param string $path
+     * @param string|resource $contents
+     * @param mixed|array $options
      * @return bool
      */
-    public function put($path, $contents, $options = []);
+    public function put(string $path, $contents, mixed $options = []): bool;
 
     /**
      * Write a new file using a stream.
      *
-     * @param  string  $path
-     * @param  resource  $resource
-     * @param  array  $options
+     * @param string $path
+     * @param resource $resource
+     * @param array $options
      * @return bool
      *
      * @throws \InvalidArgumentException If $resource is not a file handle.
      * @throws \Mini\Exception\FileExistsException
      */
-    public function writeStream($path, $resource, array $options = []);
+    public function writeStream(string $path, $resource, array $options = []): bool;
 
     /**
      * Get the visibility for the given path.
      *
-     * @param  string  $path
+     * @param string $path
      * @return string
      */
-    public function getVisibility($path);
+    public function getVisibility(string $path): string;
 
     /**
      * Set the visibility for the given path.
      *
-     * @param  string  $path
-     * @param  string  $visibility
+     * @param string $path
+     * @param string $visibility
      * @return bool
      */
-    public function setVisibility($path, $visibility);
+    public function setVisibility(string $path, string $visibility): bool;
 
     /**
      * Prepend to a file.
      *
-     * @param  string  $path
-     * @param  string  $data
+     * @param string $path
+     * @param string $data
+     * @param string $separator
      * @return bool
      */
-    public function prepend($path, $data);
+    public function prepend(string $path, string $data, string $separator = PHP_EOL): bool;
 
     /**
      * Append to a file.
      *
-     * @param  string  $path
-     * @param  string  $data
+     * @param string $path
+     * @param string $data
+     * @param string $separator
      * @return bool
      */
-    public function append($path, $data);
+    public function append(string $path, string $data, string $separator = PHP_EOL): bool;
 
     /**
      * Delete the file at a given path.
      *
-     * @param  string|array  $paths
+     * @param array|string $paths
      * @return bool
      */
-    public function delete($paths);
+    public function delete(array|string $paths): bool;
 
     /**
      * Copy a file to a new location.
      *
-     * @param  string  $from
-     * @param  string  $to
+     * @param string $from
+     * @param string $to
      * @return bool
      */
-    public function copy($from, $to);
+    public function copy(string $from, string $to): bool;
 
     /**
      * Move a file to a new location.
      *
-     * @param  string  $from
-     * @param  string  $to
+     * @param string $from
+     * @param string $to
      * @return bool
      */
-    public function move($from, $to);
+    public function move(string $from, string $to): bool;
 
     /**
      * Get the file size of a given file.
      *
-     * @param  string  $path
+     * @param string $path
      * @return int
      */
-    public function size($path);
+    public function size(string $path): int;
 
     /**
      * Get the file's last modification time.
      *
-     * @param  string  $path
+     * @param string $path
      * @return int
      */
-    public function lastModified($path);
+    public function lastModified(string $path): int;
 
     /**
      * Get an array of all files in a directory.
      *
-     * @param  string|null  $directory
-     * @param  bool  $recursive
+     * @param string|null $directory
+     * @param bool $recursive
      * @return array
      */
-    public function files($directory = null, $recursive = false);
+    public function files(string $directory = null, bool $recursive = false): array;
 
     /**
      * Get all of the files from the given directory (recursive).
      *
-     * @param  string|null  $directory
+     * @param string|null $directory
      * @return array
      */
-    public function allFiles($directory = null);
+    public function allFiles(string $directory = null): array;
 
     /**
      * Get all of the directories within a given directory.
      *
-     * @param  string|null  $directory
-     * @param  bool  $recursive
+     * @param string|null $directory
+     * @param bool $recursive
      * @return array
      */
-    public function directories($directory = null, $recursive = false);
+    public function directories(string $directory = null, bool $recursive = false): array;
 
     /**
      * Get all (recursive) of the directories within a given directory.
      *
-     * @param  string|null  $directory
+     * @param string|null $directory
      * @return array
      */
-    public function allDirectories($directory = null);
+    public function allDirectories(string $directory = null): array;
 
     /**
      * Create a directory.
      *
-     * @param  string  $path
+     * @param string $path
      * @return bool
      */
-    public function makeDirectory($path);
+    public function makeDirectory(string $path): bool;
 
     /**
      * Recursively delete a directory.
      *
-     * @param  string  $directory
+     * @param string $directory
      * @return bool
      */
-    public function deleteDirectory($directory);
+    public function deleteDirectory(string $directory): bool;
 }

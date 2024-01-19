@@ -12,12 +12,12 @@ use Composer\Autoload\ClassLoader;
 class Composer
 {
     /**
-     * @var Collection
+     * @var Collection|null
      */
     private static ?Collection $content = null;
 
     /**
-     * @var Collection
+     * @var Collection|null
      */
     private static ?Collection $json = null;
 
@@ -128,7 +128,7 @@ class Composer
     {
         $composerClass = '';
         foreach (get_declared_classes() as $declaredClass) {
-            if (strpos($declaredClass, 'ComposerAutoloaderInit') === 0 && method_exists($declaredClass, 'getLoader')) {
+            if (str_starts_with($declaredClass, 'ComposerAutoloaderInit') && method_exists($declaredClass, 'getLoader')) {
                 $composerClass = $declaredClass;
                 break;
             }

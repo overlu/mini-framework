@@ -12,7 +12,7 @@ trait CompilesEchos
     /**
      * Compile Blade echos into valid PHP.
      *
-     * @param string $value
+     * @param string|null $value
      * @return string
      */
     public function compileEchos(?string $value): string

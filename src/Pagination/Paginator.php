@@ -9,14 +9,14 @@ namespace Mini\Pagination;
 
 use ArrayAccess;
 use Countable;
-use Mini\Contracts\Pagination\Paginator as PaginatorContract;
 use Mini\Contracts\Support\Arrayable;
+use Mini\Contracts\Support\Htmlable;
 use Mini\Contracts\Support\Jsonable;
 use Mini\Support\Collection;
 use IteratorAggregate;
 use JsonSerializable;
 
-class Paginator extends AbstractPaginator implements Arrayable, ArrayAccess, Countable, IteratorAggregate, Jsonable, JsonSerializable, PaginatorContract
+class Paginator extends AbstractPaginator implements Arrayable, ArrayAccess, Countable, IteratorAggregate, Jsonable, JsonSerializable
 {
     /**
      * Determine if there are more items in the data source.
@@ -34,7 +34,7 @@ class Paginator extends AbstractPaginator implements Arrayable, ArrayAccess, Cou
      * @param array $options (path, query, fragment, pageName)
      * @return void
      */
-    public function __construct($items, $perPage, $currentPage = null, array $options = [])
+    public function __construct(mixed $items, int $perPage, int $currentPage = null, array $options = [])
     {
         $this->options = $options;
 
@@ -55,7 +55,7 @@ class Paginator extends AbstractPaginator implements Arrayable, ArrayAccess, Cou
      * @param int $currentPage
      * @return int
      */
-    protected function setCurrentPage($currentPage): int
+    protected function setCurrentPage(int $currentPage): int
     {
         $currentPage = $currentPage ?: static::resolveCurrentPage();
 
@@ -68,7 +68,7 @@ class Paginator extends AbstractPaginator implements Arrayable, ArrayAccess, Cou
      * @param mixed $items
      * @return void
      */
-    protected function setItems($items): void
+    protected function setItems(mixed $items): void
     {
         $this->items = $items instanceof Collection ? $items : Collection::make($items);
 
@@ -95,9 +95,9 @@ class Paginator extends AbstractPaginator implements Arrayable, ArrayAccess, Cou
      *
      * @param string|null $view
      * @param array $data
-     * @return string
+     * @return string|Htmlable
      */
-    public function links($view = null, $data = [])
+    public function links(string $view = null, array $data = []): string|Htmlable
     {
         return $this->render($view, $data);
     }
@@ -107,9 +107,9 @@ class Paginator extends AbstractPaginator implements Arrayable, ArrayAccess, Cou
      *
      * @param string|null $view
      * @param array $data
-     * @return \Mini\Contracts\Support\Htmlable
+     * @return Htmlable
      */
-    public function render($view = null, $data = [])
+    public function render(string $view = null, array $data = []): Htmlable
     {
         return static::viewFactory()->make($view ?: static::$defaultSimpleView, array_merge($data, [
             'paginator' => $this,
@@ -122,7 +122,7 @@ class Paginator extends AbstractPaginator implements Arrayable, ArrayAccess, Cou
      * @param bool $hasMore
      * @return $this
      */
-    public function hasMorePagesWhen($hasMore = true): self
+    public function hasMorePagesWhen(bool $hasMore = true): static
     {
         $this->hasMore = $hasMore;
 
@@ -176,7 +176,7 @@ class Paginator extends AbstractPaginator implements Arrayable, ArrayAccess, Cou
      * @param int $options
      * @return string
      */
-    public function toJson($options = 0): string
+    public function toJson(int $options = 0): string
     {
         return json_encode($this->jsonSerialize(), $options);
     }

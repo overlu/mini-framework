@@ -13,7 +13,7 @@ namespace Mini\Facades;
  */
 class Redis extends Facade
 {
-    protected static function getFacadeAccessor()
+    protected static function getFacadeAccessor(): \Redis
     {
         return app('redis')->getConnection('default');
     }

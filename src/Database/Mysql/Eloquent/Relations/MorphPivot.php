@@ -19,7 +19,7 @@ class MorphPivot extends Pivot
      *
      * @var string
      */
-    protected $morphType;
+    protected string $morphType;
 
     /**
      * The value of the polymorphic relation.
@@ -28,15 +28,15 @@ class MorphPivot extends Pivot
      *
      * @var string
      */
-    protected $morphClass;
+    protected string $morphClass;
 
     /**
      * Set the keys for a save update query.
      *
-     * @param \Mini\Database\Mysql\Eloquent\Builder $query
-     * @return \Mini\Database\Mysql\Eloquent\Builder
+     * @param Builder $query
+     * @return Builder
      */
-    protected function setKeysForSaveQuery(Builder $query)
+    protected function setKeysForSaveQuery(Builder $query): Builder
     {
         $query->where($this->morphType, $this->morphClass);
 
@@ -48,7 +48,7 @@ class MorphPivot extends Pivot
      *
      * @return int
      */
-    public function delete()
+    public function delete(): int
     {
         if (isset($this->attributes[$this->getKeyName()])) {
             return (int)parent::delete();
@@ -73,7 +73,7 @@ class MorphPivot extends Pivot
      * @param string $morphType
      * @return $this
      */
-    public function setMorphType($morphType)
+    public function setMorphType(string $morphType): self
     {
         $this->morphType = $morphType;
 
@@ -84,9 +84,9 @@ class MorphPivot extends Pivot
      * Set the morph class for the pivot.
      *
      * @param string $morphClass
-     * @return \Mini\Database\Mysql\Eloquent\Relations\MorphPivot
+     * @return MorphPivot
      */
-    public function setMorphClass($morphClass)
+    public function setMorphClass(string $morphClass): MorphPivot
     {
         $this->morphClass = $morphClass;
 
@@ -98,7 +98,7 @@ class MorphPivot extends Pivot
      *
      * @return mixed
      */
-    public function getQueueableId()
+    public function getQueueableId(): mixed
     {
         if (isset($this->attributes[$this->getKeyName()])) {
             return $this->getKey();
@@ -115,20 +115,20 @@ class MorphPivot extends Pivot
     /**
      * Get a new query to restore one or more models by their queueable IDs.
      *
-     * @param array|int $ids
-     * @return \Mini\Database\Mysql\Eloquent\Builder
+     * @param int|array $ids
+     * @return Builder
      */
-    public function newQueryForRestoration($ids)
+    public function newQueryForRestoration(int|array $ids): Builder
     {
         if (is_array($ids)) {
             return $this->newQueryForCollectionRestoration($ids);
         }
 
-        if (!Str::contains($ids, ':')) {
+        if (!str_contains((string)$ids, ':')) {
             return parent::newQueryForRestoration($ids);
         }
 
-        $segments = explode(':', $ids);
+        $segments = explode(':', (string)$ids);
 
         return $this->newQueryWithoutScopes()
             ->where($segments[0], $segments[1])
@@ -140,9 +140,9 @@ class MorphPivot extends Pivot
      * Get a new query to restore multiple models by their queueable IDs.
      *
      * @param array $ids
-     * @return \Mini\Database\Mysql\Eloquent\Builder
+     * @return Builder
      */
-    protected function newQueryForCollectionRestoration(array $ids)
+    protected function newQueryForCollectionRestoration(array $ids): Builder
     {
         if (!Str::contains($ids[0], ':')) {
             return parent::newQueryForRestoration($ids);

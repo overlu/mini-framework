@@ -9,7 +9,7 @@ namespace Mini\Config;
 
 use ArrayAccess;
 use Exception;
-use Mini\Contracts\Config\Repository as ConfigContract;
+use Mini\Contracts\Config as ConfigContract;
 use Mini\Singleton;
 
 /**

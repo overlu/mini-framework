@@ -22,7 +22,7 @@ class SwooleStream implements StreamInterface
     /**
      * @var int
      */
-    protected $size;
+    protected int $size;
 
     /**
      * @var bool
@@ -67,7 +67,7 @@ class SwooleStream implements StreamInterface
     /**
      * Closes the stream and any underlying resources.
      */
-    public function close()
+    public function close(): void
     {
         $this->detach();
     }
@@ -92,7 +92,7 @@ class SwooleStream implements StreamInterface
      *
      * @return null|int returns the size in bytes if known, or null if unknown
      */
-    public function getSize()
+    public function getSize(): ?int
     {
         if (!$this->size) {
             $this->size = strlen($this->getContents());
@@ -125,7 +125,7 @@ class SwooleStream implements StreamInterface
      *
      * @return bool
      */
-    public function isSeekable()
+    public function isSeekable(): bool
     {
         return false;
     }
@@ -142,7 +142,7 @@ class SwooleStream implements StreamInterface
      *                    SEEK_END: Set position to end-of-stream plus offset.
      * @throws RuntimeException on failure
      */
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek(int $offset, int $whence = SEEK_SET)
     {
         throw new RuntimeException('Cannot seek a SwooleStream');
     }

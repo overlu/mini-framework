@@ -25,7 +25,6 @@ class ReloadServer
 
     /**
      * @param string $server
-     * @throws \Exception
      */
     public function reloadServer(string $server): void
     {
@@ -46,10 +45,7 @@ class ReloadServer
 
 
     }
-
-    /**
-     * @throws \Exception
-     */
+    
     public function reloadAllServer(): void
     {
         $servers = config('servers', []);

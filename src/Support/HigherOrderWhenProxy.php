@@ -30,7 +30,7 @@ class HigherOrderWhenProxy
      * @param bool $condition
      * @return void
      */
-    public function __construct(Enumerable $collection, $condition)
+    public function __construct(Enumerable $collection, bool $condition)
     {
         $this->condition = $condition;
         $this->collection = $collection;
@@ -42,7 +42,7 @@ class HigherOrderWhenProxy
      * @param string $key
      * @return mixed
      */
-    public function __get($key)
+    public function __get(string $key)
     {
         return $this->condition
             ? $this->collection->{$key}
@@ -56,7 +56,7 @@ class HigherOrderWhenProxy
      * @param array $parameters
      * @return mixed
      */
-    public function __call($method, $parameters)
+    public function __call(string $method, array $parameters)
     {
         return $this->condition
             ? $this->collection->{$method}(...$parameters)

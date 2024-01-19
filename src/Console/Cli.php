@@ -40,10 +40,10 @@ class Cli
 
     /**
      * @param string $text
-     * @param string|int|array $style
+     * @param int|array|string|null $style
      * @return string
      */
-    public static function color(string $text, $style = null): string
+    public static function color(string $text, int|array|string $style = null): string
     {
         return Color::render($text, $style);
     }
@@ -68,7 +68,7 @@ class Cli
         }
         $userOpts = [];
         foreach ($opts as $n => $v) {
-            if (is_numeric($n) || strpos($n, '_') === 0) {
+            if (is_numeric($n) || str_starts_with($n, '_')) {
                 $userOpts[] = "[$v]";
             } else {
                 $userOpts[] = "[$n:$v]";
@@ -120,7 +120,7 @@ class Cli
      */
     public static function isSupport256Color(): bool
     {
-        return DIRECTORY_SEPARATOR === '/' && strpos(getenv('TERM'), '256color') !== false;
+        return DIRECTORY_SEPARATOR === '/' && str_contains(getenv('TERM'), '256color');
     }
 
     /**

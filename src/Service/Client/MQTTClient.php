@@ -45,7 +45,7 @@ class MQTTClient
      * @param array $will 遗嘱消息
      * @return mixed
      */
-    public function connect(bool $clean = true, array $will = [])
+    public function connect(bool $clean = true, array $will = []): mixed
     {
         $data = [
             'cmd' => MQTT::CONNECT, // 1
@@ -73,7 +73,7 @@ class MQTTClient
      * @param array $topics 主题列表
      * @return mixed
      */
-    public function subscribe(array $topics)
+    public function subscribe(array $topics): mixed
     {
         $data = [
             'cmd' => MQTT::SUBSCRIBE, // 8
@@ -89,7 +89,7 @@ class MQTTClient
      * @param array $topics 主题列表
      * @return mixed
      */
-    public function unSubscribe(array $topics)
+    public function unSubscribe(array $topics): mixed
     {
         $data = [
             'cmd' => MQTT::UNSUBSCRIBE, // 10
@@ -109,7 +109,7 @@ class MQTTClient
      * @param int $retain 保留标志
      * @return mixed
      */
-    public function publish($topic, $content, $qos = 0, $dup = 0, $retain = 0)
+    public function publish(string $topic, string $content, int $qos = 0, int $dup = 0, int $retain = 0): mixed
     {
         $response = $qos > 0;
         return $this->sendBuffer([
@@ -128,7 +128,7 @@ class MQTTClient
      *
      * @return array|bool|string
      */
-    public function recv()
+    public function recv(): bool|array|string
     {
         $response = $this->client->recv();
         if ($response === false) {
@@ -147,7 +147,7 @@ class MQTTClient
      *
      * @return mixed
      */
-    public function ping()
+    public function ping(): mixed
     {
         return $this->sendBuffer(['cmd' => MQTT::PINGREQ]); // 12
     }
@@ -157,7 +157,7 @@ class MQTTClient
      *
      * @return mixed
      */
-    public function close()
+    public function close(): mixed
     {
         $this->sendBuffer(['cmd' => MQTT::DISCONNECT], false); // 14
         return $this->client->close();
@@ -168,7 +168,7 @@ class MQTTClient
      *
      * @return int
      */
-    public function getMsgId()
+    public function getMsgId(): int
     {
         return ++$this->msgId;
     }
@@ -180,7 +180,7 @@ class MQTTClient
      * @param bool $response 需要响应
      * @return mixed
      */
-    public function sendBuffer($data, $response = true)
+    public function sendBuffer(array $data, bool $response = true)
     {
         $buffer = MQTT::encode($data);
         $this->client->send($buffer);
@@ -194,7 +194,7 @@ class MQTTClient
     /**
      * 重连.
      */
-    private function reConnect()
+    private function reConnect(): void
     {
         $reConnectTime = 1;
         $result = false;

@@ -22,7 +22,7 @@ class Validation
     use TranslationsTrait, MessagesTrait;
 
     /** @var mixed */
-    protected $validator;
+    protected mixed $validator;
 
     /** @var array */
     protected array $inputs = [];
@@ -192,7 +192,7 @@ class Validation
     protected function isArrayAttribute(Attribute $attribute): bool
     {
         $key = $attribute->getKey();
-        return strpos($key, '*') !== false;
+        return str_contains($key, '*');
     }
 
     /**
@@ -330,7 +330,7 @@ class Validation
      * @param mixed $value
      * @return boolean
      */
-    protected function isEmptyValue($value): bool
+    protected function isEmptyValue(mixed $value): bool
     {
         $requiredValidator = new Required;
         return false === $requiredValidator->check($value);
@@ -369,7 +369,7 @@ class Validation
      * @return mixed
      * @throws EntryNotFoundException
      */
-    protected function resolveMessage(Attribute $attribute, $value, Rule $validator): string
+    protected function resolveMessage(Attribute $attribute, mixed $value, Rule $validator): string
     {
         $primaryAttribute = $attribute->getPrimaryAttribute();
         $params = array_merge($validator->getParameters(), $validator->getParametersTexts());
@@ -410,9 +410,8 @@ class Validation
             'value' => $value,
         ]);
 
-        foreach ($vars as $key => $value) {
-            $value = $this->stringify($value);
-            $message = str_replace(':' . $key, $value, $message);
+        foreach ($vars as $key => $val) {
+            $message = str_replace(':' . $key, $this->stringify($val), $message);
         }
 
         // Replace key indexes
@@ -437,7 +436,7 @@ class Validation
      * @param mixed $value
      * @return string
      */
-    protected function stringify($value): string
+    protected function stringify(mixed $value): string
     {
         if (is_string($value) || is_numeric($value)) {
             return (string)$value;
@@ -456,7 +455,7 @@ class Validation
      * @return array
      * @throws RuleNotFoundException
      */
-    protected function resolveRules($rules): array
+    protected function resolveRules(mixed $rules): array
     {
         if (is_string($rules)) {
             $rules = explode('|', $rules);
@@ -482,7 +481,7 @@ class Validation
             } elseif ($rule instanceof Closure) {
                 $validator = $validatorFactory('callback', $rule);
             } else {
-                $ruleName = is_object($rule) ? get_class($rule) : gettype($rule);
+                $ruleName = get_debug_type($rule);
                 $message = "Rule must be a string, Closure or '" . Rule::class . "' instance. " . $ruleName . " given";
                 throw new \RuntimeException($message);
             }
@@ -563,7 +562,7 @@ class Validation
      * @param string $key
      * @return mixed
      */
-    public function getValue(string $key)
+    public function getValue(string $key): mixed
     {
         return Helper::arrayGet($this->inputs, $key);
     }
@@ -574,7 +573,7 @@ class Validation
      * @param mixed $value
      * @return void
      */
-    public function setValue(string $key, $value): void
+    public function setValue(string $key, mixed $value): void
     {
         Helper::arraySet($this->inputs, $key, $value);
     }

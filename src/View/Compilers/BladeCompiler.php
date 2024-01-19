@@ -7,7 +7,9 @@ declare(strict_types=1);
 
 namespace Mini\View\Compilers;
 
+use Mini\Exception\FileNotFoundException;
 use Mini\Support\Arr;
+use Mini\Support\Collection;
 use Mini\Support\Str;
 use InvalidArgumentException;
 
@@ -137,7 +139,7 @@ class BladeCompiler extends Compiler implements CompilerInterface
      *
      * @param string|null $path
      * @return void
-     * @throws \Mini\Exception\FileNotFoundException
+     * @throws FileNotFoundException
      */
     public function compile(?string $path = null): void
     {
@@ -179,9 +181,9 @@ class BladeCompiler extends Compiler implements CompilerInterface
      * Get the open and closing PHP tag tokens from the given string.
      *
      * @param string $contents
-     * @return \Mini\Support\Collection
+     * @return Collection
      */
-    protected function getOpenAndClosingPhpTokens(string $contents): \Mini\Support\Collection
+    protected function getOpenAndClosingPhpTokens(string $contents): Collection
     {
         return collect(token_get_all($contents))
             ->pluck(0)
@@ -203,7 +205,7 @@ class BladeCompiler extends Compiler implements CompilerInterface
     /**
      * Set the path currently being compiled.
      *
-     * @param string $path
+     * @param string|null $path
      * @return void
      */
     public function setPath(?string $path): void
@@ -261,11 +263,11 @@ class BladeCompiler extends Compiler implements CompilerInterface
      */
     protected function storeUncompiledBlocks(string $value): string
     {
-        if (strpos($value, '@verbatim') !== false) {
+        if (str_contains($value, '@verbatim')) {
             $value = $this->storeVerbatimBlocks($value);
         }
 
-        if (strpos($value, '@php') !== false) {
+        if (str_contains($value, '@php')) {
             $value = $this->storePhpBlocks($value);
         }
 
@@ -351,7 +353,7 @@ class BladeCompiler extends Compiler implements CompilerInterface
      * @param int|string $replace
      * @return string
      */
-    protected function getRawPlaceholder($replace): string
+    protected function getRawPlaceholder(int|string $replace): string
     {
         return str_replace('#', $replace, '@__raw_block_#__@');
     }

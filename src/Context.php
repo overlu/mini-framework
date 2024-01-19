@@ -84,7 +84,7 @@ class Context
      * @param \Closure $closure
      * @return mixed
      */
-    public static function override(string $id, \Closure $closure)
+    public static function override(string $id, \Closure $closure): mixed
     {
         $value = null;
         if (self::has($id)) {
@@ -106,7 +106,7 @@ class Context
      * @param mixed $value
      * @return mixed|null
      */
-    public static function getOrSet(string $id, $value)
+    public static function getOrSet(string $id, mixed $value): mixed
     {
         if (!self::has($id)) {
             return self::set($id, value($value));
@@ -114,7 +114,7 @@ class Context
         return self::get($id);
     }
 
-    public static function getContainer()
+    public static function getContainer(): Coroutine\Context|array|null
     {
         if (self::inCoroutine()) {
             return Coroutine::getContext();

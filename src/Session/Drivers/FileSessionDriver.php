@@ -61,12 +61,12 @@ class FileSessionDriver implements SessionHandlerInterface
      * Destroy a session.
      *
      * @see https://php.net/manual/en/sessionhandlerinterface.destroy.php
-     * @param string $session_id the session ID being destroyed
+     * @param string $id the session ID being destroyed
      * @return bool
      */
-    public function destroy($session_id): bool
+    public function destroy(string $id): bool
     {
-        $this->files->delete($this->path . '/' . $session_id);
+        $this->files->delete($this->path . '/' . $id);
         return true;
     }
 
@@ -74,10 +74,10 @@ class FileSessionDriver implements SessionHandlerInterface
      * Cleanup old sessions.
      *
      * @see https://php.net/manual/en/sessionhandlerinterface.gc.php
-     * @param int $maxlifetime
+     * @param int $max_lifetime
      * @return bool
      */
-    public function gc($maxlifetime): bool
+    public function gc(int $max_lifetime): bool
     {
         $files = Finder::create()
             ->in($this->path)
@@ -95,11 +95,11 @@ class FileSessionDriver implements SessionHandlerInterface
      * Initialize session.
      *
      * @see https://php.net/manual/en/sessionhandlerinterface.open.php
-     * @param string $save_path the path where to store/retrieve the session
+     * @param string $path the path where to store/retrieve the session
      * @param string $name the session name
      * @return bool
      */
-    public function open($save_path, $name): bool
+    public function open(string $path, string $name): bool
     {
         return true;
     }
@@ -108,13 +108,13 @@ class FileSessionDriver implements SessionHandlerInterface
      * Read session data.
      *
      * @see https://php.net/manual/en/sessionhandlerinterface.read.php
-     * @param string $session_id the session id to read data for
+     * @param string $id the session id to read data for
      * @return string
      */
-    public function read($session_id): string
+    public function read(string $id): string
     {
         if (
-            $this->files->isFile($path = $this->path . '/' . $session_id)
+            $this->files->isFile($path = $this->path . '/' . $id)
             && $this->files->lastModified($path) >= Carbon::now()->subMinutes($this->minutes)->getTimestamp()
         ) {
             return $this->files->sharedGet($path);
@@ -126,13 +126,13 @@ class FileSessionDriver implements SessionHandlerInterface
      * Write session data.
      *
      * @see https://php.net/manual/en/sessionhandlerinterface.write.php
-     * @param string $session_id the session id
-     * @param string $session_data
+     * @param string $id the session id
+     * @param string $data
      * @return bool
      */
-    public function write($session_id, $session_data): bool
+    public function write(string $id, string $data): bool
     {
-        $this->files->put($this->path . '/' . $session_id, $session_data, true);
+        $this->files->put($this->path . '/' . $id, $data, true);
         return true;
     }
 }

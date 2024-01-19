@@ -101,12 +101,12 @@ class Command
     {
         if ($message instanceof \Throwable) {
             static::out(get_class($message), 'error');
-            static::line();
             static::out("\033[1;37m" . $message->getMessage() . "\033[0m");
+            static::line();
             static::out("\e[0;1min\e[0m \e[33;4m" . $message->getFile() . ':' . $message->getLine() . "\033[0m");
             static::line();
             static::out(Highlighter::getInstance()->highlightSnippet(file_get_contents($message->getFile()), $message->getLine(), 3, 3), null, false);
-            if (config('app.exception.show_trace', false)) {
+            if (config('debugger.exception.show_trace', false)) {
                 static::line();
                 static::out($message->getTraceAsString());
             }

@@ -30,14 +30,14 @@ class Defaults extends Rule implements ModifyValue
     {
         $this->requireParameters($this->fillableParams);
 
-        return $this->parameter('default') ? true : false;
+        return (bool)$this->parameter('default');
     }
 
     /**
      * @param mixed $value
      * @return mixed
      */
-    public function modifyValue($value)
+    public function modifyValue(mixed $value): mixed
     {
         return $this->isEmptyValue($value) ? $this->parameter('default') : $value;
     }
@@ -47,7 +47,7 @@ class Defaults extends Rule implements ModifyValue
      * @param mixed $value
      * @return boolean
      */
-    protected function isEmptyValue($value): bool
+    protected function isEmptyValue(mixed $value): bool
     {
         return false === (new Required)->check($value);
     }

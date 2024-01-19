@@ -9,5 +9,4 @@ namespace Mini\Contracts\Database\Events;
 
 interface MigrationEvent
 {
-    //
 }

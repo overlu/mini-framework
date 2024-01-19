@@ -16,7 +16,7 @@ class HasMany extends HasOneOrMany
      *
      * @return mixed
      */
-    public function getResults()
+    public function getResults(): mixed
     {
         return !is_null($this->getParentKey())
             ? $this->query->get()
@@ -30,7 +30,7 @@ class HasMany extends HasOneOrMany
      * @param string $relation
      * @return array
      */
-    public function initRelation(array $models, $relation)
+    public function initRelation(array $models, string $relation): array
     {
         foreach ($models as $model) {
             $model->setRelation($relation, $this->related->newCollection());
@@ -43,11 +43,11 @@ class HasMany extends HasOneOrMany
      * Match the eagerly loaded results to their parents.
      *
      * @param array $models
-     * @param \Mini\Database\Mysql\Eloquent\Collection $results
+     * @param Collection $results
      * @param string $relation
      * @return array
      */
-    public function match(array $models, Collection $results, $relation)
+    public function match(array $models, Collection $results, string $relation): array
     {
         return $this->matchMany($models, $results, $relation);
     }

@@ -12,7 +12,7 @@ use Mini\Command\AbstractCommandService;
 use Mini\Command\CommandService;
 use Mini\Container\Container;
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Contracts\ServiceProviderInterface;
+use Mini\Contracts\Service\ServiceProviderInterface;
 use Mini\Contracts\Support\DeferrableProvider;
 use Mini\View\Compilers\BladeCompiler;
 use Mini\View\Factory;

@@ -85,7 +85,7 @@ class Encrypter implements EncrypterContract, StringEncrypter
      *
      * @throws EncryptException|Exception
      */
-    public function encrypt($value, bool $serialize = true): string
+    public function encrypt(mixed $value, bool $serialize = true): string
     {
         $iv = random_bytes(openssl_cipher_iv_length($this->cipher));
 
@@ -137,7 +137,7 @@ class Encrypter implements EncrypterContract, StringEncrypter
      *
      * @throws DecryptException
      */
-    public function decrypt(string $payload, bool $unserialize = true)
+    public function decrypt(string $payload, bool $unserialize = true): mixed
     {
         $payloadArray = $this->getJsonPayload($payload);
 
@@ -177,7 +177,7 @@ class Encrypter implements EncrypterContract, StringEncrypter
      * @param mixed $value
      * @return string
      */
-    protected function hash(string $iv, $value): string
+    protected function hash(string $iv, mixed $value): string
     {
         return hash_hmac('sha256', $iv . $value, $this->key);
     }
@@ -214,7 +214,7 @@ class Encrypter implements EncrypterContract, StringEncrypter
      * @param mixed $payload
      * @return bool
      */
-    protected function validPayload($payload): bool
+    protected function validPayload(mixed $payload): bool
     {
         return is_array($payload) && isset($payload['iv'], $payload['value'], $payload['mac']) &&
             strlen(base64_decode($payload['iv'], true)) === openssl_cipher_iv_length($this->cipher);

@@ -19,12 +19,12 @@ class Waiter
     /**
      * @var float
      */
-    protected $pushTimeout = 10.0;
+    protected float $pushTimeout = 10.0;
 
     /**
      * @var float
      */
-    protected $popTimeout = 10.0;
+    protected float $popTimeout = 10.0;
 
     public function __construct(float $timeout = 10.0)
     {

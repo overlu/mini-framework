@@ -9,7 +9,9 @@ namespace Mini\Filesystem;
 
 use Aws\S3\S3Client;
 use Closure;
+use Mini\Container\Container;
 use Mini\Contracts\Filesystem\Factory as FactoryContract;
+use Mini\Contracts\Foundation\Application;
 use Mini\Filesystem\OSS\Adapter as OSSAdapter;
 use Mini\Filesystem\OSS\Plugins\Kernel;
 use Mini\Filesystem\OSS\Plugins\SetBucket;
@@ -38,31 +40,31 @@ class FilesystemManager implements FactoryContract
     /**
      * The application instance.
      *
-     * @var \Mini\Contracts\Foundation\Application
+     * @var Container
      */
-    protected $app;
+    protected Container $app;
 
     /**
      * The array of resolved filesystem drivers.
      *
      * @var array
      */
-    protected $disks = [];
+    protected array $disks = [];
 
     /**
      * The registered custom driver creators.
      *
      * @var array
      */
-    protected $customCreators = [];
+    protected array $customCreators = [];
 
     /**
      * Create a new filesystem manager instance.
      *
-     * @param \Mini\Contracts\Foundation\Application $app
+     * @param Application $app
      * @return void
      */
-    public function __construct($app)
+    public function __construct(Container $app)
     {
         $this->app = $app;
     }
@@ -73,7 +75,7 @@ class FilesystemManager implements FactoryContract
      * @param string|null $name
      * @return \Mini\Contracts\Filesystem\Filesystem
      */
-    public function drive($name = null)
+    public function drive(string $name = null): \Mini\Contracts\Filesystem\Filesystem
     {
         return $this->disk($name);
     }
@@ -84,7 +86,7 @@ class FilesystemManager implements FactoryContract
      * @param string|null $name
      * @return \Mini\Contracts\Filesystem\Filesystem
      */
-    public function disk($name = null)
+    public function disk(string $name = null): \Mini\Contracts\Filesystem\Filesystem
     {
         $name = $name ?: $this->getDefaultDriver();
 
@@ -96,7 +98,7 @@ class FilesystemManager implements FactoryContract
      *
      * @return \Mini\Contracts\Filesystem\Filesystem
      */
-    public function cloud()
+    public function cloud(): \Mini\Contracts\Filesystem\Filesystem
     {
         $name = $this->getDefaultCloudDriver();
 
@@ -109,7 +111,7 @@ class FilesystemManager implements FactoryContract
      * @param string $name
      * @return \Mini\Contracts\Filesystem\Filesystem
      */
-    protected function get($name)
+    protected function get(string $name): \Mini\Contracts\Filesystem\Filesystem
     {
         return $this->disks[$name] ?? $this->resolve($name);
     }
@@ -118,11 +120,10 @@ class FilesystemManager implements FactoryContract
      * Resolve the given disk.
      *
      * @param string $name
-     * @return \Mini\Contracts\Filesystem\Filesystem
+     * @return \Mini\Contracts\Filesystem\Filesystem|null
      *
-     * @throws \InvalidArgumentException
      */
-    protected function resolve($name)
+    protected function resolve(string $name): ?\Mini\Contracts\Filesystem\Filesystem
     {
         $config = $this->getConfig($name);
 
@@ -140,16 +141,15 @@ class FilesystemManager implements FactoryContract
 
         if (method_exists($this, $driverMethod)) {
             return $this->{$driverMethod}($config);
-        } else {
-            throw new InvalidArgumentException("Driver [{$name}] is not supported.");
         }
+
+        throw new InvalidArgumentException("Driver [{$name}] is not supported.");
     }
 
     /**
      * Call a custom driver creator.
      *
      * @param array $config
-     * @return \Mini\Contracts\Filesystem\Filesystem
      */
     protected function callCustomCreator(array $config)
     {
@@ -160,9 +160,9 @@ class FilesystemManager implements FactoryContract
      * Create an instance of the local driver.
      *
      * @param array $config
-     * @return \Mini\Contracts\Filesystem\Filesystem
+     * @return FilesystemAdapter
      */
-    public function createLocalDriver(array $config)
+    public function createLocalDriver(array $config): FilesystemAdapter
     {
         $visibility = PortableVisibilityConverter::fromArray(
             $config['permissions'] ?? []
@@ -183,9 +183,9 @@ class FilesystemManager implements FactoryContract
      * Create an instance of the ftp driver.
      *
      * @param array $config
-     * @return \Mini\Contracts\Filesystem\Filesystem
+     * @return FilesystemAdapter
      */
-    public function createFtpDriver(array $config)
+    public function createFtpDriver(array $config): FilesystemAdapter
     {
         $adapter = new FtpAdapter(FtpConnectionOptions::fromArray($config));
 
@@ -196,9 +196,8 @@ class FilesystemManager implements FactoryContract
      * Create an instance of the sftp driver.
      *
      * @param array $config
-     * @return \Mini\Contracts\Filesystem\Filesystem
      */
-    public function createSftpDriver(array $config)
+    public function createSftpDriver(array $config): FilesystemAdapter
     {
         $provider = SftpConnectionProvider::fromArray($config);
 
@@ -217,9 +216,9 @@ class FilesystemManager implements FactoryContract
      * Create an instance of the Amazon S3 driver.
      *
      * @param array $config
-     * @return \Mini\Contracts\Filesystem\Cloud
+     * @return AwsS3V3Adapter
      */
-    public function createS3Driver(array $config)
+    public function createS3Driver(array $config): AwsS3V3Adapter
     {
         $s3Config = $this->formatS3Config($config);
 
@@ -240,7 +239,11 @@ class FilesystemManager implements FactoryContract
         );
     }
 
-    public function createOssDriver($config)
+    /**
+     * @param $config
+     * @return \Mini\Filesystem\OSSAdapter
+     */
+    public function createOssDriver($config): \Mini\Filesystem\OSSAdapter
     {
         $adapter = new OSSAdapter($config);
 
@@ -255,7 +258,7 @@ class FilesystemManager implements FactoryContract
      * @param array $config
      * @return array
      */
-    protected function formatS3Config(array $config)
+    protected function formatS3Config(array $config): array
     {
         $config += ['version' => 'latest'];
 
@@ -271,9 +274,8 @@ class FilesystemManager implements FactoryContract
      *
      * @param \League\Flysystem\FilesystemAdapter $adapter
      * @param array $config
-     * @return \League\Flysystem\FilesystemOperator
      */
-    protected function createFlysystem(FlysystemAdapter $adapter, array $config)
+    protected function createFlysystem(FlysystemAdapter $adapter, array $config): Flysystem
     {
         $config = Arr::only($config, ['visibility', 'disable_asserts', 'url']);
 
@@ -287,7 +289,7 @@ class FilesystemManager implements FactoryContract
      * @param mixed $disk
      * @return $this
      */
-    public function set($name, $disk)
+    public function set(string $name, mixed $disk): self
     {
         $this->disks[$name] = $disk;
 
@@ -300,7 +302,7 @@ class FilesystemManager implements FactoryContract
      * @param string $name
      * @return array
      */
-    protected function getConfig($name)
+    protected function getConfig(string $name): array
     {
         return config("filesystems.disks.{$name}", []);
     }
@@ -310,7 +312,7 @@ class FilesystemManager implements FactoryContract
      *
      * @return string
      */
-    public function getDefaultDriver()
+    public function getDefaultDriver(): string
     {
         return config('filesystems.default');
     }
@@ -320,7 +322,7 @@ class FilesystemManager implements FactoryContract
      *
      * @return string
      */
-    public function getDefaultCloudDriver()
+    public function getDefaultCloudDriver(): string
     {
         return config('filesystems.cloud', 's3');
     }
@@ -331,7 +333,7 @@ class FilesystemManager implements FactoryContract
      * @param array|string $disk
      * @return $this
      */
-    public function forgetDisk($disk)
+    public function forgetDisk(array|string $disk): self
     {
         foreach ((array)$disk as $diskName) {
             unset($this->disks[$diskName]);
@@ -346,7 +348,7 @@ class FilesystemManager implements FactoryContract
      * @param string|null $name
      * @return void
      */
-    public function purge($name = null)
+    public function purge(string $name = null): void
     {
         $name = $name ?? $this->getDefaultDriver();
 
@@ -360,7 +362,7 @@ class FilesystemManager implements FactoryContract
      * @param \Closure $callback
      * @return $this
      */
-    public function extend($driver, Closure $callback)
+    public function extend(string $driver, Closure $callback): self
     {
         $this->customCreators[$driver] = $callback;
 
@@ -374,7 +376,7 @@ class FilesystemManager implements FactoryContract
      * @param array $parameters
      * @return mixed
      */
-    public function __call($method, $parameters)
+    public function __call(string $method, array $parameters)
     {
         return $this->disk()->$method(...$parameters);
     }

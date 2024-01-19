@@ -29,7 +29,7 @@ $message = $__bag->first($__errorArgs[0]); ?>';
     /**
      * Compile the enderror statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileEnderror(?string $expression): string

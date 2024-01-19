@@ -16,14 +16,14 @@ class RelationNotFoundException extends RuntimeException
      *
      * @var string
      */
-    public $model;
+    public string $model;
 
     /**
      * The name of the relation.
      *
      * @var string
      */
-    public $relation;
+    public string $relation;
 
     /**
      * Create a new exception instance.
@@ -32,7 +32,7 @@ class RelationNotFoundException extends RuntimeException
      * @param string $relation
      * @return static
      */
-    public static function make($model, $relation)
+    public static function make(object $model, string $relation): static
     {
         $class = get_class($model);
 

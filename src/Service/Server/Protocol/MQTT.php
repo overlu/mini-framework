@@ -58,7 +58,7 @@ class MQTT
      * @param string $buffer
      * @return int
      */
-    public static function input($buffer)
+    public static function input(string $buffer): float|int
     {
         $length = strlen($buffer);
         $bodyLength = static::getBodyLength($buffer, $headBytes);
@@ -74,9 +74,9 @@ class MQTT
      * 打包Mqtt数据包.
      *
      * @param array $data
-     * @return string
+     * @return string|null
      */
-    public static function encode($data): ?string
+    public static function encode(array $data): ?string
     {
         $cmd = $data['cmd'];
         switch ($cmd) {
@@ -128,13 +128,13 @@ class MQTT
             // ['cmd'=>3, 'message_id'=>x, 'topic'=>x, 'content'=>x, 'qos'=>0/1/2, 'dup'=>0/1, 'retain'=>0/1]
             case static::PUBLISH:
                 $body = static::packString($data['topic']);
-                $qos = isset($data['qos']) ? $data['qos'] : 0;
+                $qos = $data['qos'] ?? 0;
                 if ($qos) {
                     $body .= pack('n', $data['message_id']);
                 }
                 $body .= $data['content'];
-                $dup = isset($data['dup']) ? $data['dup'] : 0;
-                $retain = isset($data['retain']) ? $data['retain'] : 0;
+                $dup = $data['dup'] ?? 0;
+                $retain = $data['retain'] ?? 0;
                 $head = static::packHead($cmd, strlen($body), $dup, $qos, $retain);
                 return $head . $body;
             // ['cmd'=>x, 'message_id'=>x]
@@ -194,7 +194,7 @@ class MQTT
      * @param string $buffer
      * @return array|string
      */
-    public static function decode($buffer)
+    public static function decode(string $buffer): array|string
     {
         $cmd = static::getCmd($buffer); //获取消息类型
         $body = static::getBody($buffer); //获取消息体
@@ -336,10 +336,10 @@ class MQTT
      * 获取消息体长度.
      *
      * @param string $buffer 消息内容
-     * @param int $headBytes 固定头部长度
+     * @param null|int $headBytes 固定头部长度
      * @return int
      */
-    public static function getBodyLength($buffer, &$headBytes)
+    public static function getBodyLength(string $buffer, ?int &$headBytes): int
     {
         $headBytes = $multiplier = 1;
         $value = 0;
@@ -362,11 +362,10 @@ class MQTT
      * @param string $buffer
      * @return string
      */
-    public static function getBody($buffer): string
+    public static function getBody(string $buffer): string
     {
         $bodyLength = static::getBodyLength($buffer, $headBytes);
-        $buffer = substr($buffer, $headBytes, $bodyLength);
-        return $buffer;
+        return substr($buffer, $headBytes, $bodyLength);
     }
 
     /**
@@ -395,7 +394,7 @@ class MQTT
      * @param $buffer
      * @return mixed
      */
-    public static function readShortInt(&$buffer)
+    public static function readShortInt(&$buffer): mixed
     {
         $tmp = unpack('n', $buffer);
         $buffer = substr($buffer, 2);
@@ -412,7 +411,7 @@ class MQTT
      * @param int $retain 保留标志
      * @return string
      */
-    public static function packHead($cmd, $bodyLength, $dup = 0, $qos = 0, $retain = 0): string
+    public static function packHead(int $cmd, int $bodyLength, int $dup = 0, int $qos = 0, int $retain = 0): string
     {
         $cmd <<= 4;
         if ($dup) {
@@ -432,7 +431,7 @@ class MQTT
      *
      * @param string $string
      */
-    public static function printStr($string): void
+    public static function printStr(string $string): void
     {
         $strLen = strlen($string);
         for ($j = 0; $j < $strLen; ++$j) {
@@ -450,9 +449,9 @@ class MQTT
      * 获取响应数据包.
      *
      * @param array $attribute 属性
-     * @return string
+     * @return string|null
      */
-    public static function getAck($attribute): ?string
+    public static function getAck(array $attribute): ?string
     {
         return static::encode($attribute);
     }
@@ -463,7 +462,7 @@ class MQTT
      * @param int $length 长度
      * @return string
      */
-    protected static function writeBodyLength($length): string
+    protected static function writeBodyLength(int $length): string
     {
         $string = '';
         do {

@@ -27,7 +27,7 @@ trait CompilesComponents
      */
     protected function compileComponent(string $expression): string
     {
-        [$component, $alias, $data] = strpos($expression, ',') !== false
+        [$component, $alias, $data] = str_contains($expression, ',')
             ? array_map('trim', explode(',', trim($expression, '()'), 3)) + ['', '', '']
             : [trim($expression, '()'), '', ''];
 
@@ -108,7 +108,7 @@ trait CompilesComponents
     /**
      * Compile the slot statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileSlot(?string $expression): string
@@ -129,7 +129,7 @@ trait CompilesComponents
     /**
      * Compile the component-first statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileComponentFirst(?string $expression): string
@@ -150,7 +150,7 @@ trait CompilesComponents
     /**
      * Compile the prop statement into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileProps(?string $expression): string
@@ -172,7 +172,7 @@ trait CompilesComponents
      * @param mixed $value
      * @return mixed
      */
-    public static function sanitizeComponentAttribute($value)
+    public static function sanitizeComponentAttribute(mixed $value): mixed
     {
         return is_string($value) ||
         (is_object($value) && !$value instanceof ComponentAttributeBag && method_exists($value, '__toString'))

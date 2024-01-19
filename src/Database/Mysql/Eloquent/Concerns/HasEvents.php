@@ -7,10 +7,12 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql\Eloquent\Concerns;
 
+use Closure;
 use Mini\Contracts\Events\Dispatcher;
 use Mini\Events\NullDispatcher;
 use Mini\Support\Arr;
 use InvalidArgumentException;
+use RuntimeException;
 
 trait HasEvents
 {
@@ -38,9 +40,9 @@ trait HasEvents
      * @param object|array|string $classes
      * @return void
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
-    public static function observe($classes)
+    public static function observe(object|array|string $classes): void
     {
         $instance = new static;
 
@@ -55,9 +57,9 @@ trait HasEvents
      * @param object|string $class
      * @return void
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
-    protected function registerObserver($class)
+    protected function registerObserver(object|string $class): void
     {
         $className = $this->resolveObserverClassName($class);
 
@@ -75,11 +77,10 @@ trait HasEvents
      * Resolve the observer's class name from an object or string.
      *
      * @param object|string $class
-     * @return string
+     * @return object|string
      *
-     * @throws \InvalidArgumentException
      */
-    private function resolveObserverClassName($class)
+    private function resolveObserverClassName(object|string $class): object|string
     {
         if (is_object($class)) {
             return get_class($class);
@@ -97,7 +98,7 @@ trait HasEvents
      *
      * @return array
      */
-    public function getObservableEvents()
+    public function getObservableEvents(): array
     {
         return array_merge(
             [
@@ -115,7 +116,7 @@ trait HasEvents
      * @param array $observables
      * @return $this
      */
-    public function setObservableEvents(array $observables)
+    public function setObservableEvents(array $observables): self
     {
         $this->observables = $observables;
 
@@ -128,7 +129,7 @@ trait HasEvents
      * @param array|mixed $observables
      * @return void
      */
-    public function addObservableEvents($observables)
+    public function addObservableEvents(mixed $observables): void
     {
         $this->observables = array_unique(array_merge(
             $this->observables, is_array($observables) ? $observables : func_get_args()
@@ -141,7 +142,7 @@ trait HasEvents
      * @param array|mixed $observables
      * @return void
      */
-    public function removeObservableEvents($observables)
+    public function removeObservableEvents(mixed $observables): void
     {
         $this->observables = array_diff(
             $this->observables, is_array($observables) ? $observables : func_get_args()
@@ -152,10 +153,10 @@ trait HasEvents
      * Register a model event with the dispatcher.
      *
      * @param string $event
-     * @param \Closure|string $callback
+     * @param string|Closure $callback
      * @return void
      */
-    protected static function registerModelEvent($event, $callback)
+    protected static function registerModelEvent(string $event, string|Closure $callback): void
     {
         if (isset(static::$dispatcher)) {
             $name = static::class;
@@ -171,7 +172,7 @@ trait HasEvents
      * @param bool $halt
      * @return mixed
      */
-    protected function fireModelEvent($event, $halt = true)
+    protected function fireModelEvent(string $event, bool $halt = true): mixed
     {
         if (!isset(static::$dispatcher)) {
             return true;
@@ -202,10 +203,10 @@ trait HasEvents
      * @param string $method
      * @return mixed|null
      */
-    protected function fireCustomModelEvent($event, $method)
+    protected function fireCustomModelEvent(string $event, string $method): mixed
     {
         if (!isset($this->dispatchesEvents[$event])) {
-            return;
+            return null;
         }
 
         $result = static::$dispatcher->$method(new $this->dispatchesEvents[$event]($this));
@@ -213,6 +214,7 @@ trait HasEvents
         if (!is_null($result)) {
             return $result;
         }
+        return null;
     }
 
     /**
@@ -221,7 +223,7 @@ trait HasEvents
      * @param mixed $result
      * @return mixed
      */
-    protected function filterModelEventResults($result)
+    protected function filterModelEventResults(mixed $result): mixed
     {
         if (is_array($result)) {
             $result = array_filter($result, function ($response) {
@@ -235,10 +237,10 @@ trait HasEvents
     /**
      * Register a retrieved model event with the dispatcher.
      *
-     * @param \Closure|string $callback
+     * @param string|Closure $callback
      * @return void
      */
-    public static function retrieved($callback)
+    public static function retrieved(string|Closure $callback): void
     {
         static::registerModelEvent('retrieved', $callback);
     }
@@ -246,10 +248,10 @@ trait HasEvents
     /**
      * Register a saving model event with the dispatcher.
      *
-     * @param \Closure|string $callback
+     * @param string|Closure $callback
      * @return void
      */
-    public static function saving($callback)
+    public static function saving(string|Closure $callback): void
     {
         static::registerModelEvent('saving', $callback);
     }
@@ -257,10 +259,10 @@ trait HasEvents
     /**
      * Register a saved model event with the dispatcher.
      *
-     * @param \Closure|string $callback
+     * @param string|Closure $callback
      * @return void
      */
-    public static function saved($callback)
+    public static function saved(string|Closure $callback): void
     {
         static::registerModelEvent('saved', $callback);
     }
@@ -268,10 +270,10 @@ trait HasEvents
     /**
      * Register an updating model event with the dispatcher.
      *
-     * @param \Closure|string $callback
+     * @param string|Closure $callback
      * @return void
      */
-    public static function updating($callback)
+    public static function updating(string|Closure $callback): void
     {
         static::registerModelEvent('updating', $callback);
     }
@@ -279,10 +281,10 @@ trait HasEvents
     /**
      * Register an updated model event with the dispatcher.
      *
-     * @param \Closure|string $callback
+     * @param string|Closure $callback
      * @return void
      */
-    public static function updated($callback)
+    public static function updated(string|Closure $callback): void
     {
         static::registerModelEvent('updated', $callback);
     }
@@ -290,10 +292,10 @@ trait HasEvents
     /**
      * Register a creating model event with the dispatcher.
      *
-     * @param \Closure|string $callback
+     * @param string|Closure $callback
      * @return void
      */
-    public static function creating($callback)
+    public static function creating(string|Closure $callback): void
     {
         static::registerModelEvent('creating', $callback);
     }
@@ -301,10 +303,10 @@ trait HasEvents
     /**
      * Register a created model event with the dispatcher.
      *
-     * @param \Closure|string $callback
+     * @param string|Closure $callback
      * @return void
      */
-    public static function created($callback)
+    public static function created(string|Closure $callback): void
     {
         static::registerModelEvent('created', $callback);
     }
@@ -312,10 +314,10 @@ trait HasEvents
     /**
      * Register a replicating model event with the dispatcher.
      *
-     * @param \Closure|string $callback
+     * @param string|Closure $callback
      * @return void
      */
-    public static function replicating($callback)
+    public static function replicating(string|Closure $callback): void
     {
         static::registerModelEvent('replicating', $callback);
     }
@@ -323,10 +325,10 @@ trait HasEvents
     /**
      * Register a deleting model event with the dispatcher.
      *
-     * @param \Closure|string $callback
+     * @param string|Closure $callback
      * @return void
      */
-    public static function deleting($callback)
+    public static function deleting(string|Closure $callback): void
     {
         static::registerModelEvent('deleting', $callback);
     }
@@ -334,10 +336,10 @@ trait HasEvents
     /**
      * Register a deleted model event with the dispatcher.
      *
-     * @param \Closure|string $callback
+     * @param string|Closure $callback
      * @return void
      */
-    public static function deleted($callback)
+    public static function deleted(string|Closure $callback): void
     {
         static::registerModelEvent('deleted', $callback);
     }
@@ -347,7 +349,7 @@ trait HasEvents
      *
      * @return void
      */
-    public static function flushEventListeners()
+    public static function flushEventListeners(): void
     {
         if (!isset(static::$dispatcher)) {
             return;
@@ -359,7 +361,7 @@ trait HasEvents
             static::$dispatcher->forget("eloquent.{$event}: " . static::class);
         }
 
-        foreach (array_values($instance->dispatchesEvents) as $event) {
+        foreach ($instance->dispatchesEvents as $event) {
             static::$dispatcher->forget($event);
         }
     }
@@ -367,9 +369,9 @@ trait HasEvents
     /**
      * Get the event dispatcher instance.
      *
-     * @return \Mini\Contracts\Events\Dispatcher
+     * @return Dispatcher
      */
-    public static function getEventDispatcher()
+    public static function getEventDispatcher(): Dispatcher
     {
         return static::$dispatcher;
     }
@@ -377,10 +379,10 @@ trait HasEvents
     /**
      * Set the event dispatcher instance.
      *
-     * @param \Mini\Contracts\Events\Dispatcher $dispatcher
+     * @param Dispatcher $dispatcher
      * @return void
      */
-    public static function setEventDispatcher(Dispatcher $dispatcher)
+    public static function setEventDispatcher(Dispatcher $dispatcher): void
     {
         static::$dispatcher = $dispatcher;
     }
@@ -390,7 +392,7 @@ trait HasEvents
      *
      * @return void
      */
-    public static function unsetEventDispatcher()
+    public static function unsetEventDispatcher(): void
     {
         static::$dispatcher = null;
     }
@@ -401,13 +403,11 @@ trait HasEvents
      * @param callable $callback
      * @return mixed
      */
-    public static function withoutEvents(callable $callback)
+    public static function withoutEvents(callable $callback): mixed
     {
         $dispatcher = static::getEventDispatcher();
 
-        if ($dispatcher) {
-            static::setEventDispatcher(new NullDispatcher($dispatcher));
-        }
+        static::setEventDispatcher(new NullDispatcher($dispatcher));
 
         try {
             return $callback();

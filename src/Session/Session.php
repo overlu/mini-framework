@@ -207,7 +207,7 @@ class Session implements SessionInterface
      * @return bool
      * @throws Exception
      */
-    public function migrate($destroy = false): bool
+    public function migrate(bool $destroy = false): bool
     {
         if ($destroy) {
             $this->handler->destroy($this->getId());
@@ -223,10 +223,10 @@ class Session implements SessionInterface
     /**
      * Checks if a key exists.
      *
-     * @param string|array $key
+     * @param array|string $key
      * @return bool
      */
-    public function exists($key): bool
+    public function exists(array|string $key): bool
     {
         $placeholder = new stdClass();
 
@@ -238,10 +238,10 @@ class Session implements SessionInterface
     /**
      * Determine if the given key is missing from the session data.
      *
-     * @param string|array $key
+     * @param array|string $key
      * @return bool
      */
-    public function missing($key): bool
+    public function missing(array|string $key): bool
     {
         return !$this->exists($key);
     }
@@ -249,10 +249,10 @@ class Session implements SessionInterface
     /**
      * Checks if an attribute is defined.
      *
-     * @param $key
+     * @param array|string $key
      * @return bool true if the attribute is defined, false otherwise
      */
-    public function has($key): bool
+    public function has(array|string $key): bool
     {
         return !collect(is_array($key) ? $key : func_get_args())->contains(function ($key) {
             return is_null($this->get($key));
@@ -263,10 +263,10 @@ class Session implements SessionInterface
      * Returns an attribute.
      *
      * @param string $name The attribute name
-     * @param mixed $default The default value if not found
+     * @param mixed|null $default The default value if not found
      * @return array|\ArrayAccess|mixed
      */
-    public function get(string $name, $default = null)
+    public function get(string $name, mixed $default = null): mixed
     {
         return Arr::get($this->attributes, $name, $default);
     }
@@ -277,7 +277,7 @@ class Session implements SessionInterface
      * @param string $name
      * @param mixed $value
      */
-    public function set(string $name, $value): void
+    public function set(string $name, mixed $value): void
     {
         Arr::set($this->attributes, $name, $value);
     }
@@ -286,9 +286,9 @@ class Session implements SessionInterface
      * Put a key / value pair or array of key / value pairs in the session.
      *
      * @param array|string $key
-     * @param null|mixed $value
+     * @param mixed|null $value
      */
-    public function put($key, $value = null): void
+    public function put(array|string $key, mixed $value = null): void
     {
         if (!is_array($key)) {
             $key = [$key => $value];
@@ -335,7 +335,7 @@ class Session implements SessionInterface
      * @param string $name
      * @return mixed The removed value or null when it does not exist
      */
-    public function remove(string $name)
+    public function remove(string $name): mixed
     {
         return Arr::pull($this->attributes, $name);
     }
@@ -345,7 +345,7 @@ class Session implements SessionInterface
      *
      * @param array|string $keys
      */
-    public function forget($keys): void
+    public function forget(array|string $keys): void
     {
         Arr::forget($this->attributes, $keys);
     }
@@ -456,7 +456,7 @@ class Session implements SessionInterface
      * @param string $key
      * @param mixed $value
      */
-    public function push(string $key, $value): void
+    public function push(string $key, mixed $value): void
     {
         $array = $this->get($key, []);
 
@@ -479,10 +479,10 @@ class Session implements SessionInterface
      * Get the value of a given key and then forget it.
      *
      * @param string $key
-     * @param mixed $default
+     * @param mixed|null $default
      * @return mixed
      */
-    public function pull(string $key, $default = null)
+    public function pull(string $key, mixed $default = null): mixed
     {
         return Arr::pull($this->attributes, $key, $default);
     }
@@ -504,10 +504,10 @@ class Session implements SessionInterface
      * Get the requested item from the flashed input array.
      *
      * @param string|null $key
-     * @param mixed $default
+     * @param mixed|null $default
      * @return mixed
      */
-    public function getOldInput(?string $key = null, $default = null)
+    public function getOldInput(?string $key = null, mixed $default = null): mixed
     {
         return Arr::get($this->get('_old_input', []), $key, $default);
     }
@@ -519,7 +519,7 @@ class Session implements SessionInterface
      * @param Closure $callback
      * @return mixed
      */
-    public function remember(string $key, Closure $callback)
+    public function remember(string $key, Closure $callback): mixed
     {
         if (!is_null($value = $this->get($key))) {
             return $value;
@@ -535,11 +535,11 @@ class Session implements SessionInterface
      *
      * @param string $key
      * @param int $amount
-     * @return mixed
+     * @return int
      */
-    public function increment(string $key, int $amount = 1)
+    public function increment(string $key, int $amount = 1): int
     {
-        $this->put($key, $value = $this->get($key, 0) + $amount);
+        $this->put($key, $value = (int)$this->get($key, 0) + $amount);
 
         return $value;
     }
@@ -551,7 +551,7 @@ class Session implements SessionInterface
      * @param int $amount
      * @return int
      */
-    public function decrement(string $key, int $amount = 1)
+    public function decrement(string $key, int $amount = 1): int
     {
         return $this->increment($key, $amount * -1);
     }

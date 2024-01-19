@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Support\Traits;
 
+use Closure;
 use Mini\Container\Container;
 
 trait Localizable
@@ -14,11 +15,11 @@ trait Localizable
     /**
      * Run the callback with the given locale.
      *
-     * @param  string  $locale
-     * @param  \Closure  $callback
+     * @param string $locale
+     * @param Closure $callback
      * @return mixed
      */
-    public function withLocale($locale, $callback)
+    public function withLocale(string $locale, Closure $callback): mixed
     {
         if (! $locale) {
             return $callback();

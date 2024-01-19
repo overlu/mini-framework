@@ -28,7 +28,7 @@ class Pipeline
      *
      * @var mixed
      */
-    protected $passable;
+    protected mixed $passable;
 
     /**
      * The array of class pipes.
@@ -54,7 +54,7 @@ class Pipeline
      * @param mixed $passable
      * @return Pipeline
      */
-    public function send($passable): self
+    public function send(mixed $passable): self
     {
         $this->passable = $passable;
 
@@ -67,7 +67,7 @@ class Pipeline
      * @param array|mixed $pipes
      * @return Pipeline
      */
-    public function through($pipes): self
+    public function through(mixed $pipes): self
     {
         $this->pipes = is_array($pipes) ? $pipes : func_get_args();
         return $this;

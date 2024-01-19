@@ -15,7 +15,7 @@ trait CapsuleManagerTrait
     /**
      * The current globally used instance.
      *
-     * @var object
+     * @var object|null
      */
     protected static ?object $instance = null;
 

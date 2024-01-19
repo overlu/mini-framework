@@ -28,10 +28,6 @@ class Json extends Rule
 
         json_decode($value);
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            return false;
-        }
-
-        return true;
+        return json_last_error() === JSON_ERROR_NONE;
     }
 }

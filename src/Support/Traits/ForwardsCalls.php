@@ -20,7 +20,7 @@ trait ForwardsCalls
      * @param array $parameters
      * @return mixed
      */
-    protected function forwardCallTo($object, string $method, array $parameters)
+    protected function forwardCallTo(mixed $object, string $method, array $parameters): mixed
     {
         try {
             return $object->{$method}(...$parameters);

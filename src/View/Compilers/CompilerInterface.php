@@ -28,7 +28,7 @@ interface CompilerInterface
     /**
      * Compile the view at the given path.
      *
-     * @param string $path
+     * @param string|null $path
      * @return void
      */
     public function compile(?string $path): void;

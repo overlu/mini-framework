@@ -78,7 +78,7 @@ class DB
      */
     public function bindMore(array $paras): void
     {
-        if (empty($this->parameters) && is_array($paras)) {
+        if (empty($this->parameters)) {
             foreach ($paras as $key => $value) {
                 $this->bind($key, $value);
             }
@@ -91,7 +91,7 @@ class DB
      * @param int $mode
      * @return null|mixed
      */
-    public function query($query, array $params = [], int $mode = PDO::FETCH_ASSOC)
+    public function query($query, array $params = [], int $mode = PDO::FETCH_ASSOC): mixed
     {
         $query = trim(str_replace("\r", " ", $query));
         $this->initialize($query, $params);
@@ -111,7 +111,7 @@ class DB
     /**
      * @return mixed
      */
-    public function lastInsertId()
+    public function lastInsertId(): mixed
     {
         return $this->connection->lastInsertId();
     }
@@ -136,7 +136,7 @@ class DB
      * @param array $params
      * @return array|null
      */
-    public function column($query, $params = []): ?array
+    public function column($query, array $params = []): ?array
     {
         $this->initialize($query, $params);
         $columns = $this->prepare->fetchAll(PDO::FETCH_NUM);
@@ -156,7 +156,7 @@ class DB
      * @param int $mod
      * @return mixed
      */
-    public function row($query, array $params = [], $mod = PDO::FETCH_ASSOC)
+    public function row($query, array $params = [], int $mod = PDO::FETCH_ASSOC): mixed
     {
         $this->initialize($query, $params);
         return $this->prepare->fetch($mod);
@@ -167,7 +167,7 @@ class DB
      * @param array $params
      * @return mixed
      */
-    public function single($query, array $params = [])
+    public function single($query, array $params = []): mixed
     {
         $this->initialize($query, $params);
         return $this->prepare->fetchColumn();
@@ -184,7 +184,7 @@ class DB
      * @return mixed|null
      * @throws Throwable
      */
-    public function transaction(callable $callable, $args = [])
+    public function transaction(callable $callable, array $args = []): mixed
     {
         try {
             $this->beginTransaction();

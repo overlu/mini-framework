@@ -28,7 +28,7 @@ trait Container
      * @param null $default
      * @return mixed|null
      */
-    public static function get(string $id, $default = null)
+    public static function get(string $id, $default = null): mixed
     {
         return static::$container[$id] ?? $default;
     }

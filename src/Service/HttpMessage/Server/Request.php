@@ -35,7 +35,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
     /**
      * @var null|array|object
      */
-    private $parsedBody;
+    private array|null|object $parsedBody;
 
     /**
      * @var array
@@ -57,7 +57,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      *
      * @var mixed
      */
-    private $bodyParams;
+    private mixed $bodyParams;
 
     /**
      * Load a swoole request, and transfer to a psr-7 request object.
@@ -162,7 +162,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      *
      * @return static
      */
-    public function addQueryParam(string $name, $value): Request
+    public function addQueryParam(string $name, mixed $value): Request
     {
         $clone = clone $this;
         $clone->queryParams[$name] = $value;
@@ -241,7 +241,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      * @return null|array|object The deserialized body parameters, if any.
      *                           These will typically be an array or object.
      */
-    public function getParsedBody()
+    public function getParsedBody(): object|array|null
     {
         return $this->parsedBody;
     }
@@ -254,7 +254,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      *
      * @return static
      */
-    public function addParserBody(string $name, $value): Request
+    public function addParserBody(string $name, mixed $value): Request
     {
         if (is_array($this->parsedBody)) {
             $clone = clone $this;
@@ -270,7 +270,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      *
      * @return mixed
      */
-    public function getBodyParams()
+    public function getBodyParams(): mixed
     {
         return $this->bodyParams;
     }
@@ -292,7 +292,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      * immutability of the message, and MUST return an instance that has the
      * updated body parameters.
      *
-     * @param null|array|object $data The deserialized body data. This will
+     * @param object|array|null $data The deserialized body data. This will
      *                                typically be in an array or object.
      * @return static
      * @throws \InvalidArgumentException if an unsupported argument type is
@@ -312,7 +312,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      *
      * @return static
      */
-    public function withBodyParams($data): Request
+    public function withBodyParams(mixed $data): Request
     {
         $clone = clone $this;
         $clone->bodyParams = $data;
@@ -343,11 +343,11 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      * specifying a default value to return if the attribute is not found.
      *
      * @param string $name the attribute name
-     * @param mixed $default default value to return if the attribute does not exist
+     * @param mixed|null $default default value to return if the attribute does not exist
      * @return mixed
      * @see getAttributes()
      */
-    public function getAttribute($name, $default = null)
+    public function getAttribute(string $name, mixed $default = null): mixed
     {
         return array_key_exists($name, $this->attributes) ? $this->attributes[$name] : $default;
     }
@@ -365,7 +365,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      * @return static
      * @see getAttributes()
      */
-    public function withAttribute($name, $value): Request
+    public function withAttribute(string $name, mixed $value): Request
     {
         $clone = clone $this;
         $clone->attributes[$name] = $value;
@@ -384,7 +384,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      * @return static
      * @see getAttributes()
      */
-    public function withoutAttribute($name): Request
+    public function withoutAttribute(string $name): Request
     {
         if (array_key_exists($name, $this->attributes) === false) {
             return $this;
@@ -438,7 +438,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      */
     public function isXmlHttpRequest(): bool
     {
-        return strtoupper($this->hasHeader('X-Requested-With')) === 'XMLHttpRequest';
+        return strtoupper((string)$this->hasHeader('X-Requested-With')) === 'XMLHttpRequest';
     }
 
     /**
@@ -466,7 +466,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
         }
 
         $contentType = strtolower($request->getHeaderLine('Content-Type'));
-        if (strpos($contentType, 'application/json') === 0) {
+        if (str_starts_with($contentType, 'application/json')) {
             $data = json_decode($request->getBody()->getContents(), true) ?? [];
         }
 
@@ -508,7 +508,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      * @param array $value $_FILES struct
      * @return UploadedFileInterface[]|UploadedFileInterface
      */
-    private static function createUploadedFileFromSpec(array $value)
+    private static function createUploadedFileFromSpec(array $value): UploadedFile|array|UploadedFileInterface
     {
         if (is_array($value['tmp_name'])) {
             return self::normalizeNestedFileSpec($value);
@@ -560,7 +560,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
             $uri = $uri->withHost($hostHeaderParts[0]);
             if (isset($hostHeaderParts[1])) {
                 $hasPort = true;
-                $uri = $uri->withPort($hostHeaderParts[1]);
+                $uri = $uri->withPort((int)$hostHeaderParts[1]);
             }
         } elseif (isset($server['server_name'])) {
             $uri = $uri->withHost($server['server_name']);
@@ -571,7 +571,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
             if (\strpos($header['host'], ':')) {
                 [$host, $port] = explode(':', $header['host'], 2);
                 if ((int)$port !== $uri->getDefaultPort()) {
-                    $uri = $uri->withPort($port);
+                    $uri = $uri->withPort((int)$port);
                 }
             } else {
                 $host = $header['host'];

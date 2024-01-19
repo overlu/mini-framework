@@ -81,7 +81,7 @@ class Uri implements UriInterface
     /**
      * @param string $uri URI to parse
      */
-    public function __construct($uri = '')
+    public function __construct(string $uri = '')
     {
         // weak type check to also accept null until we can add scalar type hints
         if ($uri !== '') {
@@ -307,7 +307,7 @@ class Uri implements UriInterface
      * @return static a new instance with the specified scheme
      * @throws InvalidArgumentException for invalid or unsupported schemes
      */
-    public function withScheme($scheme): Uri
+    public function withScheme(string $scheme): Uri
     {
         $scheme = $this->filterScheme($scheme);
         if ($this->scheme === $scheme) {
@@ -330,10 +330,10 @@ class Uri implements UriInterface
      * information.
      *
      * @param string $user the user name to use for authority
-     * @param null|string $password the password associated with $user
+     * @param string|null $password the password associated with $user
      * @return static a new instance with the specified user information
      */
-    public function withUserInfo($user, $password = null): Uri
+    public function withUserInfo(string $user, string $password = null): Uri
     {
         $info = $user;
         if ($password !== '') {
@@ -358,7 +358,7 @@ class Uri implements UriInterface
      * @return static a new instance with the specified host
      * @throws InvalidArgumentException for invalid hostnames
      */
-    public function withHost($host): Uri
+    public function withHost(string $host): Uri
     {
         $host = $this->filterHost($host);
         if ($this->host === $host) {
@@ -379,12 +379,12 @@ class Uri implements UriInterface
      * A null value provided for the port is equivalent to removing the port
      * information.
      *
-     * @param null|int $port the port to use with the new instance; a null value
+     * @param int|null $port the port to use with the new instance; a null value
      *                       removes the port information
      * @return static a new instance with the specified port
      * @throws InvalidArgumentException for invalid ports
      */
-    public function withPort($port): Uri
+    public function withPort(?int $port): Uri
     {
         $port = $this->filterPort($port);
         if ($this->port === $port) {
@@ -414,7 +414,7 @@ class Uri implements UriInterface
      * @return static a new instance with the specified path
      * @throws InvalidArgumentException for invalid paths
      */
-    public function withPath($path): Uri
+    public function withPath(string $path): Uri
     {
         $path = $this->filterPath($path);
         if ($this->path === $path) {
@@ -438,7 +438,7 @@ class Uri implements UriInterface
      * @return static a new instance with the specified query string
      * @throws InvalidArgumentException for invalid query strings
      */
-    public function withQuery($query): Uri
+    public function withQuery(string $query): Uri
     {
         $query = $this->filterQueryAndFragment($query);
         if ($this->query === $query) {
@@ -508,7 +508,7 @@ class Uri implements UriInterface
      * @param string $fragment the fragment to use with the new instance
      * @return static a new instance with the specified fragment
      */
-    public function withFragment($fragment): Uri
+    public function withFragment(string $fragment): Uri
     {
         $fragment = $this->filterQueryAndFragment($fragment);
         if ($this->fragment === $fragment) {
@@ -590,10 +590,10 @@ class Uri implements UriInterface
             $this->host = self::DEFAULT_HTTP_HOST;
         }
         if ($this->getAuthority() === '') {
-            if (strpos($this->path, '//') === 0) {
+            if (str_starts_with($this->path, '//')) {
                 throw new InvalidArgumentException('The path of a URI without an authority must not start with two slashes "//"');
             }
-            if ($this->scheme === '' && strpos(explode('/', $this->path, 2)[0], ':') !== false) {
+            if ($this->scheme === '' && str_contains(explode('/', $this->path, 2)[0], ':')) {
                 throw new InvalidArgumentException('A relative URI must not have a path beginning with a segment containing a colon');
             }
         } elseif (isset($this->path[0]) && $this->path[0] !== '/') {
@@ -629,10 +629,6 @@ class Uri implements UriInterface
      */
     private function filterScheme(string $scheme): string
     {
-        if (!is_string($scheme)) {
-            throw new InvalidArgumentException('Scheme must be a string');
-        }
-
         return strtolower($scheme);
     }
 
@@ -643,19 +639,15 @@ class Uri implements UriInterface
      */
     private function filterHost(string $host): string
     {
-        if (!is_string($host)) {
-            throw new InvalidArgumentException('Host must be a string');
-        }
-
         return strtolower($host);
     }
 
     /**
-     * @param null|int $port
+     * @param int|null $port
      * @return null|int
      * @throws InvalidArgumentException if the port is invalid
      */
-    private function filterPort($port = null)
+    private function filterPort(int $port = null): ?int
     {
         if ($port === null) {
             return null;
@@ -673,7 +665,7 @@ class Uri implements UriInterface
      */
     private function removeDefaultPort(): void
     {
-        if (isset($this->port) && $this->port !== null && $this->isDefaultPort()) {
+        if (isset($this->port) && $this->isDefaultPort()) {
             $this->port = null;
         }
     }

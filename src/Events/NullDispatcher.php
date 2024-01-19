@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Events;
 
+use Closure;
 use Mini\Contracts\Events\Dispatcher as DispatcherContract;
 use Mini\Support\Traits\ForwardsCalls;
 
@@ -17,12 +18,12 @@ class NullDispatcher implements DispatcherContract
     /**
      * The underlying event dispatcher instance.
      */
-    protected $dispatcher;
+    protected DispatcherContract $dispatcher;
 
     /**
      * Create a new event dispatcher instance that does not fire.
      *
-     * @param  \Mini\Contracts\Events\Dispatcher  $dispatcher
+     * @param DispatcherContract $dispatcher
      * @return void
      */
     public function __construct(DispatcherContract $dispatcher)
@@ -33,45 +34,52 @@ class NullDispatcher implements DispatcherContract
     /**
      * Don't fire an event.
      *
-     * @param  string|object  $event
-     * @param  mixed  $payload
-     * @param  bool  $halt
-     * @return void
+     * @param object|string $event
+     * @param mixed $payload
+     * @param bool $halt
+     * @return array|null
      */
-    public function dispatch($event, $payload = [], $halt = false)
+    public function dispatch(object|string $event, mixed $payload = [], bool $halt = false): ?array
     {
+        return null;
+    }
+
+    public function task($event, mixed $payload = [], bool $halt = false): int|bool
+    {
+        return false;
     }
 
     /**
      * Don't register an event and payload to be fired later.
      *
-     * @param  string  $event
-     * @param  array  $payload
+     * @param string $event
+     * @param array $payload
      * @return void
      */
-    public function push($event, $payload = [])
+    public function push(string $event, array $payload = []): void
     {
     }
 
     /**
      * Don't dispatch an event.
      *
-     * @param  string|object  $event
-     * @param  mixed  $payload
+     * @param object|string $event
+     * @param mixed|array $payload
      * @return array|null
      */
-    public function until($event, $payload = [])
+    public function until(object|string $event, mixed $payload = []): ?array
     {
+        return null;
     }
 
     /**
      * Register an event listener with the dispatcher.
      *
-     * @param  string|array  $events
-     * @param  \Closure|string  $listener
+     * @param array|string $events
+     * @param string|Closure $listener
      * @return void
      */
-    public function listen($events, $listener)
+    public function listen(array|string $events, string|Closure $listener): void
     {
         $this->dispatcher->listen($events, $listener);
     }
@@ -79,10 +87,10 @@ class NullDispatcher implements DispatcherContract
     /**
      * Determine if a given event has listeners.
      *
-     * @param  string  $eventName
+     * @param string $eventName
      * @return bool
      */
-    public function hasListeners($eventName)
+    public function hasListeners(string $eventName): bool
     {
         return $this->dispatcher->hasListeners($eventName);
     }
@@ -90,10 +98,10 @@ class NullDispatcher implements DispatcherContract
     /**
      * Register an event subscriber with the dispatcher.
      *
-     * @param  object|string  $subscriber
+     * @param object|string $subscriber
      * @return void
      */
-    public function subscribe($subscriber)
+    public function subscribe(object|string $subscriber): void
     {
         $this->dispatcher->subscribe($subscriber);
     }
@@ -101,10 +109,10 @@ class NullDispatcher implements DispatcherContract
     /**
      * Flush a set of pushed events.
      *
-     * @param  string  $event
+     * @param string $event
      * @return void
      */
-    public function flush($event)
+    public function flush(string $event): void
     {
         $this->dispatcher->flush($event);
     }
@@ -112,10 +120,10 @@ class NullDispatcher implements DispatcherContract
     /**
      * Remove a set of listeners from the dispatcher.
      *
-     * @param  string  $event
+     * @param string $event
      * @return void
      */
-    public function forget($event)
+    public function forget(string $event): void
     {
         $this->dispatcher->forget($event);
     }
@@ -125,7 +133,7 @@ class NullDispatcher implements DispatcherContract
      *
      * @return void
      */
-    public function forgetPushed()
+    public function forgetPushed(): void
     {
         $this->dispatcher->forgetPushed();
     }
@@ -133,8 +141,8 @@ class NullDispatcher implements DispatcherContract
     /**
      * Dynamically pass method calls to the underlying dispatcher.
      *
-     * @param  string  $method
-     * @param  array  $parameters
+     * @param string $method
+     * @param array $parameters
      * @return mixed
      */
     public function __call($method, $parameters)

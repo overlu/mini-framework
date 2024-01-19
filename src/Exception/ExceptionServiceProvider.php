@@ -17,9 +17,6 @@ use Mini\Service\AbstractServiceProvider;
  */
 class ExceptionServiceProvider extends AbstractServiceProvider
 {
-    /**
-     * @throws BindingResolutionException
-     */
     public function register(): void
     {
         $this->app->singleton('exception', function () {

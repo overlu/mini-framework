@@ -97,7 +97,7 @@ class ColorTag
      */
     public static function parse(string $text): string
     {
-        if (!$text || false === strpos($text, '</')) {
+        if (!$text || !str_contains($text, '</')) {
             return $text;
         }
 
@@ -169,7 +169,7 @@ class ColorTag
      */
     public static function strip(string $text): string
     {
-        if (false === strpos($text, '</')) {
+        if (!str_contains($text, '</')) {
             return $text;
         }
 

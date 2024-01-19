@@ -12,6 +12,7 @@ use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\Queue\Job;
 use Mini\Contracts\Queue\ShouldQueue;
 use Mini\Queue\InteractsWithQueue;
+use Throwable;
 
 class CallQueuedListener implements ShouldQueue
 {
@@ -104,11 +105,11 @@ class CallQueuedListener implements ShouldQueue
     /**
      * Set the job instance of the given class if necessary.
      *
-     * @param \Mini\Contracts\Queue\Job $job
+     * @param Job $job
      * @param mixed $instance
      * @return mixed
      */
-    protected function setJobInstanceIfNecessary(Job $job, $instance)
+    protected function setJobInstanceIfNecessary(Job $job, mixed $instance): mixed
     {
         if (in_array(InteractsWithQueue::class, class_uses_recursive($instance), true)) {
             $instance->setJob($job);
@@ -122,11 +123,11 @@ class CallQueuedListener implements ShouldQueue
      *
      * The event instance and the exception will be passed.
      *
-     * @param \Throwable $e
+     * @param Throwable $e
      * @return void
      * @throws BindingResolutionException
      */
-    public function failed($e): void
+    public function failed(Throwable $e): void
     {
         $this->prepareData();
 

@@ -9,6 +9,7 @@ namespace Mini\Service\Server;
 
 use Mini\Bootstrap;
 use Mini\Context;
+use Mini\Contracts\Foundation\Application;
 use Mini\Crontab\Crontab;
 use Mini\Exception\Handler;
 use Mini\Facades\Redis;
@@ -390,7 +391,8 @@ abstract class AbstractServer
     private function whenServerStop(Server $server): void
     {
         //socket 处理
-        if (app()->has('dcs')) {
+        $app = app();
+        if ($app->has('dcs')) {
             $redis = Redis::connection(config('cache.drivers.redis.collection', 'cache'));
             $it = NULL;
             while ($keys = $redis->scan($it, 'socket:*')) {
@@ -398,18 +400,18 @@ abstract class AbstractServer
             }
         }
         // 连接池关闭
-        app()->has('redis') && app('redis')->closePool();
-        app()->has('db') && app('db')->closePool();
-        app()->has('db.mini.pool') && app('db.mini.pool')->closePool();
+        $app->has('redis') && app('redis')->closePool();
+        $app->has('db') && app('db')->closePool();
+        $app->has('db.mini.pool') && app('db.mini.pool')->closePool();
     }
 
 
     /**
      * @param $error_message
      * @param int|string $code
-     * @return false|string
+     * @return string
      */
-    protected function error($error_message, $code = 0)
+    protected function error($error_message, int|string $code = 0): string
     {
         return json_encode([
             'code' => $code,

@@ -36,7 +36,7 @@ class Json
      * @param bool $assoc
      * @return mixed
      */
-    public static function decode(string $json, bool $assoc = true)
+    public static function decode(string $json, bool $assoc = true): mixed
     {
         $decode = json_decode($json, $assoc);
         static::handleJsonError(json_last_error(), json_last_error_msg());

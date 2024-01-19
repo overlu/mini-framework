@@ -136,7 +136,7 @@ class Redis
      * @param string $name
      * @return mixed
      */
-    protected function getConnectionFromContext(string $name)
+    protected function getConnectionFromContext(string $name): mixed
     {
         $key = $this->getConnectionKeyInContext($name);
         return Context::get($key);

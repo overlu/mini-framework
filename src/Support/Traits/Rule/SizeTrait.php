@@ -39,11 +39,11 @@ trait SizeTrait
 
     /**
      * Given $size and get the bytes
-     * @param string|int $size
+     * @param int|string $size
      * @return float
      * @throws InvalidArgumentException
      */
-    protected function getBytesSize($size): float
+    protected function getBytesSize(int|string $size): float
     {
         if (is_numeric($size)) {
             return (float)$size;
@@ -60,25 +60,14 @@ trait SizeTrait
         $number = (float)$match['number'];
         $format = $match['format'] ?? '';
 
-        switch (strtoupper($format)) {
-            case "KB":
-            case "K":
-                return $number * 1024;
-            case "MB":
-            case "M":
-                return $number * (1024 ** 2);
-            case "GB":
-            case "G":
-                return $number * (1024 ** 3);
-            case "TB":
-            case "T":
-                return $number * (1024 ** 4);
-            case "PB":
-            case "P":
-                return $number * (1024 ** 5);
-            default:
-                return $number;
-        }
+        return match (strtoupper($format)) {
+            "KB", "K" => $number * 1024,
+            "MB", "M" => $number * (1024 ** 2),
+            "GB", "G" => $number * (1024 ** 3),
+            "TB", "T" => $number * (1024 ** 4),
+            "PB", "P" => $number * (1024 ** 5),
+            default => $number,
+        };
     }
 
     /**
@@ -86,7 +75,7 @@ trait SizeTrait
      * @param mixed $value
      * @return bool
      */
-    public function isUploadedFileValue($value): bool
+    public function isUploadedFileValue(mixed $value): bool
     {
         if (!is_array($value)) {
             return false;

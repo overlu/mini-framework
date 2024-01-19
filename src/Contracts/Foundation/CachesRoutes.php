@@ -14,12 +14,12 @@ interface CachesRoutes
      *
      * @return bool
      */
-    public function routesAreCached();
+    public function routesAreCached(): bool;
 
     /**
      * Get the path to the routes cache file.
      *
      * @return string
      */
-    public function getCachedRoutesPath();
+    public function getCachedRoutesPath(): string;
 }

@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Support;
 
 use Mini\Support\Traits\Macroable;
+use voku\helper\ASCII;
 
 /**
  * Most of the methods in this file come from Mini/support,
@@ -45,7 +46,7 @@ class Str
      * @param string $search
      * @return string
      */
-    public static function after($subject, $search): string
+    public static function after(string $subject, string $search): string
     {
         return $search === '' ? $subject : array_reverse(explode($search, $subject, 2))[0];
     }
@@ -57,7 +58,7 @@ class Str
      * @param string $search
      * @return string
      */
-    public static function afterLast($subject, $search): string
+    public static function afterLast(string $subject, string $search): string
     {
         if ($search === '') {
             return $subject;
@@ -79,7 +80,7 @@ class Str
      * @param string $language
      * @return string
      */
-    public static function ascii($value, $language = 'en'): string
+    public static function ascii(string $value, string $language = 'en'): string
     {
         $languageSpecific = static::languageSpecificCharsArray($language);
 
@@ -101,7 +102,7 @@ class Str
      * @param string $search
      * @return string
      */
-    public static function before($subject, $search): string
+    public static function before(string $subject, string $search): string
     {
         return $search === '' ? $subject : explode($search, $subject)[0];
     }
@@ -113,7 +114,7 @@ class Str
      * @param string $search
      * @return string
      */
-    public static function beforeLast($subject, $search): string
+    public static function beforeLast(string $subject, string $search): string
     {
         if ($search === '') {
             return $subject;
@@ -136,7 +137,7 @@ class Str
      * @param string $to
      * @return string
      */
-    public static function between($subject, $from, $to): string
+    public static function between(string $subject, string $from, string $to): string
     {
         if ($from === '' || $to === '') {
             return $subject;
@@ -151,7 +152,7 @@ class Str
      * @param string $value
      * @return string
      */
-    public static function camel($value): string
+    public static function camel(string $value): string
     {
         if (isset(static::$camelCache[$value])) {
             return static::$camelCache[$value];
@@ -167,10 +168,10 @@ class Str
      * @param array|string $needles
      * @return bool
      */
-    public static function contains($haystack, $needles): bool
+    public static function contains(string $haystack, array|string $needles): bool
     {
         foreach ((array)$needles as $needle) {
-            if ($needle !== '' && mb_strpos($haystack, $needle) !== false) {
+            if ($needle !== '' && str_contains($haystack, $needle)) {
                 return true;
             }
         }
@@ -185,7 +186,7 @@ class Str
      * @param string[] $needles
      * @return bool
      */
-    public static function containsAll($haystack, array $needles): bool
+    public static function containsAll(string $haystack, array $needles): bool
     {
         foreach ($needles as $needle) {
             if (!static::contains($haystack, $needle)) {
@@ -203,7 +204,7 @@ class Str
      * @param array|string $needles
      * @return bool
      */
-    public static function endsWith($haystack, $needles): bool
+    public static function endsWith(string $haystack, array|string $needles): bool
     {
         foreach ((array)$needles as $needle) {
             if (substr($haystack, -strlen($needle)) === (string)$needle) {
@@ -221,7 +222,7 @@ class Str
      * @param string $cap
      * @return string
      */
-    public static function finish($value, $cap): string
+    public static function finish(string $value, string $cap): string
     {
         $quoted = preg_quote($cap, '/');
 
@@ -231,13 +232,13 @@ class Str
     /**
      * Determine if a given string matches a given pattern.
      *
-     * @param array|string $pattern
+     * @param array|string $patterns
      * @param string $value
      * @return bool
      */
-    public static function is($pattern, $value): bool
+    public static function is(array|string $patterns, string $value): bool
     {
-        $patterns = Arr::wrap($pattern);
+        $patterns = Arr::wrap($patterns);
 
         if (empty($patterns)) {
             return false;
@@ -272,7 +273,7 @@ class Str
      * @param string $value
      * @return string
      */
-    public static function kebab($value): string
+    public static function kebab(string $value): string
     {
         return static::snake($value, '-');
     }
@@ -281,10 +282,10 @@ class Str
      * Return the length of the given string.
      *
      * @param string $value
-     * @param string $encoding
+     * @param string|null $encoding
      * @return int
      */
-    public static function length($value, $encoding = null): int
+    public static function length(string $value, string $encoding = null): int
     {
         if ($encoding) {
             return mb_strlen($value, $encoding);
@@ -301,7 +302,7 @@ class Str
      * @param string $end
      * @return string
      */
-    public static function limit($value, $limit = 100, $end = '...'): string
+    public static function limit(string $value, int $limit = 100, string $end = '...'): string
     {
         if (mb_strwidth($value, 'UTF-8') <= $limit) {
             return $value;
@@ -316,7 +317,7 @@ class Str
      * @param string $value
      * @return string
      */
-    public static function lower($value): string
+    public static function lower(string $value): string
     {
         return mb_strtolower($value, 'UTF-8');
     }
@@ -343,10 +344,10 @@ class Str
      * Parse a Class@method style callback into class and method.
      *
      * @param string $callback
-     * @param null|string $default
+     * @param string|null $default
      * @return array
      */
-    public static function parseCallback(string $callback, $default = null): array
+    public static function parseCallback(string $callback, string $default = null): array
     {
         return static::contains($callback, '@') ? explode('@', $callback, 2) : [$callback, $default];
     }
@@ -460,7 +461,7 @@ class Str
      * @param string $string
      * @return Stringable
      */
-    public static function of($string): Stringable
+    public static function of(string $string): Stringable
     {
         return new Stringable($string);
     }
@@ -566,10 +567,10 @@ class Str
      * @param array|string $needles
      * @return bool
      */
-    public static function startsWith(string $haystack, $needles): bool
+    public static function startsWith(string $haystack, array|string $needles): bool
     {
         foreach ((array)$needles as $needle) {
-            if ($needle !== '' && strpos($haystack, (string)$needle) === 0) {
+            if ($needle !== '' && str_starts_with($haystack, (string)$needle)) {
                 return true;
             }
         }
@@ -601,10 +602,10 @@ class Str
      *
      * @param string $string
      * @param int $start
-     * @param null|int $length
+     * @param int|null $length
      * @return string
      */
-    public static function substr($string, $start, $length = null): string
+    public static function substr(string $string, int $start, int $length = null): string
     {
         return mb_substr($string, $start, $length, 'UTF-8');
     }
@@ -1195,5 +1196,16 @@ class Str
         }
 
         return $languageSpecific[$language] ?? null;
+    }
+
+    /**
+     * Determine if a given string is 7 bit ASCII.
+     *
+     * @param string $value
+     * @return bool
+     */
+    public static function isAscii(string $value): bool
+    {
+        return ASCII::is_ascii((string) $value);
     }
 }

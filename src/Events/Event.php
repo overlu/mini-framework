@@ -13,6 +13,7 @@ namespace Mini\Events;
  * @method static Dispatcher setQueueResolver(callable $resolver)
  * @method static array getListeners(string $eventName)
  * @method static array|null dispatch(string|object $event, mixed $payload = [], bool $halt = false)
+ * @method static int|bool task(string|object|\Closure $event, mixed $payload = [], bool $halt = false)
  * @method static array|null until(string|object $event, mixed $payload = [])
  * @method static bool hasListeners(string $eventName)
  * @method static void assertDispatched(string $event, callable|int $callback = null)

@@ -57,7 +57,7 @@ class Factory
      * @param mixed $key
      * @return mixed
      */
-    public function getValidator($key)
+    public function getValidator(mixed $key): mixed
     {
         return $this->validators[$key] ?? null;
     }

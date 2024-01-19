@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Contracts\HttpMessage;
 
+use Swoole\Http\Request;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 
@@ -14,17 +15,17 @@ interface WebsocketControllerInterface
 {
     /**
      * @param Server $server
-     * @param \Swoole\Http\Request $request
+     * @param Request $request
      * @param array $routeData
-     * @return mixed
+     * @return mixed|void
      */
-    public function onOpen(Server $server, \Swoole\Http\Request $request, array $routeData);
+    public function onOpen(Server $server, Request $request, array $routeData);
 
     /**
      * @param Server $server
      * @param Frame $frame
      * @param array $routeData
-     * @return mixed
+     * @return mixed|void
      */
     public function onMessage(Server $server, Frame $frame, array $routeData);
 
@@ -33,7 +34,7 @@ interface WebsocketControllerInterface
      * @param int $fd
      * @param array $routeData
      * @param int $reactorId
-     * @return mixed
+     * @return mixed|void
      */
     public function onClose(Server $server, int $fd, array $routeData, int $reactorId);
 
@@ -44,7 +45,7 @@ interface WebsocketControllerInterface
      * @param int $code
      * @return array
      */
-    public function success(string $action, $data = [], string $success_message = 'succeed', int $code = 200): array;
+    public function success(string $action, mixed $data = [], string $success_message = 'succeed', int $code = 200): array;
 
     /**
      * @param string $action
@@ -53,5 +54,5 @@ interface WebsocketControllerInterface
      * @param int $code
      * @return array
      */
-    public function failed(string $action, $data = [], string $error_message = 'failed', int $code = 0): array;
+    public function failed(string $action, mixed $data = [], string $error_message = 'failed', int $code = 0): array;
 }

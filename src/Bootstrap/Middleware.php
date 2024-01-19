@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Bootstrap;
 
-use Mini\Contracts\MiddlewareInterface;
+use Mini\Contracts\Middleware\MiddlewareInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 
@@ -33,7 +33,7 @@ class Middleware
      * @param object|null $class
      * @return mixed|null
      */
-    public function registerBeforeRequest(?string $method = null, ?object $class = null)
+    public function registerBeforeRequest(?string $method = null, ?object $class = null): mixed
     {
         foreach ($this->middleware as $item) {
             if ($class && method_exists($class, 'disableMiddleware') && $class->disableMiddleware(get_class($item))) {

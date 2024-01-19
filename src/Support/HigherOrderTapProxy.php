@@ -14,14 +14,14 @@ class HigherOrderTapProxy
      *
      * @var mixed
      */
-    public $target;
+    public mixed $target;
 
     /**
      * Create a new tap proxy instance.
      *
      * @param mixed $target
      */
-    public function __construct($target)
+    public function __construct(mixed $target)
     {
         $this->target = $target;
     }

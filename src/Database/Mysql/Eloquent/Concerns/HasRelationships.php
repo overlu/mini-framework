@@ -55,16 +55,16 @@ trait HasRelationships
      *
      * @var array
      */
-    protected static $relationResolvers = [];
+    protected static array $relationResolvers = [];
 
     /**
      * Define a dynamic relation resolver.
      *
      * @param string $name
-     * @param \Closure $callback
+     * @param Closure $callback
      * @return void
      */
-    public static function resolveRelationUsing($name, Closure $callback)
+    public static function resolveRelationUsing(string $name, Closure $callback): void
     {
         static::$relationResolvers = array_replace_recursive(
             static::$relationResolvers,
@@ -78,9 +78,9 @@ trait HasRelationships
      * @param string $related
      * @param string|null $foreignKey
      * @param string|null $localKey
-     * @return \Mini\Database\Mysql\Eloquent\Relations\HasOne
+     * @return HasOne
      */
-    public function hasOne($related, $foreignKey = null, $localKey = null)
+    public function hasOne(string $related, string $foreignKey = null, string $localKey = null): HasOne
     {
         $instance = $this->newRelatedInstance($related);
 
@@ -94,13 +94,13 @@ trait HasRelationships
     /**
      * Instantiate a new HasOne relationship.
      *
-     * @param \Mini\Database\Mysql\Eloquent\Builder $query
-     * @param \Mini\Database\Mysql\Eloquent\Model $parent
+     * @param Builder $query
+     * @param Model $parent
      * @param string $foreignKey
      * @param string $localKey
-     * @return \Mini\Database\Mysql\Eloquent\Relations\HasOne
+     * @return HasOne
      */
-    protected function newHasOne(Builder $query, Model $parent, $foreignKey, $localKey)
+    protected function newHasOne(Builder $query, Model $parent, string $foreignKey, string $localKey): HasOne
     {
         return new HasOne($query, $parent, $foreignKey, $localKey);
     }
@@ -114,9 +114,9 @@ trait HasRelationships
      * @param string|null $secondKey
      * @param string|null $localKey
      * @param string|null $secondLocalKey
-     * @return \Mini\Database\Mysql\Eloquent\Relations\HasOneThrough
+     * @return HasOneThrough
      */
-    public function hasOneThrough($related, $through, $firstKey = null, $secondKey = null, $localKey = null, $secondLocalKey = null)
+    public function hasOneThrough(string $related, string $through, string $firstKey = null, string $secondKey = null, string $localKey = null, string $secondLocalKey = null): HasOneThrough
     {
         $through = new $through;
 
@@ -134,16 +134,16 @@ trait HasRelationships
     /**
      * Instantiate a new HasOneThrough relationship.
      *
-     * @param \Mini\Database\Mysql\Eloquent\Builder $query
-     * @param \Mini\Database\Mysql\Eloquent\Model $farParent
-     * @param \Mini\Database\Mysql\Eloquent\Model $throughParent
+     * @param Builder $query
+     * @param Model $farParent
+     * @param Model $throughParent
      * @param string $firstKey
      * @param string $secondKey
      * @param string $localKey
      * @param string $secondLocalKey
-     * @return \Mini\Database\Mysql\Eloquent\Relations\HasOneThrough
+     * @return HasOneThrough
      */
-    protected function newHasOneThrough(Builder $query, Model $farParent, Model $throughParent, $firstKey, $secondKey, $localKey, $secondLocalKey)
+    protected function newHasOneThrough(Builder $query, Model $farParent, Model $throughParent, string $firstKey, string $secondKey, string $localKey, string $secondLocalKey): HasOneThrough
     {
         return new HasOneThrough($query, $farParent, $throughParent, $firstKey, $secondKey, $localKey, $secondLocalKey);
     }
@@ -156,9 +156,9 @@ trait HasRelationships
      * @param string|null $type
      * @param string|null $id
      * @param string|null $localKey
-     * @return \Mini\Database\Mysql\Eloquent\Relations\MorphOne
+     * @return MorphOne
      */
-    public function morphOne($related, $name, $type = null, $id = null, $localKey = null)
+    public function morphOne(string $related, string $name, string $type = null, string $id = null, string $localKey = null): MorphOne
     {
         $instance = $this->newRelatedInstance($related);
 
@@ -174,14 +174,14 @@ trait HasRelationships
     /**
      * Instantiate a new MorphOne relationship.
      *
-     * @param \Mini\Database\Mysql\Eloquent\Builder $query
-     * @param \Mini\Database\Mysql\Eloquent\Model $parent
+     * @param Builder $query
+     * @param Model $parent
      * @param string $type
      * @param string $id
      * @param string $localKey
-     * @return \Mini\Database\Mysql\Eloquent\Relations\MorphOne
+     * @return MorphOne
      */
-    protected function newMorphOne(Builder $query, Model $parent, $type, $id, $localKey)
+    protected function newMorphOne(Builder $query, Model $parent, string $type, string $id, string $localKey): MorphOne
     {
         return new MorphOne($query, $parent, $type, $id, $localKey);
     }
@@ -193,9 +193,9 @@ trait HasRelationships
      * @param string|null $foreignKey
      * @param string|null $ownerKey
      * @param string|null $relation
-     * @return \Mini\Database\Mysql\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function belongsTo($related, $foreignKey = null, $ownerKey = null, $relation = null)
+    public function belongsTo(string $related, string $foreignKey = null, string $ownerKey = null, string $relation = null): BelongsTo
     {
         // If no relation name was given, we will use this debug backtrace to extract
         // the calling method's name and use that as the relationship name as most
@@ -226,14 +226,14 @@ trait HasRelationships
     /**
      * Instantiate a new BelongsTo relationship.
      *
-     * @param \Mini\Database\Mysql\Eloquent\Builder $query
-     * @param \Mini\Database\Mysql\Eloquent\Model $child
+     * @param Builder $query
+     * @param Model $child
      * @param string $foreignKey
      * @param string $ownerKey
      * @param string $relation
-     * @return \Mini\Database\Mysql\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    protected function newBelongsTo(Builder $query, Model $child, $foreignKey, $ownerKey, $relation)
+    protected function newBelongsTo(Builder $query, Model $child, string $foreignKey, string $ownerKey, string $relation): BelongsTo
     {
         return new BelongsTo($query, $child, $foreignKey, $ownerKey, $relation);
     }
@@ -245,9 +245,9 @@ trait HasRelationships
      * @param string|null $type
      * @param string|null $id
      * @param string|null $ownerKey
-     * @return \Mini\Database\Mysql\Eloquent\Relations\MorphTo
+     * @return MorphTo
      */
-    public function morphTo($name = null, $type = null, $id = null, $ownerKey = null)
+    public function morphTo(string $name = null, string $type = null, string $id = null, string $ownerKey = null): MorphTo
     {
         // If no name is provided, we will use the backtrace to get the function name
         // since that is most likely the name of the polymorphic interface. We can
@@ -273,9 +273,9 @@ trait HasRelationships
      * @param string $type
      * @param string $id
      * @param string $ownerKey
-     * @return \Mini\Database\Mysql\Eloquent\Relations\MorphTo
+     * @return MorphTo
      */
-    protected function morphEagerTo($name, $type, $id, $ownerKey)
+    protected function morphEagerTo(string $name, string $type, string $id, string $ownerKey): MorphTo
     {
         return $this->newMorphTo(
             $this->newQuery()->setEagerLoads([]), $this, $id, $ownerKey, $type, $name
@@ -290,9 +290,9 @@ trait HasRelationships
      * @param string $type
      * @param string $id
      * @param string $ownerKey
-     * @return \Mini\Database\Mysql\Eloquent\Relations\MorphTo
+     * @return MorphTo
      */
-    protected function morphInstanceTo($target, $name, $type, $id, $ownerKey)
+    protected function morphInstanceTo(string $target, string $name, string $type, string $id, string $ownerKey): MorphTo
     {
         $instance = $this->newRelatedInstance(
             static::getActualClassNameForMorph($target)
@@ -306,15 +306,15 @@ trait HasRelationships
     /**
      * Instantiate a new MorphTo relationship.
      *
-     * @param \Mini\Database\Mysql\Eloquent\Builder $query
-     * @param \Mini\Database\Mysql\Eloquent\Model $parent
+     * @param Builder $query
+     * @param Model $parent
      * @param string $foreignKey
      * @param string $ownerKey
      * @param string $type
      * @param string $relation
-     * @return \Mini\Database\Mysql\Eloquent\Relations\MorphTo
+     * @return MorphTo
      */
-    protected function newMorphTo(Builder $query, Model $parent, $foreignKey, $ownerKey, $type, $relation)
+    protected function newMorphTo(Builder $query, Model $parent, string $foreignKey, string $ownerKey, string $type, string $relation): MorphTo
     {
         return new MorphTo($query, $parent, $foreignKey, $ownerKey, $type, $relation);
     }
@@ -325,7 +325,7 @@ trait HasRelationships
      * @param string $class
      * @return string
      */
-    public static function getActualClassNameForMorph($class)
+    public static function getActualClassNameForMorph(string $class): string
     {
         return Arr::get(Relation::morphMap() ?: [], $class, $class);
     }
@@ -335,7 +335,7 @@ trait HasRelationships
      *
      * @return string
      */
-    protected function guessBelongsToRelation()
+    protected function guessBelongsToRelation(): string
     {
         [$one, $two, $caller] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
 
@@ -348,9 +348,9 @@ trait HasRelationships
      * @param string $related
      * @param string|null $foreignKey
      * @param string|null $localKey
-     * @return \Mini\Database\Mysql\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function hasMany($related, $foreignKey = null, $localKey = null)
+    public function hasMany(string $related, string $foreignKey = null, string $localKey = null): HasMany
     {
         $instance = $this->newRelatedInstance($related);
 
@@ -366,13 +366,13 @@ trait HasRelationships
     /**
      * Instantiate a new HasMany relationship.
      *
-     * @param \Mini\Database\Mysql\Eloquent\Builder $query
-     * @param \Mini\Database\Mysql\Eloquent\Model $parent
+     * @param Builder $query
+     * @param Model $parent
      * @param string $foreignKey
      * @param string $localKey
-     * @return \Mini\Database\Mysql\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    protected function newHasMany(Builder $query, Model $parent, $foreignKey, $localKey)
+    protected function newHasMany(Builder $query, Model $parent, string $foreignKey, string $localKey): HasMany
     {
         return new HasMany($query, $parent, $foreignKey, $localKey);
     }
@@ -386,9 +386,9 @@ trait HasRelationships
      * @param string|null $secondKey
      * @param string|null $localKey
      * @param string|null $secondLocalKey
-     * @return \Mini\Database\Mysql\Eloquent\Relations\HasManyThrough
+     * @return HasManyThrough
      */
-    public function hasManyThrough($related, $through, $firstKey = null, $secondKey = null, $localKey = null, $secondLocalKey = null)
+    public function hasManyThrough(string $related, string $through, string $firstKey = null, string $secondKey = null, string $localKey = null, string $secondLocalKey = null): HasManyThrough
     {
         $through = new $through;
 
@@ -410,16 +410,16 @@ trait HasRelationships
     /**
      * Instantiate a new HasManyThrough relationship.
      *
-     * @param \Mini\Database\Mysql\Eloquent\Builder $query
-     * @param \Mini\Database\Mysql\Eloquent\Model $farParent
-     * @param \Mini\Database\Mysql\Eloquent\Model $throughParent
+     * @param Builder $query
+     * @param Model $farParent
+     * @param Model $throughParent
      * @param string $firstKey
      * @param string $secondKey
      * @param string $localKey
      * @param string $secondLocalKey
-     * @return \Mini\Database\Mysql\Eloquent\Relations\HasManyThrough
+     * @return HasManyThrough
      */
-    protected function newHasManyThrough(Builder $query, Model $farParent, Model $throughParent, $firstKey, $secondKey, $localKey, $secondLocalKey)
+    protected function newHasManyThrough(Builder $query, Model $farParent, Model $throughParent, string $firstKey, string $secondKey, string $localKey, string $secondLocalKey): HasManyThrough
     {
         return new HasManyThrough($query, $farParent, $throughParent, $firstKey, $secondKey, $localKey, $secondLocalKey);
     }
@@ -432,9 +432,9 @@ trait HasRelationships
      * @param string|null $type
      * @param string|null $id
      * @param string|null $localKey
-     * @return \Mini\Database\Mysql\Eloquent\Relations\MorphMany
+     * @return MorphMany
      */
-    public function morphMany($related, $name, $type = null, $id = null, $localKey = null)
+    public function morphMany(string $related, string $name, string $type = null, string $id = null, string $localKey = null): MorphMany
     {
         $instance = $this->newRelatedInstance($related);
 
@@ -453,14 +453,14 @@ trait HasRelationships
     /**
      * Instantiate a new MorphMany relationship.
      *
-     * @param \Mini\Database\Mysql\Eloquent\Builder $query
-     * @param \Mini\Database\Mysql\Eloquent\Model $parent
+     * @param Builder $query
+     * @param Model $parent
      * @param string $type
      * @param string $id
      * @param string $localKey
-     * @return \Mini\Database\Mysql\Eloquent\Relations\MorphMany
+     * @return MorphMany
      */
-    protected function newMorphMany(Builder $query, Model $parent, $type, $id, $localKey)
+    protected function newMorphMany(Builder $query, Model $parent, string $type, string $id, string $localKey): MorphMany
     {
         return new MorphMany($query, $parent, $type, $id, $localKey);
     }
@@ -475,10 +475,10 @@ trait HasRelationships
      * @param string|null $parentKey
      * @param string|null $relatedKey
      * @param string|null $relation
-     * @return \Mini\Database\Mysql\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
-    public function belongsToMany($related, $table = null, $foreignPivotKey = null, $relatedPivotKey = null,
-                                  $parentKey = null, $relatedKey = null, $relation = null)
+    public function belongsToMany(string $related, string $table = null, string $foreignPivotKey = null, string $relatedPivotKey = null,
+                                  string $parentKey = null, string $relatedKey = null, string $relation = null): BelongsToMany
     {
         // If no relationship name was passed, we will pull backtraces to get the
         // name of the calling function. We will use that function name as the
@@ -513,18 +513,18 @@ trait HasRelationships
     /**
      * Instantiate a new BelongsToMany relationship.
      *
-     * @param \Mini\Database\Mysql\Eloquent\Builder $query
-     * @param \Mini\Database\Mysql\Eloquent\Model $parent
+     * @param Builder $query
+     * @param Model $parent
      * @param string $table
      * @param string $foreignPivotKey
      * @param string $relatedPivotKey
      * @param string $parentKey
      * @param string $relatedKey
      * @param string|null $relationName
-     * @return \Mini\Database\Mysql\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
-    protected function newBelongsToMany(Builder $query, Model $parent, $table, $foreignPivotKey, $relatedPivotKey,
-                                        $parentKey, $relatedKey, $relationName = null)
+    protected function newBelongsToMany(Builder $query, Model $parent, string $table, string $foreignPivotKey, string $relatedPivotKey,
+                                        string  $parentKey, string $relatedKey, string $relationName = null): BelongsToMany
     {
         return new BelongsToMany($query, $parent, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relationName);
     }
@@ -540,11 +540,11 @@ trait HasRelationships
      * @param string|null $parentKey
      * @param string|null $relatedKey
      * @param bool $inverse
-     * @return \Mini\Database\Mysql\Eloquent\Relations\MorphToMany
+     * @return MorphToMany
      */
-    public function morphToMany($related, $name, $table = null, $foreignPivotKey = null,
-                                $relatedPivotKey = null, $parentKey = null,
-                                $relatedKey = null, $inverse = false)
+    public function morphToMany(string $related, string $name, string $table = null, string $foreignPivotKey = null,
+                                string $relatedPivotKey = null, string $parentKey = null,
+                                string $relatedKey = null, bool $inverse = false): MorphToMany
     {
         $caller = $this->guessBelongsToManyRelation();
 
@@ -578,8 +578,8 @@ trait HasRelationships
     /**
      * Instantiate a new MorphToMany relationship.
      *
-     * @param \Mini\Database\Mysql\Eloquent\Builder $query
-     * @param \Mini\Database\Mysql\Eloquent\Model $parent
+     * @param Builder $query
+     * @param Model $parent
      * @param string $name
      * @param string $table
      * @param string $foreignPivotKey
@@ -588,11 +588,11 @@ trait HasRelationships
      * @param string $relatedKey
      * @param string|null $relationName
      * @param bool $inverse
-     * @return \Mini\Database\Mysql\Eloquent\Relations\MorphToMany
+     * @return MorphToMany
      */
-    protected function newMorphToMany(Builder $query, Model $parent, $name, $table, $foreignPivotKey,
-                                      $relatedPivotKey, $parentKey, $relatedKey,
-                                      $relationName = null, $inverse = false)
+    protected function newMorphToMany(Builder $query, Model $parent, string $name, string $table, string $foreignPivotKey,
+                                      string  $relatedPivotKey, string $parentKey, string $relatedKey,
+                                      string  $relationName = null, bool $inverse = false): MorphToMany
     {
         return new MorphToMany($query, $parent, $name, $table, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey,
             $relationName, $inverse);
@@ -608,10 +608,10 @@ trait HasRelationships
      * @param string|null $relatedPivotKey
      * @param string|null $parentKey
      * @param string|null $relatedKey
-     * @return \Mini\Database\Mysql\Eloquent\Relations\MorphToMany
+     * @return MorphToMany
      */
-    public function morphedByMany($related, $name, $table = null, $foreignPivotKey = null,
-                                  $relatedPivotKey = null, $parentKey = null, $relatedKey = null)
+    public function morphedByMany(string $related, string $name, string $table = null, string $foreignPivotKey = null,
+                                  string $relatedPivotKey = null, string $parentKey = null, string $relatedKey = null): MorphToMany
     {
         $foreignPivotKey = $foreignPivotKey ?: $this->getForeignKey();
 
@@ -631,13 +631,10 @@ trait HasRelationships
      *
      * @return string|null
      */
-    protected function guessBelongsToManyRelation()
+    protected function guessBelongsToManyRelation(): ?string
     {
         $caller = Arr::first(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), function ($trace) {
-            return !in_array(
-                $trace['function'],
-                array_merge(static::$manyMethods, ['guessBelongsToManyRelation'])
-            );
+            return !in_array($trace['function'], array_merge(static::$manyMethods, ['guessBelongsToManyRelation']), true);
         });
 
         return !is_null($caller) ? $caller['function'] : null;
@@ -647,10 +644,10 @@ trait HasRelationships
      * Get the joining table name for a many-to-many relation.
      *
      * @param string $related
-     * @param \Mini\Database\Mysql\Eloquent\Model|null $instance
+     * @param Model|null $instance
      * @return string
      */
-    public function joiningTable($related, $instance = null)
+    public function joiningTable(string $related, Model $instance = null): string
     {
         // The joining table name, by convention, is simply the snake cased models
         // sorted alphabetically and concatenated with an underscore, so we can
@@ -674,7 +671,7 @@ trait HasRelationships
      *
      * @return string
      */
-    public function joiningTableSegment()
+    public function joiningTableSegment(): string
     {
         return Str::snake(class_basename($this));
     }
@@ -685,9 +682,9 @@ trait HasRelationships
      * @param string $relation
      * @return bool
      */
-    public function touches($relation)
+    public function touches(string $relation): bool
     {
-        return in_array($relation, $this->touches);
+        return in_array($relation, $this->touches, true);
     }
 
     /**
@@ -695,7 +692,7 @@ trait HasRelationships
      *
      * @return void
      */
-    public function touchOwners()
+    public function touchOwners(): void
     {
         foreach ($this->touches as $relation) {
             $this->$relation()->touch();
@@ -718,7 +715,7 @@ trait HasRelationships
      * @param string $id
      * @return array
      */
-    protected function getMorphs($name, $type, $id)
+    protected function getMorphs(string $name, string $type, string $id): array
     {
         return [$type ?: $name . '_type', $id ?: $name . '_id'];
     }
@@ -728,11 +725,11 @@ trait HasRelationships
      *
      * @return string
      */
-    public function getMorphClass()
+    public function getMorphClass(): string
     {
         $morphMap = Relation::morphMap();
 
-        if (!empty($morphMap) && in_array(static::class, $morphMap)) {
+        if (!empty($morphMap) && in_array(static::class, $morphMap, true)) {
             return array_search(static::class, $morphMap, true);
         }
 
@@ -745,7 +742,7 @@ trait HasRelationships
      * @param string $class
      * @return mixed
      */
-    protected function newRelatedInstance($class)
+    protected function newRelatedInstance(string $class): mixed
     {
         return tap(new $class, function ($instance) {
             if (!$instance->getConnectionName()) {
@@ -759,7 +756,7 @@ trait HasRelationships
      *
      * @return array
      */
-    public function getRelations()
+    public function getRelations(): array
     {
         return $this->relations;
     }
@@ -770,7 +767,7 @@ trait HasRelationships
      * @param string $relation
      * @return mixed
      */
-    public function getRelation($relation)
+    public function getRelation(string $relation): mixed
     {
         return $this->relations[$relation];
     }
@@ -781,7 +778,7 @@ trait HasRelationships
      * @param string $key
      * @return bool
      */
-    public function relationLoaded($key)
+    public function relationLoaded(string $key): bool
     {
         return array_key_exists($key, $this->relations);
     }
@@ -791,9 +788,9 @@ trait HasRelationships
      *
      * @param string $relation
      * @param mixed $value
-     * @return $this
+     * @return Model|HasRelationships
      */
-    public function setRelation($relation, $value)
+    public function setRelation(string $relation, mixed $value): self
     {
         $this->relations[$relation] = $value;
 
@@ -806,7 +803,7 @@ trait HasRelationships
      * @param string $relation
      * @return $this
      */
-    public function unsetRelation($relation)
+    public function unsetRelation(string $relation): self
     {
         unset($this->relations[$relation]);
 
@@ -819,7 +816,7 @@ trait HasRelationships
      * @param array $relations
      * @return $this
      */
-    public function setRelations(array $relations)
+    public function setRelations(array $relations): self
     {
         $this->relations = $relations;
 
@@ -831,11 +828,9 @@ trait HasRelationships
      *
      * @return $this
      */
-    public function withoutRelations()
+    public function withoutRelations(): self
     {
-        $model = clone $this;
-
-        return $model->unsetRelations();
+        return (clone $this)->unsetRelations();
     }
 
     /**
@@ -843,7 +838,7 @@ trait HasRelationships
      *
      * @return $this
      */
-    public function unsetRelations()
+    public function unsetRelations(): self
     {
         $this->relations = [];
 
@@ -855,7 +850,7 @@ trait HasRelationships
      *
      * @return array
      */
-    public function getTouchedRelations()
+    public function getTouchedRelations(): array
     {
         return $this->touches;
     }
@@ -866,7 +861,7 @@ trait HasRelationships
      * @param array $touches
      * @return $this
      */
-    public function setTouchedRelations(array $touches)
+    public function setTouchedRelations(array $touches): self
     {
         $this->touches = $touches;
 

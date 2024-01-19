@@ -270,12 +270,12 @@ class Color
 
     /**
      * Print colored message to STDOUT
-     * @param string|array $messages
+     * @param array|string $messages
      * @param string $style
      */
-    public static function println($messages, string $style = 'info'): void
+    public static function println(array|string $messages, string $style = 'info'): void
     {
-        $string = is_array($messages) ? implode("\n", $messages) : (string)$messages;
+        $string = is_array($messages) ? implode("\n", $messages) : $messages;
         echo self::render($string, $style);
         echo "\n";
     }
@@ -297,12 +297,12 @@ class Color
     /**
      * Render text, apply color code
      * @param string $text
-     * @param string|array $style
+     * @param array|string|null $style
      * - string: 'green', 'blue'
      * - array: [Color::FG_GREEN, Color::BG_WHITE, Color::UNDERSCORE]
      * @return string
      */
-    public static function render(string $text, $style = null): string
+    public static function render(string $text, array|string $style = null): string
     {
         if (!$text) {
             return $text;

@@ -19,10 +19,10 @@ class NamespacedItemResolver
     /**
      * Parse a key into namespace, group, and item.
      *
-     * @param  string  $key
+     * @param string $key
      * @return array
      */
-    public function parseKey($key): array
+    public function parseKey(string $key): array
     {
         // If we've already parsed the given key, we'll return the cached version we
         // already have, as this will save us some processing. We cache off every
@@ -34,7 +34,7 @@ class NamespacedItemResolver
         // If the key does not contain a double colon, it means the key is not in a
         // namespace, and is just a regular configuration item. Namespaces are a
         // tool for organizing configuration items for things such as modules.
-        if (strpos($key, '::') === false) {
+        if (!str_contains($key, '::')) {
             $segments = explode('.', $key);
 
             $parsed = $this->parseBasicSegments($segments);
@@ -74,10 +74,10 @@ class NamespacedItemResolver
     /**
      * Parse an array of namespaced segments.
      *
-     * @param  string  $key
+     * @param string $key
      * @return array
      */
-    protected function parseNamespacedSegments($key): array
+    protected function parseNamespacedSegments(string $key): array
     {
         [$namespace, $item] = explode('::', $key);
 
@@ -96,11 +96,11 @@ class NamespacedItemResolver
     /**
      * Set the parsed value of a key.
      *
-     * @param  string  $key
-     * @param  array  $parsed
+     * @param string $key
+     * @param array $parsed
      * @return void
      */
-    public function setParsedKey($key, $parsed): void
+    public function setParsedKey(string $key, array $parsed): void
     {
         $this->parsed[$key] = $parsed;
     }

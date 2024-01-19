@@ -23,9 +23,9 @@ class CommandService
 
     /**
      * 注册command服务
-     * @param AbstractCommandService[]|AbstractCommandService $commandService
+     * @param AbstractCommandService|AbstractCommandService[] $commandService
      */
-    public static function register($commandService): void
+    public static function register(array|AbstractCommandService $commandService): void
     {
         foreach ((array)$commandService as $service) {
             if (!($service = new $service) || !$service instanceof AbstractCommandService) {

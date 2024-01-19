@@ -90,6 +90,5 @@ class EncryptionServiceProvider extends AbstractServiceProvider
 
     public function boot(): void
     {
-        // TODO: Implement boot() method.
     }
 }

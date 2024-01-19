@@ -18,7 +18,7 @@ class PackageScript
     /**
      * @param Event $event
      */
-    public static function postRootPackageInstall(Event $event)
+    public static function postRootPackageInstall(Event $event): void
     {
         file_exists('.env') || @copy('.env.example', '.env');
     }
@@ -26,7 +26,7 @@ class PackageScript
     /**
      * @param Event $event
      */
-    public static function postAutoloadDump(Event $event)
+    public static function postAutoloadDump(Event $event): void
     {
         file_exists('vendor/laravel') || @mkdir('vendor/laravel', 0644, true);
     }

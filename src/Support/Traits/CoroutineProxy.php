@@ -13,8 +13,7 @@ trait CoroutineProxy
 {
     public function __call($name, $arguments)
     {
-        $target = $this->getTargetObject();
-        return $target->{$name}(...$arguments);
+        return $this->getTargetObject()->{$name}(...$arguments);
     }
 
     public function __get($name)
@@ -29,9 +28,9 @@ trait CoroutineProxy
     }
 
     /**
-     * @return mixed|null
+     * @return mixed
      */
-    protected function getTargetObject()
+    protected function getTargetObject(): mixed
     {
         if (!isset($this->proxyKey)) {
             throw new \RuntimeException('$proxyKey property of class missing.');

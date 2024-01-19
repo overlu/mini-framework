@@ -112,7 +112,7 @@ abstract class Rule
      * @param mixed $value
      * @return Rule
      */
-    public function setParameter(string $key, $value): Rule
+    public function setParameter(string $key, mixed $value): Rule
     {
         $this->params[$key] = $value;
         return $this;
@@ -140,7 +140,7 @@ abstract class Rule
      * @param null $default
      * @return mixed|null
      */
-    public function parameter(string $key, $default = null)
+    public function parameter(string $key, $default = null): mixed
     {
         return $this->params[$key] ?? $default;
     }

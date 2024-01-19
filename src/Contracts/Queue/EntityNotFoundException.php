@@ -18,7 +18,7 @@ class EntityNotFoundException extends InvalidArgumentException
      * @param mixed $id
      * @return void
      */
-    public function __construct($type, $id)
+    public function __construct(string $type, $id)
     {
         $id = (string)$id;
 

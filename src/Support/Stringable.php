@@ -28,9 +28,9 @@ class Stringable
      * @param string $value
      * @return void
      */
-    public function __construct($value = '')
+    public function __construct(string $value = '')
     {
-        $this->value = (string)$value;
+        $this->value = $value;
     }
 
     /**
@@ -39,7 +39,7 @@ class Stringable
      * @param string $search
      * @return static
      */
-    public function after($search): Stringable
+    public function after(string $search): Stringable
     {
         return new static(Str::after($this->value, $search));
     }
@@ -50,7 +50,7 @@ class Stringable
      * @param string $search
      * @return static
      */
-    public function afterLast($search): Stringable
+    public function afterLast(string $search): Stringable
     {
         return new static(Str::afterLast($this->value, $search));
     }
@@ -72,7 +72,7 @@ class Stringable
      * @param string $language
      * @return static
      */
-    public function ascii($language = 'en'): Stringable
+    public function ascii(string $language = 'en'): Stringable
     {
         return new static(Str::ascii($this->value, $language));
     }
@@ -83,7 +83,7 @@ class Stringable
      * @param string $suffix
      * @return static
      */
-    public function basename($suffix = ''): Stringable
+    public function basename(string $suffix = ''): Stringable
     {
         return new static(basename($this->value, $suffix));
     }
@@ -94,7 +94,7 @@ class Stringable
      * @param string $search
      * @return static
      */
-    public function before($search): Stringable
+    public function before(string $search): Stringable
     {
         return new static(Str::before($this->value, $search));
     }
@@ -105,7 +105,7 @@ class Stringable
      * @param string $search
      * @return static
      */
-    public function beforeLast($search): Stringable
+    public function beforeLast(string $search): Stringable
     {
         return new static(Str::beforeLast($this->value, $search));
     }
@@ -117,7 +117,7 @@ class Stringable
      * @param string $to
      * @return static
      */
-    public function between($from, $to): Stringable
+    public function between(string $from, string $to): Stringable
     {
         return new static(Str::between($this->value, $from, $to));
     }
@@ -135,10 +135,10 @@ class Stringable
     /**
      * Determine if a given string contains a given substring.
      *
-     * @param string|array $needles
+     * @param array|string $needles
      * @return bool
      */
-    public function contains($needles): bool
+    public function contains(array|string $needles): bool
     {
         return Str::contains($this->value, $needles);
     }
@@ -160,7 +160,7 @@ class Stringable
      * @param int $levels
      * @return static
      */
-    public function dirname($levels = 1): Stringable
+    public function dirname(int $levels = 1): Stringable
     {
         return new static(dirname($this->value, $levels));
     }
@@ -168,10 +168,10 @@ class Stringable
     /**
      * Determine if a given string ends with a given substring.
      *
-     * @param string|array $needles
+     * @param array|string $needles
      * @return bool
      */
-    public function endsWith($needles): bool
+    public function endsWith(array|string $needles): bool
     {
         return Str::endsWith($this->value, $needles);
     }
@@ -182,7 +182,7 @@ class Stringable
      * @param string $value
      * @return bool
      */
-    public function exactly($value): bool
+    public function exactly(string $value): bool
     {
         return $this->value === $value;
     }
@@ -192,9 +192,9 @@ class Stringable
      *
      * @param string $delimiter
      * @param int $limit
-     * @return \Mini\Support\Collection
+     * @return Collection
      */
-    public function explode($delimiter, $limit = PHP_INT_MAX): Collection
+    public function explode(string $delimiter, int $limit = PHP_INT_MAX): Collection
     {
         return collect(explode($delimiter, $this->value, $limit));
     }
@@ -205,9 +205,9 @@ class Stringable
      * @param string $pattern
      * @param int $limit
      * @param int $flags
-     * @return \Mini\Support\Collection
+     * @return Collection
      */
-    public function split($pattern, $limit = -1, $flags = 0): Collection
+    public function split(string $pattern, int $limit = -1, int $flags = 0): Collection
     {
         $segments = preg_split($pattern, $this->value, $limit, $flags);
 
@@ -220,7 +220,7 @@ class Stringable
      * @param string $cap
      * @return static
      */
-    public function finish($cap): Stringable
+    public function finish(string $cap): static
     {
         return new static(Str::finish($this->value, $cap));
     }
@@ -228,10 +228,10 @@ class Stringable
     /**
      * Determine if a given string matches a given pattern.
      *
-     * @param string|array $pattern
+     * @param array|string $pattern
      * @return bool
      */
-    public function is($pattern): bool
+    public function is(array|string $pattern): bool
     {
         return Str::is($pattern, $this->value);
     }
@@ -279,10 +279,10 @@ class Stringable
     /**
      * Return the length of the given string.
      *
-     * @param string $encoding
+     * @param string|null $encoding
      * @return int
      */
-    public function length($encoding = null): int
+    public function length(string $encoding = null): int
     {
         return Str::length($this->value, $encoding);
     }
@@ -294,7 +294,7 @@ class Stringable
      * @param string $end
      * @return static
      */
-    public function limit($limit = 100, $end = '...'): Stringable
+    public function limit(int $limit = 100, string $end = '...'): static
     {
         return new static(Str::limit($this->value, $limit, $end));
     }
@@ -304,7 +304,7 @@ class Stringable
      *
      * @return static
      */
-    public function lower(): Stringable
+    public function lower(): static
     {
         return new static(Str::lower($this->value));
     }
@@ -313,9 +313,9 @@ class Stringable
      * Get the string matching the given pattern.
      *
      * @param string $pattern
-     * @return static|null
+     * @return static
      */
-    public function match($pattern): ?Stringable
+    public function match(string $pattern): static
     {
         preg_match($pattern, $this->value, $matches);
 
@@ -330,9 +330,9 @@ class Stringable
      * Get the string matching the given pattern.
      *
      * @param string $pattern
-     * @return \Mini\Support\Collection
+     * @return Collection
      */
-    public function matchAll($pattern): Collection
+    public function matchAll(string $pattern): Collection
     {
         preg_match_all($pattern, $this->value, $matches);
 
@@ -349,7 +349,7 @@ class Stringable
      * @param string|null $default
      * @return array
      */
-    public function parseCallback($default = null): array
+    public function parseCallback(string $default = null): array
     {
         return Str::parseCallback($this->value, $default);
     }
@@ -360,7 +360,7 @@ class Stringable
      * @param int $count
      * @return static
      */
-    public function plural($count = 2): Stringable
+    public function plural(int $count = 2): static
     {
         return new static(Str::plural($this->value, $count));
     }
@@ -371,7 +371,7 @@ class Stringable
      * @param int $count
      * @return static
      */
-    public function pluralStudly($count = 2): Stringable
+    public function pluralStudly(int $count = 2): static
     {
         return new static(Str::pluralStudly($this->value, $count));
     }
@@ -382,7 +382,7 @@ class Stringable
      * @param array $values
      * @return static
      */
-    public function prepend(...$values): Stringable
+    public function prepend(...$values): static
     {
         return new static(implode('', $values) . $this->value);
     }
@@ -394,7 +394,7 @@ class Stringable
      * @param string|string[] $replace
      * @return static
      */
-    public function replace($search, $replace): Stringable
+    public function replace(array|string $search, array|string $replace): static
     {
         return new static(str_replace($search, $replace, $this->value));
     }
@@ -406,7 +406,7 @@ class Stringable
      * @param array $replace
      * @return static
      */
-    public function replaceArray($search, array $replace): Stringable
+    public function replaceArray(string $search, array $replace): static
     {
         return new static(Str::replaceArray($search, $replace, $this->value));
     }
@@ -418,7 +418,7 @@ class Stringable
      * @param string $replace
      * @return static
      */
-    public function replaceFirst($search, $replace): Stringable
+    public function replaceFirst(string $search, string $replace): static
     {
         return new static(Str::replaceFirst($search, $replace, $this->value));
     }
@@ -430,7 +430,7 @@ class Stringable
      * @param string $replace
      * @return static
      */
-    public function replaceLast($search, $replace): Stringable
+    public function replaceLast(string $search, string $replace): static
     {
         return new static(Str::replaceLast($search, $replace, $this->value));
     }
@@ -439,11 +439,11 @@ class Stringable
      * Replace the patterns matching the given regular expression.
      *
      * @param string $pattern
-     * @param \Closure|string $replace
+     * @param string|Closure $replace
      * @param int $limit
      * @return static
      */
-    public function replaceMatches($pattern, $replace, $limit = -1): Stringable
+    public function replaceMatches(string $pattern, string|Closure $replace, int $limit = -1): static
     {
         if ($replace instanceof Closure) {
             return new static(preg_replace_callback($pattern, $replace, $this->value, $limit));
@@ -458,7 +458,7 @@ class Stringable
      * @param string $prefix
      * @return static
      */
-    public function start($prefix): Stringable
+    public function start(string $prefix): static
     {
         return new static(Str::start($this->value, $prefix));
     }
@@ -468,7 +468,7 @@ class Stringable
      *
      * @return static
      */
-    public function upper(): Stringable
+    public function upper(): static
     {
         return new static(Str::upper($this->value));
     }
@@ -478,7 +478,7 @@ class Stringable
      *
      * @return static
      */
-    public function title(): Stringable
+    public function title(): static
     {
         return new static(Str::title($this->value));
     }
@@ -488,7 +488,7 @@ class Stringable
      *
      * @return static
      */
-    public function singular(): Stringable
+    public function singular(): static
     {
         return new static(Str::singular($this->value));
     }
@@ -500,7 +500,7 @@ class Stringable
      * @param string|null $language
      * @return static
      */
-    public function slug($separator = '-', $language = 'en'): Stringable
+    public function slug(string $separator = '-', ?string $language = 'en'): static
     {
         return new static(Str::slug($this->value, $separator, $language));
     }
@@ -511,7 +511,7 @@ class Stringable
      * @param string $delimiter
      * @return static
      */
-    public function snake($delimiter = '_'): Stringable
+    public function snake(string $delimiter = '_'): static
     {
         return new static(Str::snake($this->value, $delimiter));
     }
@@ -519,10 +519,10 @@ class Stringable
     /**
      * Determine if a given string starts with a given substring.
      *
-     * @param string|array $needles
+     * @param array|string $needles
      * @return bool
      */
-    public function startsWith($needles): bool
+    public function startsWith(array|string $needles): bool
     {
         return Str::startsWith($this->value, $needles);
     }
@@ -544,7 +544,7 @@ class Stringable
      * @param int|null $length
      * @return static
      */
-    public function substr($start, $length = null): Stringable
+    public function substr(int $start, int $length = null): static
     {
         return new static(Str::substr($this->value, $start, $length));
     }
@@ -557,7 +557,7 @@ class Stringable
      * @param int|null $length
      * @return int
      */
-    public function substrCount($needle, $offset = null, $length = null): int
+    public function substrCount(string $needle, int $offset = null, int $length = null): int
     {
         return Str::substrCount($this->value, $needle, $offset, $length);
     }
@@ -565,10 +565,10 @@ class Stringable
     /**
      * Trim the string of the given characters.
      *
-     * @param string $characters
+     * @param string|null $characters
      * @return static
      */
-    public function trim($characters = null): Stringable
+    public function trim(string $characters = null): static
     {
         return new static(trim(...array_merge([$this->value], func_get_args())));
     }
@@ -576,10 +576,10 @@ class Stringable
     /**
      * Left trim the string of the given characters.
      *
-     * @param string $characters
+     * @param string|null $characters
      * @return static
      */
-    public function ltrim($characters = null): Stringable
+    public function ltrim(string $characters = null): static
     {
         return new static(ltrim(...array_merge([$this->value], func_get_args())));
     }
@@ -587,10 +587,10 @@ class Stringable
     /**
      * Right trim the string of the given characters.
      *
-     * @param string $characters
+     * @param string|null $characters
      * @return static
      */
-    public function rtrim($characters = null): Stringable
+    public function rtrim(string $characters = null): static
     {
         return new static(rtrim(...array_merge([$this->value], func_get_args())));
     }
@@ -600,7 +600,7 @@ class Stringable
      *
      * @return static
      */
-    public function ucfirst(): Stringable
+    public function ucfirst(): static
     {
         return new static(Str::ucfirst($this->value));
     }
@@ -611,7 +611,7 @@ class Stringable
      * @param callable $callback
      * @return static
      */
-    public function whenEmpty($callback): Stringable
+    public function whenEmpty(callable $callback): static
     {
         if ($this->isEmpty()) {
             $result = $callback($this);
@@ -629,7 +629,7 @@ class Stringable
      * @param string $end
      * @return static
      */
-    public function words($words = 100, $end = '...'): Stringable
+    public function words(int $words = 100, string $end = '...'): static
     {
         return new static(Str::words($this->value, $words, $end));
     }
@@ -654,8 +654,6 @@ class Stringable
     public function dd(): void
     {
         $this->dump();
-
-        die(1);
     }
 
     /**
@@ -664,7 +662,7 @@ class Stringable
      * @param string $key
      * @return mixed
      */
-    public function __get($key)
+    public function __get(string $key)
     {
         return $this->{$key}();
     }

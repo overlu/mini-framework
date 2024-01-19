@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Contracts;
+namespace Mini\Contracts\Connection;
 
 interface ConnectionInterface
 {

@@ -17,6 +17,7 @@ use Mini\Support\Enumerable;
 use Mini\Support\HigherOrderCollectionProxy;
 use Mini\Support\HigherOrderWhenProxy;
 use JsonSerializable;
+use Mini\Support\LazyCollection;
 use Symfony\Component\VarDumper\VarDumper;
 use Traversable;
 
@@ -81,10 +82,10 @@ trait EnumeratesValues
     /**
      * Create a new collection instance if the value isn't one already.
      *
-     * @param mixed $items
+     * @param mixed|array $items
      * @return static
      */
-    public static function make($items = [])
+    public static function make(mixed $items = [])
     {
         return new static($items);
     }
@@ -95,7 +96,7 @@ trait EnumeratesValues
      * @param mixed $value
      * @return static
      */
-    public static function wrap($value)
+    public static function wrap(mixed $value): static
     {
         return $value instanceof Enumerable
             ? new static($value)
@@ -105,10 +106,10 @@ trait EnumeratesValues
     /**
      * Get the underlying items from the given collection if applicable.
      *
-     * @param array|static $value
+     * @param array|Enumerable $value
      * @return array
      */
-    public static function unwrap($value)
+    public static function unwrap(Enumerable|array $value): array
     {
         return $value instanceof Enumerable ? $value->all() : $value;
     }
@@ -119,7 +120,7 @@ trait EnumeratesValues
      * @param callable|string|null $callback
      * @return mixed
      */
-    public function average($callback = null)
+    public function average(callable|string $callback = null): mixed
     {
         return $this->avg($callback);
     }
@@ -128,11 +129,11 @@ trait EnumeratesValues
      * Alias for the "contains" method.
      *
      * @param mixed $key
-     * @param mixed $operator
-     * @param mixed $value
+     * @param mixed|null $operator
+     * @param mixed|null $value
      * @return bool
      */
-    public function some($key, $operator = null, $value = null)
+    public function some(mixed $key, mixed $operator = null, mixed $value = null): bool
     {
         return $this->contains(...func_get_args());
     }
@@ -141,10 +142,10 @@ trait EnumeratesValues
      * Determine if an item exists, using strict comparison.
      *
      * @param mixed $key
-     * @param mixed $value
+     * @param mixed|null $value
      * @return bool
      */
-    public function containsStrict($key, $value = null)
+    public function containsStrict(mixed $key, mixed $value = null): bool
     {
         if (func_num_args() === 2) {
             return $this->contains(function ($item) use ($key, $value) {
@@ -171,19 +172,17 @@ trait EnumeratesValues
      * @param mixed ...$args
      * @return void
      */
-    public function dd(...$args)
+    public function dd(...$args): void
     {
         call_user_func_array([$this, 'dump'], $args);
-
-        die(1);
     }
 
     /**
      * Dump the items.
      *
-     * @return $this
+     * @return Collection|LazyCollection|EnumeratesValues
      */
-    public function dump()
+    public function dump(): self
     {
         (new static(func_get_args()))
             ->push($this)
@@ -198,9 +197,9 @@ trait EnumeratesValues
      * Execute a callback over each item.
      *
      * @param callable $callback
-     * @return $this
+     * @return Collection|LazyCollection|EnumeratesValues
      */
-    public function each(callable $callback)
+    public function each(callable $callback): self
     {
         foreach ($this as $key => $item) {
             if ($callback($item, $key) === false) {
@@ -217,7 +216,7 @@ trait EnumeratesValues
      * @param callable $callback
      * @return static
      */
-    public function eachSpread(callable $callback)
+    public function eachSpread(callable $callback): static
     {
         return $this->each(static function ($chunk, $key) use ($callback) {
             $chunk[] = $key;
@@ -229,12 +228,12 @@ trait EnumeratesValues
     /**
      * Determine if all items pass the given truth test.
      *
-     * @param string|callable $key
-     * @param mixed $operator
-     * @param mixed $value
+     * @param callable|string $key
+     * @param mixed|null $operator
+     * @param mixed|null $value
      * @return bool
      */
-    public function every($key, $operator = null, $value = null)
+    public function every(callable|string $key, mixed $operator = null, mixed $value = null): bool
     {
         if (func_num_args() === 1) {
             $callback = $this->valueRetriever($key);
@@ -255,11 +254,11 @@ trait EnumeratesValues
      * Get the first item by the given key value pair.
      *
      * @param string $key
-     * @param mixed $operator
-     * @param mixed $value
+     * @param mixed|null $operator
+     * @param mixed|null $value
      * @return mixed
      */
-    public function firstWhere($key, $operator = null, $value = null)
+    public function firstWhere(string $key, mixed $operator = null, mixed $value = null): mixed
     {
         return $this->first($this->operatorForWhere(...func_get_args()));
     }
@@ -269,7 +268,7 @@ trait EnumeratesValues
      *
      * @return bool
      */
-    public function isNotEmpty()
+    public function isNotEmpty(): bool
     {
         return !$this->isEmpty();
     }
@@ -280,7 +279,7 @@ trait EnumeratesValues
      * @param callable $callback
      * @return static
      */
-    public function mapSpread(callable $callback)
+    public function mapSpread(callable $callback): static
     {
         return $this->map(static function ($chunk, $key) use ($callback) {
             $chunk[] = $key;
@@ -297,11 +296,9 @@ trait EnumeratesValues
      * @param callable $callback
      * @return static
      */
-    public function mapToGroups(callable $callback)
+    public function mapToGroups(callable $callback): static
     {
-        $groups = $this->mapToDictionary($callback);
-
-        return $groups->map([$this, 'make']);
+        return $this->mapToDictionary($callback)->map([$this, 'make']);
     }
 
     /**
@@ -310,7 +307,7 @@ trait EnumeratesValues
      * @param callable $callback
      * @return static
      */
-    public function flatMap(callable $callback)
+    public function flatMap(callable $callback): static
     {
         return $this->map($callback)->collapse();
     }
@@ -321,7 +318,7 @@ trait EnumeratesValues
      * @param string $class
      * @return static
      */
-    public function mapInto($class)
+    public function mapInto(string $class): static
     {
         return $this->map(static function ($value, $key) use ($class) {
             return new $class($value, $key);
@@ -334,7 +331,7 @@ trait EnumeratesValues
      * @param callable|string|null $callback
      * @return mixed
      */
-    public function min($callback = null)
+    public function min(callable|string $callback = null): mixed
     {
         $callback = $this->valueRetriever($callback);
 
@@ -353,7 +350,7 @@ trait EnumeratesValues
      * @param callable|string|null $callback
      * @return mixed
      */
-    public function max($callback = null)
+    public function max(callable|string $callback = null): mixed
     {
         $callback = $this->valueRetriever($callback);
 
@@ -373,7 +370,7 @@ trait EnumeratesValues
      * @param int $perPage
      * @return static
      */
-    public function forPage($page, $perPage)
+    public function forPage(int $page, int $perPage): static
     {
         $offset = max(0, ($page - 1) * $perPage);
 
@@ -384,11 +381,11 @@ trait EnumeratesValues
      * Partition the collection into two arrays using the given callback or key.
      *
      * @param callable|string $key
-     * @param mixed $operator
-     * @param mixed $value
+     * @param mixed|null $operator
+     * @param mixed|null $value
      * @return static
      */
-    public function partition($key, $operator = null, $value = null)
+    public function partition(callable|string $key, mixed $operator = null, mixed $value = null): static
     {
         $passed = [];
         $failed = [];
@@ -397,11 +394,11 @@ trait EnumeratesValues
             ? $this->valueRetriever($key)
             : $this->operatorForWhere(...func_get_args());
 
-        foreach ($this as $key => $item) {
-            if ($callback($item, $key)) {
-                $passed[$key] = $item;
+        foreach ($this as $k => $item) {
+            if ($callback($item, $k)) {
+                $passed[$k] = $item;
             } else {
-                $failed[$key] = $item;
+                $failed[$k] = $item;
             }
         }
 
@@ -414,7 +411,7 @@ trait EnumeratesValues
      * @param callable|string|null $callback
      * @return mixed
      */
-    public function sum($callback = null)
+    public function sum(callable|string $callback = null): mixed
     {
         if (is_null($callback)) {
             $callback = static function ($value) {
@@ -432,12 +429,12 @@ trait EnumeratesValues
     /**
      * Apply the callback if the value is truthy.
      *
-     * @param bool|mixed $value
-     * @param callable|null $callback
+     * @param bool $value
+     * @param callable $callback
      * @param callable|null $default
      * @return static|mixed
      */
-    public function when($value, callable $callback = null, callable $default = null)
+    public function when(bool $value, callable $callback, callable $default = null): mixed
     {
         if (!$callback) {
             return new HigherOrderWhenProxy($this, $value);
@@ -461,7 +458,7 @@ trait EnumeratesValues
      * @param callable|null $default
      * @return static|mixed
      */
-    public function whenEmpty(callable $callback, callable $default = null)
+    public function whenEmpty(callable $callback, callable $default = null): mixed
     {
         return $this->when($this->isEmpty(), $callback, $default);
     }
@@ -473,7 +470,7 @@ trait EnumeratesValues
      * @param callable|null $default
      * @return static|mixed
      */
-    public function whenNotEmpty(callable $callback, callable $default = null)
+    public function whenNotEmpty(callable $callback, callable $default = null): mixed
     {
         return $this->when($this->isNotEmpty(), $callback, $default);
     }
@@ -486,7 +483,7 @@ trait EnumeratesValues
      * @param callable|null $default
      * @return static|mixed
      */
-    public function unless($value, callable $callback, callable $default = null)
+    public function unless(bool $value, callable $callback, callable $default = null): mixed
     {
         return $this->when(!$value, $callback, $default);
     }
@@ -498,7 +495,7 @@ trait EnumeratesValues
      * @param callable|null $default
      * @return static|mixed
      */
-    public function unlessEmpty(callable $callback, callable $default = null)
+    public function unlessEmpty(callable $callback, callable $default = null): mixed
     {
         return $this->whenNotEmpty($callback, $default);
     }
@@ -510,7 +507,7 @@ trait EnumeratesValues
      * @param callable|null $default
      * @return static|mixed
      */
-    public function unlessNotEmpty(callable $callback, callable $default = null)
+    public function unlessNotEmpty(callable $callback, callable $default = null): mixed
     {
         return $this->whenEmpty($callback, $default);
     }
@@ -519,11 +516,11 @@ trait EnumeratesValues
      * Filter items by the given key value pair.
      *
      * @param string $key
-     * @param mixed $operator
-     * @param mixed $value
+     * @param mixed|null $operator
+     * @param mixed|null $value
      * @return static
      */
-    public function where($key, $operator = null, $value = null)
+    public function where(string $key, mixed $operator = null, mixed $value = null): static
     {
         return $this->filter($this->operatorForWhere(...func_get_args()));
     }
@@ -534,7 +531,7 @@ trait EnumeratesValues
      * @param string|null $key
      * @return static
      */
-    public function whereNull($key = null)
+    public function whereNull(string $key = null): static
     {
         return $this->whereStrict($key, null);
     }
@@ -545,7 +542,7 @@ trait EnumeratesValues
      * @param string|null $key
      * @return static
      */
-    public function whereNotNull($key = null)
+    public function whereNotNull(string $key = null): static
     {
         return $this->where($key, '!==', null);
     }
@@ -557,7 +554,7 @@ trait EnumeratesValues
      * @param mixed $value
      * @return static
      */
-    public function whereStrict($key, $value)
+    public function whereStrict(string $key, mixed $value): static
     {
         return $this->where($key, '===', $value);
     }
@@ -570,7 +567,7 @@ trait EnumeratesValues
      * @param bool $strict
      * @return static
      */
-    public function whereIn($key, $values, $strict = false)
+    public function whereIn(string $key, mixed $values, bool $strict = false): static
     {
         $values = $this->getArrayableItems($values);
 
@@ -586,7 +583,7 @@ trait EnumeratesValues
      * @param mixed $values
      * @return static
      */
-    public function whereInStrict($key, $values)
+    public function whereInStrict(string $key, mixed $values): static
     {
         return $this->whereIn($key, $values, true);
     }
@@ -598,7 +595,7 @@ trait EnumeratesValues
      * @param array $values
      * @return static
      */
-    public function whereBetween($key, $values)
+    public function whereBetween(string $key, array $values): static
     {
         return $this->where($key, '>=', reset($values))->where($key, '<=', end($values));
     }
@@ -610,7 +607,7 @@ trait EnumeratesValues
      * @param array $values
      * @return static
      */
-    public function whereNotBetween($key, $values)
+    public function whereNotBetween(string $key, array $values): static
     {
         return $this->filter(static function ($item) use ($key, $values) {
             return data_get($item, $key) < reset($values) || data_get($item, $key) > end($values);
@@ -625,7 +622,7 @@ trait EnumeratesValues
      * @param bool $strict
      * @return static
      */
-    public function whereNotIn($key, $values, $strict = false)
+    public function whereNotIn(string $key, mixed $values, bool $strict = false): static
     {
         $values = $this->getArrayableItems($values);
 
@@ -641,7 +638,7 @@ trait EnumeratesValues
      * @param mixed $values
      * @return static
      */
-    public function whereNotInStrict($key, $values)
+    public function whereNotInStrict(string $key, mixed $values): static
     {
         return $this->whereNotIn($key, $values, true);
     }
@@ -652,7 +649,7 @@ trait EnumeratesValues
      * @param string $type
      * @return static
      */
-    public function whereInstanceOf($type)
+    public function whereInstanceOf(string $type): static
     {
         return $this->filter(static function ($value) use ($type) {
             return $value instanceof $type;
@@ -665,7 +662,7 @@ trait EnumeratesValues
      * @param callable $callback
      * @return mixed
      */
-    public function pipe(callable $callback)
+    public function pipe(callable $callback): mixed
     {
         return $callback($this);
     }
@@ -674,9 +671,9 @@ trait EnumeratesValues
      * Pass the collection to the given callback and then return it.
      *
      * @param callable $callback
-     * @return $this
+     * @return Collection|LazyCollection|EnumeratesValues
      */
-    public function tap(callable $callback)
+    public function tap(callable $callback): self
     {
         $callback(clone $this);
 
@@ -686,28 +683,28 @@ trait EnumeratesValues
     /**
      * Create a collection of all elements that do not pass a given truth test.
      *
-     * @param callable|mixed $callback
+     * @param mixed|bool $callback
      * @return static
      */
-    public function reject($callback = true)
+    public function reject(mixed $callback = true): static
     {
         $useAsCallable = $this->useAsCallable($callback);
 
         return $this->filter(static function ($value, $key) use ($callback, $useAsCallable) {
             return $useAsCallable
                 ? !$callback($value, $key)
-                : $value != $callback;
+                : $value !== $callback;
         });
     }
 
     /**
      * Return only unique items from the collection array.
      *
-     * @param string|callable|null $key
+     * @param callable|string|null $key
      * @param bool $strict
      * @return static
      */
-    public function unique($key = null, $strict = false)
+    public function unique(callable|string $key = null, bool $strict = false): static
     {
         $callback = $this->valueRetriever($key);
 
@@ -725,10 +722,10 @@ trait EnumeratesValues
     /**
      * Return only unique items from the collection array using strict comparison.
      *
-     * @param string|callable|null $key
+     * @param callable|string|null $key
      * @return static
      */
-    public function uniqueStrict($key = null)
+    public function uniqueStrict(callable|string $key = null): static
     {
         return $this->unique($key, true);
     }
@@ -743,7 +740,7 @@ trait EnumeratesValues
      *
      * @deprecated Use the "takeUntil" method directly.
      */
-    public function until($value)
+    public function until($value): static
     {
         return $this->takeUntil($value);
     }
@@ -751,7 +748,7 @@ trait EnumeratesValues
     /**
      * Collect the values into a collection.
      *
-     * @return \Mini\Support\Collection
+     * @return Collection
      */
     public function collect(): Collection
     {
@@ -799,7 +796,7 @@ trait EnumeratesValues
      * @param int $options
      * @return string
      */
-    public function toJson($options = 0): string
+    public function toJson(int $options = 0): string
     {
         return json_encode($this->jsonSerialize(), $options);
     }
@@ -808,9 +805,9 @@ trait EnumeratesValues
      * Get a CachingIterator instance.
      *
      * @param int $flags
-     * @return \CachingIterator
+     * @return CachingIterator
      */
-    public function getCachingIterator($flags = CachingIterator::CALL_TOSTRING): CachingIterator
+    public function getCachingIterator(int $flags = CachingIterator::CALL_TOSTRING): CachingIterator
     {
         return new CachingIterator($this->getIterator(), $flags);
     }
@@ -821,7 +818,7 @@ trait EnumeratesValues
      * @param callable|null $callback
      * @return static
      */
-    public function countBy($callback = null)
+    public function countBy(callable $callback = null): static
     {
         if (is_null($callback)) {
             $callback = static function ($value) {
@@ -850,7 +847,7 @@ trait EnumeratesValues
      * @param string $method
      * @return void
      */
-    public static function proxy($method): void
+    public static function proxy(string $method): void
     {
         static::$proxies[] = $method;
     }
@@ -859,11 +856,11 @@ trait EnumeratesValues
      * Dynamically access collection proxies.
      *
      * @param string $key
-     * @return mixed
+     * @return HigherOrderCollectionProxy
      *
      * @throws \Exception
      */
-    public function __get($key)
+    public function __get(string $key)
     {
         if (!in_array($key, static::$proxies, true)) {
             throw new \RuntimeException("Property [{$key}] does not exist on this collection instance.");
@@ -878,7 +875,7 @@ trait EnumeratesValues
      * @param mixed $items
      * @return array
      */
-    protected function getArrayableItems($items): array
+    protected function getArrayableItems(mixed $items): array
     {
         if (is_array($items)) {
             return $items;
@@ -912,10 +909,10 @@ trait EnumeratesValues
      *
      * @param string $key
      * @param string|null $operator
-     * @param mixed $value
-     * @return \Closure
+     * @param mixed|null $value
+     * @return callable|Closure
      */
-    protected function operatorForWhere($key, $operator = null, $value = null): callable
+    protected function operatorForWhere(string $key, string $operator = null, mixed $value = null): callable|Closure
     {
         if (func_num_args() === 1) {
             $value = true;
@@ -936,7 +933,7 @@ trait EnumeratesValues
                 return is_string($value) || (is_object($value) && method_exists($value, '__toString'));
             });
 
-            if (count($strings) < 2 && count(array_filter([$retrieved, $value], 'is_object')) == 1) {
+            if (count($strings) < 2 && count(array_filter([$retrieved, $value], 'is_object')) === 1) {
                 return in_array($operator, ['!=', '<>', '!==']);
             }
 
@@ -970,7 +967,7 @@ trait EnumeratesValues
      * @param mixed $value
      * @return bool
      */
-    protected function useAsCallable($value): bool
+    protected function useAsCallable(mixed $value): bool
     {
         return !is_string($value) && is_callable($value);
     }
@@ -979,9 +976,9 @@ trait EnumeratesValues
      * Get a value retrieving callback.
      *
      * @param callable|string|null $value
-     * @return callable
+     * @return callable|Closure|string|null
      */
-    protected function valueRetriever($value)
+    protected function valueRetriever(callable|string|null $value): callable|Closure|string|null
     {
         if ($this->useAsCallable($value)) {
             return $value;
@@ -996,9 +993,9 @@ trait EnumeratesValues
      * Make a function to check an item's equality.
      *
      * @param mixed $value
-     * @return \Closure
+     * @return Closure
      */
-    protected function equality($value): callable
+    protected function equality(mixed $value): callable
     {
         return static function ($item) use ($value) {
             return $item === $value;
@@ -1008,8 +1005,8 @@ trait EnumeratesValues
     /**
      * Make a function using another function, by negating its result.
      *
-     * @param \Closure $callback
-     * @return \Closure
+     * @param Closure $callback
+     * @return Closure
      */
     protected function negate(Closure $callback): callable
     {

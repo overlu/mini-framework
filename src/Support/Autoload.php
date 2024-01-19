@@ -23,7 +23,7 @@ class Autoload
         }
 
         foreach ($this->getAutoloadRules() as $prefix => $prefixPath) {
-            if ($this->isRootNamespace($prefix) || strpos($path, $prefixPath) === 0) {
+            if ($this->isRootNamespace($prefix) || str_starts_with($path, $prefixPath)) {
                 return $prefix . str_replace('/', '\\', substr($path, strlen($prefixPath)));
             }
         }
@@ -42,7 +42,7 @@ class Autoload
         }
 
         foreach ($this->getAutoloadRules() as $prefix => $prefixPath) {
-            if ($this->isRootNamespace($prefix) || strpos($name, $prefix) === 0) {
+            if ($this->isRootNamespace($prefix) || str_starts_with($name, $prefix)) {
                 return $prefixPath . str_replace('\\', '/', substr($name, strlen($prefix))) . $extension;
             }
         }

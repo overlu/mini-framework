@@ -20,11 +20,11 @@ class WebsocketException extends RuntimeException
 
     /**
      * HttpException constructor.
-     * @param string|array $message
-     * @param int $code
+     * @param string $message
+     * @param int|null $code
      * @param Throwable|null $previous
      */
-    public function __construct($message = '', ?int $code = 0, Throwable $previous = null)
+    public function __construct(string $message = '', ?int $code = 0, Throwable $previous = null)
     {
         parent::__construct($message ?: app(Translate::class)->getOrDefault('http_status_code.' . $code, 'something error'), $code, $previous);
     }

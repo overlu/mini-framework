@@ -66,7 +66,7 @@ class SetCookie
      *
      * @return self
      */
-    public static function fromString($cookie)
+    public static function fromString(string $cookie): self
     {
         // Create the default return array
         $data = self::$defaults;
@@ -113,7 +113,7 @@ class SetCookie
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->data['Name'];
     }
@@ -123,7 +123,7 @@ class SetCookie
      *
      * @param string $name Cookie name
      */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->data['Name'] = $name;
     }
@@ -133,7 +133,7 @@ class SetCookie
      *
      * @return string
      */
-    public function getValue()
+    public function getValue(): string
     {
         return $this->data['Value'];
     }
@@ -143,7 +143,7 @@ class SetCookie
      *
      * @param string $value Cookie value
      */
-    public function setValue($value)
+    public function setValue(string $value): void
     {
         $this->data['Value'] = $value;
     }
@@ -153,7 +153,7 @@ class SetCookie
      *
      * @return null|string
      */
-    public function getDomain()
+    public function getDomain(): ?string
     {
         return $this->data['Domain'];
     }
@@ -163,7 +163,7 @@ class SetCookie
      *
      * @param string $domain
      */
-    public function setDomain($domain)
+    public function setDomain(string $domain): void
     {
         $this->data['Domain'] = $domain;
     }
@@ -173,7 +173,7 @@ class SetCookie
      *
      * @return string
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->data['Path'];
     }
@@ -183,7 +183,7 @@ class SetCookie
      *
      * @param string $path Path of the cookie
      */
-    public function setPath($path)
+    public function setPath(string $path): void
     {
         $this->data['Path'] = $path;
     }
@@ -193,7 +193,7 @@ class SetCookie
      *
      * @return null|int
      */
-    public function getMaxAge()
+    public function getMaxAge(): ?int
     {
         return $this->data['Max-Age'];
     }
@@ -203,7 +203,7 @@ class SetCookie
      *
      * @param int $maxAge Max age of the cookie in seconds
      */
-    public function setMaxAge($maxAge)
+    public function setMaxAge(int $maxAge): void
     {
         $this->data['Max-Age'] = $maxAge;
     }
@@ -213,7 +213,7 @@ class SetCookie
      *
      * @return mixed
      */
-    public function getExpires()
+    public function getExpires(): mixed
     {
         return $this->data['Expires'];
     }
@@ -221,9 +221,9 @@ class SetCookie
     /**
      * Set the unix timestamp for which the cookie will expire.
      *
-     * @param int $timestamp Unix timestamp
+     * @param int|string $timestamp Unix timestamp
      */
-    public function setExpires($timestamp)
+    public function setExpires(int|string $timestamp): void
     {
         $this->data['Expires'] = is_numeric($timestamp)
             ? (int)$timestamp
@@ -235,7 +235,7 @@ class SetCookie
      *
      * @return null|bool
      */
-    public function getSecure()
+    public function getSecure(): ?bool
     {
         return $this->data['Secure'];
     }
@@ -245,7 +245,7 @@ class SetCookie
      *
      * @param bool $secure Set to true or false if secure
      */
-    public function setSecure($secure)
+    public function setSecure(bool $secure): void
     {
         $this->data['Secure'] = $secure;
     }
@@ -255,7 +255,7 @@ class SetCookie
      *
      * @return null|bool
      */
-    public function getDiscard()
+    public function getDiscard(): ?bool
     {
         return $this->data['Discard'];
     }
@@ -265,7 +265,7 @@ class SetCookie
      *
      * @param bool $discard Set to true or false if this is a session cookie
      */
-    public function setDiscard($discard)
+    public function setDiscard(bool $discard): void
     {
         $this->data['Discard'] = $discard;
     }
@@ -275,7 +275,7 @@ class SetCookie
      *
      * @return bool
      */
-    public function getHttpOnly()
+    public function getHttpOnly(): bool
     {
         return $this->data['HttpOnly'];
     }
@@ -285,7 +285,7 @@ class SetCookie
      *
      * @param bool $httpOnly Set to true or false if this is HTTP only
      */
-    public function setHttpOnly($httpOnly)
+    public function setHttpOnly(bool $httpOnly): void
     {
         $this->data['HttpOnly'] = $httpOnly;
     }
@@ -307,17 +307,17 @@ class SetCookie
      *
      * @return bool
      */
-    public function matchesPath($requestPath)
+    public function matchesPath(string $requestPath): bool
     {
         $cookiePath = $this->getPath();
 
         // Match on exact matches or when path is the default empty "/"
-        if ($cookiePath === '/' || $cookiePath == $requestPath) {
+        if ($cookiePath === '/' || $cookiePath === $requestPath) {
             return true;
         }
 
         // Ensure that the cookie-path is a prefix of the request path.
-        if (strpos($requestPath, $cookiePath) !== 0) {
+        if (!str_starts_with($requestPath, $cookiePath)) {
             return false;
         }
 
@@ -337,7 +337,7 @@ class SetCookie
      *
      * @return bool
      */
-    public function matchesDomain($domain)
+    public function matchesDomain(string $domain): bool
     {
         // Remove the leading '.' as per spec in RFC 6265.
         // http://tools.ietf.org/html/rfc6265#section-5.2.3
@@ -354,7 +354,7 @@ class SetCookie
             return false;
         }
 
-        return (bool)preg_match('/\.' . preg_quote($cookieDomain) . '$/', $domain);
+        return (bool)preg_match('/\.' . preg_quote($cookieDomain, null) . '$/', $domain);
     }
 
     /**
@@ -362,7 +362,7 @@ class SetCookie
      *
      * @return bool
      */
-    public function isExpired()
+    public function isExpired(): bool
     {
         return $this->getExpires() && time() > $this->getExpires();
     }
@@ -372,7 +372,7 @@ class SetCookie
      *
      * @return bool|string Returns true if valid or an error message if invalid
      */
-    public function validate()
+    public function validate(): bool|string
     {
         // Names must not be empty, but can be 0
         $name = $this->getName();

@@ -7,11 +7,14 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql\Capsule;
 
+use Closure;
 use Mini\Container\Container;
 use Mini\Contracts\Events\Dispatcher;
+use Mini\Database\Mysql\Connection;
 use Mini\Database\Mysql\Connectors\ConnectionFactory;
 use Mini\Database\Mysql\DatabaseManager;
 use Mini\Database\Mysql\Eloquent\Model as Eloquent;
+use Mini\Database\Mysql\Query\Builder;
 use Mini\Support\Traits\CapsuleManagerTrait;
 use PDO;
 
@@ -31,7 +34,7 @@ class Manager
     /**
      * Create a new database capsule manager.
      *
-     * @param \Mini\Container\Container|null $container
+     * @param Container|null $container
      * @return void
      */
     public function __construct(Container $container = null)
@@ -78,9 +81,9 @@ class Manager
      * Get a connection instance from the global manager.
      *
      * @param string|null $connection
-     * @return \Mini\Database\Mysql\Connection
+     * @return Connection
      */
-    public static function connection($connection = null): \Mini\Database\Mysql\Connection
+    public static function connection(string $connection = null): Connection
     {
         return static::$instance->getConnection($connection);
     }
@@ -88,12 +91,12 @@ class Manager
     /**
      * Get a fluent query builder instance.
      *
-     * @param \Closure|\Mini\Database\Mysql\Query\Builder|string $table
+     * @param string|Closure|Builder $table
      * @param string|null $as
      * @param string|null $connection
-     * @return \Mini\Database\Mysql\Query\Builder
+     * @return Builder
      */
-    public static function table($table, $as = null, $connection = null): \Mini\Database\Mysql\Query\Builder
+    public static function table(Builder|string|Closure $table, string $as = null, string $connection = null): Builder
     {
         return static::$instance->connection($connection)->table($table, $as);
     }
@@ -104,7 +107,7 @@ class Manager
      * @param string|null $connection
      * @return \Mini\Database\Mysql\Schema\Builder
      */
-    public static function schema($connection = null): \Mini\Database\Mysql\Schema\Builder
+    public static function schema(string $connection = null): \Mini\Database\Mysql\Schema\Builder
     {
         return static::$instance->connection($connection)->getSchemaBuilder();
     }
@@ -113,9 +116,9 @@ class Manager
      * Get a registered connection instance.
      *
      * @param string|null $name
-     * @return \Mini\Database\Mysql\Connection
+     * @return Connection
      */
-    public function getConnection($name = null): \Mini\Database\Mysql\Connection
+    public function getConnection(string $name = null): Connection
     {
         return $this->manager->connection($name);
     }
@@ -127,7 +130,7 @@ class Manager
      * @param string $name
      * @return void
      */
-    public function addConnection(array $config, $name = 'default'): void
+    public function addConnection(array $config, string $name = 'default'): void
     {
         $connections = $this->container['config']['database.connections'];
 
@@ -159,7 +162,7 @@ class Manager
      * @param int $fetchMode
      * @return $this
      */
-    public function setFetchMode($fetchMode): self
+    public function setFetchMode(int $fetchMode): self
     {
         $this->container['config']['database.fetch'] = $fetchMode;
 
@@ -184,7 +187,7 @@ class Manager
     /**
      * Get the current event dispatcher instance.
      *
-     * @return \Mini\Contracts\Events\Dispatcher|null
+     * @return Dispatcher|null
      */
     public function getEventDispatcher(): ?Dispatcher
     {
@@ -197,7 +200,7 @@ class Manager
     /**
      * Set the event dispatcher instance to be used by connections.
      *
-     * @param \Mini\Contracts\Events\Dispatcher $dispatcher
+     * @param Dispatcher $dispatcher
      * @return void
      */
     public function setEventDispatcher(Dispatcher $dispatcher): void
@@ -212,7 +215,7 @@ class Manager
      * @param array $parameters
      * @return mixed
      */
-    public static function __callStatic($method, $parameters)
+    public static function __callStatic(string $method, array $parameters)
     {
         return static::connection()->$method(...$parameters);
     }

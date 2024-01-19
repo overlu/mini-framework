@@ -28,15 +28,15 @@ interface MessageBag
      * @param array|MessageProvider $messages
      * @return $this
      */
-    public function merge($messages);
+    public function merge(array|MessageProvider $messages): self;
 
     /**
      * Determine if messages exist for a given key.
      *
-     * @param array|string $key
+     * @param array|string|null $key
      * @return bool
      */
-    public function has($key): bool;
+    public function has(array|string $key = null): bool;
 
     /**
      * Get the first message from the bag for a given key.
@@ -77,7 +77,7 @@ interface MessageBag
      * @param string $format
      * @return $this
      */
-    public function setFormat(string $format = ':message');
+    public function setFormat(string $format = ':message'): self;
 
     /**
      * Determine if the message bag has any messages.

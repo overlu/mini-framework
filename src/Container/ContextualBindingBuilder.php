@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Container;
 
+use Closure;
 use Mini\Contracts\Container\Container;
 use Mini\Contracts\Container\ContextualBindingBuilder as ContextualBindingBuilderContract;
 
@@ -24,7 +25,7 @@ class ContextualBindingBuilder implements ContextualBindingBuilderContract
      *
      * @var string|array
      */
-    protected $concrete;
+    protected string|array $concrete;
 
     /**
      * The abstract target.
@@ -37,10 +38,10 @@ class ContextualBindingBuilder implements ContextualBindingBuilderContract
      * Create a new contextual binding builder.
      *
      * @param Container $container
-     * @param string|array $concrete
+     * @param array|string $concrete
      * @return void
      */
-    public function __construct(Container $container, $concrete)
+    public function __construct(Container $container, array|string $concrete)
     {
         $this->concrete = $concrete;
         $this->container = $container;
@@ -52,7 +53,7 @@ class ContextualBindingBuilder implements ContextualBindingBuilderContract
      * @param string $abstract
      * @return $this
      */
-    public function needs($abstract): self
+    public function needs(string $abstract): static
     {
         $this->needs = $abstract;
 
@@ -62,10 +63,10 @@ class ContextualBindingBuilder implements ContextualBindingBuilderContract
     /**
      * Define the implementation for the contextual binding.
      *
-     * @param \Closure|string|array $implementation
+     * @param string|Closure $implementation
      * @return void
      */
-    public function give($implementation): void
+    public function give(string|Closure $implementation): void
     {
         foreach (Util::arrayWrap($this->concrete) as $concrete) {
             $this->container->addContextualBinding($concrete, $this->needs, $implementation);

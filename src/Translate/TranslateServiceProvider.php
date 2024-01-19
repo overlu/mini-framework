@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Translate;
 
-use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Service\AbstractServiceProvider;
 
 class TranslateServiceProvider extends AbstractServiceProvider
@@ -16,9 +15,6 @@ class TranslateServiceProvider extends AbstractServiceProvider
     {
     }
 
-    /**
-     * @throws BindingResolutionException|\ReflectionException
-     */
     public function boot(): void
     {
         $this->app->alias(Translate::class, 'translate');

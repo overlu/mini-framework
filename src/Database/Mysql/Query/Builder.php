@@ -619,7 +619,7 @@ class Builder
      *
      * @param array $wheres
      * @param array $bindings
-     * @return void
+     * @return $this
      */
     public function mergeWheres($wheres, $bindings)
     {
@@ -628,6 +628,8 @@ class Builder
         $this->bindings['where'] = array_values(
             array_merge($this->bindings['where'], (array)$bindings)
         );
+
+        return $this;
     }
 
     /**

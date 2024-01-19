@@ -17,7 +17,7 @@ interface Broadcaster
      * @param Request $request
      * @return mixed
      */
-    public function auth($request);
+    public function auth(Request $request): mixed;
 
     /**
      * Return the valid authentication response.
@@ -26,7 +26,7 @@ interface Broadcaster
      * @param mixed $result
      * @return mixed
      */
-    public function validAuthenticationResponse($request, $result);
+    public function validAuthenticationResponse(Request $request, mixed $result): mixed;
 
     /**
      * Broadcast the given event.
@@ -36,5 +36,5 @@ interface Broadcaster
      * @param array $payload
      * @return void
      */
-    public function broadcast(array $channels, $event, array $payload = []);
+    public function broadcast(array $channels, string $event, array $payload = []): void;
 }

@@ -90,7 +90,7 @@ class View implements ArrayAccess, Htmlable, ViewContract
      *
      * @throws \Throwable
      */
-    public function render(callable $callback = null)
+    public function render(callable $callback = null): string
     {
         try {
             $contents = $this->renderContents();
@@ -179,11 +179,11 @@ class View implements ArrayAccess, Htmlable, ViewContract
     /**
      * Add a piece of data to the view.
      *
-     * @param string|array $key
-     * @param mixed $value
+     * @param array|string $key
+     * @param mixed|null $value
      * @return $this
      */
-    public function with($key, $value = null): self
+    public function with(array|string $key, mixed $value = null): self
     {
         if (is_array($key)) {
             $this->data = array_merge($this->data, $key);

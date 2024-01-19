@@ -39,7 +39,7 @@ class NotIn extends Rule
      * @param bool $strict
      * @return void
      */
-    public function strict($strict = true): void
+    public function strict(bool $strict = true): void
     {
         $this->strict = $strict;
     }

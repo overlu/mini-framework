@@ -72,7 +72,7 @@ class Pluralizer
      * @param int $count
      * @return string
      */
-    public static function plural($value, $count = 2): string
+    public static function plural(string $value, int $count = 2): string
     {
         if ((int)abs($count) === 1 || static::uncountable($value)) {
             return $value;
@@ -89,7 +89,7 @@ class Pluralizer
      * @param string $value
      * @return string
      */
-    public static function singular($value): string
+    public static function singular(string $value): string
     {
         $singular = static::inflector()->singularize($value);
 
@@ -102,7 +102,7 @@ class Pluralizer
      * @param string $value
      * @return bool
      */
-    protected static function uncountable($value): bool
+    protected static function uncountable(string $value): bool
     {
         return in_array(strtolower($value), static::$uncountable, true);
     }
@@ -114,7 +114,7 @@ class Pluralizer
      * @param string $comparison
      * @return string
      */
-    protected static function matchCase($value, $comparison): string
+    protected static function matchCase(string $value, string $comparison): string
     {
         $functions = ['mb_strtolower', 'mb_strtoupper', 'ucfirst', 'ucwords'];
 

@@ -24,7 +24,7 @@ class Facade
      * @param object|string $name
      * @return mixed
      */
-    protected static function resolveFacadeInstance($name)
+    protected static function resolveFacadeInstance(object|string $name): mixed
     {
         if (is_object($name)) {
             return $name;
@@ -45,7 +45,7 @@ class Facade
      * Get the registered name of the component.
      * @return mixed
      */
-    protected static function getFacadeAccessor()
+    protected static function getFacadeAccessor(): mixed
     {
         throw new RuntimeException('Facade does not implement getFacadeAccessor method.');
     }
@@ -55,7 +55,7 @@ class Facade
      *
      * @return mixed
      */
-    public static function getFacadeRoot()
+    public static function getFacadeRoot(): mixed
     {
         return static::resolveFacadeInstance(static::getFacadeAccessor());
     }
@@ -69,7 +69,7 @@ class Facade
      *
      * @throws RuntimeException
      */
-    public static function __callStatic($method, $args)
+    public static function __callStatic(string $method, array $args)
     {
         $instance = static::getFacadeRoot();
 

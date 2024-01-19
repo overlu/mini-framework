@@ -17,19 +17,23 @@ trait HasGlobalScopes
     /**
      * Register a new global scope on the model.
      *
-     * @param \Mini\Database\Mysql\Eloquent\Scope|\Closure|string $scope
-     * @param \Closure|null $implementation
+     * @param string|Closure|Scope $scope
+     * @param Closure|null $implementation
      * @return mixed
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public static function addGlobalScope($scope, Closure $implementation = null)
+    public static function addGlobalScope(string|Closure|Scope $scope, Closure $implementation = null): mixed
     {
         if (is_string($scope) && !is_null($implementation)) {
             return static::$globalScopes[static::class][$scope] = $implementation;
-        } elseif ($scope instanceof Closure) {
+        }
+
+        if ($scope instanceof Closure) {
             return static::$globalScopes[static::class][spl_object_hash($scope)] = $scope;
-        } elseif ($scope instanceof Scope) {
+        }
+
+        if ($scope instanceof Scope) {
             return static::$globalScopes[static::class][get_class($scope)] = $scope;
         }
 
@@ -39,10 +43,10 @@ trait HasGlobalScopes
     /**
      * Determine if a model has a global scope.
      *
-     * @param \Mini\Database\Mysql\Eloquent\Scope|string $scope
+     * @param string|Scope $scope
      * @return bool
      */
-    public static function hasGlobalScope($scope)
+    public static function hasGlobalScope(string|Scope $scope): bool
     {
         return !is_null(static::getGlobalScope($scope));
     }
@@ -50,10 +54,10 @@ trait HasGlobalScopes
     /**
      * Get a global scope registered with the model.
      *
-     * @param \Mini\Database\Mysql\Eloquent\Scope|string $scope
-     * @return \Mini\Database\Mysql\Eloquent\Scope|\Closure|null
+     * @param string|Scope $scope
+     * @return Scope|Closure|null
      */
-    public static function getGlobalScope($scope)
+    public static function getGlobalScope(string|Scope $scope): Closure|Scope|null
     {
         if (is_string($scope)) {
             return Arr::get(static::$globalScopes, static::class . '.' . $scope);
@@ -69,7 +73,7 @@ trait HasGlobalScopes
      *
      * @return array
      */
-    public function getGlobalScopes()
+    public function getGlobalScopes(): array
     {
         return Arr::get(static::$globalScopes, static::class, []);
     }

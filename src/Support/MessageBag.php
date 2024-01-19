@@ -80,7 +80,7 @@ class MessageBag implements Arrayable, Countable, Jsonable, JsonSerializable, Me
      * @param array|MessageProvider $messages
      * @return $this
      */
-    public function merge($messages): self
+    public function merge(array|MessageProvider $messages): self
     {
         if ($messages instanceof MessageProvider) {
             $messages = $messages->getMessageBag()->getMessages();
@@ -94,10 +94,10 @@ class MessageBag implements Arrayable, Countable, Jsonable, JsonSerializable, Me
     /**
      * Determine if messages exist for all of the given keys.
      *
-     * @param array|string $key
+     * @param array|string|null $key
      * @return bool
      */
-    public function has($key): bool
+    public function has(array|string $key = null): bool
     {
         if ($this->isEmpty()) {
             return false;
@@ -109,8 +109,8 @@ class MessageBag implements Arrayable, Countable, Jsonable, JsonSerializable, Me
 
         $keys = is_array($key) ? $key : func_get_args();
 
-        foreach ($keys as $key) {
-            if ($this->first($key) === '') {
+        foreach ($keys as $k) {
+            if ($this->first($k) === '') {
                 return false;
             }
         }
@@ -124,7 +124,7 @@ class MessageBag implements Arrayable, Countable, Jsonable, JsonSerializable, Me
      * @param array|string $keys
      * @return bool
      */
-    public function hasAny($keys = []): bool
+    public function hasAny(array|string $keys = []): bool
     {
         if ($this->isEmpty()) {
             return false;
@@ -144,8 +144,8 @@ class MessageBag implements Arrayable, Countable, Jsonable, JsonSerializable, Me
     /**
      * Get the first message from the message bag for a given key.
      *
-     * @param string $key
-     * @param string $format
+     * @param string|null $key
+     * @param string|null $format
      * @return string
      */
     public function first(?string $key = null, ?string $format = null): string
@@ -309,7 +309,7 @@ class MessageBag implements Arrayable, Countable, Jsonable, JsonSerializable, Me
      * @param int $options
      * @return string
      */
-    public function toJson($options = 0): string
+    public function toJson(int $options = 0): string
     {
         return json_encode($this->jsonSerialize(), $options);
     }

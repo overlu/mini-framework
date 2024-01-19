@@ -41,11 +41,11 @@ class SnowFlake
 
     /**
      * 反向解析雪花算法生成的编号
-     * @param int|float $snowFlakeId
+     * @param float|int $snowFlakeId
      * @return \stdClass
      * @author : evalor <master@evalor.cn>
      */
-    public static function unmake($snowFlakeId): \stdClass
+    public static function unmake(float|int $snowFlakeId): \stdClass
     {
         $Binary = str_pad(decbin($snowFlakeId), 64, '0', STR_PAD_LEFT);
         $Object = new \stdClass;

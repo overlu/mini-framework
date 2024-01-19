@@ -95,7 +95,7 @@ class ViewErrorBag implements Countable
      * @param array $parameters
      * @return mixed
      */
-    public function __call($method, $parameters)
+    public function __call(string $method, array $parameters)
     {
         return $this->getBag('default')->$method(...$parameters);
     }
@@ -106,7 +106,7 @@ class ViewErrorBag implements Countable
      * @param string $key
      * @return MessageBagContract
      */
-    public function __get($key)
+    public function __get(string $key)
     {
         return $this->getBag($key);
     }
@@ -118,7 +118,7 @@ class ViewErrorBag implements Countable
      * @param MessageBagContract $value
      * @return void
      */
-    public function __set($key, $value)
+    public function __set(string $key, MessageBagContract $value)
     {
         $this->put($key, $value);
     }

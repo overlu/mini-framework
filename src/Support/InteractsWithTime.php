@@ -19,7 +19,7 @@ trait InteractsWithTime
      * @param DateInterval|DateTimeInterface|int $delay
      * @return int
      */
-    protected function secondsUntil($delay): int
+    protected function secondsUntil(DateInterval|DateTimeInterface|int $delay): int
     {
         $delay = $this->parseDateInterval($delay);
 
@@ -34,7 +34,7 @@ trait InteractsWithTime
      * @param DateInterval|DateTimeInterface|int $delay
      * @return int
      */
-    protected function availableAt($delay = 0): int
+    protected function availableAt(DateInterval|DateTimeInterface|int $delay = 0): int
     {
         $delay = $this->parseDateInterval($delay);
 
@@ -47,9 +47,9 @@ trait InteractsWithTime
      * If the given value is an interval, convert it to a DateTime instance.
      *
      * @param DateInterval|DateTimeInterface|int $delay
-     * @return DateTimeInterface|int
+     * @return DateInterval|DateTimeInterface|int
      */
-    protected function parseDateInterval($delay)
+    protected function parseDateInterval(DateInterval|DateTimeInterface|int $delay): DateInterval|DateTimeInterface|int
     {
         if ($delay instanceof DateInterval) {
             $delay = Carbon::now()->add($delay);

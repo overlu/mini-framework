@@ -64,7 +64,7 @@ trait CompilesLayouts
      * @param string $expression
      * @return string
      */
-    protected function compileYield($expression): string
+    protected function compileYield(string $expression): string
     {
         return "<?php echo \$__env->yieldContent{$expression}; ?>";
     }

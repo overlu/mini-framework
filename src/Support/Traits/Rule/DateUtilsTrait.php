@@ -34,10 +34,10 @@ trait DateUtilsTrait
 
     /**
      * Given $date and get the time stamp
-     * @param mixed $date
+     * @param string $date
      * @return int
      */
-    protected function getTimeStamp($date): int
+    protected function getTimeStamp(string $date): int
     {
         return strtotime($date);
     }

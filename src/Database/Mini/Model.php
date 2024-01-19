@@ -53,10 +53,7 @@ class Model
      */
     public function __get($name)
     {
-        if (is_array($this->variables) && array_key_exists($name, $this->variables)) {
-            return $this->variables[$name];
-        }
-        return null;
+        return $this->variables[$name] ?? null;
     }
 
     /**
@@ -73,7 +70,7 @@ class Model
      * @param array $data
      * @return mixed|null
      */
-    public function update(array $data = [])
+    public function update(array $data = []): mixed
     {
         $this->variables = $data ?: $this->variables;
         $this->variables[$this->primaryKey] = (empty($this->variables[$this->primaryKey])) ? 'no_pk' : $this->variables[$this->primaryKey];
@@ -107,7 +104,7 @@ class Model
      * @param array $data
      * @return int|mixed|null
      */
-    public function save(array $data = [])
+    public function save(array $data = []): mixed
     {
         $pk = $this->variables[$this->primaryKey] ?? null;
         return is_null($pk) ? $this->insert($data) : $this->update($data);
@@ -117,7 +114,7 @@ class Model
      * @param array $data
      * @return int|mixed
      */
-    public function insert(array $data = [])
+    public function insert(array $data = []): mixed
     {
         $this->variables = $data ?: $this->variables;
 
@@ -141,7 +138,7 @@ class Model
      * @param string $id
      * @return mixed|null
      */
-    public function delete(string $id = '')
+    public function delete(string $id = ''): mixed
     {
         $id = (empty($this->variables[$this->primaryKey])) ? $id : $this->variables[$this->primaryKey];
 
@@ -149,13 +146,14 @@ class Model
             $sql = 'DELETE FROM ' . $this->table . ' WHERE ' . $this->primaryKey . '= :' . $this->primaryKey . ' LIMIT 1';
             return $this->exec($sql, array($this->primaryKey => $id));
         }
+        return null;
     }
 
     /**
      * @param string $id
      * @return array|mixed
      */
-    public function find(string $id = '')
+    public function find(string $id = ''): mixed
     {
         $id = (empty($this->variables[$this->primaryKey])) ? $id : $this->variables[$this->primaryKey];
         $result = [];
@@ -169,11 +167,11 @@ class Model
     }
 
     /**
-     * @param mixed $fields
+     * @param mixed|string $fields
      * @param int $limit
      * @return array|null
      */
-    public function column($fields = '', int $limit = 0): ?array
+    public function column(mixed $fields = '', int $limit = 0): ?array
     {
         $result = [];
         if ($fields) {
@@ -192,7 +190,7 @@ class Model
      * @param array $sort .
      * @return mixed|null
      */
-    public function search(array $wheres = [], $fields = ['*'], array $sort = [])
+    public function search(array $wheres = [], array|string $fields = ['*'], array $sort = []): mixed
     {
         $this->variables = $wheres ?: $this->variables;
 
@@ -220,73 +218,63 @@ class Model
     /**
      * @return mixed|null
      */
-    public function all()
+    public function all(): mixed
     {
         return $this->db->query('SELECT * FROM ' . $this->table);
     }
 
     /**
-     * @param $field
+     * @param string $field
      * @return mixed
      */
-    public function min($field)
+    public function min(string $field): mixed
     {
-        if ($field) {
-            return $this->db->single('SELECT min(' . $field . ')' . ' FROM ' . $this->table);
-        }
+        return $this->db->single('SELECT min(' . $field . ')' . ' FROM ' . $this->table);
     }
 
     /**
-     * @param $field
+     * @param string $field
      * @return mixed
      */
-    public function max($field)
+    public function max(string $field): mixed
     {
-        if ($field) {
-            return $this->db->single('SELECT max(' . $field . ')' . ' FROM ' . $this->table);
-        }
+        return $this->db->single('SELECT max(' . $field . ')' . ' FROM ' . $this->table);
     }
 
     /**
-     * @param $field
+     * @param string $field
      * @return mixed
      */
-    public function avg($field)
+    public function avg(string $field): mixed
     {
-        if ($field) {
-            return $this->db->single('SELECT avg(' . $field . ')' . ' FROM ' . $this->table);
-        }
+        return $this->db->single('SELECT avg(' . $field . ')' . ' FROM ' . $this->table);
     }
 
     /**
-     * @param $field
+     * @param string $field
      * @return mixed
      */
-    public function sum($field)
+    public function sum(string $field): mixed
     {
-        if ($field) {
-            return $this->db->single('SELECT sum(' . $field . ')' . ' FROM ' . $this->table);
-        }
+        return $this->db->single('SELECT sum(' . $field . ')' . ' FROM ' . $this->table);
     }
 
     /**
-     * @param $field
+     * @param string $field
      * @return mixed
      */
-    public function count($field)
+    public function count(string $field): mixed
     {
-        if ($field) {
-            return $this->db->single('SELECT count(' . $field . ')' . ' FROM ' . $this->table);
-        }
+        return $this->db->single('SELECT count(' . $field . ')' . ' FROM ' . $this->table);
     }
 
 
     /**
      * @param $sql
-     * @param null $array
+     * @param array|null $array
      * @return mixed|null
      */
-    private function exec($sql, $array = null)
+    private function exec($sql, array $array = null): mixed
     {
 
         $array = $array ?: $this->variables;
@@ -306,7 +294,7 @@ class Model
      * @return mixed|null
      * @throws Throwable
      */
-    public function transaction(callable $callable, array $args = [])
+    public function transaction(callable $callable, array $args = []): mixed
     {
         try {
             $this->db->beginTransaction();

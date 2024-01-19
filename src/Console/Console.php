@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Mini\Console;
 
 use Exception;
-use Mini\Singleton;
+use RuntimeException;
 
 /**
  * Class Console
@@ -33,7 +33,7 @@ class Console
     public function __call($name, $arguments)
     {
         if (!$this->app) {
-            throw new Exception('Console not initialize yet');
+            throw new RuntimeException('Console not initialize yet');
         }
         return $this->app->$name(...$arguments);
     }

@@ -94,8 +94,6 @@ class HttpServer extends AbstractServer
      * @param $response
      * @return \Psr\Http\Message\ResponseInterface
      * @throws Throwable
-     * @noinspection JsonEncodingApiUsageInspection
-     * @noinspection PhpComposerExtensionStubsInspection
      */
     protected function transferToResponse($response): \Psr\Http\Message\ResponseInterface
     {
@@ -140,17 +138,15 @@ class HttpServer extends AbstractServer
     }
 
     /**
-     * @return mixed
      */
-    public function response()
+    public function response(): \Psr\Http\Message\ResponseInterface
     {
         return Context::get(ResponseInterface::class);
     }
 
     /**
-     * @return mixed
      */
-    public function request()
+    public function request(): Psr\Http\Message\RequestInterface
     {
         return Context::get(RequestInterface::class);
     }

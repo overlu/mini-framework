@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Bootstrap;
 
+use Mini\Container\Container;
 use Mini\Service\AbstractServiceProvider;
 use RuntimeException;
 use Swoole\Server;
@@ -31,7 +32,6 @@ class ProviderService
      */
     public function bootstrap(?Server $server = null, ?int $workerId = null): void
     {
-        $app = app();
         $booted = [];
         foreach ($this->serviceProviders as $serviceProvider) {
             if (!class_exists($serviceProvider)) {
@@ -40,7 +40,7 @@ class ProviderService
             /**
              * @var $serviceProviderObj AbstractServiceProvider
              */
-            if (!($serviceProviderObj = new $serviceProvider($app, $server, $workerId)) instanceof AbstractServiceProvider) {
+            if (!($serviceProviderObj = new $serviceProvider(Container::getInstance(), $server, $workerId)) instanceof AbstractServiceProvider) {
                 throw new RuntimeException($serviceProvider . ' should instanceof ' . AbstractServiceProvider::class);
             }
             if ($this->serviceProviderWasNotBooted($serviceProvider)) {

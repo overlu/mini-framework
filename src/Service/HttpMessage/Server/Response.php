@@ -33,9 +33,9 @@ class Response extends \Mini\Service\HttpMessage\Base\Response implements Sendab
     /**
      * Handle response and send.
      * @param bool $withContent
-     * @return mixed|void
+     * @return void
      */
-    public function send(bool $withContent = true)
+    public function send(bool $withContent = true):void
     {
         if (!$this->getSwooleResponse()) {
             return;

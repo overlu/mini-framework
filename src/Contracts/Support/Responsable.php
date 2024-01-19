@@ -7,13 +7,16 @@ declare(strict_types=1);
 
 namespace Mini\Contracts\Support;
 
+use Mini\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
 interface Responsable
 {
     /**
      * Create an HTTP response that represents the object.
      *
-     * @param \Mini\Http\Request $request
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param Request $request
+     * @return Response
      */
-    public function toResponse($request);
+    public function toResponse(Request $request): Response;
 }

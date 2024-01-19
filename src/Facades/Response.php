@@ -64,7 +64,7 @@ use Mini\Context;
  */
 class Response extends Facade
 {
-    protected static function getFacadeAccessor()
+    protected static function getFacadeAccessor(): string
     {
         if (!Context::has('IsInRequestEvent')) {
             throw new \RuntimeException("Not In Request Environment.");

@@ -55,7 +55,7 @@ trait CompilesConditionals
     /**
      * Compile the env statements into valid PHP.
      *
-     * @param string $environments
+     * @param string|null $environments
      * @return string
      */
     protected function compileEnv(?string $environments): string
@@ -132,7 +132,7 @@ trait CompilesConditionals
     /**
      * Compile the has-section statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileHasSection(?string $expression): string
@@ -143,7 +143,7 @@ trait CompilesConditionals
     /**
      * Compile the section-missing statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileSectionMissing(?string $expression): string
@@ -154,7 +154,7 @@ trait CompilesConditionals
     /**
      * Compile the if statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileIf(?string $expression): string
@@ -165,7 +165,7 @@ trait CompilesConditionals
     /**
      * Compile the unless statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileUnless(?string $expression): string
@@ -176,7 +176,7 @@ trait CompilesConditionals
     /**
      * Compile the else-if statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileElseif(?string $expression): string
@@ -217,7 +217,7 @@ trait CompilesConditionals
     /**
      * Compile the if-isset statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileIsset(?string $expression): string
@@ -238,7 +238,7 @@ trait CompilesConditionals
     /**
      * Compile the switch statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileSwitch(?string $expression): string
@@ -251,7 +251,7 @@ trait CompilesConditionals
     /**
      * Compile the case statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compileCase(?string $expression): string

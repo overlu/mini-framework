@@ -14,7 +14,7 @@ final class ExceptionThrower
     /**
      * @var Throwable
      */
-    private $throwable;
+    private Throwable $throwable;
 
     public function __construct(Throwable $throwable)
     {

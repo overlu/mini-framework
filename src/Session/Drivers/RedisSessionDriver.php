@@ -7,15 +7,15 @@ declare(strict_types=1);
 
 namespace Mini\Session\Drivers;
 
+use Redis;
 use SessionHandlerInterface;
-use Swoole\Coroutine\Redis;
 
 class RedisSessionDriver implements SessionHandlerInterface
 {
     /**
-     * @var \Redis|Redis
+     * @var Redis
      */
-    protected $redis;
+    protected Redis $redis;
 
     /**
      * @var int
@@ -43,12 +43,12 @@ class RedisSessionDriver implements SessionHandlerInterface
      * Destroy a session.
      *
      * @see https://php.net/manual/en/sessionhandlerinterface.destroy.php
-     * @param string $session_id the session ID being destroyed
+     * @param string $id the session ID being destroyed
      * @return bool
      */
-    public function destroy($session_id): bool
+    public function destroy(string $id): bool
     {
-        $this->redis->unlink($session_id);
+        $this->redis->unlink($id);
         return true;
     }
 
@@ -56,10 +56,10 @@ class RedisSessionDriver implements SessionHandlerInterface
      * Cleanup old sessions.
      *
      * @see https://php.net/manual/en/sessionhandlerinterface.gc.php
-     * @param int $maxlifetime
+     * @param int $max_lifetime
      * @return bool
      */
-    public function gc($maxlifetime): bool
+    public function gc(int $max_lifetime): bool
     {
         return true;
     }
@@ -68,11 +68,11 @@ class RedisSessionDriver implements SessionHandlerInterface
      * Initialize session.
      *
      * @see https://php.net/manual/en/sessionhandlerinterface.open.php
-     * @param string $save_path the path where to store/retrieve the session
+     * @param string $path the path where to store/retrieve the session
      * @param string $name the session name
      * @return bool
      */
-    public function open($save_path, $name): bool
+    public function open(string $path, string $name): bool
     {
         return true;
     }
@@ -81,24 +81,24 @@ class RedisSessionDriver implements SessionHandlerInterface
      * Read session data.
      *
      * @see https://php.net/manual/en/sessionhandlerinterface.read.php
-     * @param string $session_id the session id to read data for
+     * @param string $id the session id to read data for
      * @return string
      */
-    public function read($session_id): string
+    public function read(string $id): string
     {
-        return $this->redis->get($session_id) ?: '';
+        return $this->redis->get($id) ?: '';
     }
 
     /**
      * Write session data.
      *
      * @see https://php.net/manual/en/sessionhandlerinterface.write.php
-     * @param string $session_id the session id
-     * @param string $session_data
+     * @param string $id the session id
+     * @param string $data
      * @return bool
      */
-    public function write($session_id, $session_data): bool
+    public function write(string $id, string $data): bool
     {
-        return (bool)$this->redis->setEx($session_id, (int)$this->gcMaxLifeTime * 60, $session_data);
+        return (bool)$this->redis->setEx($id, (int)$this->gcMaxLifeTime * 60, $data);
     }
 }

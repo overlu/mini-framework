@@ -17,15 +17,9 @@ use Throwable;
 
 class SwooleFileStream implements StreamInterface, FileInterface
 {
-    /**
-     * @var string
-     */
-    protected $size;
+    protected string|int|false $size;
 
-    /**
-     * @var SplFileInfo
-     */
-    protected $file;
+    protected string|SplFileInfo $file;
 
     /**
      * SwooleFileStream constructor.
@@ -33,12 +27,12 @@ class SwooleFileStream implements StreamInterface, FileInterface
      * @param SplFileInfo|string $file
      * @throws FileException
      */
-    public function __construct($file)
+    public function __construct(SplFileInfo|string $file)
     {
-        if (! $file instanceof SplFileInfo) {
+        if (!$file instanceof SplFileInfo) {
             $file = new SplFileInfo($file);
         }
-        if (! $file->isReadable()) {
+        if (!$file->isReadable()) {
             throw new FileException('File must be readable.');
         }
         $this->file = $file;
@@ -68,7 +62,7 @@ class SwooleFileStream implements StreamInterface, FileInterface
     /**
      * Closes the stream and any underlying resources.
      */
-    public function close()
+    public function close(): void
     {
         throw new BadMethodCallException('Not implemented');
     }
@@ -79,7 +73,7 @@ class SwooleFileStream implements StreamInterface, FileInterface
      *
      * @return void Underlying PHP stream, if any
      */
-    public function detach()
+    public function detach(): void
     {
         throw new BadMethodCallException('Not implemented');
     }
@@ -87,11 +81,11 @@ class SwooleFileStream implements StreamInterface, FileInterface
     /**
      * Get the size of the stream if known.
      *
-     * @return null|int returns the size in bytes if known, or null if unknown
+     * @return bool|int|string|null returns the size in bytes if known, or null if unknown
      */
-    public function getSize()
+    public function getSize(): bool|int|string|null
     {
-        if (! $this->size) {
+        if (!$this->size) {
             $this->size = filesize($this->getContents());
         }
         return $this->size;
@@ -102,7 +96,7 @@ class SwooleFileStream implements StreamInterface, FileInterface
      *
      * @return void Position of the file pointer
      */
-    public function tell()
+    public function tell(): void
     {
         throw new BadMethodCallException('Not implemented');
     }
@@ -112,7 +106,7 @@ class SwooleFileStream implements StreamInterface, FileInterface
      *
      * @return void
      */
-    public function eof()
+    public function eof(): void
     {
         throw new BadMethodCallException('Not implemented');
     }
@@ -122,7 +116,7 @@ class SwooleFileStream implements StreamInterface, FileInterface
      *
      * @return void
      */
-    public function isSeekable()
+    public function isSeekable(): void
     {
         throw new BadMethodCallException('Not implemented');
     }
@@ -139,7 +133,7 @@ class SwooleFileStream implements StreamInterface, FileInterface
      *                    SEEK_END: Set position to end-of-stream plus offset.
      * @throws RuntimeException on failure
      */
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek(int $offset, int $whence = SEEK_SET): void
     {
         throw new BadMethodCallException('Not implemented');
     }
@@ -153,7 +147,7 @@ class SwooleFileStream implements StreamInterface, FileInterface
      * @see http://www.php.net/manual/en/function.fseek.php
      * @see seek()
      */
-    public function rewind()
+    public function rewind(): void
     {
         throw new BadMethodCallException('Not implemented');
     }
@@ -163,7 +157,7 @@ class SwooleFileStream implements StreamInterface, FileInterface
      *
      * @return bool
      */
-    public function isWritable()
+    public function isWritable(): bool
     {
         return false;
     }
@@ -174,7 +168,7 @@ class SwooleFileStream implements StreamInterface, FileInterface
      * @param string $string the string that is to be written
      * @return void returns the number of bytes written to the stream
      */
-    public function write($string)
+    public function write(string $string): void
     {
         throw new BadMethodCallException('Not implemented');
     }
@@ -184,7 +178,7 @@ class SwooleFileStream implements StreamInterface, FileInterface
      *
      * @return bool
      */
-    public function isReadable()
+    public function isReadable(): bool
     {
         return true;
     }
@@ -195,11 +189,11 @@ class SwooleFileStream implements StreamInterface, FileInterface
      * @param int $length Read up to $length bytes from the object and return
      *                    them. Fewer than $length bytes may be returned if underlying stream
      *                    call returns fewer bytes.
-     * @throws RuntimeException if an error occurs
      * @return string returns the data read from the stream, or an empty string
      *                if no bytes are available
+     * @throws RuntimeException if an error occurs
      */
-    public function read($length)
+    public function read(int $length): string
     {
         throw new BadMethodCallException('Not implemented');
     }
@@ -207,11 +201,11 @@ class SwooleFileStream implements StreamInterface, FileInterface
     /**
      * Returns the remaining contents in a string.
      *
+     * @return string
      * @throws RuntimeException if unable to read or an error occurs while
      *                           reading
-     * @return string
      */
-    public function getContents()
+    public function getContents(): string
     {
         return $this->getFilename();
     }
@@ -222,12 +216,12 @@ class SwooleFileStream implements StreamInterface, FileInterface
      * stream_get_meta_data() function.
      *
      * @see http://php.net/manual/en/function.stream-get-meta-data.php
-     * @param string $key specific metadata to retrieve
-     * @return null|array|mixed Returns an associative array if no key is
+     * @param string|null $key specific metadata to retrieve
+     * @return void Returns an associative array if no key is
      *                          provided. Returns a specific key value if a key is provided and the
      *                          value is found, or null if the key is not found.
      */
-    public function getMetadata($key = null)
+    public function getMetadata(string $key = null): void
     {
         throw new BadMethodCallException('Not implemented');
     }

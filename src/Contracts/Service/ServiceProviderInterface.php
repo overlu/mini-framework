@@ -5,9 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Contracts;
-
-use Swoole\Server;
+namespace Mini\Contracts\Service;
 
 interface ServiceProviderInterface
 {

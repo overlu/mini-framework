@@ -7,15 +7,17 @@ declare(strict_types=1);
 
 namespace Mini\Facades;
 
+use Mini\Database\Mysql\Schema\Builder;
+
 /**
  * Class Schema
- * @method static \Mini\Database\Mysql\Schema\Builder create(string $table, \Closure $callback)
- * @method static \Mini\Database\Mysql\Schema\Builder disableForeignKeyConstraints()
- * @method static \Mini\Database\Mysql\Schema\Builder drop(string $table)
- * @method static \Mini\Database\Mysql\Schema\Builder dropIfExists(string $table)
- * @method static \Mini\Database\Mysql\Schema\Builder enableForeignKeyConstraints()
- * @method static \Mini\Database\Mysql\Schema\Builder rename(string $from, string $to)
- * @method static \Mini\Database\Mysql\Schema\Builder table(string $table, \Closure $callback)
+ * @method static Builder create(string $table, \Closure $callback)
+ * @method static Builder disableForeignKeyConstraints()
+ * @method static Builder drop(string $table)
+ * @method static Builder dropIfExists(string $table)
+ * @method static Builder enableForeignKeyConstraints()
+ * @method static Builder rename(string $from, string $to)
+ * @method static Builder table(string $table, \Closure $callback)
  * @method static bool hasColumn(string $table, string $column)
  * @method static bool hasColumns(string $table, array $columns)
  * @method static bool dropColumns(string $table, array $columns)
@@ -34,9 +36,9 @@ class Schema extends Facade
     /**
      * Get a schema builder instance for the default connection.
      *
-     * @return \Mini\Database\Mysql\Schema\Builder
+     * @return Builder
      */
-    protected static function getFacadeAccessor()
+    protected static function getFacadeAccessor(): Builder
     {
         return app('db')->connection()->getSchemaBuilder();
     }

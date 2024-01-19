@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql\Eloquent;
 
+use ArrayAccess;
+use Closure;
 use Mini\Contracts\Queue\QueueableCollection;
 use Mini\Contracts\Queue\QueueableEntity;
 use Mini\Contracts\Support\Arrayable;
@@ -21,10 +23,10 @@ class Collection extends BaseCollection implements QueueableCollection
      * Find a model in the collection by key.
      *
      * @param mixed $key
-     * @param mixed $default
-     * @return \Mini\Database\Mysql\Eloquent\Model|static|null
+     * @param mixed|null $default
+     * @return Model|static|null
      */
-    public function find($key, $default = null)
+    public function find(mixed $key, mixed $default = null): Model|static|null
     {
         if ($key instanceof Model) {
             $key = $key->getKey();
@@ -43,7 +45,7 @@ class Collection extends BaseCollection implements QueueableCollection
         }
 
         return Arr::first($this->items, function ($model) use ($key) {
-            return $model->getKey() == $key;
+            return $model->getKey() === $key;
         }, $default);
     }
 
@@ -53,7 +55,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param array|string $relations
      * @return $this
      */
-    public function load($relations)
+    public function load(array|string $relations): self
     {
         if ($this->isNotEmpty()) {
             if (is_string($relations)) {
@@ -74,7 +76,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param array|string $relations
      * @return $this
      */
-    public function loadCount($relations)
+    public function loadCount(array|string $relations): self
     {
         if ($this->isEmpty()) {
             return $this;
@@ -108,7 +110,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param array|string $relations
      * @return $this
      */
-    public function loadMissing($relations)
+    public function loadMissing(array|string $relations)
     {
         if (is_string($relations)) {
             $relations = func_get_args();
@@ -144,11 +146,11 @@ class Collection extends BaseCollection implements QueueableCollection
     /**
      * Load a relationship path if it is not already eager loaded.
      *
-     * @param \Mini\Database\Mysql\Eloquent\Collection $models
+     * @param Collection $models
      * @param array $path
      * @return void
      */
-    protected function loadMissingRelation($models, $path)
+    protected function loadMissingRelation(Collection $models, array $path): void
     {
         $relation = array_shift($path);
 
@@ -182,7 +184,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param array $relations
      * @return $this
      */
-    public function loadMorph($relation, $relations)
+    public function loadMorph(string $relation, array $relations): self
     {
         $this->pluck($relation)
             ->filter()
@@ -203,7 +205,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param array $relations
      * @return $this
      */
-    public function loadMorphCount($relation, $relations)
+    public function loadMorphCount(string $relation, array $relations): self
     {
         $this->pluck($relation)
             ->filter()
@@ -221,11 +223,11 @@ class Collection extends BaseCollection implements QueueableCollection
      * Determine if a key exists in the collection.
      *
      * @param mixed $key
-     * @param mixed $operator
-     * @param mixed $value
+     * @param mixed|null $operator
+     * @param mixed|null $value
      * @return bool
      */
-    public function contains($key, $operator = null, $value = null)
+    public function contains(mixed $key, mixed $operator = null, mixed $value = null): bool
     {
         if (func_num_args() > 1 || $this->useAsCallable($key)) {
             return parent::contains(...func_get_args());
@@ -238,7 +240,7 @@ class Collection extends BaseCollection implements QueueableCollection
         }
 
         return parent::contains(function ($model) use ($key) {
-            return $model->getKey() == $key;
+            return $model->getKey() === $key;
         });
     }
 
@@ -247,7 +249,7 @@ class Collection extends BaseCollection implements QueueableCollection
      *
      * @return array
      */
-    public function modelKeys()
+    public function modelKeys(): array
     {
         return array_map(function ($model) {
             return $model->getKey();
@@ -257,10 +259,10 @@ class Collection extends BaseCollection implements QueueableCollection
     /**
      * Merge the collection with the given items.
      *
-     * @param \ArrayAccess|array $items
+     * @param mixed $items
      * @return static
      */
-    public function merge($items)
+    public function merge(mixed $items): static
     {
         $dictionary = $this->getDictionary();
 
@@ -275,7 +277,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * Run a map over each of the items.
      *
      * @param callable $callback
-     * @return \Mini\Support\Collection|static
+     * @return Collection
      */
     public function map(callable $callback)
     {
@@ -292,7 +294,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param array|string $with
      * @return static
      */
-    public function fresh($with = [])
+    public function fresh(array|string $with = []): static
     {
         if ($this->isEmpty()) {
             return new static;
@@ -315,10 +317,10 @@ class Collection extends BaseCollection implements QueueableCollection
     /**
      * Diff the collection with the given items.
      *
-     * @param \ArrayAccess|array $items
+     * @param mixed $items
      * @return static
      */
-    public function diff($items)
+    public function diff(mixed $items): static
     {
         $diff = new static;
 
@@ -336,10 +338,10 @@ class Collection extends BaseCollection implements QueueableCollection
     /**
      * Intersect the collection with the given items.
      *
-     * @param \ArrayAccess|array $items
+     * @param mixed $items
      * @return static
      */
-    public function intersect($items)
+    public function intersect(mixed $items): static
     {
         $intersect = new static;
 
@@ -361,11 +363,11 @@ class Collection extends BaseCollection implements QueueableCollection
     /**
      * Return only unique items from the collection.
      *
-     * @param string|callable|null $key
+     * @param callable|string|null $key
      * @param bool $strict
-     * @return static|\Mini\Support\Collection
+     * @return Collection
      */
-    public function unique($key = null, $strict = false)
+    public function unique(callable|string $key = null, bool $strict = false): static
     {
         if (!is_null($key)) {
             return parent::unique($key, $strict);
@@ -380,7 +382,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param mixed $keys
      * @return static
      */
-    public function only($keys)
+    public function only(mixed $keys): static
     {
         if (is_null($keys)) {
             return new static($this->items);
@@ -397,7 +399,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param mixed $keys
      * @return static
      */
-    public function except($keys)
+    public function except(mixed $keys): static
     {
         $dictionary = Arr::except($this->getDictionary(), $keys);
 
@@ -410,7 +412,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param array|string $attributes
      * @return $this
      */
-    public function makeHidden($attributes)
+    public function makeHidden(array|string $attributes): self
     {
         return $this->each->makeHidden($attributes);
     }
@@ -421,7 +423,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param array|string $attributes
      * @return $this
      */
-    public function makeVisible($attributes)
+    public function makeVisible(array|string $attributes): self
     {
         return $this->each->makeVisible($attributes);
     }
@@ -432,7 +434,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param array|string $attributes
      * @return $this
      */
-    public function append($attributes)
+    public function append(array|string $attributes): self
     {
         return $this->each->append($attributes);
     }
@@ -440,10 +442,10 @@ class Collection extends BaseCollection implements QueueableCollection
     /**
      * Get a dictionary keyed by primary keys.
      *
-     * @param \ArrayAccess|array|null $items
+     * @param ArrayAccess|array|null $items
      * @return array
      */
-    public function getDictionary($items = null)
+    public function getDictionary(ArrayAccess|array $items = null): array
     {
         $items = is_null($items) ? $this->items : $items;
 
@@ -463,11 +465,11 @@ class Collection extends BaseCollection implements QueueableCollection
     /**
      * Get an array with the values of a given key.
      *
-     * @param string|array $value
+     * @param array|string $value
      * @param string|null $key
-     * @return \Mini\Support\Collection
+     * @return BaseCollection
      */
-    public function pluck($value, $key = null)
+    public function pluck(mixed $value, string $key = null): static
     {
         return $this->toBase()->pluck($value, $key);
     }
@@ -475,9 +477,9 @@ class Collection extends BaseCollection implements QueueableCollection
     /**
      * Get the keys of the collection items.
      *
-     * @return \Mini\Support\Collection
+     * @return BaseCollection
      */
-    public function keys()
+    public function keys(): static
     {
         return $this->toBase()->keys();
     }
@@ -486,9 +488,9 @@ class Collection extends BaseCollection implements QueueableCollection
      * Zip the collection together with one or more arrays.
      *
      * @param mixed ...$items
-     * @return \Mini\Support\Collection
+     * @return BaseCollection
      */
-    public function zip($items)
+    public function zip(mixed $items): static
     {
         return call_user_func_array([$this->toBase(), 'zip'], func_get_args());
     }
@@ -496,9 +498,9 @@ class Collection extends BaseCollection implements QueueableCollection
     /**
      * Collapse the collection of items into a single array.
      *
-     * @return \Mini\Support\Collection
+     * @return BaseCollection
      */
-    public function collapse()
+    public function collapse(): static
     {
         return $this->toBase()->collapse();
     }
@@ -509,7 +511,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param int $depth
      * @return BaseCollection
      */
-    public function flatten(int $depth)
+    public function flatten(int $depth): static
     {
         return $this->toBase()->flatten($depth);
     }
@@ -517,9 +519,9 @@ class Collection extends BaseCollection implements QueueableCollection
     /**
      * Flip the items in the collection.
      *
-     * @return \Mini\Support\Collection
+     * @return BaseCollection
      */
-    public function flip()
+    public function flip(): static
     {
         return $this->toBase()->flip();
     }
@@ -529,9 +531,9 @@ class Collection extends BaseCollection implements QueueableCollection
      *
      * @param int $size
      * @param mixed $value
-     * @return \Mini\Support\Collection
+     * @return BaseCollection
      */
-    public function pad($size, $value)
+    public function pad(int $size, mixed $value): static
     {
         return $this->toBase()->pad($size, $value);
     }
@@ -540,9 +542,9 @@ class Collection extends BaseCollection implements QueueableCollection
      * Get the comparison function to detect duplicates.
      *
      * @param bool $strict
-     * @return \Closure
+     * @return Closure
      */
-    protected function duplicateComparator(bool $strict)
+    protected function duplicateComparator(bool $strict): Closure
     {
         return function ($a, $b) {
             return $a->is($b);
@@ -554,12 +556,12 @@ class Collection extends BaseCollection implements QueueableCollection
      *
      * @return string|null
      *
-     * @throws \LogicException
+     * @throws LogicException
      */
-    public function getQueueableClass()
+    public function getQueueableClass(): ?string
     {
         if ($this->isEmpty()) {
-            return;
+            return null;
         }
 
         $class = get_class($this->first());
@@ -578,7 +580,7 @@ class Collection extends BaseCollection implements QueueableCollection
      *
      * @return array
      */
-    public function getQueueableIds()
+    public function getQueueableIds(): array
     {
         if ($this->isEmpty()) {
             return [];
@@ -594,7 +596,7 @@ class Collection extends BaseCollection implements QueueableCollection
      *
      * @return array
      */
-    public function getQueueableRelations()
+    public function getQueueableRelations(): array
     {
         if ($this->isEmpty()) {
             return [];
@@ -604,11 +606,13 @@ class Collection extends BaseCollection implements QueueableCollection
 
         if (count($relations) === 0 || $relations === [[]]) {
             return [];
-        } elseif (count($relations) === 1) {
-            return reset($relations);
-        } else {
-            return array_intersect(...$relations);
         }
+
+        if (count($relations) === 1) {
+            return reset($relations);
+        }
+
+        return array_intersect(...$relations);
     }
 
     /**
@@ -616,12 +620,12 @@ class Collection extends BaseCollection implements QueueableCollection
      *
      * @return string|null
      *
-     * @throws \LogicException
+     * @throws LogicException
      */
-    public function getQueueableConnection()
+    public function getQueueableConnection(): ?string
     {
         if ($this->isEmpty()) {
-            return;
+            return null;
         }
 
         $connection = $this->first()->getConnectionName();

@@ -36,21 +36,20 @@ class Cookie
 
     /**
      * @param string $name The name of the cookie
-     * @param null|string $value The value of the cookie
-     * @param DateTimeInterface|int|string $expire The time the cookie expires
+     * @param string $value The value of the cookie
+     * @param int $expire The time the cookie expires
      * @param string $path The path on the server in which the cookie will be available on
-     * @param null|string $domain The domain that the cookie is available to
+     * @param string $domain The domain that the cookie is available to
      * @param bool $secure Whether the cookie should only be transmitted over a secure HTTPS connection from the client
      * @param bool $httpOnly Whether the cookie will be made accessible only through the HTTP protocol
      * @param bool $raw Whether the cookie value should be sent with no url encoding
      * @param null|string $sameSite Whether the cookie will be available for cross-site requests
      *
-     * @throws InvalidArgumentException
      */
     public function __construct(
         string $name,
         string $value = '',
-        int $expire = 0,
+        mixed $expire = 0,
         string $path = '/',
         string $domain = '',
         bool $secure = false,
@@ -72,7 +71,7 @@ class Cookie
         if ($expire instanceof DateTimeInterface) {
             $expire = $expire->format('U');
         } elseif (!is_numeric($expire)) {
-            $expire = strtotime($expire);
+            $expire = strtotime((string)$expire);
 
             if ($expire === false) {
                 throw new InvalidArgumentException('The cookie expiration time is not valid.');
@@ -152,7 +151,7 @@ class Cookie
      *
      * @return static
      */
-    public static function fromString(string $cookie, $decode = false): Cookie
+    public static function fromString(string $cookie, bool $decode = false): Cookie
     {
         $data = [
             'expires' => 0,
@@ -164,7 +163,7 @@ class Cookie
             'samesite' => null,
         ];
         foreach (explode(';', $cookie) as $part) {
-            if (strpos($part, '=') === false) {
+            if (!str_contains($part, '=')) {
                 $key = trim($part);
                 $value = true;
             } else {

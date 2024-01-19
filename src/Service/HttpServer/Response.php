@@ -33,7 +33,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use SimpleXMLElement;
 use SplFileInfo;
-use Throwable;
 use function get_class;
 
 class Response implements PsrResponseInterface, ResponseInterface, Sendable
@@ -50,22 +49,22 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
         $this->response = $response;
     }
 
-    public function __call($name, $arguments)
+    public function __call($method, $parameters)
     {
         $response = $this->getResponse();
-        if (!method_exists($response, $name)) {
-            throw new BadMethodCallException(sprintf('Call to undefined method %s::%s()', get_class($this), $name));
+        if (!method_exists($response, $method)) {
+            throw new BadMethodCallException(sprintf('Call to undefined method %s::%s()', self::class, $method));
         }
-        return $response->{$name}(...$arguments);
+        return $response->{$method}(...$parameters);
     }
 
-    public static function __callStatic($name, $arguments)
+    public static function __callStatic($method, $parameters)
     {
         $response = Context::get(ResponseInterface::class);
-        if (!method_exists($response, $name)) {
-            throw new BadMethodCallException(sprintf('Call to undefined static method %s::%s()', self::class, $name));
+        if (!method_exists($response, $method)) {
+            throw new BadMethodCallException(sprintf('Call to undefined static method %s::%s()', self::class, $method));
         }
-        return $response::{$name}(...$arguments);
+        return $response::{$method}(...$parameters);
     }
 
     /**
@@ -74,7 +73,7 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
      * @param array|Arrayable|Jsonable $data
      * @return PsrResponseInterface
      */
-    public function json($data): PsrResponseInterface
+    public function json(Arrayable|array|Jsonable $data): PsrResponseInterface
     {
         return $this->getResponse()
             ->withAddedHeader('content-type', 'application/json; charset=utf-8')
@@ -89,7 +88,7 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
      * @return PsrResponseInterface
      * @throws EncodingException
      */
-    public function xml($data, string $root = 'root'): PsrResponseInterface
+    public function xml(Arrayable|Xmlable|array $data, string $root = 'root'): PsrResponseInterface
     {
         return $this->getResponse()
             ->withAddedHeader('content-type', 'application/xml; charset=utf-8')
@@ -97,13 +96,13 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
     }
 
     /**
-     * @param $view
+     * @param string|array $view
      * @param array $data
      * @param int $status
      * @param array $headers
      * @return mixed
      */
-    public function view($view, $data = [], $status = 200, array $headers = [])
+    public function view(string|array $view, array $data = [], int $status = 200, array $headers = []): mixed
     {
         if (is_array($view)) {
             return app('view')->first($view, $data);
@@ -117,7 +116,7 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
      * @param mixed $data will transfer to a string value
      * @return PsrResponseInterface
      */
-    public function raw($data): PsrResponseInterface
+    public function raw(mixed $data): PsrResponseInterface
     {
         return $this->getResponse()
             ->withAddedHeader('content-type', 'text/plain; charset=utf-8')
@@ -155,7 +154,6 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
      * @param string $name the alias name of the file that client receive
      * @return PsrResponseInterface
      * @throws FileException
-     * @throws InvalidResponseException
      */
     public function download(string $file, string $name = ''): PsrResponseInterface
     {
@@ -225,7 +223,7 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
      * @return PsrResponseInterface
      * @throws InvalidResponseException
      */
-    public function withProtocolVersion($version)
+    public function withProtocolVersion($version): PsrResponseInterface
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
@@ -288,7 +286,6 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
 
     /**
      * @return Session
-     * @throws \Mini\Container\EntryNotFoundException
      */
     public function session(): Session
     {
@@ -329,7 +326,7 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
      * @return PsrResponseInterface
      * @throws InvalidResponseException
      */
-    public function withHeader($name, $value)
+    public function withHeader($name, $value): PsrResponseInterface
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
@@ -348,7 +345,7 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
      * @return PsrResponseInterface
      * @throws InvalidResponseException
      */
-    public function withAddedHeader($name, $value)
+    public function withAddedHeader($name, $value): PsrResponseInterface
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
@@ -364,7 +361,7 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
      * @return PsrResponseInterface
      * @throws InvalidResponseException
      */
-    public function withoutHeader($name)
+    public function withoutHeader($name): PsrResponseInterface
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
@@ -390,7 +387,7 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
      * @return PsrResponseInterface
      * @throws InvalidResponseException
      */
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body): PsrResponseInterface
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
@@ -425,7 +422,7 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
      * @return PsrResponseInterface
      * @throws InvalidResponseException
      */
-    public function withStatus($code, $reasonPhrase = '')
+    public function withStatus($code, $reasonPhrase = ''): PsrResponseInterface
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
@@ -449,11 +446,11 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
 
     /**
      * @param bool $withContent
-     * @return mixed
+     * @return void
      */
-    public function send(bool $withContent = true)
+    public function send(bool $withContent = true): void
     {
-        return $this->getResponse()->send($withContent);
+        $this->getResponse()->send($withContent);
     }
 
     /**
@@ -465,10 +462,6 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
     protected function call($name, $arguments): self
     {
         $response = $this->getResponse();
-
-        if (!$response instanceof PsrResponseInterface) {
-            throw new InvalidResponseException('The response is not instanceof ' . PsrResponseInterface::class);
-        }
 
         if (!method_exists($response, $name)) {
             throw new BadMethodCallException(sprintf('Call to undefined method %s::%s()', get_class($this), $name));
@@ -504,7 +497,7 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
      * @param array|Arrayable|Jsonable $data
      * @return string
      */
-    protected function toJson($data): string
+    protected function toJson(mixed $data): string
     {
         return json_encode($data, JSON_UNESCAPED_UNICODE);
     }
@@ -512,12 +505,12 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
     /**
      * @param array|Arrayable|Xmlable $data
      * @param null|mixed $parentNode
-     * @param mixed $root
+     * @param string $root
      * @return string
      * @throws EncodingException when the data encoding error
      * @throws Exception
      */
-    protected function toXml($data, $parentNode = null, $root = 'root'): string
+    protected function toXml(mixed $data, mixed $parentNode = null, string $root = 'root'): string
     {
         if ($data instanceof Xmlable) {
             return (string)$data;
@@ -527,11 +520,7 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
         } else {
             $data = (array)$data;
         }
-        if ($parentNode === null) {
-            $xml = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?>' . "<{$root}></{$root}>");
-        } else {
-            $xml = $parentNode;
-        }
+        $xml = $parentNode ?? new SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?>' . "<{$root}></{$root}>");
         foreach ($data as $key => $value) {
             if (is_array($value)) {
                 $this->toXml($value, $xml->addChild($key));
@@ -549,9 +538,9 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
     /**
      * Get the response object from context.
      *
-     * @return object|PsrResponseInterface it's an object that implemented PsrResponseInterface, or maybe it's a proxy class
+     * @return PsrResponseInterface it's an object that implemented PsrResponseInterface, or maybe it's a proxy class
      */
-    protected function getResponse()
+    protected function getResponse(): PsrResponseInterface
     {
         if ($this->response instanceof PsrResponseInterface) {
             return $this->response;

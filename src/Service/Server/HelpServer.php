@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Service\Server;
 
+use JetBrains\PhpStorm\NoReturn;
 use Mini\Support\Command;
 
 class HelpServer
@@ -18,6 +19,7 @@ class HelpServer
     ];
     protected string $delimiter = '-------------------------------------------';
 
+    #[NoReturn]
     public function __construct()
     {
         Command::line();

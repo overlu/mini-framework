@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Facades;
 
-use Exception;
+use RuntimeException;
 
 /**
  * Class Config
@@ -47,12 +47,12 @@ class Console extends Facade
 {
     /**
      * @return string
-     * @throws Exception
+     * @throws RuntimeException
      */
     protected static function getFacadeAccessor(): string
     {
         if (RUN_ENV !== 'artisan') {
-            throw new Exception('Only can use in artisan environemnt');
+            throw new RuntimeException('Only can use in artisan environemnt');
         }
         return 'console';
     }

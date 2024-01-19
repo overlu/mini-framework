@@ -51,8 +51,6 @@ class Required extends Rule
      */
     protected function setAttributeAsRequired(): void
     {
-        if ($this->attribute) {
-            $this->attribute->setRequired(true);
-        }
+        $this->attribute?->setRequired(true);
     }
 }

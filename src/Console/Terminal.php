@@ -60,7 +60,7 @@ class Terminal
     /**
      * current class's instance
      *
-     * @var self
+     * @var self|null
      */
     private static ?Terminal $instance = null;
 
@@ -160,7 +160,7 @@ class Terminal
      *
      * @return string
      */
-    public static function build($format, string $type = 'm'): string
+    public static function build(mixed $format, string $type = 'm'): string
     {
         $format = null === $format ? '' : implode(';', (array)$format);
         return self::BEGIN_CHAR . implode(';', (array)$format) . $type . self::END_CHAR;
@@ -184,7 +184,7 @@ class Terminal
         $code = self::$ctrlCursorCodes[$typeName];
 
         // allow argument
-        if (false !== strpos($code, '%')) {
+        if (str_contains($code, '%')) {
             // The special code: ` 'coordinate' => '%dG|%d;%dH' `
             if ($typeName === self::CUR_COORDINATE) {
                 $codes = explode('|', $code);
@@ -221,7 +221,7 @@ class Terminal
         $code = self::$ctrlScreenCodes[$typeName];
 
         // allow argument
-        if (false !== strpos($code, '%')) {
+        if (str_contains($code, '%')) {
             $code = sprintf($code, $arg);
         }
 

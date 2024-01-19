@@ -23,7 +23,7 @@ class ModelIdentifier
      *
      * @var mixed
      */
-    public $id;
+    public mixed $id;
 
     /**
      * The relationships loaded on the model.
@@ -37,7 +37,7 @@ class ModelIdentifier
      *
      * @var string|null
      */
-    public $connection;
+    public mixed $connection;
 
     /**
      * Create a new model identifier.
@@ -48,7 +48,7 @@ class ModelIdentifier
      * @param mixed $connection
      * @return void
      */
-    public function __construct($class, $id, array $relations, $connection)
+    public function __construct(string $class, mixed $id, array $relations, mixed $connection)
     {
         $this->id = $id;
         $this->class = $class;

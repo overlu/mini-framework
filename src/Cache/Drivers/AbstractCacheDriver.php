@@ -8,32 +8,33 @@ declare(strict_types=1);
 namespace Mini\Cache\Drivers;
 
 use Closure;
+use Mini\Contracts\Cache;
 
 /**
  * 抽象驱动类
  * Class AbstractDriver
  * @package Mini\Cache\Drivers
  */
-abstract class AbstractCacheDriver
+abstract class AbstractCacheDriver implements Cache
 {
     protected string $prefix = '';
 
     /**
      * Retrieve an item from the cache by key.
      * @param string $key
-     * @param null $default
+     * @param mixed|null $default
      * @return mixed
      */
-    abstract public function get(string $key, $default = null);
+    abstract public function get(string $key, mixed $default = null): mixed;
 
     /**
      * Retrieve an item from the cache by key.
-     * @param string $key
+     * @param mixed $offset
      * @return mixed
      */
-    public function offsetGet(string $key)
+    public function offsetGet(mixed $offset): mixed
     {
-        return $this->get($key);
+        return $this->get($offset);
     }
 
     /**
@@ -42,10 +43,10 @@ abstract class AbstractCacheDriver
      * Items not found in the cache will have a null value.
      *
      * @param array $keys
-     * @param null $default
+     * @param mixed|null $default
      * @return array
      */
-    public function getMultiple(array $keys, $default = null): array
+    public function getMultiple(array $keys, mixed $default = null): array
     {
         $result = [];
         foreach ($keys as $key) {
@@ -60,42 +61,42 @@ abstract class AbstractCacheDriver
      * Items not found in the cache will have a null value.
      *
      * @param array $keys
-     * @param null $default
+     * @param mixed|null $default
      * @return array
      */
-    public function many(array $keys, $default = null): array
+    public function many(array $keys, mixed $default = null): array
     {
         return $this->getMultiple($keys, $default);
     }
 
     /**
      * Store an item in the cache for the default time.
-     * @param string $key
+     * @param mixed $offset
      * @param $value
      * @return bool
      */
-    public function offsetSet(string $key, $value): bool
+    public function offsetSet(mixed $offset, $value): bool
     {
-        return $this->put($key, $value, 3600);
+        return $this->put($offset, $value, 3600);
     }
 
     /**
      * Store an item in the cache.
      * @param string $key
-     * @param $value
+     * @param mixed $value
      * @param int|null $ttl
      * @return bool
      */
-    abstract public function set(string $key, $value, ?int $ttl = null): bool;
+    abstract public function set(string $key, mixed $value, ?int $ttl = null): bool;
 
     /**
      * Store an item in the cache.
      * @param string $key
-     * @param $value
+     * @param mixed $value
      * @param int|null $ttl
      * @return bool
      */
-    public function put(string $key, $value, ?int $ttl = null): bool
+    public function put(string $key, mixed $value, ?int $ttl = null): bool
     {
         return $this->set($key, $value, $ttl);
     }
@@ -103,11 +104,11 @@ abstract class AbstractCacheDriver
     /**
      * Store an item in the cache if the key does not exist.
      * @param string $key
-     * @param $value
+     * @param mixed $value
      * @param int|null $ttl
      * @return bool
      */
-    public function add(string $key, $value, ?int $ttl = null): bool
+    public function add(string $key, mixed $value, ?int $ttl = null): bool
     {
         if ($ttl <= 0 && $ttl !== null) {
             return false;
@@ -120,12 +121,12 @@ abstract class AbstractCacheDriver
 
     /**
      * Get an item from the cache, or execute the given Closure and store the result.
-     * @param $key
+     * @param mixed $key
      * @param Closure $callback
      * @param int|null $ttl
      * @return mixed
      */
-    public function remember($key, Closure $callback, ?int $ttl = null)
+    public function remember(string $key, Closure $callback, ?int $ttl = null): mixed
     {
         $value = $this->get($key);
         // If the item exists in the cache we will just return this immediately and if
@@ -146,7 +147,7 @@ abstract class AbstractCacheDriver
      * @param Closure $callback
      * @return mixed
      */
-    public function rememberForever(string $key, Closure $callback)
+    public function rememberForever(string $key, Closure $callback): mixed
     {
         $value = $this->get($key);
 
@@ -169,7 +170,7 @@ abstract class AbstractCacheDriver
      * @param Closure $callback
      * @return mixed
      */
-    public function sear(string $key, Closure $callback)
+    public function sear(string $key, Closure $callback): mixed
     {
         return $this->rememberForever($key, $callback);
     }
@@ -214,12 +215,12 @@ abstract class AbstractCacheDriver
 
     /**
      * Remove an item from the cache.
-     * @param string $key
+     * @param mixed $offset
      * @return bool
      */
-    public function offsetUnset(string $key): bool
+    public function offsetUnset(mixed $offset): bool
     {
-        return $this->delete($key);
+        return $this->delete($offset);
     }
 
     /**
@@ -249,12 +250,12 @@ abstract class AbstractCacheDriver
     /**
      * Determine if a cached value exists.
      *
-     * @param string $key
+     * @param mixed $offset
      * @return bool
      */
-    public function offsetExists(string $key): bool
+    public function offsetExists(mixed $offset): bool
     {
-        return $this->has($key);
+        return $this->has($offset);
     }
 
     /**
@@ -310,10 +311,10 @@ abstract class AbstractCacheDriver
      * Retrieve an item from the cache and delete it.
      *
      * @param string $key
-     * @param mixed $default
+     * @param mixed|null $default
      * @return mixed
      */
-    public function pull(string $key, $default = null)
+    public function pull(string $key, mixed $default = null): mixed
     {
         return tap($this->get($key, $default), function () use ($key) {
             $this->delete($key);
@@ -368,7 +369,7 @@ abstract class AbstractCacheDriver
     }
 
     /**
-     * @return mixed|null
+     * @return string
      */
     public function getPrefix(): string
     {

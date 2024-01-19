@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Contracts\HttpMessage;
 
-
 use Swoole\Http\Request;
 use Swoole\WebSocket\Server;
 
@@ -23,21 +22,21 @@ interface WebsocketRequestInterface
      * @param string|null $key
      * @param mixed $default
      */
-    public function query(?string $key = null, $default = null);
+    public function query(?string $key = null, mixed $default = null): mixed;
 
     /**
      * Retrieve the data from parsed body, if $key is null, will return all parsed body.
      * @param string|null $key
      * @param mixed $default
      */
-    public function post(?string $key = null, $default = null);
+    public function post(?string $key = null, mixed $default = null): mixed;
 
     /**
      * Retrieve the input data from request, include query parameters, parsed body and json body.
-     * @param string $key
+     * @param string|null $key
      * @param mixed $default
      */
-    public function input(?string $key = null, $default = null);
+    public function input(?string $key = null, mixed $default = null): mixed;
 
     /**
      * Determine if the $key is exist in parameters.

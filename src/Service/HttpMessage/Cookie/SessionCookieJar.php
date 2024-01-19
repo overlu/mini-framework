@@ -50,7 +50,7 @@ class SessionCookieJar extends CookieJar
     /**
      * Save cookies to the client session.
      */
-    public function save()
+    public function save(): void
     {
         $json = [];
         foreach ($this as $cookie) {
@@ -66,7 +66,7 @@ class SessionCookieJar extends CookieJar
     /**
      * Load the contents of the client session into the data array.
      */
-    protected function load()
+    protected function load(): void
     {
         if (!Session::exists($this->sessionKey)) {
             return;
@@ -76,7 +76,7 @@ class SessionCookieJar extends CookieJar
             foreach ($data as $cookie) {
                 $this->setCookie(new SetCookie($cookie));
             }
-        } elseif (strlen($data)) {
+        } elseif ($data !== '') {
             throw new \RuntimeException('Invalid cookie data');
         }
     }

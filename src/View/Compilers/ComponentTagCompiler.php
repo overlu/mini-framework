@@ -11,6 +11,7 @@ use Mini\Container\Container;
 use Mini\Contracts\Foundation\Application;
 use Mini\Contracts\View\Factory;
 use Mini\Filesystem\Filesystem;
+use Mini\Support\Collection;
 use Mini\Support\Str;
 use Mini\View\AnonymousComponent;
 use InvalidArgumentException;
@@ -197,8 +198,6 @@ class ComponentTagCompiler
      * @param string $component
      * @param array $attributes
      * @return string
-     *
-     * @throws \InvalidArgumentException
      */
     protected function componentString(string $component, array $attributes): string
     {
@@ -235,7 +234,6 @@ class ComponentTagCompiler
      * @return string
      *
      * @throws \InvalidArgumentException
-     * @throws \Mini\Contracts\Container\BindingResolutionException
      */
     public function componentClass(string $component): string
     {
@@ -273,7 +271,6 @@ class ComponentTagCompiler
      *
      * @param string $component
      * @return string
-     * @throws \Mini\Contracts\Container\BindingResolutionException
      */
     public function guessClassName(string $component): string
     {
@@ -293,10 +290,10 @@ class ComponentTagCompiler
      *
      * @param string $class
      * @param array $attributes
-     * @return \Mini\Support\Collection|array
+     * @return Collection|array
      * @throws \ReflectionException
      */
-    public function partitionDataAndAttributes($class, array $attributes)
+    public function partitionDataAndAttributes(string $class, array $attributes): Collection|array
     {
         // If the class doesn't exists, we'll assume it's a class-less component and
         // return all of the attributes as both data and attributes since we have
@@ -447,9 +444,7 @@ class ComponentTagCompiler
         $value = $this->escapeSingleQuotesOutsideOfPhpBlocks($value);
 
         $value = str_replace('<?php echo ', '\'.', $value);
-        $value = str_replace('; ?>', '.\'', $value);
-
-        return $value;
+        return str_replace('; ?>', '.\'', $value);
     }
 
     /**
@@ -478,7 +473,7 @@ class ComponentTagCompiler
      * @param bool $escapeBound
      * @return string
      */
-    protected function attributesToString(array $attributes, $escapeBound = true): string
+    protected function attributesToString(array $attributes, bool $escapeBound = true): string
     {
         return collect($attributes)
             ->map(function (string $value, string $attribute) use ($escapeBound) {

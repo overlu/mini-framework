@@ -32,9 +32,6 @@ trait MessageTrait
      */
     protected string $protocol = '1.1';
 
-    /**
-     * @var StreamInterface
-     */
     protected ?StreamInterface $stream = null;
 
     /**
@@ -59,7 +56,7 @@ trait MessageTrait
      * @param string $version HTTP protocol version
      * @return static
      */
-    public function withProtocolVersion($version)
+    public function withProtocolVersion(string $version): static
     {
         if ($this->protocol === $version) {
             return $this;
@@ -116,7 +113,7 @@ trait MessageTrait
      *              name using a case-insensitive string comparison. Returns false if
      *              no matching header name is found in the message.
      */
-    public function hasHeader($name): bool
+    public function hasHeader(string $name): bool
     {
         return isset($this->headerNames[strtolower($name)]);
     }
@@ -133,7 +130,7 @@ trait MessageTrait
      *                  header. If the header does not appear in the message, this method MUST
      *                  return an empty array.
      */
-    public function getHeader($name): array
+    public function getHeader(string $name): array
     {
         $name = strtolower($name);
 
@@ -162,7 +159,7 @@ trait MessageTrait
      *                concatenated together using a comma. If the header does not appear in
      *                the message, this method MUST return an empty string.
      */
-    public function getHeaderLine($name): string
+    public function getHeaderLine(string $name): string
     {
         return implode(', ', $this->getHeader($name));
     }
@@ -180,7 +177,7 @@ trait MessageTrait
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values
      */
-    public function withHeader($name, $value)
+    public function withHeader(string $name, $value): static
     {
         if (!is_array($value)) {
             $value = [$value];
@@ -203,7 +200,7 @@ trait MessageTrait
      * @param array $headers
      * @return static
      */
-    public function withHeaders(array $headers)
+    public function withHeaders(array $headers): static
     {
         $new = clone $this;
         foreach ($headers as $name => $value) {
@@ -226,7 +223,7 @@ trait MessageTrait
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values
      */
-    public function withAddedHeader($name, $value)
+    public function withAddedHeader(string $name, $value): static
     {
         if (!is_array($value)) {
             $value = [$value];
@@ -257,7 +254,7 @@ trait MessageTrait
      * @param string $name case-insensitive header field name to remove
      * @return static
      */
-    public function withoutHeader($name)
+    public function withoutHeader(string $name): static
     {
         $normalized = strtolower($name);
 
@@ -278,7 +275,7 @@ trait MessageTrait
      *
      * @return StreamInterface returns the body as a stream
      */
-    public function getBody()
+    public function getBody(): StreamInterface
     {
         if (!$this->stream) {
             $this->stream = new SwooleStream('');
@@ -298,7 +295,7 @@ trait MessageTrait
      * @return static
      * @throws \InvalidArgumentException when the body is not valid
      */
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body): static
     {
         if (isset($this->stream) && $body === $this->stream) {
             return $this;
@@ -324,7 +321,7 @@ trait MessageTrait
      * @return array|string wanted part or all parts as array($firstName => firstPart, partname => value)
      * @throws \RuntimeException
      */
-    public function getHeaderField($name, $wantedPart = '0', $firstName = '0')
+    public function getHeaderField(string $name, string $wantedPart = '0', string $firstName = '0'): array|string
     {
         return Decode::splitHeaderField($this->getHeaderLine($name), $wantedPart, $firstName);
     }
@@ -352,7 +349,7 @@ trait MessageTrait
      * @param array $headers
      * @return static
      */
-    private function setHeaders(array $headers)
+    private function setHeaders(array $headers): static
     {
         $this->headerNames = $this->headers = [];
         foreach ($headers as $header => $value) {

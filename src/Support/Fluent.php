@@ -44,7 +44,7 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
      * @param array $parameters
      * @return $this
      */
-    public function __call($method, $parameters)
+    public function __call(string $method, array $parameters)
     {
         $this->attributes[$method] = count($parameters) > 0 ? $parameters[0] : true;
 
@@ -57,7 +57,7 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
      * @param string $key
      * @return mixed
      */
-    public function __get($key)
+    public function __get(string $key)
     {
         return $this->get($key);
     }
@@ -68,7 +68,7 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
      * @param string $key
      * @param mixed $value
      */
-    public function __set($key, $value)
+    public function __set(string $key, mixed $value)
     {
         $this->offsetSet($key, $value);
     }
@@ -79,7 +79,7 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
      * @param string $key
      * @return bool
      */
-    public function __isset($key)
+    public function __isset(string $key)
     {
         return $this->offsetExists($key);
     }
@@ -89,7 +89,7 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
      *
      * @param string $key
      */
-    public function __unset($key)
+    public function __unset(string $key)
     {
         $this->offsetUnset($key);
     }
@@ -103,10 +103,10 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
      * Get an attribute from the fluent instance.
      *
      * @param string $key
-     * @param null|mixed $default
+     * @param mixed|null $default
      * @return mixed
      */
-    public function get(string $key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         if (array_key_exists($key, $this->attributes)) {
             return $this->attributes[$key];
@@ -149,7 +149,7 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
      * @param int $options
      * @return string
      */
-    public function toJson($options = 0): string
+    public function toJson(int $options = 0): string
     {
         return json_encode($this->jsonSerialize(), $options);
     }

@@ -16,21 +16,21 @@ interface View extends Renderable
      *
      * @return string
      */
-    public function name();
+    public function name(): string;
 
     /**
      * Add a piece of data to the view.
      *
-     * @param string|array $key
-     * @param mixed $value
+     * @param array|string $key
+     * @param mixed|null $value
      * @return $this
      */
-    public function with($key, $value = null);
+    public function with(array|string $key, mixed $value = null): self;
 
     /**
      * Get the array of view data.
      *
      * @return array
      */
-    public function getData();
+    public function getData(): array;
 }

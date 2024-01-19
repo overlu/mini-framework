@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Database\Mysql\Connectors;
 
 use InvalidArgumentException;
+use PDO;
 
 class SQLiteConnector extends Connector implements ConnectorInterface
 {
@@ -15,11 +16,9 @@ class SQLiteConnector extends Connector implements ConnectorInterface
      * Establish a database connection.
      *
      * @param array $config
-     * @return \PDO
-     *
-     * @throws \InvalidArgumentException
+     * @return PDO
      */
-    public function connect(array $config)
+    public function connect(array $config): PDO
     {
         $options = $this->getOptions($config);
 

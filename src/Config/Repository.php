@@ -26,10 +26,10 @@ trait Repository
      * Get the specified configuration value.
      *
      * @param array|string $key
-     * @param mixed $default
+     * @param mixed|null $default
      * @return mixed
      */
-    public function get($key, $default = null)
+    public function get(array|string $key, mixed $default = null): mixed
     {
         if (is_array($key)) {
             return $this->getMany($key);
@@ -63,15 +63,15 @@ trait Repository
      * Set a given configuration value.
      *
      * @param array|string $key
-     * @param mixed $value
+     * @param mixed|null $value
      * @return void
      */
-    public function set($key, $value = null): void
+    public function set(array|string $key, mixed $value = null): void
     {
         $keys = is_array($key) ? $key : [$key => $value];
 
-        foreach ($keys as $key => $value) {
-            Arr::set($this->repository, $key, $value);
+        foreach ($keys as $k => $val) {
+            Arr::set($this->repository, $k, $val);
         }
     }
 
@@ -82,7 +82,7 @@ trait Repository
      * @param mixed $value
      * @return void
      */
-    public function prepend(string $key, $value): void
+    public function prepend(string $key, mixed $value): void
     {
         $array = $this->get($key);
 
@@ -98,7 +98,7 @@ trait Repository
      * @param mixed $value
      * @return void
      */
-    public function push(string $key, $value): void
+    public function push(string $key, mixed $value): void
     {
         $array = $this->get($key);
 
@@ -120,46 +120,46 @@ trait Repository
     /**
      * Determine if the given configuration option exists.
      *
-     * @param string $key
+     * @param mixed $offset
      * @return bool
      */
-    public function offsetExists($key): bool
+    public function offsetExists(mixed $offset): bool
     {
-        return $this->has($key);
+        return $this->has($offset);
     }
 
     /**
      * Get a configuration option.
      *
-     * @param string $key
+     * @param mixed $offset
      * @return mixed
      */
-    public function offsetGet($key): mixed
+    public function offsetGet(mixed $offset): mixed
     {
-        return $this->get($key);
+        return $this->get($offset);
     }
 
     /**
      * Set a configuration option.
      *
-     * @param string $key
+     * @param mixed $offset
      * @param mixed $value
      * @return void
      */
-    public function offsetSet($key, mixed $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
-        $this->set($key, $value);
+        $this->set($offset, $value);
     }
 
     /**
      * Unset a configuration option.
      *
-     * @param string $key
+     * @param mixed $offset
      * @return void
      */
-    public function offsetUnset($key): void
+    public function offsetUnset(mixed $offset): void
     {
-        $this->set($key, null);
+        $this->set($offset, null);
     }
 }
 

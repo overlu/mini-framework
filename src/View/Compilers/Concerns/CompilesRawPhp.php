@@ -12,7 +12,7 @@ trait CompilesRawPhp
     /**
      * Compile the raw PHP statements into valid PHP.
      *
-     * @param string $expression
+     * @param string|null $expression
      * @return string
      */
     protected function compilePhp(?string $expression): string
