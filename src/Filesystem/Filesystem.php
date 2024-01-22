@@ -9,6 +9,7 @@ namespace Mini\Filesystem;
 
 use ErrorException;
 use FilesystemIterator;
+use League\Flysystem\UnableToWriteFile;
 use Mini\Exception\FileNotFoundException;
 use Mini\Support\LazyCollection;
 use Mini\Support\Traits\Macroable;
@@ -23,7 +24,7 @@ use Symfony\Component\Mime\MimeTypes;
  * Class Filesystem
  * @package Mini\Filesystem
  */
-class Filesystem implements \Mini\Contracts\Filesystem\Filesystem
+class Filesystem implements \Mini\Contracts\File
 {
     use Macroable;
 
@@ -227,10 +228,10 @@ class Filesystem implements \Mini\Contracts\Filesystem\Filesystem
      *
      * @param string $path
      * @param string $contents
-     * @param bool $lock
+     * @param mixed $lock
      * @return bool
      */
-    public function put(string $path, $contents, $lock = false): bool
+    public function put(string $path, $contents, mixed $lock = false): bool
     {
         return (bool)file_put_contents($path, $contents, $lock ? LOCK_EX : 0);
     }
@@ -561,7 +562,7 @@ class Filesystem implements \Mini\Contracts\Filesystem\Filesystem
      * @param bool $hidden
      * @return Finder
      */
-    public function filesAsIterator(string $directory, bool $hidden = false): Finder
+    public function filesAsIterator(string $directory = '', bool $hidden = false): Finder
     {
         return Finder::create()->files()->ignoreDotFiles(!$hidden)->in($directory)->depth(0)->sortByName();
     }
@@ -569,11 +570,11 @@ class Filesystem implements \Mini\Contracts\Filesystem\Filesystem
     /**
      * Get an array of all files in a directory.
      *
-     * @param string|null $directory
+     * @param string $directory
      * @param bool $hidden
      * @return SplFileInfo[]
      */
-    public function files(string $directory = null, bool $hidden = false): array
+    public function files(string $directory = '', bool $hidden = false): array
     {
         return iterator_to_array(
             $this->filesAsIterator($directory, $hidden),
@@ -586,14 +587,11 @@ class Filesystem implements \Mini\Contracts\Filesystem\Filesystem
      *
      * @param string $directory
      * @param bool $hidden
-     * @return SplFileInfo[]
+     * @return Finder
      */
-    public function allFilesAsIterator(string $directory, bool $hidden = false): array
+    public function allFilesAsIterator(string $directory = '', bool $hidden = false): Finder
     {
-        return iterator_to_array(
-            Finder::create()->files()->ignoreDotFiles(!$hidden)->in($directory)->sortByName(),
-            false
-        );
+        return Finder::create()->files()->ignoreDotFiles(!$hidden)->in($directory)->sortByName();
     }
 
     /**
@@ -601,21 +599,25 @@ class Filesystem implements \Mini\Contracts\Filesystem\Filesystem
      *
      * @param string $directory
      * @param bool $hidden
-     * @return Finder
+     * @return SplFileInfo[]
      */
-    public function allFiles(string $directory, bool $hidden = false): Finder
+    public function allFiles(string $directory = '', bool $hidden = false): array
     {
-        return Finder::create()->files()->ignoreDotFiles(!$hidden)->in($directory)->sortByName();
+
+        return iterator_to_array(
+            $this->allFilesAsIterator($directory, $hidden),
+            false
+        );
     }
 
     /**
      * Get all of the files count from the given directory (recursive).
      *
-     * @param $directory
+     * @param string $directory
      * @param bool $hidden
      * @return int
      */
-    public function allFilesCount(string $directory, bool $hidden = false): int
+    public function allFilesCount(string $directory = '', bool $hidden = false): int
     {
         return count(Finder::create()->files()->ignoreDotFiles(!$hidden)->in($directory));
     }
@@ -626,7 +628,7 @@ class Filesystem implements \Mini\Contracts\Filesystem\Filesystem
      * @param string $directory
      * @return array
      */
-    public function directoriesToArray(string $directory): array
+    public function directoriesToArray(string $directory = ''): array
     {
         $directories = [];
         $resources = Finder::create()->in($directory)->directories()->depth(0)->sortByName();
@@ -637,36 +639,37 @@ class Filesystem implements \Mini\Contracts\Filesystem\Filesystem
     }
 
     /**
-     * Get all of the directories within a given directory.
-     *
-     * @param $directory
+     * @param string $directory
      * @return Finder
      */
-    public function directories(string $directory): Finder
+    public function directoriesAsIterator(string $directory = ''): Finder
     {
         return Finder::create()->in($directory)->directories()->depth(0)->sortByName();
     }
 
     /**
-     * Get all of the directories within a given directory (recursive).
+     * Get all of the directories within a given directory.
      *
      * @param string $directory
-     * @return Finder
+     * @param bool $recursive
+     * @return array
      */
-    public function allDirectories(string $directory): Finder
+    public function directories(string $directory = '', bool $recursive = false): array
     {
-        return Finder::create()->in($directory)->directories()->sortByName();
+        return iterator_to_array(
+            $this->directoriesAsIterator($directory),
+            false
+        );
+
     }
 
     /**
-     * Get all of the directories count from the given directory (recursive).
-     *
      * @param string $directory
-     * @return int
+     * @return Finder
      */
-    public function allDirectoriesCount(string $directory): int
+    public function allDirectoriesAsIterator(string $directory = ''): Finder
     {
-        return count(Finder::create()->in($directory)->directories()->sortByName());
+        return Finder::create()->in($directory)->directories()->sortByName();
     }
 
     /**
@@ -675,11 +678,36 @@ class Filesystem implements \Mini\Contracts\Filesystem\Filesystem
      * @param string $directory
      * @return array
      */
-    public function allDirectoriesToArray(string $directory): array
+    public function allDirectories(string $directory = ''): array
+    {
+        return iterator_to_array(
+            $this->allDirectoriesAsIterator($directory),
+            false
+        );
+    }
+
+    /**
+     * Get all of the directories count from the given directory (recursive).
+     *
+     * @param string $directory
+     * @return int
+     */
+    public function allDirectoriesCount(string $directory = ''): int
+    {
+        return count(Finder::create()->in($directory)->directories());
+    }
+
+    /**
+     * Get all of the directories within a given directory (recursive).
+     *
+     * @param string $directory
+     * @return array
+     */
+    public function allDirectoriesToArray(string $directory = ''): array
     {
         $directories = [];
 
-        foreach (Finder::create()->in($directory)->directories()->sortByName() as $dir) {
+        foreach ($this->allDirectoriesAsIterator($directory) as $dir) {
             $directories[] = $dir->getPathname();
         }
 
@@ -855,10 +883,14 @@ class Filesystem implements \Mini\Contracts\Filesystem\Filesystem
     /**
      * @param string $path
      * @return resource|null
+     * @throws FileNotFoundException
      */
     public function readStream(string $path)
     {
-        // TODO: Implement readStream() method.
+        $resource = fopen('php://temp', 'rb+');
+        fwrite($resource, $this->get($path));
+        fseek($resource, 0);
+        return $resource;
     }
 
     /**
@@ -869,7 +901,17 @@ class Filesystem implements \Mini\Contracts\Filesystem\Filesystem
      */
     public function writeStream(string $path, $resource, array $options = []): bool
     {
-        // TODO: Implement writeStream() method.
+        if (!is_resource($resource)) {
+            throw UnableToWriteFile::atLocation($path, 'The contents is invalid resource.');
+        }
+        while (!feof($resource)) {
+            if (false === $buffer = fread($resource, 1048576)) { // 1024 * 1024
+                throw UnableToWriteFile::atLocation($path, 'fread failed');
+            }
+            $this->put($path, $buffer);
+        }
+        fclose($resource);
+        return true;
     }
 
     /**
@@ -878,7 +920,7 @@ class Filesystem implements \Mini\Contracts\Filesystem\Filesystem
      */
     public function getVisibility(string $path): string
     {
-        // TODO: Implement getVisibility() method.
+        return static::VISIBILITY_PUBLIC;
     }
 
     /**
@@ -888,6 +930,6 @@ class Filesystem implements \Mini\Contracts\Filesystem\Filesystem
      */
     public function setVisibility(string $path, string $visibility): bool
     {
-        // TODO: Implement setVisibility() method.
+        return true;
     }
 }

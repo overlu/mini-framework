@@ -156,36 +156,37 @@ interface Filesystem
     /**
      * Get an array of all files in a directory.
      *
-     * @param string|null $directory
+     * @param string $directory
      * @param bool $recursive
      * @return array
      */
-    public function files(string $directory = null, bool $recursive = false): array;
+    public function files(string $directory = '', bool $recursive = false): array;
 
     /**
      * Get all of the files from the given directory (recursive).
      *
-     * @param string|null $directory
+     * @param string $directory
+     * @param bool $hidden
      * @return array
      */
-    public function allFiles(string $directory = null): array;
+    public function allFiles(string $directory = '', bool $hidden = false): array;
 
     /**
      * Get all of the directories within a given directory.
      *
-     * @param string|null $directory
+     * @param string $directory
      * @param bool $recursive
      * @return array
      */
-    public function directories(string $directory = null, bool $recursive = false): array;
+    public function directories(string $directory = '', bool $recursive = false): array;
 
     /**
      * Get all (recursive) of the directories within a given directory.
      *
-     * @param string|null $directory
+     * @param string $directory
      * @return array
      */
-    public function allDirectories(string $directory = null): array;
+    public function allDirectories(string $directory = ''): array;
 
     /**
      * Create a directory.

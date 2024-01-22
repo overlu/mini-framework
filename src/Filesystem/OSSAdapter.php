@@ -19,10 +19,9 @@ class OSSAdapter extends FilesystemAdapter
 {
 
     /**
-     * @param \League\Flysystem\FilesystemOperator $driver
+     * @param FilesystemOperator $driver
+     * @param Adapter $adapter
      * @param array $config
-     * @param OssClient $client
-     * @return void
      */
     public function __construct(FilesystemOperator $driver, Adapter $adapter, array $config)
     {

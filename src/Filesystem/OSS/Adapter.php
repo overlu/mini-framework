@@ -153,7 +153,7 @@ class Adapter implements FilesystemAdapter
      */
     public function readStream(string $path)
     {
-        $resource = fopen('php://temp', 'r+');
+        $resource = fopen('php://temp', 'rb+');
         fwrite($resource, $this->read($path));
         fseek($resource, 0);
         return $resource;

@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Filesystem;
 
-use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Service\AbstractServiceProvider;
 
 class FilesystemServiceProvider extends AbstractServiceProvider
@@ -31,9 +30,10 @@ class FilesystemServiceProvider extends AbstractServiceProvider
      */
     protected function registerNativeFilesystem(): void
     {
-        $this->app->singleton('files', function () {
+        $this->app->singleton(\Mini\Contracts\File::class, function () {
             return new Filesystem;
         });
+        $this->app->alias(\Mini\Contracts\File::class, 'files');
     }
 
     /**
@@ -61,9 +61,10 @@ class FilesystemServiceProvider extends AbstractServiceProvider
      */
     protected function registerManager(): void
     {
-        $this->app->singleton('filesystem', function ($app) {
+        $this->app->singleton(\Mini\Contracts\Storage::class, function ($app) {
             return new FilesystemManager($app);
         });
+        $this->app->alias(\Mini\Contracts\Storage::class, 'filesystem');
     }
 
     /**

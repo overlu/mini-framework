@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Filesystem;
 
 use DateTimeInterface;
+use League\Flysystem\FilesystemException;
 use Mini\Contracts\Filesystem\Cloud as CloudFilesystemContract;
 use Mini\Contracts\Filesystem\Filesystem as FilesystemContract;
 use Mini\Exception\FileNotFoundException;
@@ -488,11 +489,7 @@ class FilesystemAdapter implements CloudFilesystemContract
      */
     public function readStream(string $path)
     {
-        try {
-            return $this->driver->readStream($path);
-        } catch (UnableToReadFile $e) {
-            //
-        }
+        return $this->driver->readStream($path);
     }
 
     /**
@@ -614,11 +611,12 @@ class FilesystemAdapter implements CloudFilesystemContract
     /**
      * Get an array of all files in a directory.
      *
-     * @param string|null $directory
+     * @param string $directory
      * @param bool $recursive
      * @return array
+     * @throws FilesystemException
      */
-    public function files(string $directory = null, bool $recursive = false): array
+    public function files(string $directory = '', bool $recursive = false): array
     {
         return $this->driver->listContents($directory, $recursive)
             ->filter(function (StorageAttributes $attributes) {
@@ -633,10 +631,12 @@ class FilesystemAdapter implements CloudFilesystemContract
     /**
      * Get all of the files from the given directory (recursive).
      *
-     * @param string|null $directory
+     * @param string $directory
+     * @param bool $hidden
      * @return array
+     * @throws FilesystemException
      */
-    public function allFiles(string $directory = null): array
+    public function allFiles(string $directory = '', bool $hidden = false): array
     {
         return $this->files($directory, true);
     }
@@ -644,11 +644,12 @@ class FilesystemAdapter implements CloudFilesystemContract
     /**
      * Get all of the directories within a given directory.
      *
-     * @param string|null $directory
+     * @param string $directory
      * @param bool $recursive
      * @return array
+     * @throws FilesystemException
      */
-    public function directories(string $directory = null, bool $recursive = false): array
+    public function directories(string $directory = '', bool $recursive = false): array
     {
         return $this->driver->listContents($directory, $recursive)
             ->filter(function (StorageAttributes $attributes) {
@@ -663,10 +664,10 @@ class FilesystemAdapter implements CloudFilesystemContract
     /**
      * Get all (recursive) of the directories within a given directory.
      *
-     * @param string|null $directory
+     * @param string $directory
      * @return array
      */
-    public function allDirectories(string $directory = null): array
+    public function allDirectories(string $directory = ''): array
     {
         return $this->directories($directory, true);
     }
@@ -743,7 +744,7 @@ class FilesystemAdapter implements CloudFilesystemContract
      *
      * @throws \InvalidArgumentException
      */
-    protected function parseVisibility(?string $visibility): ?string
+    protected function parseVisibility(?string $visibility = null): ?string
     {
         if (is_null($visibility)) {
             return null;

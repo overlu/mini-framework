@@ -10,8 +10,7 @@ namespace Mini\Filesystem;
 use Aws\S3\S3Client;
 use Closure;
 use Mini\Container\Container;
-use Mini\Contracts\Filesystem\Factory as FactoryContract;
-use Mini\Contracts\Foundation\Application;
+use Mini\Contracts\Storage as FactoryContract;
 use Mini\Filesystem\OSS\Adapter as OSSAdapter;
 use Mini\Filesystem\OSS\Plugins\Kernel;
 use Mini\Filesystem\OSS\Plugins\SetBucket;
@@ -61,8 +60,7 @@ class FilesystemManager implements FactoryContract
     /**
      * Create a new filesystem manager instance.
      *
-     * @param Application $app
-     * @return void
+     * @param Container $app
      */
     public function __construct(Container $app)
     {
