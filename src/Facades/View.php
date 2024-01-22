@@ -8,10 +8,10 @@ declare(strict_types=1);
 namespace Mini\Facades;
 
 /**
- * @method static \Mini\Contracts\View\Factory addNamespace(string $namespace, string|array $hints)
+ * @method static \Mini\Contracts\View addNamespace(string $namespace, string|array $hints)
  * @method static \Mini\Contracts\View\View first(array $views, \Mini\Contracts\Support\Arrayable|array $data = [], array $mergeData = [])
- * @method static \Mini\Contracts\View\Factory replaceNamespace(string $namespace, string|array $hints)
- * @method static \Mini\Contracts\View\Factory addExtension(string $extension, string $engine, \Closure|null $resolver = null)
+ * @method static \Mini\Contracts\View replaceNamespace(string $namespace, string|array $hints)
+ * @method static \Mini\Contracts\View addExtension(string $extension, string $engine, \Closure|null $resolver = null)
  * @method static \Mini\Contracts\View\View file(string $path, array $data = [], array $mergeData = [])
  * @method static \Mini\Contracts\View\View make(string $view, array $data = [], array $mergeData = [])
  * @method static array composer(array|string $views, \Closure|string $callback)

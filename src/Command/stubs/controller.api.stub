@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace App\Controllers\Http;
 
-use Mini\Contracts\HttpMessage\RequestInterface;
+use Mini\Contracts\Request;
 
 class {{ class }} extends Controller
 {
@@ -21,9 +21,9 @@ class {{ class }} extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * @param RequestInterface $request
+     * @param Request $request
      */
-    public function store(RequestInterface $request)
+    public function store(Request $request)
     {
         //
     }
@@ -38,10 +38,10 @@ class {{ class }} extends Controller
     }
 
     /**
-     * @param RequestInterface $request
+     * @param Request $request
      * @param $id
      */
-    public function update(RequestInterface $request, $id)
+    public function update(Request $request, $id)
     {
         //
     }

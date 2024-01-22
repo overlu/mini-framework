@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Validator;
 
 use Mini\Container\EntryNotFoundException;
+use Mini\Contracts\Validator;
 use Mini\Exception\MissingRequiredParameterException;
 use Mini\Exception\RuleNotFoundException;
 use Mini\Exception\RuleQuashException;
@@ -15,7 +16,7 @@ use Mini\Support\Traits\AliasesTrait;
 use Mini\Support\Traits\MessagesTrait;
 use Mini\Support\Traits\TranslationsTrait;
 
-class Factory
+class Factory implements Validator
 {
     use TranslationsTrait, MessagesTrait, AliasesTrait;
 

@@ -5,11 +5,11 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Contracts\HttpMessage;
+namespace Mini\Contracts;
 
 use RuntimeException;
 
-interface SessionInterface
+interface Session
 {
     /**
      * Starts the session storage.

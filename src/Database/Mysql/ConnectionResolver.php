@@ -14,14 +14,14 @@ class ConnectionResolver implements ConnectionResolverInterface
      *
      * @var array
      */
-    protected $connections = [];
+    protected array $connections = [];
 
     /**
      * The default connection name.
      *
      * @var string
      */
-    protected $default;
+    protected string $default = '';
 
     /**
      * Create a new connection resolver instance.
@@ -40,9 +40,9 @@ class ConnectionResolver implements ConnectionResolverInterface
      * Get a database connection instance.
      *
      * @param string|null $name
-     * @return \Mini\Database\Mysql\ConnectionInterface
+     * @return ConnectionInterface
      */
-    public function connection($name = null)
+    public function connection(string $name = null): ConnectionInterface
     {
         if (is_null($name)) {
             $name = $this->getDefaultConnection();
@@ -55,10 +55,10 @@ class ConnectionResolver implements ConnectionResolverInterface
      * Add a connection to the resolver.
      *
      * @param string $name
-     * @param \Mini\Database\Mysql\ConnectionInterface $connection
+     * @param ConnectionInterface $connection
      * @return void
      */
-    public function addConnection($name, ConnectionInterface $connection)
+    public function addConnection(string $name, ConnectionInterface $connection): void
     {
         $this->connections[$name] = $connection;
     }
@@ -69,7 +69,7 @@ class ConnectionResolver implements ConnectionResolverInterface
      * @param string $name
      * @return bool
      */
-    public function hasConnection($name)
+    public function hasConnection(string $name): bool
     {
         return isset($this->connections[$name]);
     }
@@ -79,7 +79,7 @@ class ConnectionResolver implements ConnectionResolverInterface
      *
      * @return string
      */
-    public function getDefaultConnection()
+    public function getDefaultConnection(): string
     {
         return $this->default;
     }
@@ -90,7 +90,7 @@ class ConnectionResolver implements ConnectionResolverInterface
      * @param string $name
      * @return void
      */
-    public function setDefaultConnection($name)
+    public function setDefaultConnection(string $name): void
     {
         $this->default = $name;
     }

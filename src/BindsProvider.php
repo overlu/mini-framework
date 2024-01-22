@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace Mini;
 
-use Mini\Contracts\HttpMessage\RequestInterface;
-use Mini\Contracts\HttpMessage\ResponseInterface;
+use Mini\Contracts\Request as RequestInterface;
+use Mini\Contracts\Response as ResponseInterface;
 use Mini\Service\HttpServer\Request;
 use Mini\Service\HttpServer\Response;
 

@@ -5,12 +5,12 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Contracts\HttpMessage;
+namespace Mini\Contracts;
 
 use Mini\Service\HttpMessage\Upload\UploadedFile;
 use Psr\Http\Message\ServerRequestInterface;
 
-interface RequestInterface extends ServerRequestInterface
+interface Request extends ServerRequestInterface
 {
     /**
      * Retrieve all input data from request, include query parameters, parsed body and json body.

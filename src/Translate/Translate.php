@@ -11,7 +11,7 @@ use Mini\Support\Arr;
 use Symfony\Component\Translation\Loader\ArrayLoader;
 use Symfony\Component\Translation\Translator;
 
-class Translate
+class Translate implements \Mini\Contracts\Translate
 {
     protected array $translation = [];
     protected string $locate = 'en';

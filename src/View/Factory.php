@@ -10,7 +10,7 @@ namespace Mini\View;
 use Mini\Contracts\Container\Container;
 use Mini\Contracts\Events\Dispatcher;
 use Mini\Contracts\Support\Arrayable;
-use Mini\Contracts\View\Factory as FactoryContract;
+use Mini\Contracts\View as FactoryContract;
 use Mini\Support\Arr;
 use Mini\Support\Str;
 use Mini\Support\Traits\Macroable;

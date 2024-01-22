@@ -8,8 +8,8 @@ declare(strict_types=1);
 namespace Mini\Session;
 
 use Exception;
-use Mini\Contracts\HttpMessage\SessionInterface;
 use Mini\Contracts\Middleware\MiddlewareInterface;
+use Mini\Contracts\Session;
 use Mini\Service\HttpMessage\Cookie\Cookie;
 use Psr\Http\Message\ResponseInterface;
 
@@ -21,9 +21,9 @@ class SessionMiddleware implements MiddlewareInterface
     private SessionManager $sessionManager;
 
     /**
-     * @var SessionInterface
+     * @var Session
      */
-    private SessionInterface $session;
+    private Session $session;
 
     public function __construct()
     {

@@ -9,6 +9,8 @@ namespace Mini\Contracts\HttpMessage;
 
 use Countable;
 use IteratorAggregate;
+use Mini\Contracts\Request;
+use Mini\Contracts\Response;
 use Mini\Service\HttpMessage\Cookie\SetCookie;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -31,17 +33,17 @@ interface CookieJarInterface extends Countable, IteratorAggregate
      * If no matching cookies are found in the cookie jar, then no Cookie
      * header is added to the request and the same request is returned.
      *
-     * @param RequestInterface $request request object to modify
+     * @param Request as RequestInterface $request request object to modify
      *
-     * @return RequestInterface returns the modified request
+     * @return Request as RequestInterface returns the modified request
      */
     public function withCookieHeader(RequestInterface $request): RequestInterface;
 
     /**
      * Extract cookies from an HTTP response and store them in the CookieJar.
      *
-     * @param RequestInterface $request Request that was sent
-     * @param ResponseInterface $response Response that was received
+     * @param Request $request Request that was sent
+     * @param Response $response Response that was received
      */
     public function extractCookies(
         RequestInterface  $request,

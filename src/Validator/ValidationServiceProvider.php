@@ -17,12 +17,9 @@ class ValidationServiceProvider extends AbstractServiceProvider
     {
     }
 
-    /**
-     * @throws BindingResolutionException|ReflectionException
-     */
     public function boot(): void
     {
-        $this->app->alias(Factory::class, 'validator');
         $this->app->singleton(Factory::class, Factory::class);
+        $this->app->alias(Factory::class, 'validator');
     }
 }

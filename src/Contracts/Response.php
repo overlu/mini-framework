@@ -5,21 +5,20 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Contracts\HttpMessage;
+namespace Mini\Contracts;
 
-use Mini\Service\HttpMessage\Cookie\Cookie;
 use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\Support\Jsonable;
 use Mini\Contracts\Support\Xmlable;
-use Mini\Service\HttpServer\Response;
+use Mini\Service\HttpMessage\Cookie\Cookie;
+use Mini\Service\HttpServer\Response as Resp;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 
 /**
- * Interface ResponseInterface
  * @package Mini\Contracts\HttpMessage
- * @mixin Response | \Mini\Service\HttpMessage\Server\Response
+ * @mixin Resp | \Mini\Service\HttpMessage\Server\Response
  */
-interface ResponseInterface
+interface Response
 {
     /**
      * Format data to JSON and return data with Content-Type:application/json header.

@@ -7,12 +7,13 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mini;
 
+use Mini\Contracts\MiniDB;
 use PDO;
 use Swoole\Coroutine;
 use Swoole\Database\PDOProxy;
 use Throwable;
 
-class DB
+class DB implements MiniDB
 {
     protected PDOProxy $connection;
 

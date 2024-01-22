@@ -30,21 +30,20 @@ class ViewServiceProvider extends AbstractServiceProvider
      * Register the view environment.
      *
      * @return void
-     * @throws BindingResolutionException|\ReflectionException
      */
     public function registerFactory(): void
     {
-        $this->app->singleton('view', function ($app) {
+        $this->app->singleton(\Mini\Contracts\View::class, function ($app) {
             $factory = new Factory($app['view.engine.resolver'], $app['view.finder'], $app['events']);
             $factory->setContainer($app);
             $factory->share('app', $app);
             return $factory;
         });
+        $this->app->alias(\Mini\Contracts\View::class, 'view');
     }
 
     /**
      * Register the view finder implementation.
-     * @throws BindingResolutionException
      */
     public function registerViewFinder(): void
     {

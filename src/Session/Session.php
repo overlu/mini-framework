@@ -9,8 +9,8 @@ namespace Mini\Session;
 
 use Closure;
 use Exception;
-use Mini\Contracts\HttpMessage\SessionInterface;
 use Mini\Contracts\Session\ExistenceAwareInterface;
+use Mini\Contracts\Session as SessionInterface;
 use Mini\Support\Arr;
 use Mini\Support\Str;
 use SessionHandlerInterface;

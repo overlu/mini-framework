@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Hashing;
 
-use Mini\Contracts\Hashing\Hasher;
+use Mini\Contracts\Hasher;
 use Mini\Support\Manager;
 
 /**

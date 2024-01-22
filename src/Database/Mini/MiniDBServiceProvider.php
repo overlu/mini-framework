@@ -7,27 +7,22 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mini;
 
-use Mini\Contracts\Container\BindingResolutionException;
+use Mini\Contracts\MiniDB;
 use Mini\Service\AbstractServiceProvider;
-use ReflectionException;
 
 class MiniDBServiceProvider extends AbstractServiceProvider
 {
-    /**
-     * @throws BindingResolutionException|ReflectionException
-     */
     public function register(): void
     {
         $this->app->singleton('db.mini.pool', function () {
             return new Pool();
         });
-        $this->app->singleton('db.mini', function () {
+        $this->app->singleton(MiniDB::class, function () {
             return new DB();
         });
+        $this->app->alias(MiniDB::class, 'db.mini');
     }
 
-    /**
-     */
     public function boot(): void
     {
     }

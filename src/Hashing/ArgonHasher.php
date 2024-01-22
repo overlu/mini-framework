@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Hashing;
 
-use Mini\Contracts\Hashing\Hasher as HasherContract;
+use Mini\Contracts\Hasher as HasherContract;
 use RuntimeException;
 
 /**

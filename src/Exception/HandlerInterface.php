@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\Exception;
 
-use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Contracts\HttpMessage\WebsocketRequestInterface;
+use Mini\Contracts\Request as RequestInterface;
 use Throwable;
 
 /**

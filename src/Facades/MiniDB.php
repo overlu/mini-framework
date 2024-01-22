@@ -12,9 +12,9 @@ use Mini\Database\Mini\DB;
 /**
  * Class MiniDB
  * @method static DB connection(string $name = null)
- * @method static mixed query($query, array $params = [], $mode = PDO::FETCH_ASSOC)
+ * @method static mixed query($query, array $params = [], $mode = \PDO::FETCH_ASSOC)
  * @method static array|null column($query, $params = [])
- * @method static mixed row($query, array $params = [], $mod = PDO::FETCH_ASSOC)
+ * @method static mixed row($query, array $params = [], $mod = \PDO::FETCH_ASSOC)
  * @method static mixed single($query, array $params = [])
  * @package Mini\Facades
  */

@@ -7,9 +7,9 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql;
 
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Types\Type;
 use Mini\Context;
-use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\Queue\EntityResolver;
 use Mini\Database\Mysql\Connectors\ConnectionFactory;
 use Mini\Database\Mysql\Eloquent\Model;
@@ -18,12 +18,12 @@ use Mini\Database\Mysql\Events\QueryExecuted;
 use Mini\Facades\Console;
 use Mini\Facades\Logger;
 use Mini\Service\AbstractServiceProvider;
-use ReflectionException;
 
 class EloquentServiceProvider extends AbstractServiceProvider
 {
     /**
-     * @throws BindingResolutionException
+     * @return void
+     * @throws Exception
      */
     public function register(): void
     {
@@ -38,7 +38,6 @@ class EloquentServiceProvider extends AbstractServiceProvider
      * Register the primary database bindings.
      *
      * @return void
-     * @throws BindingResolutionException|ReflectionException
      */
     protected function registerConnectionServices(): void
     {
@@ -46,9 +45,10 @@ class EloquentServiceProvider extends AbstractServiceProvider
             return new ConnectionFactory($app);
         });
 
-        $this->app->singleton('db', function ($app) {
+        $this->app->singleton(\Mini\Contracts\DB::class, function ($app) {
             return new DatabaseManager($app, $app['db.factory'], config('database.connections', []));
         });
+        $this->app->alias(\Mini\Contracts\DB::class, 'db');
 
         $this->app->bind('db.connection', function ($app) {
             return $app['db']->connection();
@@ -60,7 +60,6 @@ class EloquentServiceProvider extends AbstractServiceProvider
      * Register the queueable entity resolver implementation.
      *
      * @return void
-     * @throws BindingResolutionException|ReflectionException
      */
     protected function registerQueueableEntityResolver(): void
     {
@@ -73,6 +72,7 @@ class EloquentServiceProvider extends AbstractServiceProvider
      * Register custom types with the Doctrine DBAL library.
      *
      * @return void
+     * @throws Exception
      */
     protected function registerDoctrineTypes(): void
     {
@@ -129,7 +129,6 @@ class EloquentServiceProvider extends AbstractServiceProvider
             if (RUN_ENV === 'artisan') {
                 Logger::debug(sprintf('[%s] [%s] %s | %s: %s', $query->connection->getDatabaseName(), $duration, $realSql,
                     'artisan', Console::getCommand()), [], 'query');
-                return;
             }
         });
     }

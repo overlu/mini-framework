@@ -8,8 +8,8 @@ declare(strict_types=1);
 namespace Mini\View\Middleware;
 
 use Closure;
-use Mini\Contracts\HttpMessage\RequestInterface;
-use Mini\Contracts\View\Factory as ViewFactory;
+use Mini\Contracts\Request as RequestInterface;
+use Mini\Contracts\View as ViewFactory;
 use Mini\Service\HttpServer\Request;
 use Mini\Support\ViewErrorBag;
 

@@ -9,7 +9,7 @@ namespace Mini\Session;
 
 use Exception;
 use Mini\Context;
-use Mini\Contracts\HttpMessage\SessionInterface;
+use Mini\Contracts\Session;
 use Mini\Support\Str;
 use RuntimeException;
 
@@ -40,14 +40,14 @@ class SessionManager
         }
     }
 
-    public function getSession(): ?SessionInterface
+    public function getSession(): ?Session
     {
-        return Context::get(SessionInterface::class);
+        return Context::get(Session::class);
     }
 
-    public function setSession(SessionInterface $session): void
+    public function setSession(Session $session): void
     {
-        Context::set(SessionInterface::class, $session);
+        Context::set(Session::class, $session);
     }
 
     /**

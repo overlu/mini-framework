@@ -17,7 +17,7 @@ class TranslateServiceProvider extends AbstractServiceProvider
 
     public function boot(): void
     {
-        $this->app->alias(Translate::class, 'translate');
-        $this->app->singleton(Translate::class, Translate::class);
+        $this->app->singleton(\Mini\Contracts\Translate::class, Translate::class);
+        $this->app->alias(\Mini\Contracts\Translate::class, 'translate');
     }
 }

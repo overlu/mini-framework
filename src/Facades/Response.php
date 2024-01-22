@@ -69,6 +69,6 @@ class Response extends Facade
         if (!Context::has('IsInRequestEvent')) {
             throw new \RuntimeException("Not In Request Environment.");
         }
-        return \Mini\Contracts\HttpMessage\ResponseInterface::class;
+        return \Mini\Contracts\Response::class;
     }
 }

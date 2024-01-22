@@ -10,7 +10,7 @@ namespace Mini\Pagination;
 use ArrayIterator;
 use Closure;
 use Mini\Contracts\Support\Htmlable;
-use Mini\Contracts\View\Factory;
+use Mini\Contracts\View as Factory;
 use Mini\Support\Arr;
 use Mini\Support\Collection;
 use Mini\Support\Str;

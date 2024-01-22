@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Mini\Contracts\Hashing;
+namespace Mini\Contracts;
 
 interface Hasher
 {

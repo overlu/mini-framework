@@ -7,22 +7,22 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql;
 
-interface ConnectionResolverInterface
+interface ConnectionResolverInterface extends \Mini\Contracts\DB
 {
     /**
      * Get a database connection instance.
      *
      * @param string|null $name
-     * @return \Mini\Database\Mysql\ConnectionInterface
+     * @return ConnectionInterface
      */
-    public function connection($name = null);
+    public function connection(string $name = null): ConnectionInterface;
 
     /**
      * Get the default connection name.
      *
      * @return string
      */
-    public function getDefaultConnection();
+    public function getDefaultConnection(): string;
 
     /**
      * Set the default connection name.
@@ -30,5 +30,5 @@ interface ConnectionResolverInterface
      * @param string $name
      * @return void
      */
-    public function setDefaultConnection($name);
+    public function setDefaultConnection(string $name): void;
 }

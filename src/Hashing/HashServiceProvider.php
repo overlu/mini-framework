@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Hashing;
 
 use Mini\Contracts\Container\BindingResolutionException;
+use Mini\Contracts\Hasher;
 use Mini\Service\AbstractServiceProvider;
 use ReflectionException;
 
@@ -21,10 +22,10 @@ class HashServiceProvider extends AbstractServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton('hash', function () {
+        $this->app->singleton(Hasher::class, function () {
             return new HashManager($this->app);
         });
-
+        $this->app->alias(Hasher::class, 'hash');
         $this->app->singleton('hash.driver', function () {
             return $this->app['hash']->driver();
         });

@@ -9,19 +9,19 @@ namespace Mini\Service\Server;
 
 use Mini\BindsProvider;
 use Mini\Context;
-use Mini\Contracts\Support\Htmlable;
-use Mini\Contracts\Support\Sendable;
-use Mini\Contracts\HttpMessage\RequestInterface;
-use Mini\Contracts\HttpMessage\ResponseInterface;
-use Mini\Service\HttpMessage\Stream\SwooleStream;
+use Mini\Contracts\Request as RequestInterface;
+use Mini\Contracts\Response as ResponseInterface;
 use Mini\Contracts\Support\Arrayable;
+use Mini\Contracts\Support\Htmlable;
 use Mini\Contracts\Support\Jsonable;
+use Mini\Contracts\Support\Sendable;
+use Mini\Service\HttpMessage\Server\Request as Psr7Request;
+use Mini\Service\HttpMessage\Server\Response as Psr7Response;
+use Mini\Service\HttpMessage\Stream\SwooleStream;
 use Mini\Service\Route\Route;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Http\Server;
-use Mini\Service\HttpMessage\Server\Request as Psr7Request;
-use Mini\Service\HttpMessage\Server\Response as Psr7Response;
 use Throwable;
 
 class HttpServer extends AbstractServer

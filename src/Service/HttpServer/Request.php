@@ -7,11 +7,11 @@ declare(strict_types=1);
 
 namespace Mini\Service\HttpServer;
 
+use Mini\Context;
+use Mini\Contracts\Request as RequestInterface;
 use Mini\Service\HttpMessage\Upload\UploadedFile;
-use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Session\Session;
 use Mini\Support\Arr;
-use Mini\Context;
 use Mini\Support\Str;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;

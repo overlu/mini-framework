@@ -9,7 +9,7 @@ namespace Mini\View\Compilers;
 
 use Mini\Container\Container;
 use Mini\Contracts\Foundation\Application;
-use Mini\Contracts\View\Factory;
+use Mini\Contracts\View as Factory;
 use Mini\Filesystem\Filesystem;
 use Mini\Support\Collection;
 use Mini\Support\Str;

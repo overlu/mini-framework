@@ -13,7 +13,7 @@ use RuntimeException;
 use Swoole\Database\RedisConfig;
 use Swoole\Database\RedisPool;
 
-class Redis
+class Redis implements \Mini\Contracts\Redis
 {
     /**
      * @var RedisPool[]
@@ -86,7 +86,7 @@ class Redis
      * @param mixed $connection
      * @return void
      */
-    protected function setConnectionToContext(string $name, $connection): void
+    protected function setConnectionToContext(string $name, mixed $connection): void
     {
         $key = $this->getConnectionKeyInContext($name);
         Context::set($key, $connection);
@@ -94,9 +94,9 @@ class Redis
 
     /**
      * @param string $key
-     * @param null $connection
+     * @param mixed $connection
      */
-    public function close(string $key = 'default', $connection = null): void
+    public function close(string $key = 'default', mixed $connection = null): void
     {
         if (!empty($this->pools[$key])) {
             $this->pools[$key]->put($connection);

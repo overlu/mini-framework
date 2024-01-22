@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Session;
 
-use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Service\AbstractServiceProvider;
 use Mini\Session\Drivers\FileSessionDriver;
 use Mini\Session\Drivers\NullSessionHandler;
@@ -34,14 +33,12 @@ class SessionServiceProvider extends AbstractServiceProvider
         //
     }
 
-    /**
-     * @throws BindingResolutionException|\ReflectionException
-     */
     protected function registerSession(): void
     {
-        $this->app->singleton('session', function () {
+        $this->app->singleton(\Mini\Contracts\Session::class, function () {
             return new Session($this->getSessionName(), $this->buildSessionHandler());
         });
+        $this->app->alias(\Mini\Contracts\Session::class, 'session');
         $this->app->singleton('session.manager', function () {
             return new SessionManager();
         });
@@ -69,9 +66,6 @@ class SessionServiceProvider extends AbstractServiceProvider
         return config('session.session_name', 'MINI_SESSION_ID');
     }
 
-    /**
-     * @throws BindingResolutionException|\ReflectionException
-     */
     public function boot(): void
     {
         $this->registerSession();

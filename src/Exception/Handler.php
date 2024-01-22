@@ -9,8 +9,8 @@ namespace Mini\Exception;
 
 use Exception;
 use Mini\Context;
-use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Contracts\HttpMessage\WebsocketRequestInterface;
+use Mini\Contracts\Request as RequestInterface;
 use Mini\Logging\Logger;
 use Mini\Singleton;
 use Mini\Support\Command;

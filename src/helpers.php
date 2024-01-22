@@ -8,9 +8,9 @@ declare(strict_types=1);
 use Mini\Config\Config;
 use Mini\Container\Container;
 use Mini\Context;
-use Mini\Contracts\HttpMessage\RequestInterface;
 use Mini\Contracts\HttpMessage\WebsocketRequestInterface;
 use Mini\Contracts\HttpMessage\WebsocketResponseInterface;
+use Mini\Contracts\Request as RequestInterface;
 use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\Support\Htmlable;
 use Mini\Contracts\Support\Jsonable;
@@ -614,7 +614,7 @@ if (!function_exists('response')) {
         if (!Context::has('IsInRequestEvent')) {
             throw new RuntimeException("Not In Request Environment.");
         }
-        return app(\Mini\Contracts\HttpMessage\ResponseInterface::class);
+        return app(\Mini\Contracts\Response::class);
     }
 }
 
