@@ -27,7 +27,7 @@ class Application
      * version
      * @var string
      */
-    public const VERSION = '3.1.2';
+    public const VERSION = '3.1.5';
 
     /**
      * @var array|string[]

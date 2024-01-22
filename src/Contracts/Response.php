@@ -65,7 +65,7 @@ interface Response
     /**
      * Override a response with a cookie.
      * @param Cookie $cookie
-     * @return ResponseInterface
+     * @return PsrResponseInterface
      */
-    public function withCookie(Cookie $cookie): ResponseInterface;
+    public function withCookie(Cookie $cookie): PsrResponseInterface;
 }

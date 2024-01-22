@@ -154,6 +154,8 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
      * @param string $name the alias name of the file that client receive
      * @return PsrResponseInterface
      * @throws FileException
+     * @throws InvalidResponseException
+     * @throws \Mini\Container\EntryNotFoundException
      */
     public function download(string $file, string $name = ''): PsrResponseInterface
     {
@@ -192,10 +194,10 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
 
     /**
      * @param Cookie $cookie
-     * @return ResponseInterface
+     * @return PsrResponseInterface
      * @throws InvalidResponseException
      */
-    public function withCookie(Cookie $cookie): ResponseInterface
+    public function withCookie(Cookie $cookie): PsrResponseInterface
     {
         return $this->call(__FUNCTION__, func_get_args());
     }

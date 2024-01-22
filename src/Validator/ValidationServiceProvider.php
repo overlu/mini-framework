@@ -7,9 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Validator;
 
-use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Service\AbstractServiceProvider;
-use ReflectionException;
 
 class ValidationServiceProvider extends AbstractServiceProvider
 {
@@ -19,7 +17,7 @@ class ValidationServiceProvider extends AbstractServiceProvider
 
     public function boot(): void
     {
-        $this->app->singleton(Factory::class, Factory::class);
-        $this->app->alias(Factory::class, 'validator');
+        $this->app->singleton(\Mini\Contracts\Validator::class, Factory::class);
+        $this->app->alias(\Mini\Contracts\Validator::class, 'validator');
     }
 }
