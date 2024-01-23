@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Service\WsServer;
 
 use Mini\Contracts\HttpMessage\WebsocketControllerInterface;
+use Mini\Contracts\HttpMessage\WebsocketRequestInterface;
 use Mini\Support\Store;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
@@ -20,11 +21,11 @@ class DCS implements WebsocketControllerInterface
 {
     /**
      * @param Server $server
-     * @param \Swoole\Http\Request $request
+     * @param WebsocketRequestInterface $request
      * @param array $routeData
      * @return void
      */
-    public function onOpen(Server $server, \Swoole\Http\Request $request, array $routeData): void
+    public function onOpen(Server $server, WebsocketRequestInterface $request, array $routeData): void
     {
         if (!$this->checkAuthCode($routeData['authcode'], $routeData['host'])) {
             ws_abort(401);

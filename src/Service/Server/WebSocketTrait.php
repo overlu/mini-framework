@@ -9,14 +9,12 @@ namespace Mini\Service\Server;
 
 use Exception;
 use Mini\Context;
-use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\HttpMessage\WebsocketRequestInterface;
 use Mini\Contracts\HttpMessage\WebsocketResponseInterface;
 use Mini\Listener;
 use Mini\Service\WsServer\Request;
 use Mini\Service\WsServer\Response;
 use Mini\Service\WsServer\User;
-use ReflectionException;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 use Throwable;
@@ -69,8 +67,6 @@ trait WebSocketTrait
     /**
      * @param \Swoole\Http\Request $request
      * @param Server $server
-     * @throws BindingResolutionException
-     * @throws ReflectionException
      */
     protected function initWsRequestAndResponse(\Swoole\Http\Request $request, Server $server): void
     {
@@ -99,7 +95,7 @@ trait WebSocketTrait
                     'data' => $resp['data'],
                     'className' => $resp['className']
                 ];
-                if ($openRes = call([$resp['class'], 'onOpen'], [$server, $request, $resp['data']])) {
+                if ($openRes = call([$resp['class'], 'onOpen'], [$server, ws_request(), $resp['data']])) {
                     ws_response()->push($openRes);
                 }
                 return;
@@ -110,7 +106,7 @@ trait WebSocketTrait
                     'onOpen',
                     [
                         'server' => $server,
-                        'request' => $request,
+                        'request' => ws_request(),
                         'routeData' => $resp['data']
                     ]
                 ])) {
@@ -146,7 +142,7 @@ trait WebSocketTrait
                 /**
                  * 解绑fd
                  */
-                $this->unbindFd($fd);
+//                $this->unbindFd($fd);
 
                 if (!empty($this->handler['className'])) {
                     call([$this->handler['callable'], 'onClose'], [$server, $fd, $this->handler['data'], $reactorId]);
