@@ -25,14 +25,14 @@ class Blueprint
      *
      * @var string
      */
-    protected $table;
+    protected $table = '';
 
     /**
      * The prefix of the table.
      *
      * @var string
      */
-    protected $prefix;
+    protected $prefix = '';
 
     /**
      * The columns that should be added to the table.
@@ -47,6 +47,13 @@ class Blueprint
      * @var \Mini\Support\Fluent[]
      */
     protected $commands = [];
+
+    /**
+     * The comment of the table.
+     *
+     * @var string
+     */
+    public $comment;
 
     /**
      * The storage engine that should be used for the table.

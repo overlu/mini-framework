@@ -75,9 +75,11 @@ class MySqlGrammar extends Grammar
         // Finally, we will append the engine configuration onto this SQL statement as
         // the final thing we do before returning this finished SQL. Once this gets
         // added the query will be ready to execute against the real connections.
-        return $this->compileCreateEngine(
+        $sql = $this->compileCreateEngine(
             $sql, $connection, $blueprint
         );
+
+        return $this->compileCreateComment($sql, $connection, $blueprint);
     }
 
     /**
@@ -142,6 +144,21 @@ class MySqlGrammar extends Grammar
             return $sql . ' engine = ' . $blueprint->engine;
         } elseif (!is_null($engine = $connection->getConfig('engine'))) {
             return $sql . ' engine = ' . $engine;
+        }
+
+        return $sql;
+    }
+
+    /**
+     * @param $sql
+     * @param Connection $connection
+     * @param Blueprint $blueprint
+     * @return array|mixed|string
+     */
+    protected function compileCreateComment($sql, Connection $connection, Blueprint $blueprint)
+    {
+        if (isset($blueprint->comment)) {
+            return $sql . " comment = '" . str_replace("'", "\'", $blueprint->comment) . "'";
         }
 
         return $sql;

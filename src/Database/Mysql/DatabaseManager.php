@@ -220,10 +220,10 @@ class DatabaseManager implements ConnectionResolverInterface
      * Prepare the database connection instance.
      *
      * @param Connection $connection
-     * @param string $type
+     * @param string|null $type
      * @return Connection
      */
-    protected function configure(Connection $connection, string $type): Connection
+    protected function configure(Connection $connection, string $type = null): Connection
     {
         $connection = $this->setPdoForType($connection, $type);
 
