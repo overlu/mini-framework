@@ -18,11 +18,11 @@ class MethodNotAllowedHttpException extends HttpException
 {
     /**
      * @param array $allow An array of allowed methods
-     * @param null $message The internal exception message
+     * @param string $message The internal exception message
      * @param Exception|null $previous The previous exception
      * @param int $code The internal exception code
      */
-    public function __construct(array $allow = [], $message = null, Exception $previous = null, $code = 0)
+    public function __construct(array $allow = [], string $message = '', Exception $previous = null, $code = 0)
     {
         parent::__construct($message, 405, empty($allow) ? [] : ['Allow' => strtoupper(implode(', ', $allow))], $code, $previous);
     }

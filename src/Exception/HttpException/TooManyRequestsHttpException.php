@@ -18,11 +18,11 @@ class TooManyRequestsHttpException extends HttpException
 {
     /**
      * @param null $retryAfter The number of seconds or HTTP-date after which the request may be retried
-     * @param null $message The internal exception message
+     * @param string $message The internal exception message
      * @param Exception|null $previous The previous exception
      * @param int $code The internal exception code
      */
-    public function __construct($retryAfter = null, $message = null, Exception $previous = null, $code = 0)
+    public function __construct($retryAfter = null, string $message = '', Exception $previous = null, $code = 0)
     {
         parent::__construct($message, 429, $retryAfter ? ['Retry-After' => $retryAfter] : [], $code, $previous);
     }

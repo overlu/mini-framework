@@ -14,6 +14,7 @@ use Mini\Contracts\Request as RequestInterface;
 use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\Support\Htmlable;
 use Mini\Contracts\Support\Jsonable;
+use Mini\Contracts\View\View;
 use Mini\Events\Dispatcher;
 use Mini\Exception\WebsocketException;
 use Mini\Server;
@@ -44,7 +45,7 @@ if (!function_exists('value')) {
      * @param mixed $value
      * @return mixed
      */
-    function value($value)
+    function value(mixed $value): mixed
     {
         return $value instanceof Closure ? $value() : $value;
     }
@@ -56,7 +57,7 @@ if (!function_exists('app')) {
      * @param array $parameters
      * @return mixed|Container
      */
-    function app(?string $abstract = null, array $parameters = [])
+    function app(?string $abstract = null, array $parameters = []): mixed
     {
         if (is_null($abstract)) {
             return Container::getInstance();
@@ -76,7 +77,7 @@ if (!function_exists('retry')) {
      * @return mixed
      * @throws Exception
      */
-    function retry(int $times, callable $callback, int $sleep = 0, ?callable $when = null)
+    function retry(int $times, callable $callback, int $sleep = 0, ?callable $when = null): mixed
     {
         $attempts = 0;
 
@@ -105,7 +106,7 @@ if (!function_exists('with')) {
      * @param callable|null $callback
      * @return mixed
      */
-    function with($value, callable $callback = null)
+    function with(mixed $value, callable $callback = null): mixed
     {
         return is_null($callback) ? $value : $callback($value);
     }
@@ -114,10 +115,10 @@ if (!function_exists('with')) {
 if (!function_exists('collect')) {
     /**
      * Create a collection from the given value.
-     * @param null|mixed $value
+     * @param mixed|null $value
      * @return Collection
      */
-    function collect($value = null): Collection
+    function collect(mixed $value = null): Collection
     {
         return new Collection($value);
     }
@@ -131,7 +132,7 @@ if (!function_exists('data_fill')) {
      * @param mixed $value
      * @return array|object
      */
-    function data_fill(&$target, $key, $value)
+    function data_fill(mixed &$target, mixed $key, mixed $value): object|array
     {
         return data_set($target, $key, $value, false);
     }
@@ -141,11 +142,11 @@ if (!function_exists('data_get')) {
     /**
      * Get an item from an array or object using "dot" notation.
      * @param array|int|string $key
-     * @param null|mixed $default
+     * @param mixed|null $default
      * @param mixed $target
      * @return array|null|mixed
      */
-    function data_get($target, $key, $default = null)
+    function data_get(mixed $target, mixed $key, mixed $default = null): mixed
     {
         if (is_null($key)) {
             return $target;
@@ -185,7 +186,7 @@ if (!function_exists('data_set')) {
      * @param mixed $value
      * @return array|object
      */
-    function data_set(&$target, $key, $value, bool $overwrite = true)
+    function data_set(mixed &$target, mixed $key, mixed $value, bool $overwrite = true): object|array
     {
         $segments = is_array($key) ? $key : explode('.', $key);
         if (($segment = array_shift($segments)) === '*') {
@@ -237,7 +238,7 @@ if (!function_exists('head')) {
      * @param array $array
      * @return mixed
      */
-    function head(array $array)
+    function head(array $array): mixed
     {
         return reset($array);
     }
@@ -249,7 +250,7 @@ if (!function_exists('last')) {
      * @param array $array
      * @return mixed
      */
-    function last(array $array)
+    function last(array $array): mixed
     {
         return end($array);
     }
@@ -262,7 +263,7 @@ if (!function_exists('tap')) {
      * @param callable|null $callback
      * @return mixed|HigherOrderTapProxy
      */
-    function tap($value, ?callable $callback = null)
+    function tap(mixed $value, ?callable $callback = null): mixed
     {
         if (is_null($callback)) {
             return new HigherOrderTapProxy($value);
@@ -279,7 +280,7 @@ if (!function_exists('call')) {
      * @param array $args
      * @return null|mixed
      */
-    function call($callback, array $args = [])
+    function call(mixed $callback, array $args = []): mixed
     {
         if ($callback instanceof \Closure) {
             $result = $callback(...$args);
@@ -303,7 +304,7 @@ if (!function_exists('go')) {
     function go(callable $callable): int
     {
         $id = Coroutine::create($callable);
-        return $id > 0 ? $id : 0;
+        return max($id, 0);
     }
 }
 
@@ -315,7 +316,7 @@ if (!function_exists('co')) {
     function co(callable $callable): int
     {
         $id = Coroutine::create($callable);
-        return $id > 0 ? $id : 0;
+        return max($id, 0);
     }
 }
 
@@ -335,7 +336,7 @@ if (!function_exists('class_basename')) {
      * @param object|string $class
      * @return string
      */
-    function class_basename($class): string
+    function class_basename(object|string $class): string
     {
         $class = is_object($class) ? get_class($class) : $class;
 
@@ -346,10 +347,10 @@ if (!function_exists('class_basename')) {
 if (!function_exists('trait_uses_recursive')) {
     /**
      * Returns all traits used by a trait and its traits.
-     * @param string|object $trait
+     * @param object|string $trait
      * @return array
      */
-    function trait_uses_recursive($trait): array
+    function trait_uses_recursive(object|string $trait): array
     {
         $traits = class_uses($trait);
 
@@ -367,7 +368,7 @@ if (!function_exists('class_uses_recursive')) {
      * @param object|string $class
      * @return array
      */
-    function class_uses_recursive($class): array
+    function class_uses_recursive(object|string $class): array
     {
         if (is_object($class)) {
             $class = get_class($class);
@@ -428,7 +429,7 @@ if (!function_exists('make')) {
      * @param array $parameters
      * @return mixed
      */
-    function make(string $name, array $parameters = [])
+    function make(string $name, array $parameters = []): mixed
     {
         if (ApplicationContext::hasContainer()) {
             $container = ApplicationContext::getContainer();
@@ -467,7 +468,7 @@ if (!function_exists('getInstance')) {
      * @param $class
      * @return mixed
      */
-    function getInstance($class)
+    function getInstance($class): mixed
     {
         return ($class)::getInstance();
     }
@@ -501,10 +502,10 @@ if (!function_exists('config')) {
      * 如果key为数组，则为设置配置数据
      *
      * @param array|string $key
-     * @param mixed $default
+     * @param mixed|null $default
      * @return mixed|void
      */
-    function config($key, $default = null)
+    function config(array|string $key, mixed $default = null)
     {
         $config = app()->has('config') ? app('config') : Config::getInstance();
         if (is_array($key)) {
@@ -520,9 +521,9 @@ if (!function_exists('redis')) {
     /**
      * 获取redis实例
      * @param string $connection
-     * @return \Redis
+     * @return Redis
      */
-    function redis(string $connection = 'default')
+    function redis(string $connection = 'default'): Redis
     {
         return app('redis')->getConnection($connection);
     }
@@ -531,7 +532,7 @@ if (!function_exists('redis')) {
 if (!function_exists('server')) {
     /**
      * 获取server
-     * @return \Swoole\Server|\Swoole\WebSocket\Server|\Swoole\Http\Server
+     * @return \Swoole\Server
      */
     function server(): \Swoole\Server
     {
@@ -595,7 +596,7 @@ if (!function_exists('ws_request')) {
      * 获取websocket request资源
      * @return Request
      */
-    function ws_request()
+    function ws_request(): Request
     {
         if (!Context::has('IsInWebsocketEvent')) {
             throw new RuntimeException("Not In Websocket Environment.");
@@ -623,7 +624,7 @@ if (!function_exists('ws_response')) {
      * 获取websocket response资源
      * @return Response
      */
-    function ws_response()
+    function ws_response(): Response
     {
         if (!Context::has('IsInWebsocketEvent')) {
             throw new RuntimeException("Not In Websocket Environment.");
@@ -640,7 +641,7 @@ if (!function_exists('url')) {
      * @param string $fragment
      * @return Uri|string
      */
-    function url(?string $path = null, array $params = [], string $fragment = '')
+    function url(?string $path = null, array $params = [], string $fragment = ''): Uri|string
     {
         if (is_null($path)) {
             return app('url');
@@ -679,10 +680,10 @@ if (!function_exists('session')) {
      * If an array is passed as the key, we will assume you want to set an array of values.
      *
      * @param array|string|null $key
-     * @param mixed $default
+     * @param mixed|null $default
      * @return mixed|Session
      */
-    function session($key = null, $default = null)
+    function session(array|string $key = null, mixed $default = null)
     {
         if (is_null($key)) {
             return app('session');
@@ -763,7 +764,7 @@ if (!function_exists('database_path')) {
      * @param string $path
      * @return string
      */
-    function database_path(string $path = '')
+    function database_path(string $path = ''): string
     {
         return BASE_PATH . DIRECTORY_SEPARATOR . 'database' . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
@@ -814,10 +815,10 @@ if (!function_exists('array_plus')) {
 if (!function_exists('abort')) {
     /**
      * @param int $code
-     * @param string|array $message
+     * @param string $message
      * @param array $headers
      */
-    function abort(int $code, $message = '', array $headers = []): void
+    function abort(int $code, string $message = '', array $headers = []): void
     {
         throw new \Mini\Exception\HttpException($message, $code, $headers);
     }
@@ -826,9 +827,9 @@ if (!function_exists('abort')) {
 if (!function_exists('ws_abort')) {
     /**
      * @param int $code
-     * @param string|array $message
+     * @param string $message
      */
-    function ws_abort(int $code, $message = ''): void
+    function ws_abort(int $code, string $message = ''): void
     {
         throw new WebsocketException($message, $code);
     }
@@ -837,11 +838,11 @@ if (!function_exists('ws_abort')) {
 if (!function_exists('e')) {
     /**
      * Escape HTML special characters in a string.
-     * @param Htmlable|string $value
+     * @param Htmlable|string|Arrayable|Jsonable $value
      * @param bool $doubleEncode
      * @return string
      */
-    function e($value, bool $doubleEncode = false): string
+    function e(mixed $value, bool $doubleEncode = false): string
     {
         if ($value instanceof Htmlable) {
             return $value->toHtml();
@@ -870,9 +871,9 @@ if (!function_exists('view')) {
      *
      * @param string|null $view
      * @param array $data
-     * @return \Mini\Contracts\View\View
+     * @return View
      */
-    function view(?string $view = null, array $data = [])
+    function view(?string $view = null, array $data = []): View
     {
         $factory = app('view');
         if (empty($view)) {
@@ -888,7 +889,7 @@ if (!function_exists('is_json')) {
      * @param $string
      * @return bool|array
      */
-    function is_json($string)
+    function is_json($string): bool|array
     {
         if (!is_string($string)) {
             return false;
@@ -954,7 +955,7 @@ if (!function_exists('redirect')) {
      * @param string $schema
      * @return ResponseInterface
      */
-    function redirect($toUrl, int $status = 302, string $schema = 'http'): ResponseInterface
+    function redirect(Uri|string $toUrl, int $status = 302, string $schema = 'http'): ResponseInterface
     {
         return response()->redirect($toUrl, $status, $schema);
     }
@@ -978,9 +979,9 @@ if (!function_exists('wait')) {
      * @param float|null $timeout
      * @return mixed
      */
-    function wait(Closure $closure, ?float $timeout = null)
+    function wait(Closure $closure, ?float $timeout = null): mixed
     {
-        return Container::getInstance()->get(Waiter::class)->wait($closure, $timeout);
+        return app()->get(Waiter::class)->wait($closure, $timeout);
     }
 }
 

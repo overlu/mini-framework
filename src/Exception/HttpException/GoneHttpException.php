@@ -17,11 +17,11 @@ use Mini\Exception\HttpException;
 class GoneHttpException extends HttpException
 {
     /**
-     * @param null $message The internal exception message
+     * @param string $message The internal exception message
      * @param Exception|null $previous The previous exception
      * @param int $code The internal exception code
      */
-    public function __construct($message = null, Exception $previous = null, $code = 0)
+    public function __construct(string $message = '', Exception $previous = null, $code = 0)
     {
         parent::__construct($message, 410, [], $code, $previous);
     }

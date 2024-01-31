@@ -25,12 +25,12 @@ class HttpException extends RuntimeException implements HttpExceptionInterface
     /**
      * HttpException constructor.
      * @param mixed $statusCode
-     * @param string|array $message
+     * @param string $message
      * @param array $headers
      * @param int|null $code
      * @param Throwable|null $previous
      */
-    public function __construct($message = '', $statusCode = 0, array $headers = [], ?int $code = 0, Throwable $previous = null)
+    public function __construct(string $message = '', $statusCode = 0, array $headers = [], ?int $code = 0, Throwable $previous = null)
     {
         $this->headers = $headers;
         $this->statusCode = app(Translate::class)->has('http_status_code.' . $statusCode) ? $statusCode : 200;
@@ -55,9 +55,9 @@ class HttpException extends RuntimeException implements HttpExceptionInterface
     }
 
     /**
-     * @return array|string
+     * @return string
      */
-    public function getResponseMessage(): array|string
+    public function getResponseMessage(): string
     {
         return $this->responseMessage;
     }
