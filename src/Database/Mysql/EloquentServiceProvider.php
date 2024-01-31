@@ -99,13 +99,11 @@ class EloquentServiceProvider extends AbstractServiceProvider
             return;
         }
 
-        $trigger = config('logging.database_query_log_trigger', false);
-
-        if (!$this->requestHasTrigger($trigger)) {
-            return;
-        }
-
         DB::listen(function (QueryExecuted $query) {
+            $trigger = config('logging.database_query_log_trigger', false);
+            if (!$this->requestHasTrigger($trigger)) {
+                return;
+            }
             if ($query->time < config('logging.slower_than', 0)) {
                 return;
             }
