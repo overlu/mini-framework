@@ -920,7 +920,7 @@ trait HasAttributes
      * @param string $value
      * @return bool
      */
-    protected function isStandardDateFormat(string $value): bool
+    protected function isStandardDateFormat(string $value)
     {
         return preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', $value);
     }
