@@ -73,10 +73,19 @@ class ErrorBag
     /**
      * Get the first value of array
      * @param string $key
+     * @param string $format
      * @return mixed
      */
-    public function first(string $key): mixed
+    public function first(string $key = '', string $format = ':message'): mixed
     {
+        if (empty($key)) {
+            foreach ($this->messages as $keyMessages) {
+                foreach ($keyMessages as $message) {
+                    return $this->formatMessage($message, $format);
+                }
+            }
+            return null;
+        }
         [$key, $ruleName] = $this->parsekey($key);
         if ($this->isWildcardKey($key)) {
             $messages = $this->filterMessagesForWildcardKey($key, $ruleName);
@@ -91,10 +100,13 @@ class ErrorBag
         }
 
         if ($ruleName) {
-            return $keyMessages[$ruleName] ?? null;
+            if (empty($keyMessages[$ruleName])) {
+                return null;
+            }
+            return $this->formatMessage($keyMessages[$ruleName], $format);
         }
 
-        return array_shift($keyMessages);
+        return $this->formatMessage(array_shift($keyMessages), $format);
     }
 
     /**
