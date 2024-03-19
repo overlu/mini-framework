@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of Mini.
+ * This file is part of ${PROJECT_NAME}.
  * @auth ${USER}
  */
 declare(strict_types=1);
