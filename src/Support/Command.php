@@ -14,6 +14,7 @@ use Mini\Console\Highlighter;
 use Mini\Console\Terminal;
 use Mini\Exception\ShellException;
 use Swoole\Coroutine\System;
+use Throwable;
 
 class Command
 {
@@ -95,13 +96,13 @@ class Command
 
     /**
      * 打印错误消息
-     * @param string|\Throwable $message
+     * @param Throwable|string $message
      */
-    public static function error($message): void
+    public static function error(Throwable|string $message): void
     {
-        if ($message instanceof \Throwable) {
+        if ($message instanceof Throwable) {
             static::out(get_class($message), 'error');
-            static::out("\033[1;37m" . $message->getMessage() . "\033[0m");
+            static::out("\033[1;37m" . $message->getMessage() . "\033[0m [\e[31;1m" . $message->getCode() . "\033[0m]");
             static::line();
             static::out("\e[0;1min\e[0m \e[33;4m" . $message->getFile() . ':' . $message->getLine() . "\033[0m");
             static::line();
