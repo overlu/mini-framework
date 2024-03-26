@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Contracts;
 
 use Mini\Service\HttpMessage\Upload\UploadedFile;
+use Mini\Validator\Validation;
 use Psr\Http\Message\ServerRequestInterface;
 
 interface Request extends ServerRequestInterface
@@ -178,4 +179,11 @@ interface Request extends ServerRequestInterface
      * @return bool
      */
     public function hasFile(string $key): bool;
+
+    /**
+     * @param array $rules
+     * @param array $messages
+     * @return Validation
+     */
+    public function validate(array $rules, array $messages = []): Validation;
 }

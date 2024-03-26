@@ -9,10 +9,12 @@ namespace Mini\Service\HttpServer;
 
 use Mini\Context;
 use Mini\Contracts\Request as RequestInterface;
+use Mini\Facades\Validator;
 use Mini\Service\HttpMessage\Upload\UploadedFile;
 use Mini\Session\Session;
 use Mini\Support\Arr;
 use Mini\Support\Str;
+use Mini\Validator\Validation;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use RuntimeException;
@@ -733,6 +735,16 @@ class Request implements RequestInterface
     public function withoutAttribute(string $name): Request
     {
         return $this->call(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * @param array $rules
+     * @param array $messages
+     * @return Validation
+     */
+    public function validate(array $rules, array $messages = []): Validation
+    {
+        return app('validator')->validate($this->all(), $rules, $messages);
     }
 
     /**

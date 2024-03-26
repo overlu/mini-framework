@@ -86,6 +86,7 @@ use Mini\Context;
  * @method static \Mini\Contracts\Request withoutAttribute($name)
  * @method static \Swoole\Http\Request getSwooleRequest()
  * @method static \Mini\Contracts\Request setSwooleRequest(\Swoole\Http\Request $swooleRequest)
+ * @method static \Mini\Validator\Validation validate(array $rules, array $messages = [])
  * @package Mini\Facades
  * @see \Mini\Service\HttpServer\Request
  */
