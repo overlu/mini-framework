@@ -742,9 +742,9 @@ class Request implements RequestInterface
      * @param array $messages
      * @return Validation
      */
-    public function validate(array $rules, array $messages = []): Validation
+    public function validate(array $rules, array $messages = [], bool $bail = true): Validation
     {
-        return app('validator')->validate($this->all(), $rules, $messages);
+        return app('validator')->validate($this->all(), $rules, $messages, $bail);
     }
 
     /**

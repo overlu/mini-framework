@@ -11,7 +11,7 @@ namespace Mini\Facades;
  * Class Validator
  * @method static void setValidator(string $key, \Mini\Validator\Rule $rule)
  * @method static \Mini\Validator\Rule getValidator(string $key)
- * @method static \Mini\Validator\Validation validate(array $inputs, array $rules, array $messages = [])
+ * @method static \Mini\Validator\Validation validate(array $inputs, array $rules, array $messages = [], bool $bail = true)
  * @method static \Mini\Validator\Validation make(array $inputs, array $rules, array $messages = [])
  * @method static void addValidator(string $ruleName, \Mini\Validator\Rule $rule)
  * @method static void allowRuleOverride(bool $status = false)

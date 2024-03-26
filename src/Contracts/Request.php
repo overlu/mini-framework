@@ -185,5 +185,5 @@ interface Request extends ServerRequestInterface
      * @param array $messages
      * @return Validation
      */
-    public function validate(array $rules, array $messages = []): Validation;
+    public function validate(array $rules, array $messages = [], bool $bail = true): Validation;
 }
