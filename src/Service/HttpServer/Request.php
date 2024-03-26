@@ -740,6 +740,7 @@ class Request implements RequestInterface
     /**
      * @param array $rules
      * @param array $messages
+     * @param bool $bail
      * @return Validation
      */
     public function validate(array $rules, array $messages = [], bool $bail = true): Validation
