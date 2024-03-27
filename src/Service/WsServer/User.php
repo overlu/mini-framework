@@ -113,9 +113,9 @@ class User
     /**
      * 根据fd获取用户id
      * @param $fd
-     * @return mixed
+     * @return array
      */
-    public static function getUserByFd($fd): mixed
+    public static function getUserByFd($fd): array
     {
         return Store::get(Socket::$fdPrefix . Socket::packFd($fd));
     }

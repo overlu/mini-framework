@@ -91,7 +91,7 @@ class Client
     /**
      * 注销
      */
-    public static function unregister()
+    public static function unregister(): void
     {
         Store::remove(Socket::$host, self::localClientHost());
     }

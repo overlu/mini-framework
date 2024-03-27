@@ -41,14 +41,14 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
     protected ?int $worker_id;
 
     /**
-     * All of the registered booting callbacks.
+     * All the registered booting callbacks.
      *
      * @var array
      */
     protected array $bootingCallbacks = [];
 
     /**
-     * All of the registered booted callbacks.
+     * All the registered booted callbacks.
      *
      * @var array
      */
@@ -230,7 +230,7 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
      * @param array|string $paths
      * @return void
      */
-    protected function loadMigrationsFrom($paths): void
+    protected function loadMigrationsFrom(array|string $paths): void
     {
         $this->callAfterResolving('migrator', function ($migrator) use ($paths) {
             foreach ((array)$paths as $path) {
@@ -245,7 +245,6 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
      * @param string $name
      * @param Closure $callback
      * @return void
-     * @throws BindingResolutionException
      */
     protected function callAfterResolving(string $name, Closure $callback): void
     {
@@ -260,10 +259,10 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
      * Register paths to be published by the publish command.
      *
      * @param array $paths
-     * @param mixed $groups
+     * @param mixed|null $groups
      * @return void
      */
-    protected function publishes(array $paths, $groups = null): void
+    protected function publishes(array $paths, mixed $groups = null): void
     {
         $this->ensurePublishArrayInitialized($class = static::class);
 
@@ -312,7 +311,7 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
      * @param string|null $group
      * @return array
      */
-    public static function pathsToPublish($provider = null, $group = null): array
+    public static function pathsToPublish(string $provider = null, string $group = null): array
     {
         if (!is_null($paths = static::pathsForProviderOrGroup($provider, $group))) {
             return $paths;
@@ -328,7 +327,7 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
      *
      * @param string|null $provider
      * @param string|null $group
-     * @return array
+     * @return array|null
      */
     protected static function pathsForProviderOrGroup(?string $provider, ?string $group): ?array
     {
@@ -389,10 +388,10 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
     /**
      * Register the package's custom Artisan commands.
      *
-     * @param AbstractCommandService[]|AbstractCommandService $commands
+     * @param AbstractCommandService|AbstractCommandService[] $commands
      * @return void
      */
-    public function commands($commands): void
+    public function commands(array|AbstractCommandService $commands): void
     {
         CommandService::register($commands);
     }
