@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Contracts;
 
 use Mini\Service\HttpMessage\Upload\UploadedFile;
+use Mini\Session\Session;
 use Mini\Validator\Validation;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -187,4 +188,71 @@ interface Request extends ServerRequestInterface
      * @return Validation
      */
     public function validate(array $rules, array $messages = [], bool $bail = true): Validation;
+
+    /**
+     * @return string
+     */
+    public function ip(): string;
+
+    /**
+     * @return bool
+     */
+    public function isSecure(): bool;
+
+    /**
+     * @return string
+     */
+    public function getScheme(): string;
+
+    /**
+     * @return array
+     */
+    public function getCookieParams(): array;
+
+    /**
+     * Get a subset containing the provided keys with values from the input data.
+     *
+     * @param array $keys
+     * @return array
+     */
+    public function only(array $keys): array;
+
+    /**
+     * Get the current path info for the request.
+     *
+     * @return string
+     */
+    public function path(): string;
+
+    /**
+     * @return Session
+     */
+    public function session(): Session;
+
+    /**
+     * @param string|null $key
+     * @param $default
+     * @return mixed
+     */
+    public function route(?string $key = null, $default = null): mixed;
+
+    /**
+     * @return array
+     */
+    public function headers(): array;
+
+    /**
+     * @return string
+     */
+    public function method(): string;
+
+    /**
+     * @return string
+     */
+    public function getClientIp(): string;
+
+    /**
+     * @return string[]
+     */
+    public function getClientIps(): array;
 }
