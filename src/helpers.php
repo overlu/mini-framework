@@ -34,7 +34,6 @@ use Mini\Support\HtmlString;
 use Mini\Support\Parallel;
 use Mini\Support\Str;
 use Mini\Support\Waiter;
-use Mini\Translate\Translate;
 use Psr\Http\Message\ResponseInterface;
 use Swoole\Runtime;
 
@@ -910,7 +909,7 @@ if (!function_exists('__')) {
      */
     function __(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
     {
-        return app(Translate::class)->get($id, $parameters, $domain, $locale);
+        return app('translate')->get($id, $parameters, $domain, $locale);
     }
 }
 
@@ -925,7 +924,7 @@ if (!function_exists('trans')) {
      */
     function trans(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
     {
-        return app(Translate::class)->trans($id, $parameters, $domain, $locale);
+        return app('translate')->trans($id, $parameters, $domain, $locale);
     }
 }
 

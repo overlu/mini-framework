@@ -14,12 +14,14 @@ use Symfony\Component\Translation\Translator;
 class Translate implements \Mini\Contracts\Translate
 {
     protected array $translation = [];
-    protected string $locate = 'en';
+    protected string $locate = '';
+    protected string $fallback_locale = 'en';
     protected Translator $translator;
 
     public function __construct()
     {
-        $this->locate = config('app.locale', config('app.fallback_locale', 'en'));
+        $this->locate = config('app.locale', '');
+        $this->fallback_locale = config('app.fallback_locale', 'en');
         $this->translator = new Translator($this->locate);
         $this->initialize();
     }
@@ -47,7 +49,10 @@ class Translate implements \Mini\Contracts\Translate
      */
     public function get(?string $key = null, array $parameters = [], ?string $domain = null, ?string $locale = null): string
     {
-        return empty($parameters) ? (Arr::get($this->translation[$locale ?: $this->locate], $key) ?? $key) : $this->trans($key, $parameters, $domain, $locale);
+        if (empty($parameters)) {
+            return Arr::get($this->translation[$locale ?: $this->locate], $key, Arr::get($this->translation[$this->fallback_locale], $key, $key));
+        }
+        return $this->trans($key, $parameters, $domain, $locale);
     }
 
     /**
@@ -84,14 +89,31 @@ class Translate implements \Mini\Contracts\Translate
             $parameters[':' . $k] = $parameter;
             unset($parameters[$k]);
         }
-        return $this->translator->trans($key, $parameters, $domain, $locale);
+        return $this->translator->trans($key, $parameters, $domain, $locale ?: $this->locate);
     }
 
     /**
-     * @return mixed|string|void
+     * @return string
      */
-    public function getLocale()
+    public function getLocale(): string
     {
         return $this->locate;
+    }
+
+    /**
+     * @param string $locate
+     * @return void
+     */
+    public function setLocale(string $locate): void
+    {
+        $this->locate = $locate;
+    }
+
+    /**
+     * @return void
+     */
+    public function resetLocale(): void
+    {
+        $this->locate = config('app.locale', '');
     }
 }

@@ -15,6 +15,8 @@ namespace Mini\Facades;
  * @method static string getOrDefault(null|string $key = null, null|string $default = null, null|string $locale = null)
  * @method static string trans(null|string $key = null, array $parameters = [], null|string $domain = null, null|string $locale = null)
  * @method static string getLocale()
+ * @method static void resetLocale()
+ * @method static void setLocale(string $locate)
  * @see \Mini\Translate\Translate
  */
 class Lang extends Facade
