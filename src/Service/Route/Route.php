@@ -204,12 +204,12 @@ class Route
                     throw new RuntimeException("Router {$uri} Defined Class {$className} Not Found");
                 }
             }
+            $func = $handler[1];
+            $this->controller = new $className($func, $params);
             $resp = app('middleware')->registerBeforeRequest($func, $this->controller);
             if (!is_null($resp)) {
                 return $resp;
             }
-            $func = $handler[1];
-            $this->controller = new $className($func, $params);
             if (!method_exists($this->controller, $func)) {
                 throw new RuntimeException("Router {$uri} Defined {$className}->{$func} Method Not Found");
             }
