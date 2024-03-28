@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Exception;
 
-use Mini\Translate\Translate;
+use Mini\Facades\Lang;
 use RuntimeException;
 use Throwable;
 
@@ -32,8 +32,8 @@ class HttpException extends RuntimeException implements HttpExceptionInterface
     public function __construct(mixed $message = '', $statusCode = 0, array $headers = [], ?int $code = 0, Throwable $previous = null)
     {
         $this->headers = $headers;
-        $this->statusCode = app(Translate::class)->has('http_status_code.' . $statusCode) ? $statusCode : 200;
-        $this->responseMessage = $message ?: app(Translate::class)->getOrDefault('http_status_code.' . $statusCode, 'something error');
+        $this->statusCode = Lang::has('http_status_code.' . $statusCode) ? $statusCode : 200;
+        $this->responseMessage = $message ?: Lang::getOrDefault('http_status_code.' . $statusCode, 'something error');
         parent::__construct('something error', $statusCode, $previous);
     }
 
