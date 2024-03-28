@@ -50,7 +50,7 @@ class Translate implements \Mini\Contracts\Translate
     public function get(?string $key = null, array $parameters = [], ?string $domain = null, ?string $locale = null): string
     {
         if (empty($parameters)) {
-            return Arr::get($this->translation[$locale ?: $this->locate], $key, Arr::get($this->translation[$this->fallback_locale], $key, $key));
+            return Arr::get($this->translation[$locale ?: $this->locate] ?? [], $key, Arr::get($this->translation[$this->fallback_locale] ?? [], $key, $key));
         }
         return $this->trans($key, $parameters, $domain, $locale);
     }
@@ -63,7 +63,7 @@ class Translate implements \Mini\Contracts\Translate
      */
     public function getOrDefault(?string $key, ?string $default = null, ?string $locale = null): string
     {
-        return Arr::get($this->translation[$locale ?: $this->locate], $key) ?? ($default ?: $key);
+        return Arr::get($this->translation[$locale ?: $this->locate] ?? [], $key, ($default ?: $key));
     }
 
     /**
@@ -73,7 +73,7 @@ class Translate implements \Mini\Contracts\Translate
      */
     public function has(string $key, ?string $locale = null): bool
     {
-        return Arr::has($this->translation[$locale ?: $this->locate], $key);
+        return Arr::has($this->translation[$locale ?: $this->locate] ?? [], $key);
     }
 
     /**
