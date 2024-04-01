@@ -344,9 +344,10 @@ class Validation
      */
     protected function ruleIsOptional(Attribute $attribute, Rule $rule): bool
     {
-        return false === $attribute->isRequired() and
-            false === $rule->isImplicit() and
-            false === $rule instanceof Required;
+        return false === $attribute->isRequired() &&
+            false === $rule->isImplicit() &&
+            false === $rule instanceof Required &&
+            ($rule->getKey() !== 'string' ? $attribute->getValue() !== '' : true);
     }
 
     /**
