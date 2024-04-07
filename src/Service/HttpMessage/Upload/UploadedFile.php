@@ -372,7 +372,7 @@ class UploadedFile extends SplFileInfo implements UploadedFileInterface
      * @param array|string $options
      * @return string|false
      */
-    public function store(string $path, array|string $options = []): bool|string
+    public function store(string $path = '', array|string $options = []): bool|string
     {
         return $this->storeAs($path, $this->hashName(), $this->parseOptions($options));
     }
