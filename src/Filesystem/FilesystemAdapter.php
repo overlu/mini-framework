@@ -12,7 +12,7 @@ use League\Flysystem\FilesystemException;
 use Mini\Contracts\Filesystem\Cloud as CloudFilesystemContract;
 use Mini\Contracts\Filesystem\Filesystem as FilesystemContract;
 use Mini\Exception\FileNotFoundException;
-use Mini\Http\UploadedFile;
+use Mini\Service\HttpMessage\Upload\UploadedFile;
 use Mini\Support\Arr;
 use Mini\Support\Str;
 use InvalidArgumentException;
@@ -181,7 +181,7 @@ class FilesystemAdapter implements CloudFilesystemContract
         try {
             return $this->driver->read($path);
         } catch (UnableToReadFile $e) {
-            return '';
+            return throw_unless(!$this->throwsExceptions(), $e) ?: '';
         }
     }
 
@@ -278,7 +278,7 @@ class FilesystemAdapter implements CloudFilesystemContract
                 ? $this->driver->writeStream($path, $contents, $options)
                 : $this->driver->write($path, $contents, $options);
         } catch (UnableToWriteFile $e) {
-            return false;
+            return throw_if($this->throwsExceptions(), $e);
         }
 
         return true;
@@ -288,7 +288,7 @@ class FilesystemAdapter implements CloudFilesystemContract
      * Store the uploaded file on the disk.
      *
      * @param string $path
-     * @param \Mini\Http\UploadedFile|string|File $file
+     * @param UploadedFile|string|File $file
      * @param mixed|array $options
      * @return string|false
      */
@@ -303,12 +303,12 @@ class FilesystemAdapter implements CloudFilesystemContract
      * Store the uploaded file on the disk with a given name.
      *
      * @param string $path
-     * @param \Mini\Http\UploadedFile|\Mini\Http\File|string $file
+     * @param UploadedFile|File|string $file
      * @param string $name
      * @param mixed $options
      * @return string|false
      */
-    public function putFileAs(string $path, UploadedFile|\Mini\Http\File|string $file, string $name, mixed $options = []): bool|string
+    public function putFileAs(string $path, UploadedFile|File|string $file, string $name, mixed $options = []): bool|string
     {
         $stream = fopen(is_string($file) ? $file : $file->getRealPath(), 'r');
 
@@ -353,7 +353,7 @@ class FilesystemAdapter implements CloudFilesystemContract
         try {
             $this->driver->setVisibility($path, $this->parseVisibility($visibility));
         } catch (UnableToSetVisibility $e) {
-            return false;
+            return throw_if($this->throwsExceptions(), $e);
         }
 
         return true;
@@ -408,7 +408,7 @@ class FilesystemAdapter implements CloudFilesystemContract
             try {
                 $this->driver->delete($path);
             } catch (UnableToDeleteFile $e) {
-                $success = false;
+                return throw_if($this->throwsExceptions(), $e);
             }
         }
 
@@ -427,7 +427,7 @@ class FilesystemAdapter implements CloudFilesystemContract
         try {
             $this->driver->copy($from, $to);
         } catch (UnableToCopyFile $e) {
-            return false;
+            return throw_if($this->throwsExceptions(), $e);
         }
 
         return true;
@@ -445,7 +445,7 @@ class FilesystemAdapter implements CloudFilesystemContract
         try {
             $this->driver->move($from, $to);
         } catch (UnableToMoveFile $e) {
-            return false;
+            return throw_if($this->throwsExceptions(), $e);
         }
 
         return true;
@@ -500,7 +500,7 @@ class FilesystemAdapter implements CloudFilesystemContract
         try {
             $this->driver->writeStream($path, $resource, $options);
         } catch (UnableToWriteFile $e) {
-            return false;
+            return throw_if($this->throwsExceptions(), $e);
         }
 
         return true;
@@ -512,7 +512,7 @@ class FilesystemAdapter implements CloudFilesystemContract
      * @param string $path
      * @return string
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function url(string $path): string
     {
@@ -585,7 +585,7 @@ class FilesystemAdapter implements CloudFilesystemContract
      * @param array $options
      * @return string
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function temporaryUrl(string $path, DateTimeInterface $expiration, array $options = []): string
     {
@@ -683,7 +683,7 @@ class FilesystemAdapter implements CloudFilesystemContract
         try {
             $this->driver->createDirectory($path);
         } catch (UnableToCreateDirectory $e) {
-            return false;
+            return throw_if($this->throwsExceptions(), $e);
         }
 
         return true;
@@ -700,7 +700,7 @@ class FilesystemAdapter implements CloudFilesystemContract
         try {
             $this->driver->deleteDirectory($directory);
         } catch (UnableToDeleteDirectory $e) {
-            return false;
+            return throw_if($this->throwsExceptions(), $e);
         }
 
         return true;
@@ -734,6 +734,11 @@ class FilesystemAdapter implements CloudFilesystemContract
     public function getConfig(): array
     {
         return $this->config;
+    }
+
+    protected function throwsExceptions(): bool
+    {
+        return (bool)($this->config['throw'] ?? false);
     }
 
     /**

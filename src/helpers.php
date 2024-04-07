@@ -1056,3 +1056,48 @@ if (!function_exists('mini_version')) {
         return app()->version();
     }
 }
+
+if (!function_exists('throw_if')) {
+    /**
+     * Throw the given exception if the given condition is true.
+     * @template TException of \Throwable
+     *
+     * @param mixed $condition
+     * @param TException $exception
+     * @param mixed ...$parameters
+     * @return bool
+     *
+     * @throws TException
+     */
+    function throw_if(mixed $condition, mixed $exception = 'RuntimeException', ...$parameters): bool
+    {
+        if ($condition) {
+            if (is_string($exception) && class_exists($exception)) {
+                $exception = new $exception(...$parameters);
+            }
+
+            throw is_string($exception) ? new RuntimeException($exception) : $exception;
+        }
+
+        return (bool)$condition;
+    }
+}
+
+if (!function_exists('throw_unless')) {
+    /**
+     * Throw the given exception unless the given condition is true.
+     * @template TException of \Throwable
+     * @param mixed $condition
+     * @param TException $exception
+     * @param mixed ...$parameters
+     * @return bool
+     *
+     * @throws TException
+     */
+    function throw_unless(mixed $condition, mixed $exception = 'RuntimeException', ...$parameters): bool
+    {
+        throw_if(!$condition, $exception, ...$parameters);
+
+        return (bool)$condition;
+    }
+}

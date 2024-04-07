@@ -148,8 +148,9 @@ class FilesystemManager implements FactoryContract
      * Call a custom driver creator.
      *
      * @param array $config
+     * @return mixed
      */
-    protected function callCustomCreator(array $config)
+    protected function callCustomCreator(array $config): mixed
     {
         return $this->customCreators[$config['driver']]($this->app, $config);
     }
@@ -194,6 +195,7 @@ class FilesystemManager implements FactoryContract
      * Create an instance of the sftp driver.
      *
      * @param array $config
+     * @return FilesystemAdapter
      */
     public function createSftpDriver(array $config): FilesystemAdapter
     {
@@ -220,7 +222,7 @@ class FilesystemManager implements FactoryContract
     {
         $s3Config = $this->formatS3Config($config);
 
-        $root = $s3Config['root'] ?? null;
+        $root = $s3Config['root'] ?? '';
 
         $visibility = new AwsS3PortableVisibilityConverter(
             $config['visibility'] ?? Visibility::PUBLIC

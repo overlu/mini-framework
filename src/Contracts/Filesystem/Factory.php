@@ -32,7 +32,7 @@ namespace Mini\Contracts\Filesystem;
  * @method int lastModified(string $path)
  * @method int size(string $path)
  * @method resource|null readStream(string $path)
- * @method string get(string $path)
+ * @method string get(string $name)
  * @method string getVisibility(string $path)
  * @method string temporaryUrl(string $path, \DateTimeInterface $expiration, array $options = [])
  * @method string url(string $path)
