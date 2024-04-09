@@ -384,7 +384,7 @@ class UploadedFile extends SplFileInfo implements UploadedFileInterface
      * @param array|string $options
      * @return string|false
      */
-    public function storePublicly(string $path, array|string $options = []): bool|string
+    public function storePublicly(string $path = '', array|string $options = []): bool|string
     {
         $options = $this->parseOptions($options);
 
