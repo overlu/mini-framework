@@ -114,9 +114,9 @@ trait HasTimestamps
     /**
      * Get the name of the "created at" column.
      *
-     * @return string
+     * @return string|null
      */
-    public function getCreatedAtColumn(): string
+    public function getCreatedAtColumn(): ?string
     {
         return static::CREATED_AT;
     }
@@ -124,9 +124,9 @@ trait HasTimestamps
     /**
      * Get the name of the "updated at" column.
      *
-     * @return string
+     * @return string|null
      */
-    public function getUpdatedAtColumn(): string
+    public function getUpdatedAtColumn(): ?string
     {
         return static::UPDATED_AT;
     }
