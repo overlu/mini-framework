@@ -523,7 +523,7 @@ class Builder
      * @param array|string $columns
      * @return Collection|static[]
      */
-    public function get(array|string $columns = ['*']): Collection|array
+    public function get(mixed $columns = ['*']): Collection|array
     {
         $builder = $this->applyScopes();
 
@@ -543,7 +543,7 @@ class Builder
      * @param array|string $columns
      * @return Model[]|static[]
      */
-    public function getModels(array|string $columns = ['*']): array
+    public function getModels(mixed $columns = ['*']): array
     {
         return $this->model->hydrate(
             $this->query->get($columns)->all()

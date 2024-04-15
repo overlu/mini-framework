@@ -214,8 +214,8 @@ class Builder
      * @return void
      */
     public function __construct(ConnectionInterface $connection,
-                                Grammar $grammar = null,
-                                Processor $processor = null)
+                                Grammar             $grammar = null,
+                                Processor           $processor = null)
     {
         $this->connection = $connection;
         $this->grammar = $grammar ?: $connection->getQueryGrammar();
@@ -2189,10 +2189,10 @@ class Builder
     /**
      * Execute the query as a "select" statement.
      *
-     * @param array|string $columns
+     * @param mixed|array|string $columns
      * @return \Mini\Support\Collection
      */
-    public function get($columns = ['*'])
+    public function get(mixed $columns = ['*'])
     {
         return collect($this->onceWithColumns(Arr::wrap($columns), function () {
             return $this->processor->processSelect($this, $this->runSelect());

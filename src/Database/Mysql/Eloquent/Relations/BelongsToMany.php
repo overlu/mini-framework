@@ -763,10 +763,10 @@ class BelongsToMany extends Relation
     /**
      * Execute the query as a "select" statement.
      *
-     * @param array $columns
+     * @param mixed|array $columns
      * @return Collection
      */
-    public function get(array $columns = ['*']): Collection
+    public function get(mixed $columns = ['*']): Collection
     {
         // First we'll add the proper select columns onto the query so it is run with
         // the proper columns. Then, we will get the results and hydrate out pivot

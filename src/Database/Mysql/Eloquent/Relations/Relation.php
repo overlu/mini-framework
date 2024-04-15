@@ -152,10 +152,10 @@ abstract class Relation
     /**
      * Execute the query as a "select" statement.
      *
-     * @param array $columns
+     * @param mixed|array $columns
      * @return Collection
      */
-    public function get(array $columns = ['*']): Collection
+    public function get(mixed $columns = ['*']): Collection
     {
         return $this->query->get($columns);
     }
