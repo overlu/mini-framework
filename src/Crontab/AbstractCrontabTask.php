@@ -11,15 +11,15 @@ abstract class AbstractCrontabTask implements CrontabTaskInterface
 {
     use ManagesFrequencies;
 
-    public string $expression = '* * * * * *';
+    protected string $expression = '* * * * * *';
 
-    public const SUNDAY = 0;
-    public const MONDAY = 1;
-    public const TUESDAY = 2;
-    public const WEDNESDAY = 3;
-    public const THURSDAY = 4;
-    public const FRIDAY = 5;
-    public const SATURDAY = 6;
+    private const SUNDAY = 0;
+    private const MONDAY = 1;
+    private const TUESDAY = 2;
+    private const WEDNESDAY = 3;
+    private const THURSDAY = 4;
+    private const FRIDAY = 5;
+    private const SATURDAY = 6;
 
     abstract public function handle();
 

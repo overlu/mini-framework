@@ -20,7 +20,7 @@ class KeyGenerateCommandService extends AbstractCommandService
      * @return void
      * @throws Exception
      */
-    public function handle(Process $process): void
+    public function handle(?Process $process): void
     {
         $key = $this->generateRandomKey();
 

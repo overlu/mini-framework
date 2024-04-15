@@ -36,29 +36,22 @@ class CommandService
     }
 
     /**
+     * @return AbstractCommandService[]
+     */
+    public static function getRegisterCommands(): array
+    {
+        return static::$commands;
+    }
+
+    /**
      * @throws BindingResolutionException|Throwable
      */
     public static function run(): void
     {
         try {
-            $app = new App([
-                'desc' => 'mini cli application',
-            ]);
-            app('console')->setApp($app);
-            $process = new Process(function () use ($app) {
-                $app->run();
-            });
-            $currentCommand = trim($app->getArgs()[0] ?? '');
-            foreach (static::$commands as $command => $instance) {
-                $app->addCommand($command, static function () use ($instance, $app, $process) {
-                    $instance->setApp($app)->handle($process);
-                }, $instance->getCommandDescription());
-                if ($command === $currentCommand && $instance->enableCoroutine) {
-                    $process->set(['enable_coroutine' => true]);
-                }
-            }
-            $process->start();
-            Process::wait(!($app->getOpt('d') || $app->getArg('daemonize')));
+            $console = app('console');
+            $console->process->start();
+            Process::wait(!($console->app->getOpt('d') || $console->app->getArg('daemonize')));
         } catch (Throwable $throwable) {
             if (!$throwable instanceof ExitException) {
                 throw $throwable;

@@ -15,7 +15,7 @@ interface CommandInterface
      * @param Process $process
      * @return mixed
      */
-    public function handle(Process $process);
+    public function handle(?Process $process);
 
     /**
      * @return string

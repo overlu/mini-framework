@@ -18,7 +18,7 @@ class ViewCacheCommandService extends AbstractCommandService
      * @param Process $process
      * @return void
      */
-    public function handle(Process $process): void
+    public function handle(?Process $process): void
     {
         $this->call('view:clear');
 

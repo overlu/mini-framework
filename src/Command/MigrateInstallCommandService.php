@@ -16,7 +16,7 @@ class MigrateInstallCommandService extends AbstractCommandService
     /**
      * @param Process $process
      */
-    public function handle(Process $process): void
+    public function handle(?Process $process): void
     {
         run(function () {
             $this->repository->setSource($this->getOpt('database'));

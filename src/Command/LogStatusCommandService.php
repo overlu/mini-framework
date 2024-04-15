@@ -21,7 +21,7 @@ class LogStatusCommandService extends AbstractCommandService
      * @param Process $process
      * @return void
      */
-    public function handle(Process $process): void
+    public function handle(?Process $process): void
     {
         $status = SeasLog::analyzerCount();
         $total = 0;

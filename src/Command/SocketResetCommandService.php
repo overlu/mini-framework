@@ -21,7 +21,7 @@ class SocketResetCommandService extends AbstractCommandService
      * @return void
      * @throws Exception
      */
-    public function handle(Process $process): void
+    public function handle(?Process $process): void
     {
         if (Command::has('bin/mini')) {
             $this->error('server is running, stop the mini server first!');

@@ -16,7 +16,7 @@ class MigrateCommandService extends AbstractCommandService
     /**
      * @param Process $process
      */
-    public function handle(Process $process): void
+    public function handle(?Process $process): void
     {
         if (!$this->confirmToProceed()) {
             return;

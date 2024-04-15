@@ -19,7 +19,7 @@ class RoutesAllCommandService extends AbstractCommandService
      * @param Process $process
      * @return void
      */
-    public function handle(Process $process): void
+    public function handle(?Process $process): void
     {
         $routes = app('route')->routes();
         $this->parseWebSocketRoutes($routes['ws']);

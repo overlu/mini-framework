@@ -11,7 +11,7 @@ namespace Mini\Console\Util;
  * Class StrBuffer
  * @package Toolkit\Stdlib\Str
  */
-final class StrBuffer
+final class StrBuffer implements \Stringable
 {
     /**
      * @var string

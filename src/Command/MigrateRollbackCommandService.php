@@ -13,7 +13,7 @@ class MigrateRollbackCommandService extends AbstractCommandService
 {
     use Migration;
 
-    public function handle(Process $process): void
+    public function handle(?Process $process): void
     {
         run(function () {
             if (!$this->confirmToProceed()) {

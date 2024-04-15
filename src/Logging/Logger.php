@@ -99,7 +99,7 @@ class Logger
         $arguments[1] = $arguments[1] ?? [];
         foreach ($arguments[1] as $key => $value) {
             if ((is_string($value) || is_numeric($value)) && preg_match("/\{" . $key . "\}/", $arguments[0])) {
-                $arguments[0] = preg_replace("/\{" . $key . "\}/", $value, $arguments[0]);
+                $arguments[0] = preg_replace("/\{" . $key . "\}/", (string)$value, $arguments[0]);
                 unset($arguments[1][$key]);
             }
         }

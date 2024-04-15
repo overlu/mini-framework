@@ -9,7 +9,6 @@ namespace Mini;
 
 use Mini\Bootstrap\Middleware;
 use Mini\Bootstrap\ProviderService;
-use ReflectionException;
 use SeasLog;
 use Swoole\Server;
 use Throwable;
@@ -93,7 +92,7 @@ class Bootstrap
 
     public function consoleStart(): void
     {
-        SeasLog::setRequestID(uniqid('mini-artisan-', true));
+        SeasLog::setRequestID(uniqid('mini-artisan.', true));
         app('providers')->bootstrap();
     }
 }

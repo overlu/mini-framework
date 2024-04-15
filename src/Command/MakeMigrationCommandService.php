@@ -23,7 +23,7 @@ class MakeMigrationCommandService extends AbstractCommandService
      * @return void
      * @throws Exception
      */
-    public function handle(Process $process): void
+    public function handle(?Process $process): void
     {
         run(function () {
             $name = trim($this->argument('name', $this->getArg(0, '')));

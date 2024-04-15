@@ -9,6 +9,7 @@ namespace Mini\Crontab;
 
 use Exception;
 use InvalidArgumentException;
+use Mini\Bootstrap;
 use Mini\Logging\Logger;
 use Swoole\Event;
 use Swoole\Timer;

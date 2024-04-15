@@ -137,7 +137,7 @@ trait WriteMessageTrait
      *
      * @return int
      */
-    public static function write(array|string $messages, bool $nl = true, bool|int $quit = false, array $opts = []): int
+    public static function write(array|string|\Stringable $messages, bool $nl = true, bool|int $quit = false, array $opts = []): int
     {
         if (is_array($messages)) {
             $messages = implode($nl ? PHP_EOL : '', $messages);

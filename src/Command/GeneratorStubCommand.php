@@ -111,7 +111,7 @@ abstract class GeneratorStubCommand extends AbstractCommandService
      * @return void
      * @throws FileNotFoundException|EntryNotFoundException
      */
-    public function handle(Process $process): void
+    public function handle(?Process $process): void
     {
         $name = $this->getNameInput();
 

@@ -514,6 +514,11 @@ class App
         return $this->args;
     }
 
+    public function getFirstArg(): mixed
+    {
+        return $this->args[0] ?? '';
+    }
+
     /**
      * @param array $args
      */

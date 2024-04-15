@@ -13,7 +13,7 @@ use Swoole\Process;
 
 class StatusCrontabCommandService extends AbstractCommandService
 {
-    public function handle(Process $process): void
+    public function handle(?Process $process): void
     {
         CrontabTaskList::initialTaskList();
         $crontabTaskList = CrontabTaskList::getCrontabTaskList();

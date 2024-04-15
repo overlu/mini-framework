@@ -39,7 +39,7 @@ use Throwable;
 
 class Console
 {
-    private static array $systemCommandService = [
+    public static array $systemCommandService = [
         HelloMiniCommandService::class,
         KeyGenerateCommandService::class,
         RoutesAllCommandService::class,
@@ -77,7 +77,7 @@ class Console
         try {
             Bootstrap::initial();
             Bootstrap::getInstance()->consoleStart();
-            CommandService::register([...config('console', []), ...static::$systemCommandService]);
+//            CommandService::register([...config('console', []), ...static::$systemCommandService]);
             CommandService::run();
         } catch (Throwable $throwable) {
             app('exception')->throw($throwable);

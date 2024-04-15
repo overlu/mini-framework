@@ -33,7 +33,7 @@ abstract class AbstractCommandService implements CommandInterface
      * @param Process $process
      * @return void
      */
-    abstract public function handle(Process $process): void;
+    abstract public function handle(?Process $process): void;
 
     /**
      * get command

@@ -16,7 +16,7 @@ class HelloMiniCommandService extends AbstractCommandService
      * @param Process $process
      * @return void
      */
-    public function handle(Process $process): void
+    public function handle(?Process $process): void
     {
         $version = Application::VERSION;
         $info = <<<EOL

@@ -51,9 +51,6 @@ class Console extends Facade
      */
     protected static function getFacadeAccessor(): string
     {
-        if (RUN_ENV !== 'artisan') {
-            throw new RuntimeException('Only can use in artisan environemnt');
-        }
-        return 'console';
+        return 'console.console';
     }
 }

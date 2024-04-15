@@ -17,7 +17,7 @@ class ViewClearCommandService extends AbstractCommandService
      * @param Process $process
      * @return void
      */
-    public function handle(Process $process): void
+    public function handle(?Process $process): void
     {
         $path = config('view.compiled');
 
