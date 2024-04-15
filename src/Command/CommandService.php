@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
-use Mini\Console\App;
 use Mini\Contracts\Container\BindingResolutionException;
 use RuntimeException;
 use Swoole\ExitException;

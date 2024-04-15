@@ -16,7 +16,7 @@ class KeyGenerateCommandService extends AbstractCommandService
     use ConfirmableTrait;
 
     /**
-     * @param Process $process
+     * @param Process|null $process
      * @return void
      * @throws Exception
      */

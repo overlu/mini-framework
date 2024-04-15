@@ -106,10 +106,10 @@ abstract class GeneratorStubCommand extends AbstractCommandService
     abstract protected function getStub(): string;
 
     /**
-     * Execute the console command.
-     * @param Process $process
+     * @param Process|null $process
      * @return void
-     * @throws FileNotFoundException|EntryNotFoundException
+     * @throws EntryNotFoundException
+     * @throws FileNotFoundException
      */
     public function handle(?Process $process): void
     {

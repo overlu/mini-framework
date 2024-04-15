@@ -14,7 +14,7 @@ class MigrateInstallCommandService extends AbstractCommandService
     use Migration;
 
     /**
-     * @param Process $process
+     * @param Process|null $process
      */
     public function handle(?Process $process): void
     {

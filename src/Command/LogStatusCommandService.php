@@ -18,7 +18,7 @@ use Swoole\Process;
 class LogStatusCommandService extends AbstractCommandService
 {
     /**
-     * @param Process $process
+     * @param Process|null $process
      * @return void
      */
     public function handle(?Process $process): void

@@ -45,9 +45,8 @@ class VendorPublishCommandService extends AbstractCommandService
     }
 
     /**
-     * @param Process $process
+     * @param Process|null $process
      * @return void
-     * @throws FilesystemException
      */
     public function handle(?Process $process): void
     {

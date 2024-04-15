@@ -11,6 +11,10 @@ use Swoole\Process;
 
 class StorageLinkCommandService extends AbstractCommandService
 {
+    /**
+     * @param Process|null $process
+     * @return void
+     */
     public function handle(?Process $process): void
     {
         $relative = $this->app->getOpt('relative');

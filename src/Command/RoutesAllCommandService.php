@@ -16,7 +16,7 @@ class RoutesAllCommandService extends AbstractCommandService
     protected array $httpRoutes = [];
 
     /**
-     * @param Process $process
+     * @param Process|null $process
      * @return void
      */
     public function handle(?Process $process): void

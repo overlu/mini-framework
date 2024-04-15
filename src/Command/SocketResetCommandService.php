@@ -17,7 +17,7 @@ use Swoole\Process;
 class SocketResetCommandService extends AbstractCommandService
 {
     /**
-     * @param Process $process
+     * @param Process|null $process
      * @return void
      * @throws Exception
      */

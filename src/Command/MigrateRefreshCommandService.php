@@ -13,6 +13,10 @@ class MigrateRefreshCommandService extends AbstractCommandService
 {
     use Migration;
 
+    /**
+     * @param Process|null $process
+     * @return void
+     */
     public function handle(?Process $process): void
     {
 

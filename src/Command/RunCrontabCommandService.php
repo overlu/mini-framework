@@ -12,6 +12,10 @@ use Swoole\Process;
 
 class RunCrontabCommandService extends AbstractCommandService
 {
+    /**
+     * @param Process|null $process
+     * @return void
+     */
     public function handle(?Process $process): void
     {
         Crontab::run();

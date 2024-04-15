@@ -14,7 +14,7 @@ use Swoole\Process;
 class ViewClearCommandService extends AbstractCommandService
 {
     /**
-     * @param Process $process
+     * @param Process|null $process
      * @return void
      */
     public function handle(?Process $process): void

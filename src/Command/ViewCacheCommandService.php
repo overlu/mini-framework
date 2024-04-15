@@ -15,7 +15,7 @@ use Symfony\Component\Finder\SplFileInfo;
 class ViewCacheCommandService extends AbstractCommandService
 {
     /**
-     * @param Process $process
+     * @param Process|null $process
      * @return void
      */
     public function handle(?Process $process): void
