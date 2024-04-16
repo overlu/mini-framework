@@ -702,9 +702,9 @@ trait EnumeratesValues
      *
      * @param callable|string|null $key
      * @param bool $strict
-     * @return static
+     * @return LazyCollection|Collection|EnumeratesValues
      */
-    public function unique(callable|string $key = null, bool $strict = false): static
+    public function unique(callable|string $key = null, bool $strict = false): self
     {
         $callback = $this->valueRetriever($key);
 

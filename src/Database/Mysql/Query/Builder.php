@@ -2189,7 +2189,7 @@ class Builder
     /**
      * Execute the query as a "select" statement.
      *
-     * @param mixed|array|string $columns
+     * @param array|string $columns
      * @return \Mini\Support\Collection
      */
     public function get(mixed $columns = ['*'])

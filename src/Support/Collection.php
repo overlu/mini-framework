@@ -105,9 +105,9 @@ class Collection implements ArrayAccess, Enumerable
      * Get the average value of a given key.
      *
      * @param callable|string|null $callback
-     * @return int|float
+     * @return mixed
      */
-    public function avg(callable|string $callback = null): int|float
+    public function avg(callable|string $callback = null): mixed
     {
         $callback = $this->valueRetriever($callback);
 
@@ -187,7 +187,7 @@ class Collection implements ArrayAccess, Enumerable
      *
      * @return static
      */
-    public function collapse(): static
+    public function collapse(): self
     {
         return new static(Arr::collapse($this->items));
     }
@@ -403,9 +403,9 @@ class Collection implements ArrayAccess, Enumerable
      * Get a flattened array of the items in the collection.
      *
      * @param int $depth
-     * @return static
+     * @return self
      */
-    public function flatten(int $depth): static
+    public function flatten(int $depth): self
     {
         return new static(Arr::flatten($this->items, $depth));
     }
@@ -413,9 +413,9 @@ class Collection implements ArrayAccess, Enumerable
     /**
      * Flip the items in the collection.
      *
-     * @return static
+     * @return self
      */
-    public function flip(): static
+    public function flip(): self
     {
         return new static(array_flip($this->items));
     }
@@ -626,9 +626,9 @@ class Collection implements ArrayAccess, Enumerable
     /**
      * Get the keys of the collection items.
      *
-     * @return static
+     * @return self
      */
-    public function keys(): static
+    public function keys(): self
     {
         return new static(array_keys($this->items));
     }
@@ -652,7 +652,7 @@ class Collection implements ArrayAccess, Enumerable
      * @param string|null $key
      * @return static
      */
-    public function pluck(mixed $value, string $key = null): static
+    public function pluck(mixed $value, string $key = null): self
     {
         return new static(Arr::pluck($this->items, $value, $key));
     }
@@ -1230,9 +1230,9 @@ class Collection implements ArrayAccess, Enumerable
      *      => [[1, 4], [2, 5], [3, 6]]
      *
      * @param mixed $items
-     * @return static
+     * @return self
      */
-    public function zip(mixed $items): static
+    public function zip(mixed $items): self
     {
         $arrayableItems = array_map(function ($items) {
             return $this->getArrayableItems($items);
@@ -1250,9 +1250,9 @@ class Collection implements ArrayAccess, Enumerable
      *
      * @param int $size
      * @param mixed $value
-     * @return static
+     * @return self
      */
-    public function pad(int $size, mixed $value): static
+    public function pad(int $size, mixed $value): self
     {
         return new static(array_pad($this->items, $size, $value));
     }

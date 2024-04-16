@@ -394,7 +394,7 @@ class HasManyThrough extends Relation
     /**
      * Execute the query as a "select" statement.
      *
-     * @param mixed|array $columns
+     * @param mixed $columns
      * @return Collection
      */
     public function get(mixed $columns = ['*']): Collection

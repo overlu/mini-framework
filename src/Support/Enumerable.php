@@ -82,9 +82,9 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
     /**
      * Collapse the items into a single enumerable.
      *
-     * @return static
+     * @return self
      */
-    public function collapse(): static;
+    public function collapse(): self;
 
     /**
      * Alias for the "contains" method.
@@ -409,9 +409,9 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
     /**
      * Flip the values with their keys.
      *
-     * @return static
+     * @return self
      */
-    public function flip(): static;
+    public function flip(): self;
 
     /**
      * Get an item from the collection by key.
@@ -498,9 +498,9 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
     /**
      * Get the keys of the collection items.
      *
-     * @return static
+     * @return self
      */
-    public function keys(): static;
+    public function keys(): self;
 
     /**
      * Get the last item from the collection.
@@ -840,7 +840,7 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
      * @param string|null $key
      * @return static
      */
-    public function pluck(mixed $value, string $key = null): static;
+    public function pluck(mixed $value, string $key = null): self;
 
     /**
      * Create a collection of all elements that do not pass a given truth test.
@@ -855,9 +855,9 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
      *
      * @param callable|string|null $key
      * @param bool $strict
-     * @return static
+     * @return self
      */
-    public function unique(callable|string $key = null, bool $strict = false): static;
+    public function unique(callable|string $key = null, bool $strict = false): self;
 
     /**
      * Return only unique items from the collection array using strict comparison.
@@ -879,9 +879,9 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
      *
      * @param int $size
      * @param mixed $value
-     * @return static
+     * @return self
      */
-    public function pad(int $size, mixed $value): static;
+    public function pad(int $size, mixed $value): self;
 
     /**
      * Count the number of items in the collection using a given truth test.

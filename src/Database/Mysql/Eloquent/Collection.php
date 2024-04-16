@@ -110,7 +110,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param array|string $relations
      * @return $this
      */
-    public function loadMissing(array|string $relations)
+    public function loadMissing(array|string $relations): self
     {
         if (is_string($relations)) {
             $relations = func_get_args();
@@ -277,7 +277,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * Run a map over each of the items.
      *
      * @param callable $callback
-     * @return Collection
+     * @return BaseCollection
      */
     public function map(callable $callback)
     {
@@ -292,9 +292,9 @@ class Collection extends BaseCollection implements QueueableCollection
      * Reload a fresh model instance from the database for all the entities.
      *
      * @param array|string $with
-     * @return static
+     * @return BaseCollection
      */
-    public function fresh(array|string $with = []): static
+    public function fresh(array|string $with = []): BaseCollection
     {
         if ($this->isEmpty()) {
             return new static;
@@ -365,9 +365,9 @@ class Collection extends BaseCollection implements QueueableCollection
      *
      * @param callable|string|null $key
      * @param bool $strict
-     * @return Collection
+     * @return BaseCollection
      */
-    public function unique(callable|string $key = null, bool $strict = false): static
+    public function unique(callable|string $key = null, bool $strict = false): BaseCollection
     {
         if (!is_null($key)) {
             return parent::unique($key, $strict);
@@ -469,7 +469,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param string|null $key
      * @return BaseCollection
      */
-    public function pluck(mixed $value, string $key = null): static
+    public function pluck(mixed $value, string $key = null): BaseCollection
     {
         return $this->toBase()->pluck($value, $key);
     }
@@ -479,7 +479,7 @@ class Collection extends BaseCollection implements QueueableCollection
      *
      * @return BaseCollection
      */
-    public function keys(): static
+    public function keys(): BaseCollection
     {
         return $this->toBase()->keys();
     }
@@ -490,7 +490,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param mixed ...$items
      * @return BaseCollection
      */
-    public function zip(mixed $items): static
+    public function zip(mixed $items): BaseCollection
     {
         return call_user_func_array([$this->toBase(), 'zip'], func_get_args());
     }
@@ -500,7 +500,7 @@ class Collection extends BaseCollection implements QueueableCollection
      *
      * @return BaseCollection
      */
-    public function collapse(): static
+    public function collapse(): BaseCollection
     {
         return $this->toBase()->collapse();
     }
@@ -511,7 +511,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param int $depth
      * @return BaseCollection
      */
-    public function flatten(int $depth): static
+    public function flatten(int $depth): BaseCollection
     {
         return $this->toBase()->flatten($depth);
     }
@@ -521,7 +521,7 @@ class Collection extends BaseCollection implements QueueableCollection
      *
      * @return BaseCollection
      */
-    public function flip(): static
+    public function flip(): BaseCollection
     {
         return $this->toBase()->flip();
     }
@@ -533,7 +533,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * @param mixed $value
      * @return BaseCollection
      */
-    public function pad(int $size, mixed $value): static
+    public function pad(int $size, mixed $value): BaseCollection
     {
         return $this->toBase()->pad($size, $value);
     }
