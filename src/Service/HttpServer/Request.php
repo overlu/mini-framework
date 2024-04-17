@@ -594,8 +594,8 @@ class Request implements RequestInterface
      */
     public function getClientIps(): array
     {
-        if (!empty($ips = $this->getHeader('x-forwarded-for'))) {
-            return $ips;
+        if (!empty($ips = $this->header('x-forwarded-for'))) {
+            return explode(',', $ips);
         }
         if (!empty($ips = $this->getHeader('x-real-ip'))) {
             return $ips;
