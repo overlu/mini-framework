@@ -216,9 +216,9 @@ class App
 
     /**
      * @param Throwable $throwable
-     * @return int
+     * @return mixed
      */
-    protected function handleException(Throwable $throwable): int
+    protected function handleException(Throwable $throwable): mixed
     {
         $code = $throwable->getCode() !== 0 ? $throwable->getCode() : -1;
         app('exception')->report($throwable);
