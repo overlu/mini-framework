@@ -860,7 +860,11 @@ if (!function_exists('e')) {
                 ? (string)$value
                 : json_encode((array)$value, JSON_UNESCAPED_UNICODE);
         }
-        return htmlspecialchars($value, ENT_QUOTES, 'UTF-8', $doubleEncode);
+        if (is_array($value)) {
+            return json_encode($value, JSON_UNESCAPED_UNICODE);
+        }
+
+        return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8', $doubleEncode);
     }
 }
 
