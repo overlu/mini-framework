@@ -11,7 +11,7 @@ abstract class AbstractCrontabTask implements CrontabTaskInterface
 {
     use ManagesFrequencies;
 
-    protected string $expression = '* * * * * *';
+    protected string $expression = '0 * * * * *';
 
     private const SUNDAY = 0;
     private const MONDAY = 1;
