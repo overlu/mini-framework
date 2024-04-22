@@ -19,7 +19,6 @@ class MigrateRefreshCommandService extends AbstractCommandService
      */
     public function handle(?Process $process): void
     {
-
         if (!$this->confirmToProceed()) {
             return;
         }
@@ -31,32 +30,32 @@ class MigrateRefreshCommandService extends AbstractCommandService
         } else {
             $this->runReset($database, $path);
         }
-        $this->call('migrate', array_filter([
-            '--database' => $database,
-            '--path' => $path,
-            '--realpath' => $this->getOpt('realpath'),
-            '--force' => true,
+        $this->call('migrate', [], array_filter([
+            'database' => $database,
+            'path' => $path,
+            'realpath' => $this->getOpt('realpath'),
+            'force' => true,
         ]));
     }
 
     protected function runRollback($database, $path, $step): void
     {
-        $this->call('migrate:rollback', array_filter([
-            '--database' => $database,
-            '--path' => $path,
-            '--realpath' => $this->getOpt('realpath'),
-            '--step' => $step,
-            '--force' => true,
+        $this->call('migrate:rollback', [], array_filter([
+            'database' => $database,
+            'path' => $path,
+            'realpath' => $this->getOpt('realpath'),
+            'step' => $step,
+            'force' => true,
         ]));
     }
 
     protected function runReset($database, $path): void
     {
-        $this->call('migrate:reset', array_filter([
-            '--database' => $database,
-            '--path' => $path,
-            '--realpath' => $this->getOpt('realpath'),
-            '--force' => true,
+        $this->call('migrate:reset', [], array_filter([
+            'database' => $database,
+            'path' => $path,
+            'realpath' => $this->getOpt('realpath'),
+            'force' => true,
         ]));
     }
 

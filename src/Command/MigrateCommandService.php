@@ -32,7 +32,7 @@ class MigrateCommandService extends AbstractCommandService
     {
         $this->migrator->setConnection($this->getOpt('database'));
         if (!$this->migrator->repositoryExists()) {
-            $this->app->call('migrate:install', array_filter([
+            $this->app->call('migrate:install', [], array_filter([
                 'database' => $this->getOpt('database'),
             ]));
         }
