@@ -7,11 +7,11 @@ declare(strict_types=1);
 
 namespace Mini\Encryption;
 
+use Laravel\SerializableClosure\SerializableClosure;
 use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Exception\MissingAppKeyException;
 use Mini\Service\AbstractServiceProvider;
 use Mini\Support\Str;
-use Opis\Closure\SerializableClosure;
 
 class EncryptionServiceProvider extends AbstractServiceProvider
 {
