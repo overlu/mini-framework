@@ -656,6 +656,11 @@ class Stringable
         $this->dump();
     }
 
+    public function toString(): string
+    {
+        return $this->value;
+    }
+
     /**
      * Proxy dynamic properties onto methods.
      *

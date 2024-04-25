@@ -90,7 +90,11 @@ if (!function_exists('retry')) {
                 throw $e;
             }
             if ($sleep) {
-                usleep($sleep * 1000);
+                if (Coroutine::inCoroutine()) {
+                    \Swoole\Coroutine::sleep((float)($sleep / 1000));
+                } else {
+                    usleep($sleep * 1000);
+                }
             }
             goto beginning;
         }
