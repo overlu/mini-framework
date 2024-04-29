@@ -68,12 +68,11 @@ class Connection implements DriverConnection
      * Execute a new query against the connection.
      *
      * @param string $sql
-     * @param ParameterType|int $type
      * @return ResultInterface
      */
-    public function query(string $sql, $type = ParameterType::STRING): ResultInterface
+    public function query(string $sql): ResultInterface
     {
-        $stmt = $this->connection->query($sql, $type);
+        $stmt = $this->connection->query($sql);
 
         \assert($stmt instanceof PDOStatement);
 
