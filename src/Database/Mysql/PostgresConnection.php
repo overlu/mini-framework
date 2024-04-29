@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql;
 
-use Doctrine\DBAL\Driver\PDOPgSql\Driver as DoctrineDriver;
+use Mini\Database\Mysql\PDO\PostgresDriver;
 use Mini\Database\Mysql\Query\Grammars\PostgresGrammar as QueryGrammar;
 use Mini\Database\Mysql\Query\Processors\PostgresProcessor;
 use Mini\Database\Mysql\Schema\Grammars\PostgresGrammar as SchemaGrammar;
@@ -88,11 +88,10 @@ class PostgresConnection extends Connection
 
     /**
      * Get the Doctrine DBAL driver.
-     *
-     * @return \Doctrine\DBAL\Driver\PDOPgSql\Driver
+     * @return PostgresDriver
      */
-    protected function getDoctrineDriver()
+    protected function getDoctrineDriver(): PostgresDriver
     {
-        return new DoctrineDriver;
+        return new PostgresDriver();
     }
 }

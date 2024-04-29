@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql;
 
-use Doctrine\DBAL\Driver\PDOMySql\Driver as DoctrineDriver;
+use Mini\Database\Mysql\PDO\MySqlDriver;
 use Mini\Database\Mysql\Query\Grammars\MySqlGrammar as QueryGrammar;
 use Mini\Database\Mysql\Query\Processors\MySqlProcessor;
 use Mini\Database\Mysql\Schema\Grammars\MySqlGrammar as SchemaGrammar;
@@ -60,12 +60,10 @@ class MySqlConnection extends Connection
     }
 
     /**
-     * Get the Doctrine DBAL driver.
-     *
-     * @return \Doctrine\DBAL\Driver\PDOMySql\Driver
+     * @return MySqlDriver
      */
-    protected function getDoctrineDriver()
+    protected function getDoctrineDriver(): MySqlDriver
     {
-        return new DoctrineDriver;
+        return new MySqlDriver();
     }
 }

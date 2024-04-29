@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql;
 
-use Doctrine\DBAL\Driver\PDOSqlite\Driver as DoctrineDriver;
+use Mini\Database\Mysql\PDO\SQLiteDriver;
 use Mini\Database\Mysql\Query\Grammars\SQLiteGrammar as QueryGrammar;
 use Mini\Database\Mysql\Query\Processors\SQLiteProcessor;
 use Mini\Database\Mysql\Schema\Grammars\SQLiteGrammar as SchemaGrammar;
@@ -85,12 +85,10 @@ class SQLiteConnection extends Connection
 
     /**
      * Get the Doctrine DBAL driver.
-     *
-     * @return \Doctrine\DBAL\Driver\PDOSqlite\Driver
      */
-    protected function getDoctrineDriver()
+    protected function getDoctrineDriver(): SQLiteDriver
     {
-        return new DoctrineDriver;
+        return new SQLiteDriver();
     }
 
     /**

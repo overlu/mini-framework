@@ -892,11 +892,10 @@ class Connection implements ConnectionInterface
     /**
      * Get the Doctrine DBAL schema manager for the connection.
      *
-     * @return \Doctrine\DBAL\Schema\AbstractSchemaManager
      */
     public function getDoctrineSchemaManager()
     {
-        return $this->getDoctrineDriver()->getSchemaManager($this->getDoctrineConnection());
+        return $this->getDoctrineConnection()->createSchemaManager();
     }
 
     /**

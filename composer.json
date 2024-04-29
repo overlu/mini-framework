@@ -51,7 +51,7 @@
     },
     "require-dev": {
         "overlu/var-dumper": "^1.0",
-        "doctrine/dbal": "^2.13.3",
-        "phpunit/phpunit": "^9.2"
+        "phpunit/phpunit": "^9.2",
+        "doctrine/dbal": "^4.0"
     }
 }

@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace Mini\Database\Mysql;
 
 use Closure;
-use Doctrine\DBAL\Driver\PDOSqlsrv\Driver as DoctrineDriver;
+use Mini\Database\Mysql\PDO\SqlServerDriver;
 use Mini\Database\Mysql\Query\Grammars\SqlServerGrammar as QueryGrammar;
 use Mini\Database\Mysql\Query\Processors\SqlServerProcessor;
 use Mini\Database\Mysql\Schema\Grammars\SqlServerGrammar as SchemaGrammar;
@@ -103,11 +103,9 @@ class SqlServerConnection extends Connection
 
     /**
      * Get the Doctrine DBAL driver.
-     *
-     * @return \Doctrine\DBAL\Driver\PDOSqlsrv\Driver
      */
     protected function getDoctrineDriver()
     {
-        return new DoctrineDriver;
+        return new SqlServerDriver();
     }
 }
