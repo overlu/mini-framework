@@ -163,20 +163,14 @@ class Route
         $routeInfo = $this->httpDispatcher->dispatch($method, rtrim($uri, '/') ?: '/');
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
-                $resp = app('middleware')->registerBeforeRequest();
-                if (!is_null($resp)) {
-                    return $resp;
-                }
                 return $this->defaultRouter();
             case Dispatcher::METHOD_NOT_ALLOWED:
-                $resp = app('middleware')->registerBeforeRequest();
-                if (!is_null($resp)) {
-                    return $resp;
-                }
                 throw new MethodNotAllowedHttpException();
             case Dispatcher::FOUND:
-                $request->routes = $routeInfo[2] ?? [];
-                return $this->dispatchHandle($routeInfo[1], $request->routes, $uri);
+//                $request->routes = $routeInfo[2] ?? [];
+                $routes = $routeInfo[2] ?? [];
+                request()->setRouteParams($routeInfo[2] ?? []);
+                return $this->dispatchHandle($routeInfo[1], $routes, $uri);
         }
         return $this->defaultRouter();
     }
@@ -334,6 +328,10 @@ class Route
     {
         if (empty($this->routes['default'])) {
             throw new NotFoundHttpException();
+        }
+        $resp = app('middleware')->registerBeforeRequest();
+        if (!is_null($resp)) {
+            return $resp;
         }
         return $this->dispatchHandle($this->routes['default'], []);
     }

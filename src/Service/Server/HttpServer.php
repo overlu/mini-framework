@@ -145,8 +145,9 @@ class HttpServer extends AbstractServer
     }
 
     /**
+     * @return \Mini\Service\HttpServer\Request | \Mini\Service\HttpMessage\Server\Request
      */
-    public function request(): Psr\Http\Message\RequestInterface
+    public function request()
     {
         return Context::get(RequestInterface::class);
     }

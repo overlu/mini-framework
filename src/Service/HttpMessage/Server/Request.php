@@ -59,6 +59,8 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
      */
     private mixed $bodyParams;
 
+    private array $routeParams = [];
+
     /**
      * Load a swoole request, and transfer to a psr-7 request object.
      *
@@ -94,6 +96,17 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
     public function getServerParams(): array
     {
         return $this->serverParams;
+    }
+
+    public function setRouteParams(array $params): Request
+    {
+        $this->routeParams = $params;
+        return $this;
+    }
+
+    public function getRouteParams(): array
+    {
+        return $this->routeParams ?? [];
     }
 
     /**

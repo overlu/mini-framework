@@ -393,7 +393,7 @@ class Request implements RequestInterface
      */
     public function route(?string $key = null, $default = null): mixed
     {
-        $routes = $this->getRequest()->getSwooleRequest()->routes ?? [];
+        $routes = $this->getRequest()->getRouteParams();
         return $key ? ($routes[$key] ?? $default) : $routes;
     }
 
@@ -869,6 +869,9 @@ class Request implements RequestInterface
         return $request->{$name}(...$arguments);
     }
 
+    /**
+     * @return \Mini\Service\HttpServer\Request | \Mini\Service\HttpMessage\Server\Request
+     */
     protected function getRequest()
     {
         return Context::get(RequestInterface::class);

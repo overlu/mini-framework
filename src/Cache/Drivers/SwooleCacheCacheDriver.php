@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Cache\Drivers;
 
+use Mini\Server;
 use Swoole\Table;
 use Swoole\Timer;
 
@@ -16,7 +17,7 @@ use Swoole\Timer;
  */
 class SwooleCacheCacheDriver extends AbstractCacheDriver
 {
-    protected Table $table;
+    protected ?Table $table = null;
 
     /**
      * SwooleTable constructor.
@@ -30,7 +31,26 @@ class SwooleCacheCacheDriver extends AbstractCacheDriver
 
     private function initTable(): void
     {
-        $this->table = server()->table;
+        $this->table = Server::getInstance()->getTable();
+        if (empty($this->table)) {
+            $table = new Table(
+                config('cache.drivers.swoole.table.size', 4096),
+                config('cache.drivers.swoole.table.conflict_proportion', 0.2)
+            );
+            $table->column(
+                'value',
+                config('cache.drivers.swoole.column.value.type', Table::TYPE_STRING),
+                config('cache.drivers.swoole.column.value.size', 4096)
+            );
+            $table->column(
+                'expire',
+                config('cache.drivers.swoole.column.expire.type', Table::TYPE_STRING),
+                config('cache.drivers.swoole.column.expire.size', 4)
+            );
+            $table->create();
+            Server::getInstance()->setTable($table);
+            $this->table = $table;
+        }
     }
 
     /**

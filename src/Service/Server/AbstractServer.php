@@ -101,28 +101,7 @@ abstract class AbstractServer
         $this->callbackDispatch();
         $this->eventOnDispatch();
         $this->startDispatch();
-        $this->swooleTableDispatch();
         $this->crontabDispatch();
-    }
-
-    private function swooleTableDispatch(): void
-    {
-        $table = new Table(
-            config('cache.drivers.swoole.table.size', 4096),
-            config('cache.drivers.swoole.table.conflict_proportion', 0.2)
-        );
-        $table->column(
-            'value',
-            config('cache.drivers.swoole.column.value.type', Table::TYPE_STRING),
-            config('cache.drivers.swoole.column.value.size', 4096)
-        );
-        $table->column(
-            'expire',
-            config('cache.drivers.swoole.column.expire.type', Table::TYPE_STRING),
-            config('cache.drivers.swoole.column.expire.size', 4)
-        );
-        $table->create();
-        $this->server->table = $table;
     }
 
     private function eventOnDispatch(): void

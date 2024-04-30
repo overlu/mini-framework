@@ -36,7 +36,7 @@ class Middleware
     public function registerBeforeRequest(?string $method = null, ?object $class = null): mixed
     {
         foreach ($this->middleware as $item) {
-            if ($class && method_exists($class, 'disableMiddleware') && $class->disableMiddleware(get_class($item))) {
+            if ($class && method_exists($class, 'disableMiddleware') && $class->disableMiddleware(get_class($item), 'before')) {
                 continue;
             }
             if (!is_null($response = $item->before($method ?: '', $class ? get_class($class) : ''))) {
@@ -55,7 +55,7 @@ class Middleware
     {
         $middleware = array_reverse($this->middleware);
         foreach ($middleware as $item) {
-            if ($class && method_exists($class, 'disableMiddleware') && $class->disableMiddleware(get_class($item))) {
+            if ($class && method_exists($class, 'disableMiddleware') && $class->disableMiddleware(get_class($item), 'after')) {
                 continue;
             }
             $response = $item->after($response, $class ? get_class($class) : '');

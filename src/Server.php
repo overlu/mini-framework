@@ -7,11 +7,15 @@ declare(strict_types=1);
 
 namespace Mini;
 
+use Swoole\Table;
+
 class Server
 {
     use Singleton;
 
     private \Swoole\Server $server;
+
+    private ?Table $table = null;
 
     /**
      * @param \Swoole\Server $server
@@ -19,6 +23,19 @@ class Server
     public function set(\Swoole\Server $server): void
     {
         $this->server = $server;
+    }
+
+    public function setTable(Table $table): void
+    {
+        $this->table = $table;
+    }
+
+    /**
+     * @return Table|null
+     */
+    public function getTable(): ?Table
+    {
+        return $this->table;
     }
 
     /**
