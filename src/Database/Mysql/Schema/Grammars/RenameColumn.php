@@ -22,13 +22,14 @@ class RenameColumn
      * @param \Mini\Database\Mysql\Schema\Grammars\Grammar $grammar
      * @param \Mini\Database\Mysql\Schema\Blueprint $blueprint
      * @param \Mini\Support\Fluent $command
-     * @param \Mini\Database\Mysql\Connection $connection
+     * @param Connection $connection
      * @return array
+     * @throws \Doctrine\DBAL\Exception
      */
     public static function compile(Grammar $grammar, Blueprint $blueprint, Fluent $command, Connection $connection)
     {
         $schema = $connection->getDoctrineSchemaManager();
-        $databasePlatform = $schema->getDatabasePlatform();
+        $databasePlatform = $connection->getDoctrineConnection()->getDatabasePlatform();
         $databasePlatform->registerDoctrineTypeMapping('enum', 'string');
 
         $column = $connection->getDoctrineColumn(
@@ -68,9 +69,22 @@ class RenameColumn
     protected static function setRenamedColumns(TableDiff $tableDiff, Fluent $command, Column $column)
     {
         $tableDiff->renamedColumns = [
-            $command->from => new Column($command->to, $column->getType(), $column->toArray()),
+            $command->from => new Column($command->to, $column->getType(), self::getWritableColumnOptions($column)),
         ];
 
         return $tableDiff;
+    }
+
+    /**
+     * Get the writable column options.
+     *
+     * @param \Doctrine\DBAL\Schema\Column $column
+     * @return array
+     */
+    private static function getWritableColumnOptions(Column $column)
+    {
+        return array_filter($column->toArray(), function (string $name) use ($column) {
+            return method_exists($column, 'set' . $name);
+        }, ARRAY_FILTER_USE_KEY);
     }
 }

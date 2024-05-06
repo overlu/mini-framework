@@ -7,16 +7,16 @@ declare(strict_types=1);
 
 namespace Mini\Database\Mysql\PDO;
 
-use Doctrine\DBAL\Driver\Connection as DriverConnection;
 use Doctrine\DBAL\Driver\PDO\Result;
 use Doctrine\DBAL\Driver\PDO\Statement;
 use Doctrine\DBAL\Driver\Result as ResultInterface;
+use Doctrine\DBAL\Driver\ServerInfoAwareConnection;
 use Doctrine\DBAL\Driver\Statement as StatementInterface;
 use Doctrine\DBAL\ParameterType;
 use PDO;
 use PDOStatement;
 
-class Connection implements DriverConnection
+class Connection implements ServerInfoAwareConnection
 {
     /**
      * The underlying PDO connection.
@@ -85,7 +85,7 @@ class Connection implements DriverConnection
      * @param string|null $name
      * @return int|string
      */
-    public function lastInsertId(string $name = null): int|string
+    public function lastInsertId($name = null)
     {
         if ($name === null) {
             return $this->connection->lastInsertId();
@@ -132,12 +132,13 @@ class Connection implements DriverConnection
     /**
      * Wrap quotes around the given input.
      *
-     * @param string $value
+     * @param string $input
+     * @param string $type
      * @return string
      */
-    public function quote(string $value): string
+    public function quote($input, $type = ParameterType::STRING)
     {
-        return $this->connection->quote($value);
+        return $this->connection->quote($input, $type);
     }
 
     /**

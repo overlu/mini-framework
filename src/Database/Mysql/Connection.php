@@ -896,7 +896,6 @@ class Connection implements ConnectionInterface
      */
     public function getDoctrineSchemaManager()
     {
-//        return $this->getDoctrineDriver()->getSchemaManager($this->getDoctrineConnection());
         return $this->getDoctrineConnection()->createSchemaManager();
     }
 
