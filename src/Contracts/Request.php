@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\Contracts;
 
+use Carbon\Carbon;
+use Carbon\Exceptions\InvalidFormatException;
 use Mini\Service\HttpMessage\Upload\UploadedFile;
 use Mini\Session\Session;
 use Mini\Validator\Validation;
@@ -255,4 +257,63 @@ interface Request extends ServerRequestInterface
      * @return string[]
      */
     public function getClientIps(): array;
+
+    /**
+     * Retrieve input from the request as a String.
+     *
+     * @param string $key
+     * @param string|null $default
+     * @return string
+     */
+    public function str(string $key, string $default = null): string;
+
+    /**
+     * Retrieve input from the request as a String.
+     *
+     * @param string $key
+     * @param string $default
+     * @return string
+     */
+    public function string(string $key, string $default = ''): string;
+
+    /**
+     * Retrieve input as a boolean value.
+     *
+     * Returns true when value is "1", "true", "on", and "yes". Otherwise, returns false.
+     *
+     * @param string $key
+     * @param bool $default
+     * @return bool
+     */
+    public function boolean(string $key, bool $default = false): bool;
+
+    /**
+     * Retrieve input as an integer value.
+     *
+     * @param string $key
+     * @param int $default
+     * @return int
+     */
+    public function integer(string $key, int $default = 0): int;
+
+    /**
+     * Retrieve input as a float value.
+     *
+     * @param string $key
+     * @param float $default
+     * @return float
+     */
+    public function float(string $key, float $default = 0.0): float;
+
+    /**
+     * Retrieve input from the request as a Carbon instance.
+     *
+     * @param string $key
+     * @param string|null $format
+     * @param string|null $tz
+     * @return Carbon|null
+     *
+     * @throws InvalidFormatException
+     */
+    public function date(string $key, string $format = null, string $tz = null): ?Carbon;
 }

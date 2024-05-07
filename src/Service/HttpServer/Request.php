@@ -7,11 +7,14 @@ declare(strict_types=1);
 
 namespace Mini\Service\HttpServer;
 
+use Carbon\Exceptions\InvalidFormatException;
 use Mini\Context;
 use Mini\Contracts\Request as RequestInterface;
+use Mini\Facades\Date;
 use Mini\Service\HttpMessage\Upload\UploadedFile;
 use Mini\Session\Session;
 use Mini\Support\Arr;
+use Mini\Support\Carbon;
 use Mini\Support\Str;
 use Mini\Validator\Validation;
 use Psr\Http\Message\StreamInterface;
@@ -395,6 +398,123 @@ class Request implements RequestInterface
     {
         $routes = $this->getRequest()->getRouteParams();
         return $key ? ($routes[$key] ?? $default) : $routes;
+    }
+
+    /**
+     * Retrieve input from the request as a String.
+     *
+     * @param string $key
+     * @param string|null $default
+     * @return string
+     */
+    public function str(string $key, string $default = null): string
+    {
+        return $this->string($key, $default);
+    }
+
+    /**
+     * Retrieve input from the request as a String.
+     *
+     * @param string $key
+     * @param string $default
+     * @return string
+     */
+    public function string(string $key, string $default = ''): string
+    {
+        return (string)($this->input($key, $default));
+    }
+
+    /**
+     * Retrieve input as a boolean value.
+     *
+     * Returns true when value is "1", "true", "on", and "yes". Otherwise, returns false.
+     *
+     * @param string $key
+     * @param bool $default
+     * @return bool
+     */
+    public function boolean(string $key, bool $default = false): bool
+    {
+        return filter_var($this->input($key, $default), FILTER_VALIDATE_BOOLEAN);
+    }
+
+    /**
+     * Retrieve input as an integer value.
+     *
+     * @param string $key
+     * @param int $default
+     * @return int
+     */
+    public function integer(string $key, int $default = 0): int
+    {
+        return (int)$this->input($key, $default);
+    }
+
+    /**
+     * Retrieve input as a float value.
+     *
+     * @param string $key
+     * @param float $default
+     * @return float
+     */
+    public function float(string $key, float $default = 0.0): float
+    {
+        return (float)$this->input($key, $default);
+    }
+
+    /**
+     * Retrieve input from the request as a Carbon instance.
+     *
+     * @param string $key
+     * @param string|null $format
+     * @param string|null $tz
+     * @return Carbon|null
+     *
+     * @throws InvalidFormatException
+     */
+    public function date(string $key, string $format = null, string $tz = null): ?Carbon
+    {
+        if ($this->isNotFilled($key)) {
+            return null;
+        }
+
+        if (is_null($format)) {
+            return Date::parse($this->input($key), $tz);
+        }
+
+        return Date::createFromFormat($format, $this->input($key), $tz);
+    }
+
+    /**
+     * Determine if the request contains an empty value for an input item.
+     *
+     * @param array|string $key
+     * @return bool
+     */
+    public function isNotFilled(array|string $key): bool
+    {
+        $keys = is_array($key) ? $key : func_get_args();
+
+        foreach ($keys as $value) {
+            if (!$this->isEmptyString($value)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Determine if the given input key is an empty string for "filled".
+     *
+     * @param string $key
+     * @return bool
+     */
+    protected function isEmptyString(string $key): bool
+    {
+        $value = $this->input($key);
+
+        return !is_bool($value) && !is_array($value) && trim((string)$value) === '';
     }
 
     /**
