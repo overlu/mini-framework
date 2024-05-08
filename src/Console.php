@@ -9,6 +9,7 @@ namespace Mini;
 
 use Mini\Command\CommandService;
 use Mini\Command\HelloMiniCommandService;
+use Mini\Command\IdeHelperModelCommandService;
 use Mini\Command\KeyGenerateCommandService;
 use Mini\Command\LogStatusCommandService;
 use Mini\Command\MakeCommandCommandService;
@@ -66,7 +67,8 @@ class Console
         SocketResetCommandService::class,
         VendorPublishCommandService::class,
         ViewClearCommandService::class,
-        ViewCacheCommandService::class
+        ViewCacheCommandService::class,
+        IdeHelperModelCommandService::class
     ];
 
     /**

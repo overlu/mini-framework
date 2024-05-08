@@ -603,11 +603,20 @@ class Filesystem implements \Mini\Contracts\File
      */
     public function allFiles(string $directory = '', bool $hidden = false): array
     {
-
         return iterator_to_array(
             $this->allFilesAsIterator($directory, $hidden),
             false
         );
+    }
+
+    public function allFilesToArray(string $directory = '', bool $hidden = false): array
+    {
+        $files = [];
+        $resources = $this->allFilesAsIterator($directory, $hidden);
+        foreach ($resources as $file) {
+            $files[] = $file->getPathname();
+        }
+        return $files;
     }
 
     /**

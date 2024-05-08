@@ -8,13 +8,16 @@ declare(strict_types=1);
 namespace Mini\Facades;
 
 /**
- * @method static \Symfony\Component\Finder\Finder allFiles(string $directory, bool $hidden = false)
- * @method static \Symfony\Component\Finder\SplFileInfo[] allFilesToArray(string $directory, bool $hidden = false)
+ * @method static \Symfony\Component\Finder\Finder allFilesAsIterator(string $directory, bool $hidden = false)
+ * @method static \Symfony\Component\Finder\SplFileInfo[] allFiles(string $directory, bool $hidden = false)
+ * @method static array allFilesToArray(string $directory, bool $hidden = false)
  * @method static int allFilesCount(string $directory, bool $hidden = false)
- * @method static \Symfony\Component\Finder\Finder files(string $directory, bool $hidden = false)
- * @method static \Symfony\Component\Finder\SplFileInfo[] filesToArray(string $directory, bool $hidden = false)
- * @method static \Symfony\Component\Finder\Finder directories(string $directory)
- * @method static \Symfony\Component\Finder\Finder allDirectories(string $directory)
+ * @method static \Symfony\Component\Finder\Finder filesAsIterator(string $directory, bool $hidden = false)
+ * @method static \Symfony\Component\Finder\SplFileInfo[] files(string $directory, bool $hidden = false)
+ * @method static array directories(string $directory)
+ * @method static \Symfony\Component\Finder\Finder directoriesAsIterator(string $directory)
+ * @method static \Symfony\Component\Finder\SplFileInfo[] allDirectories(string $directory)
+ * @method static \Symfony\Component\Finder\Finder allDirectoriesAsIterator(string $directory)
  * @method static array directoriesToArray(string $directory)
  * @method static array allDirectoriesToArray(string $directory)
  * @method static int allDirectoriesCount(string $directory)
