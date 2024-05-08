@@ -117,7 +117,6 @@ AND table_schema = '{$databaseName}' ORDER BY ORDINAL_POSITION ASC");
     public function getCommandDescription(): string
     {
         return 'Generate property for ide to understand models .
-                   <blue >{
-                    --model : The model name .}</blue > ';
+                   <blue>{--model : The model name .}</blue> ';
     }
 }
