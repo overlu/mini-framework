@@ -63,12 +63,12 @@ class IdeHelperModelCommandService extends AbstractCommandService
         if (preg_match('/\/\*\*(.*)/', $comment)) {
             return $comment;
         }
-        $arr = explode("\n", $comment);
+        $arr = explode("\n", rtrim($comment, "\n"));
         $newComment = "/**\n";
         foreach ($arr as $str) {
             $newComment .= " * " . $str . "\n";
         }
-        return rtrim($newComment, "\n") . " */";
+        return $newComment . " */";
     }
 
     /**
@@ -102,7 +102,7 @@ AND table_schema = '{$databaseName}' ORDER BY ORDINAL_POSITION ASC");
                 $type = 'array';
             }
             if (in_array($column->COLUMN_NAME, ['created_at', 'updated_at', 'deleted_at'])) {
-                $type = '\\'.Carbon::class;
+                $type = '\\' . Carbon::class;
             }
             $comment .= sprintf("@property %s \$%s %s\n", $type, $column->COLUMN_NAME, $column->COLUMN_COMMENT);
         }
