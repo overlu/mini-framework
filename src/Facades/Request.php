@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Facades;
 
+use Carbon\Carbon;
 use Mini\Context;
 
 /**
@@ -18,6 +19,12 @@ use Mini\Context;
  * @method static mixed post(null|string $key = null, $default = null)
  * @method static mixed input(string $key = null, $default = null)
  * @method static mixed inputs(array $keys, array $default = [])
+ * @method static string str(string $key, string $default = null)
+ * @method static string string(string $key, string $default = null)
+ * @method static bool boolean(string $key, string $default = null)
+ * @method static int integer(string $key, string $default = null)
+ * @method static float float(string $key, string $default = null)
+ * @method static Carbon|null date(string $key, string $format = null, string $tz = null)
  * @method static array hasInput(array $keys)
  * @method static bool has(string|array $keys)
  * @method static mixed header(string $key, $default = null)
