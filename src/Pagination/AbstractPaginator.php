@@ -620,6 +620,17 @@ abstract class AbstractPaginator implements Htmlable, \Mini\Contracts\Pagination
     }
 
     /**
+     * @return $this
+     */
+    public function shuffle(): AbstractPaginator
+    {
+        if ($this->items->isNotEmpty()) {
+            $this->items = $this->items->shuffle();
+        }
+        return $this;
+    }
+
+    /**
      * Get the paginator's underlying collection.
      *
      * @return Collection
