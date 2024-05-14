@@ -50,6 +50,10 @@ class Handler implements HandlerInterface
      */
     public function throw(Throwable $throwable): void
     {
+        if ($throwable instanceof DdException) {
+            $this->dd();
+            return;
+        }
         if ($throwable instanceof HttpException) {
             $this->sendHttpException($throwable);
             return;
@@ -183,7 +187,7 @@ class Handler implements HandlerInterface
      * @param Throwable $throwable
      * @throws Exception
      */
-    protected function sendHttpException(Throwable $throwable): void
+    private function sendHttpException(Throwable $throwable): void
     {
         if (Context::has('IsInRequestEvent') && $swResponse = response()->getSwooleResponse()) {
             if ($throwable instanceof HttpExceptionInterface) {
@@ -212,9 +216,25 @@ class Handler implements HandlerInterface
     }
 
     /**
+     * @return void
+     */
+    private function dd(): void
+    {
+        if (Context::has('IsInRequestEvent') && $swResponse = response()->getSwooleResponse()) {
+            $swResponse->status(200);
+            $swResponse->setHeader('mini-request-id', Seaslog::getRequestID(), true);
+            $swResponse->end();
+            return;
+        }
+        if (Context::has('IsInWebsocketEvent')) {
+            ws_response()->push('');
+        }
+    }
+
+    /**
      * @param Throwable $throwable
      */
-    protected function sendWebsocketException(Throwable $throwable): void
+    private function sendWebsocketException(Throwable $throwable): void
     {
         if (Context::has('IsInWebsocketEvent')) {
             $shouldClose = false;
