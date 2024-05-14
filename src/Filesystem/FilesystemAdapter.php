@@ -597,6 +597,22 @@ class FilesystemAdapter implements CloudFilesystemContract
     }
 
     /**
+     * @param $path
+     * @param $expiration
+     * @param array $options
+     * @return mixed
+     */
+    public function temporaryUploadUrl($path, $expiration, array $options = [])
+    {
+        if (!method_exists($this->adapter, 'temporaryUploadUrl')) {
+            throw new RuntimeException('This driver does not support creating temporary upload URLs.');
+        }
+        
+        return $this->adapter->temporaryUploadUrl($path, $expiration, $options);
+
+    }
+
+    /**
      * Concatenate a path to a URL.
      *
      * @param string $url

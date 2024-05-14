@@ -19,9 +19,9 @@ class Store
      * @param string $key
      * @return array
      */
-    public static function get(string $key): array
+    public static function get(string $key, \Closure $callback = null): array
     {
-        return (array)(Cache::driver(config('websocket.cache_driver', 'redis'))->get($key, []));
+        return (array)(Cache::has($key) ? (Cache::get($key, [])) : Cache::remember($key, $callback));
     }
 
     /**
@@ -45,7 +45,7 @@ class Store
                     $remove_values[] = array_shift($new_values);
                 }
             }
-            Cache::driver(config('websocket.cache_driver', 'redis'))->set($key, $new_values);
+            Cache::set($key, $new_values);
             $redis->del($lockKet);
             return [
                 'remove_values' => $remove_values,
@@ -64,7 +64,7 @@ class Store
      */
     public static function drop(string $key): bool
     {
-        return Cache::driver(config('websocket.cache_driver', 'redis'))->delete($key);
+        return Cache::delete($key);
     }
 
     /**
@@ -90,7 +90,7 @@ class Store
         $index = array_search($value, $values, true);
         if ($index !== false) {
             unset($values[$index]);
-            return Cache::driver(config('websocket.cache_driver', 'redis'))->set($key, [...$values]);
+            return Cache::set($key, [...$values]);
         }
         return false;
     }
