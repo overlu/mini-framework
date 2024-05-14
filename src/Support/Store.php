@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Support;
 
+use Closure;
 use Mini\Facades\Cache;
 use Mini\Facades\Redis;
 
@@ -17,9 +18,10 @@ class Store
     /**
      * 获取数据仓库
      * @param string $key
+     * @param Closure|null $callback
      * @return array
      */
-    public static function get(string $key, \Closure $callback = null): array
+    public static function get(string $key, Closure $callback = null): array
     {
         return (array)(Cache::has($key) ? (Cache::get($key, [])) : Cache::remember($key, $callback));
     }
