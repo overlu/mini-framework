@@ -13,7 +13,9 @@ use Mini\Facades\Redis;
 
 class Store
 {
-    public static string $lockPrefix = 'store_lock:';
+    private static string $lockPrefix = '69014g$9_store_lock:';
+    private static string $prefix = '69014g$9_store:';
+
 
     /**
      * 获取数据仓库
@@ -23,6 +25,7 @@ class Store
      */
     public static function get(string $key, Closure $callback = null): array
     {
+        $key = self::getKey($key);
         return (array)(Cache::has($key) ? (Cache::get($key, [])) : Cache::remember($key, $callback));
     }
 
@@ -35,9 +38,8 @@ class Store
      */
     public static function put(string $key, $value, int $length = 0): array
     {
-        $lockKet = static::$lockPrefix . $key;
         $redis = Redis::connection(config('cache.drivers.redis.collection', 'cache'));
-        $notLocked = $redis->set($lockKet, 1, array('nx', 'ex' => 5));
+        $notLocked = $redis->set(static::$lockPrefix . $key, 1, array('nx', 'ex' => 5));
         if ($notLocked) {
             $values = static::get($key);
             $new_values = array_unique([...$values, ...(array)$value]);
@@ -47,8 +49,8 @@ class Store
                     $remove_values[] = array_shift($new_values);
                 }
             }
-            Cache::set($key, $new_values);
-            $redis->del($lockKet);
+            Cache::set(self::getKey($key), $new_values);
+            $redis->del(static::$lockPrefix . $key);
             return [
                 'remove_values' => $remove_values,
                 'new_values' => $new_values
@@ -66,7 +68,7 @@ class Store
      */
     public static function drop(string $key): bool
     {
-        return Cache::delete($key);
+        return Cache::delete(self::getKey($key));
     }
 
     /**
@@ -92,8 +94,17 @@ class Store
         $index = array_search($value, $values, true);
         if ($index !== false) {
             unset($values[$index]);
-            return Cache::set($key, [...$values]);
+            return Cache::set(self::getKey($key), [...$values]);
         }
         return false;
+    }
+
+    /**
+     * @param string $key
+     * @return string
+     */
+    private static function getKey(string $key): string
+    {
+        return static::$prefix . $key;
     }
 }
