@@ -26,7 +26,7 @@ class Store
     public static function get(string $key, Closure $callback = null): array
     {
         $key = self::getKey($key);
-        return (array)(Cache::has($key) ? (Cache::get($key, [])) : Cache::remember($key, $callback));
+        return (array)(Cache::has($key) ? (Cache::get($key, [])) : ($callback ? Cache::remember($key, $callback) : []));
     }
 
     /**
