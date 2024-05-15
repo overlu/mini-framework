@@ -28,21 +28,21 @@ class BelongsTo extends Relation
      *
      * @var string
      */
-    protected string $foreignKey;
+    protected string $foreignKey = '';
 
     /**
      * The associated key on the parent model.
      *
      * @var string
      */
-    protected string $ownerKey;
+    protected string $ownerKey = '';
 
     /**
      * The name of the relationship.
      *
      * @var string
      */
-    protected string $relationName;
+    protected string $relationName = '';
 
     /**
      * The count of self joins.

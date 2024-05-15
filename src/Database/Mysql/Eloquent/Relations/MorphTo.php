@@ -19,7 +19,7 @@ class MorphTo extends BelongsTo
      *
      * @var string
      */
-    protected string $morphType;
+    protected string $morphType = '';
 
     /**
      * The models whose relations are being eager loaded.

@@ -19,7 +19,7 @@ class MorphPivot extends Pivot
      *
      * @var string
      */
-    protected string $morphType;
+    protected string $morphType = '';
 
     /**
      * The value of the polymorphic relation.
@@ -28,7 +28,7 @@ class MorphPivot extends Pivot
      *
      * @var string
      */
-    protected string $morphClass;
+    protected string $morphClass = '';
 
     /**
      * Set the keys for a save update query.
@@ -46,23 +46,23 @@ class MorphPivot extends Pivot
     /**
      * Delete the pivot model record from the database.
      *
-     * @return int
+     * @return bool|null
      */
-    public function delete(): int
+    public function delete(): ?bool
     {
         if (isset($this->attributes[$this->getKeyName()])) {
-            return (int)parent::delete();
+            return parent::delete();
         }
 
         if ($this->fireModelEvent('deleting') === false) {
-            return 0;
+            return false;
         }
 
         $query = $this->getDeleteQuery();
 
         $query->where($this->morphType, $this->morphClass);
 
-        return tap($query->delete(), function () {
+        return (bool)tap($query->delete(), function () {
             $this->fireModelEvent('deleted', false);
         });
     }

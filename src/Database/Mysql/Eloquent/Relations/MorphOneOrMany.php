@@ -17,14 +17,14 @@ abstract class MorphOneOrMany extends HasOneOrMany
      *
      * @var string
      */
-    protected string $morphType;
+    protected string $morphType = '';
 
     /**
      * The class name of the parent model.
      *
      * @var string
      */
-    protected string $morphClass;
+    protected string $morphClass = '';
 
     /**
      * Create a new morph one or many relationship instance.

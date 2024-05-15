@@ -19,14 +19,14 @@ class MorphToMany extends BelongsToMany
      *
      * @var string
      */
-    protected string $morphType;
+    protected string $morphType = '';
 
     /**
      * The class name of the morph type constraint.
      *
      * @var string
      */
-    protected string $morphClass;
+    protected string $morphClass = '';
 
     /**
      * Indicates if we are connecting the inverse of the relation.

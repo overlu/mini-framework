@@ -28,42 +28,42 @@ class BelongsToMany extends Relation
      *
      * @var string
      */
-    protected string $table;
+    protected string $table = '';
 
     /**
      * The foreign key of the parent model.
      *
      * @var string
      */
-    protected string $foreignPivotKey;
+    protected string $foreignPivotKey = '';
 
     /**
      * The associated key of the relation.
      *
      * @var string
      */
-    protected string $relatedPivotKey;
+    protected string $relatedPivotKey = '';
 
     /**
      * The key name of the parent model.
      *
      * @var string
      */
-    protected string $parentKey;
+    protected string $parentKey = '';
 
     /**
      * The key name of the related model.
      *
      * @var string
      */
-    protected string $relatedKey;
+    protected string $relatedKey = '';
 
     /**
      * The "name" of the relationship.
      *
      * @var string
      */
-    protected ?string $relationName;
+    protected ?string $relationName = '';
 
     /**
      * The pivot table columns to retrieve.
@@ -126,7 +126,7 @@ class BelongsToMany extends Relation
      *
      * @var string
      */
-    protected string $using;
+    protected string $using = '';
 
     /**
      * The name of the accessor to use for the "pivot" relationship.

@@ -18,21 +18,21 @@ trait AsPivot
      *
      * @var Model|null
      */
-    public ?Model $pivotParent;
+    public ?Model $pivotParent = null;
 
     /**
      * The name of the foreign key column.
      *
      * @var string
      */
-    protected string $foreignKey;
+    protected string $foreignKey = '';
 
     /**
      * The name of the "other key" column.
      *
      * @var string
      */
-    protected string $relatedKey;
+    protected string $relatedKey = '';
 
     /**
      * Create a new pivot model instance.
@@ -111,21 +111,21 @@ trait AsPivot
     /**
      * Delete the pivot model record from the database.
      *
-     * @return int
+     * @return bool|null
      */
-    public function delete(): int
+    public function delete(): ?bool
     {
         if (isset($this->attributes[$this->getKeyName()])) {
-            return (int)parent::delete();
+            return parent::delete();
         }
 
         if ($this->fireModelEvent('deleting') === false) {
-            return 0;
+            return false;
         }
 
         $this->touchOwners();
 
-        return tap($this->getDeleteQuery()->delete(), function () {
+        return (bool)tap($this->getDeleteQuery()->delete(), function () {
             $this->fireModelEvent('deleted', false);
         });
     }

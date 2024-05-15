@@ -40,28 +40,28 @@ class HasManyThrough extends Relation
      *
      * @var string
      */
-    protected string $firstKey;
+    protected string $firstKey = '';
 
     /**
      * The far key on the relationship.
      *
      * @var string
      */
-    protected string $secondKey;
+    protected string $secondKey = '';
 
     /**
      * The local key on the relationship.
      *
      * @var string
      */
-    protected string $localKey;
+    protected string $localKey = '';
 
     /**
      * The local key on the intermediary model.
      *
      * @var string
      */
-    protected string $secondLocalKey;
+    protected string $secondLocalKey = '';
 
     /**
      * The count of self joins.

@@ -37,8 +37,6 @@ class Connector
      * @param array $config
      * @param array $options
      * @return PDO
-     *
-     * @throws Exception
      */
     public function createConnection(string $dsn, array $config, array $options): PDO|PDOConnection
     {
