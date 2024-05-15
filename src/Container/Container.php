@@ -857,6 +857,8 @@ class Container implements ArrayAccess, ContainerContract
 
         if (!is_null($constructor)) {
             $dependencies = $constructor->getParameters();
+        } else {
+            $dependencies = [];
         }
 
         if ($isSignleton) {
