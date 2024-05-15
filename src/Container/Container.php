@@ -16,6 +16,7 @@ use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\Container\CircularDependencyException;
 use Mini\Contracts\App as ContainerContract;
 use LogicException;
+use Mini\Singleton;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionParameter;
@@ -838,10 +839,11 @@ class Container implements ArrayAccess, ContainerContract
             throw new BindingResolutionException("Target class [$concrete] does not exist.", 0, $e);
         }
 
+        $isSignleton = in_array(Singleton::class, $reflector->getTraitNames(), true);
         // If the type is not instantiable, the developer is attempting to resolve
         // an abstract type such as an Interface or Abstract Class and there is
         // no binding registered for the abstractions so we need to bail out.
-        if (!$reflector->isInstantiable()) {
+        if (!$reflector->isInstantiable() && !$isSignleton) {
             $this->notInstantiable($concrete);
         }
 
@@ -853,6 +855,15 @@ class Container implements ArrayAccess, ContainerContract
 
         $constructor = $reflector->getConstructor();
 
+        if (!is_null($constructor)) {
+            $dependencies = $constructor->getParameters();
+        }
+
+        if ($isSignleton) {
+            array_pop($this->buildStack);
+            return $concrete::getInstance(...$dependencies);
+        }
+
         // If there are no constructors, that means there are no dependencies then
         // we can just resolve the instances of the objects right away, without
         // resolving any other types or dependencies out of these containers.
@@ -861,8 +872,6 @@ class Container implements ArrayAccess, ContainerContract
 
             return new $concrete;
         }
-
-        $dependencies = $constructor->getParameters();
 
         // Once we have all the constructor's parameters we can create each of the
         // dependency instances and then use the reflection instances to make a
@@ -1036,7 +1045,6 @@ class Container implements ArrayAccess, ContainerContract
         } else {
             $message = "Target [$concrete] is not instantiable.";
         }
-
         throw new BindingResolutionException($message);
     }
 
