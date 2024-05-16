@@ -234,7 +234,7 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
      * @param string $name
      * @return string
      */
-    protected function fallbackName($name): string
+    protected function fallbackName(string $name): string
     {
         return str_replace('%', '', Str::ascii($name));
     }

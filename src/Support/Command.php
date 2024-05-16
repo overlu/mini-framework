@@ -129,7 +129,7 @@ class Command
      */
     public static function line(int $line = 1): void
     {
-        printf(str_pad(PHP_EOL, $line));
+        Cli::write(str_pad(PHP_EOL, $line));
     }
 
     /**
@@ -139,7 +139,7 @@ class Command
      */
     public static function message(string $message = '', bool $newLine = true): void
     {
-        printf('%s', Color::render($message . ($newLine ? PHP_EOL : '')));
+        Cli::write($message, $newLine);
     }
 
     /**
@@ -148,7 +148,7 @@ class Command
      */
     public static function suggest(string $message): void
     {
-        static::out($message, 'suggest');
+        Cli::writeln('<notice>' . $string . '</notice>');
     }
 
     /**
@@ -166,8 +166,7 @@ class Command
             'suggest' => "\033[44;37m%s\033[0m",
         ];
         $format = $styles[$style] ?? '%s';
-        $format .= $newLine ? PHP_EOL : '';
-        printf($format, $message);
+        Cli::write(sprintf($format, $message), $newLine);
     }
 
     /**
@@ -191,7 +190,7 @@ class Command
      */
     public static function removeLine(int $n = 1): void
     {
-        print str_repeat("\r\033[K\033[1A\r\033[K\r", $n);
+        Cli::write(str_repeat("\r\033[K\033[1A\r\033[K\r", $n), false);
     }
 
     /**
@@ -211,7 +210,7 @@ class Command
             $line_count += count(str_split($line, (int)$term_width));
         }
         static::removeLine($line_count);
-        Cli::write($message);
+        Cli::write($message, false);
     }
 
     /**

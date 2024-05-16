@@ -19,9 +19,11 @@ use Mini\Service\HttpMessage\Server\Request as Psr7Request;
 use Mini\Service\HttpMessage\Server\Response as Psr7Response;
 use Mini\Service\HttpMessage\Stream\SwooleStream;
 use Mini\Service\Route\Route;
+use MiniExcel\Excel;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Http\Server;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Throwable;
 
 class HttpServer extends AbstractServer
@@ -122,6 +124,22 @@ class HttpServer extends AbstractServer
             return $this->response()
                 ->withAddedHeader('content-type', 'application/json;charset=UTF-8')
                 ->withBody(new SwooleStream((string)$response->toJson()));
+        }
+
+        if (class_exists(SymfonyResponse::class) && $response instanceof SymfonyResponse) {
+            $res = $this->response()->withStatus($response->getStatusCode());
+            foreach ($response->headers->all() as $name => $values) {
+                foreach ($values as $value) {
+                    $res = $res->withHeader($name, $value);
+                }
+            }
+            if (ob_get_length() > 0) {
+                ob_end_clean();
+            }
+            ob_start();
+            $response->sendContent();
+            $content = ob_get_clean();
+            return $res->withBody(new SwooleStream((string)$content));
         }
 
         if (is_object($response)) {
