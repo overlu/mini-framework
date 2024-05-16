@@ -452,7 +452,7 @@ abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializab
      * @param string|null $connection
      * @return static
      */
-    public function newFromBuilder(array $attributes = [], string $connection = null): static
+    public function newFromBuilder($attributes = [], string $connection = null): static
     {
         $model = $this->newInstance([], true);
 
