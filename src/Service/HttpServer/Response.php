@@ -33,6 +33,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use SimpleXMLElement;
 use SplFileInfo;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use function get_class;
 
 class Response implements PsrResponseInterface, ResponseInterface, Sendable
@@ -190,6 +191,52 @@ class Response implements PsrResponseInterface, ResponseInterface, Sendable
             ->withHeader('pragma', 'public')
             ->withHeader('etag', $etag)
             ->withBody(new SwooleFileStream($file));
+    }
+
+    /**
+     * Create a new streamed response instance.
+     *
+     * @param  callable  $callback
+     * @param  int  $status
+     * @param  array  $headers
+     * @return StreamedResponse
+     */
+    public function stream($callback, $status = 200, array $headers = []): StreamedResponse
+    {
+        return new StreamedResponse($callback, $status, $headers);
+    }
+
+    /**
+     * @param $callback
+     * @param $name
+     * @param array $headers
+     * @param $disposition
+     * @return StreamedResponse
+     */
+    public function streamDownload($callback, $name = null, array $headers = [], $disposition = 'attachment'): StreamedResponse
+    {
+        $response = new StreamedResponse($callback, 200, $headers);
+
+        if (!is_null($name)) {
+            $response->headers->set('Content-Disposition', $response->headers->makeDisposition(
+                $disposition,
+                $name,
+                $this->fallbackName($name)
+            ));
+        }
+
+        return $response;
+    }
+
+    /**
+     * Convert the string to ASCII characters that are equivalent to the given name.
+     *
+     * @param string $name
+     * @return string
+     */
+    protected function fallbackName($name): string
+    {
+        return str_replace('%', '', Str::ascii($name));
     }
 
     /**
