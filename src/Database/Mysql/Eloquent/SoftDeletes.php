@@ -66,7 +66,7 @@ trait SoftDeletes
      *
      * @return mixed
      */
-    protected function performDeleteOnModel(): mixed
+    protected function performDeleteOnModel()
     {
         if ($this->forceDeleting) {
             $this->exists = false;
