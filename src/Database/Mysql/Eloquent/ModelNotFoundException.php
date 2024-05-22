@@ -30,10 +30,10 @@ class ModelNotFoundException extends RuntimeException
      * Set the affected Eloquent model and instance ids.
      *
      * @param string $model
-     * @param int|array $ids
+     * @param int|array|string $ids
      * @return $this
      */
-    public function setModel(string $model, int|array $ids = []): self
+    public function setModel(string $model, int|array|string $ids = []): self
     {
         $this->model = $model;
         $this->ids = Arr::wrap($ids);
