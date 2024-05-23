@@ -101,7 +101,7 @@ AND table_schema = '{$databaseName}' ORDER BY ORDINAL_POSITION ASC");
             } elseif ($column->DATA_TYPE === 'json') {
                 $type = 'array';
             }
-            if (in_array($column->COLUMN_NAME, ['created_at', 'updated_at', 'deleted_at'])) {
+            if (in_array($column->COLUMN_NAME, array_merge($model->getDates(), ['deleted_at']), true)) {
                 $type = '\\' . Carbon::class;
             }
             $comment .= sprintf("@property %s \$%s %s\n", $type, $column->COLUMN_NAME, $column->COLUMN_COMMENT);
