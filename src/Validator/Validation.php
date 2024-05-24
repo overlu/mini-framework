@@ -607,7 +607,7 @@ class Validation
     {
         $resolvedInputs = [];
         foreach ($inputs as $key => $rules) {
-            $exp = explode(':', $key);
+            $exp = explode(':', (string)$key);
 
             if (count($exp) > 1) {
                 // set attribute alias
