@@ -550,7 +550,7 @@ if (!function_exists('event')) {
      * @param array $args
      * @return array|null
      */
-    function event(...$args)
+    function event(...$args): ?array
     {
         return app(Dispatcher::class)->dispatch(...$args);
     }
@@ -901,8 +901,8 @@ if (!function_exists('is_json')) {
         if (!is_string($string)) {
             return false;
         }
-        $string = json_decode($string, true);
-        return json_last_error() === JSON_ERROR_NONE ? $string : false;
+        json_decode($string, true);
+        return json_last_error() === JSON_ERROR_NONE;
     }
 }
 

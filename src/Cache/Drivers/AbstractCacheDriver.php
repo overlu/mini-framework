@@ -72,12 +72,12 @@ abstract class AbstractCacheDriver implements Cache
     /**
      * Store an item in the cache for the default time.
      * @param mixed $offset
-     * @param $value
-     * @return bool
+     * @param mixed $value
+     * @return void
      */
-    public function offsetSet(mixed $offset, $value): bool
+    public function offsetSet(mixed $offset, mixed $value): void
     {
-        return $this->put($offset, $value, 3600);
+        $this->put($offset, $value, 3600);
     }
 
     /**
@@ -216,11 +216,11 @@ abstract class AbstractCacheDriver implements Cache
     /**
      * Remove an item from the cache.
      * @param mixed $offset
-     * @return bool
+     * @return void
      */
-    public function offsetUnset(mixed $offset): bool
+    public function offsetUnset(mixed $offset): void
     {
-        return $this->delete($offset);
+        $this->delete($offset);
     }
 
     /**

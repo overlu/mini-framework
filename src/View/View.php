@@ -86,9 +86,9 @@ class View implements ArrayAccess, Htmlable, ViewContract
      * Get the string contents of the view.
      *
      * @param callable|null $callback
-     * @return array|string
+     * @return string
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function render(callable $callback = null): string
     {
@@ -308,46 +308,46 @@ class View implements ArrayAccess, Htmlable, ViewContract
     /**
      * Determine if a piece of data is bound.
      *
-     * @param string $key
+     * @param string $offset
      * @return bool
      */
-    public function offsetExists($key): bool
+    public function offsetExists($offset): bool
     {
-        return array_key_exists($key, $this->data);
+        return array_key_exists($offset, $this->data);
     }
 
     /**
      * Get a piece of bound data to the view.
      *
-     * @param string $key
+     * @param string $offset
      * @return mixed
      */
-    public function offsetGet($key): mixed
+    public function offsetGet($offset): mixed
     {
-        return $this->data[$key];
+        return $this->data[$offset];
     }
 
     /**
      * Set a piece of data on the view.
      *
-     * @param string $key
+     * @param string $offset
      * @param mixed $value
      * @return void
      */
-    public function offsetSet($key, mixed $value): void
+    public function offsetSet($offset, mixed $value): void
     {
-        $this->with($key, $value);
+        $this->with($offset, $value);
     }
 
     /**
      * Unset a piece of data from the view.
      *
-     * @param string $key
+     * @param string $offset
      * @return void
      */
-    public function offsetUnset($key): void
+    public function offsetUnset($offset): void
     {
-        unset($this->data[$key]);
+        unset($this->data[$offset]);
     }
 
     /**
@@ -368,7 +368,7 @@ class View implements ArrayAccess, Htmlable, ViewContract
      * @param mixed $value
      * @return void
      */
-    public function __set(string $key, $value): void
+    public function __set(string $key, mixed $value): void
     {
         $this->with($key, $value);
     }
@@ -390,7 +390,7 @@ class View implements ArrayAccess, Htmlable, ViewContract
      * @param string $key
      * @return void
      */
-    public function __unset($key): void
+    public function __unset(string $key): void
     {
         unset($this->data[$key]);
     }

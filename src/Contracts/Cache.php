@@ -53,9 +53,9 @@ interface Cache extends ArrayAccess
      * Store an item in the cache for the default time.
      * @param mixed $offset
      * @param mixed $value
-     * @return bool
+     * @return void
      */
-    public function offsetSet(mixed $offset, mixed $value): bool;
+    public function offsetSet(mixed $offset, mixed $value): void;
 
     /**
      * Store an item in the cache.
@@ -143,9 +143,9 @@ interface Cache extends ArrayAccess
     /**
      * Remove an item from the cache.
      * @param mixed $offset
-     * @return bool
+     * @return void
      */
-    public function offsetUnset(mixed $offset): bool;
+    public function offsetUnset(mixed $offset): void;
 
     /**
      * @param array $keys

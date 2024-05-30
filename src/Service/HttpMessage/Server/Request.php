@@ -17,9 +17,6 @@ use Psr\Http\Message\UriInterface;
 
 class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRequestInterface
 {
-    /**
-     * @var \Swoole\Http\Request
-     */
     protected \Swoole\Http\Request $swooleRequest;
 
     /**
@@ -480,7 +477,7 @@ class Request extends \Mini\Service\HttpMessage\Base\Request implements ServerRe
 
         $contentType = strtolower($request->getHeaderLine('Content-Type'));
         if (str_starts_with($contentType, 'application/json')) {
-            $data = json_decode($request->getBody()->getContents(), true) ?? [];
+            $data = is_json($request->getBody()->getContents()) ? json_decode($request->getBody()->getContents(), true) : [];
         }
 
         return $data;
