@@ -95,7 +95,7 @@ class EloquentServiceProvider extends AbstractServiceProvider
 
         Model::setEventDispatcher($this->app['events']);
 
-        if (!config('logging.database_query_log_enabled', false) || config('app.env') === 'production') {
+        if (!config('logging.database_query_log_enabled', false)) {
             return;
         }
 

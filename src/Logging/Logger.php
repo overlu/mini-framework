@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Logging;
 
 use Mini\Console\Cli;
+use Mini\Facades\Event;
 use SeasLog;
 
 /**
@@ -31,6 +32,7 @@ class Logger
         'info' => 'info',
         'notice' => 'warning',
         'debug' => 'warning',
+        'warning' => 'warning'
     ];
 
     private static array $notOutPutErrorModules = ['system', 'pay', 'crontab'];
@@ -55,7 +57,7 @@ class Logger
             $arguments[2] = '';
         }
         $arguments[1] = [];
-
+        self::fireLoggerEvent($name, $arguments);
         SeasLog::$name(...$arguments);
     }
 
@@ -89,7 +91,8 @@ class Logger
         $arguments = self::parseData([
             $message, $context, $module
         ]);
-
+        self::output($level, $arguments);
+        self::fireLoggerEvent($level, $arguments);
         SeasLog::log($level, ...$arguments);
     }
 
@@ -104,5 +107,10 @@ class Logger
             }
         }
         return $arguments;
+    }
+
+    private static function fireLoggerEvent(string $level, array $arguments): void
+    {
+        Event::dispatch('logging.' . $level, new LoggingEvent(sprintf($arguments[0], $arguments[1]), $arguments[2], $level));
     }
 }

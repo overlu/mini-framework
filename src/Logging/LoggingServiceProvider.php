@@ -19,6 +19,11 @@ class LoggingServiceProvider extends AbstractServiceProvider
             $config = config('logging');
             @Seaslog::setBasePath($config['default_base_path']);
             @Seaslog::setLogger($config['default_logger']);
+            if (!empty($config['observer']) && class_exists($config['observer']) && $config['observer'] instanceof Observer) {
+                foreach (Logger::$cliLevel as $level => $item) {
+                    $this->app['events']->listen('logging.' . $level, $config['observer'] . '@' . (method_exists($config['observer'], $level) ? $level : 'handle'));
+                }
+            }
         } catch (Throwable $throwable) {
             $this->app['exception']->logError($throwable);
         }
