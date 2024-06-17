@@ -111,6 +111,6 @@ class Logger
 
     private static function fireLoggerEvent(string $level, array $arguments): void
     {
-        Event::dispatch('logging.' . $level, new LoggingEvent(sprintf($arguments[0], $arguments[1]), $arguments[2], $level));
+        Event::dispatch('logging.' . $level, new LoggingEvent(empty($arguments[1]) ? $arguments[0] : sprintf($arguments[0], $arguments[1]), $arguments[2], $level));
     }
 }
