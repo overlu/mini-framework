@@ -20,6 +20,7 @@ use Mini\Exception\WebsocketException;
 use Mini\Server;
 use Mini\Service\HttpMessage\Cookie\Cookie;
 use Mini\Service\HttpMessage\Uri\Uri;
+use Mini\Service\Route\UrlGenerator;
 use Mini\Service\WsServer\Request;
 use Mini\Service\WsServer\Response;
 use Mini\Session\Session;
@@ -642,9 +643,9 @@ if (!function_exists('url')) {
      * @param ?string $path
      * @param array $params
      * @param string $fragment
-     * @return Uri|string
+     * @return UrlGenerator|string
      */
-    function url(?string $path = null, array $params = [], string $fragment = ''): Uri|string
+    function url(?string $path = null, array $params = [], string $fragment = ''): UrlGenerator|string
     {
         if (is_null($path)) {
             return app('url');
