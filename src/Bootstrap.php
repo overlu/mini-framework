@@ -42,7 +42,8 @@ class Bootstrap
         \Mini\Hashing\HashServiceProvider::class,
         \Mini\View\ViewServiceProvider::class,
         \Mini\Console\ConsoleServiceProvider::class,
-        \Mini\Service\Route\RouteServiceProvider::class
+        \Mini\Service\Route\RouteServiceProvider::class,
+        \Mini\Mail\MailServiceProvider::class
     ];
 
     public static function initial(): void

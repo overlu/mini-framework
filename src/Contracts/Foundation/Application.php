@@ -20,11 +20,9 @@ interface Application extends Container
 
     /**
      * Get or check the current application environment.
-     *
-     * @param string|array $environments
      * @return string
      */
-    public function environment(...$environments): string;
+    public function environment(): string;
 
     /**
      * Get the current application locale.
