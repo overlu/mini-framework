@@ -146,7 +146,7 @@ trait BuildsQueries
      * @param array|string $columns
      * @return Model|object|static|null
      */
-    public function first(array|string $columns = ['*']): mixed
+    public function first(mixed $columns = ['*']): mixed
     {
         return $this->take(1)->get($columns)->first();
     }

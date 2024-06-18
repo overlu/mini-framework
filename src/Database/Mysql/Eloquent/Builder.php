@@ -472,7 +472,7 @@ class Builder
      *
      * @throws ModelNotFoundException
      */
-    public function firstOrFail(array $columns = ['*']): Model|static
+    public function firstOrFail(mixed $columns = ['*']): Model|static
     {
         if (!is_null($model = $this->first($columns))) {
             return $model;

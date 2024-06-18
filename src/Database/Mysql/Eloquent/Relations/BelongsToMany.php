@@ -724,7 +724,7 @@ class BelongsToMany extends Relation
      * @param array $columns
      * @return mixed
      */
-    public function first(array $columns = ['*']): mixed
+    public function first(mixed $columns = ['*']): mixed
     {
         $results = $this->take(1)->get($columns);
 
@@ -739,7 +739,7 @@ class BelongsToMany extends Relation
      *
      * @throws ModelNotFoundException
      */
-    public function firstOrFail(array $columns = ['*']): Model|static
+    public function firstOrFail(mixed $columns = ['*']): Model|static
     {
         if (!is_null($model = $this->first($columns))) {
             return $model;

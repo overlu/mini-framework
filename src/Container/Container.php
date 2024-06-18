@@ -16,6 +16,7 @@ use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Contracts\Container\CircularDependencyException;
 use Mini\Contracts\App as ContainerContract;
 use LogicException;
+use Mini\Facades\Lang;
 use Mini\Singleton;
 use ReflectionClass;
 use ReflectionException;
@@ -1400,6 +1401,77 @@ class Container implements ArrayAccess, ContainerContract
     public function offsetUnset($offset): void
     {
         unset($this->bindings[$offset], $this->instances[$offset], $this->resolved[$offset]);
+    }
+
+    /**
+     * Get the current application locale.
+     *
+     * @return string
+     */
+    public function getLocale(): string
+    {
+        return config('app.locale');
+    }
+
+    /**
+     * Get the current application locale.
+     *
+     * @return string
+     */
+    public function currentLocale(): string
+    {
+        return $this->getLocale();
+    }
+
+    /**
+     * Get the current application fallback locale.
+     *
+     * @return string
+     */
+    public function getFallbackLocale(): string
+    {
+        return config('app.fallback_locale');
+    }
+
+    /**
+     * Set the current application locale.
+     *
+     * @param string $locale
+     * @return void
+     */
+    public function setLocale(string $locale): void
+    {
+        config([
+            'app.locale' => $locale
+        ]);
+
+        Lang::setLocale($locale);
+    }
+
+    /**
+     * Set the current application fallback locale.
+     *
+     * @param string $fallbackLocale
+     * @return void
+     */
+    public function setFallbackLocale(string $fallbackLocale): void
+    {
+        config([
+            'app.fallback_locale' => $fallbackLocale
+        ]);
+
+        Lang::setFallbackLocale($fallbackLocale);
+    }
+
+    /**
+     * Determine if the application locale is the given locale.
+     *
+     * @param string $locale
+     * @return bool
+     */
+    public function isLocale(string $locale): bool
+    {
+        return $this->getLocale() === $locale;
     }
 
     /**

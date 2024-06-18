@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\Console;
 
+use Mini\Support\Command;
+
 /**
  * Class Color
  *
@@ -265,7 +267,7 @@ class Color
      */
     public static function printf(string $format, ...$args): void
     {
-        echo self::render(sprintf($format, ...$args));
+        Command::message(self::render(sprintf($format, ...$args)));
     }
 
     /**
@@ -276,8 +278,7 @@ class Color
     public static function println(array|string $messages, string $style = 'info'): void
     {
         $string = is_array($messages) ? implode("\n", $messages) : $messages;
-        echo self::render($string, $style);
-        echo "\n";
+        Command::message(self::render($string, $style));
     }
 
     /**

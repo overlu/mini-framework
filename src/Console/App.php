@@ -328,7 +328,7 @@ class App
     public function displayHelp(string $err = ''): void
     {
         if ($err) {
-            echo Color::render("<red>Error</red>: $err\n\n");
+            Command::message("<error>Error</error>:" . $err);
         }
 
         // help
@@ -349,7 +349,7 @@ class App
 
         $help .= "\nFor command usage please run: <cyan>{$this->script} command [options] [arguments]</cyan>";
 
-        echo Color::render($help) . PHP_EOL;
+        Command::message($help);
         exit(0);
     }
 
@@ -393,7 +393,7 @@ class App
             ]);
         }
 
-        echo Color::render($help);
+        Command::message($help);
     }
 
     /**

@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\Console;
 
+use Mini\Support\Command;
+
 /**
  * Class Terminal - terminal control by ansiCode
  * 2K 清除本行
@@ -199,7 +201,7 @@ class Terminal
             }
         }
 
-        echo self::build($code, '');
+        Command::message(self::build($code, ''));
 
         return $this;
     }
@@ -225,7 +227,7 @@ class Terminal
             $code = sprintf($code, $arg);
         }
 
-        echo self::build($code, '');
+        Command::message(self::build($code, ''));
 
         return $this;
     }

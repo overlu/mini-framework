@@ -43,11 +43,12 @@ if (!function_exists('value')) {
      * Return the default value of the given value.
      *
      * @param mixed $value
+     * @param mixed ...$args
      * @return mixed
      */
-    function value(mixed $value): mixed
+    function value(mixed $value, ...$args): mixed
     {
-        return $value instanceof Closure ? $value() : $value;
+        return $value instanceof Closure ? $value(...$args) : $value;
     }
 }
 
@@ -895,9 +896,9 @@ if (!function_exists('view')) {
 if (!function_exists('is_json')) {
     /**
      * @param $string
-     * @return bool|array
+     * @return bool
      */
-    function is_json($string): bool|array
+    function is_json($string): bool
     {
         if (!is_string($string)) {
             return false;
@@ -1108,5 +1109,47 @@ if (!function_exists('throw_unless')) {
         throw_if(!$condition, $exception, ...$parameters);
 
         return (bool)$condition;
+    }
+}
+
+if (!function_exists('blank')) {
+    /**
+     * Determine if the given value is "blank".
+     *
+     * @param mixed $value
+     * @return bool
+     */
+    function blank(mixed $value): bool
+    {
+        if (is_null($value)) {
+            return true;
+        }
+
+        if (is_string($value)) {
+            return trim($value) === '';
+        }
+
+        if (is_numeric($value) || is_bool($value)) {
+            return false;
+        }
+
+        if ($value instanceof Countable) {
+            return count($value) === 0;
+        }
+
+        return empty($value);
+    }
+}
+
+if (!function_exists('filled')) {
+    /**
+     * Determine if a value is "filled".
+     *
+     * @param mixed $value
+     * @return bool
+     */
+    function filled(mixed $value): bool
+    {
+        return !blank($value);
     }
 }

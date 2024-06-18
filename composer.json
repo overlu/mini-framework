@@ -34,7 +34,10 @@
         "psr/event-dispatcher": "^1.0",
         "laravel/serializable-closure": "^1.3",
         "guzzlehttp/guzzle": "^7.8",
-        "guzzlehttp/uri-template": "^1.0"
+        "guzzlehttp/uri-template": "^1.0",
+        "symfony/mailer": "^6.2",
+        "league/commonmark": "^2.2",
+        "tijsverkoyen/css-to-inline-styles": "^2.2.5"
     },
     "autoload": {
         "psr-4": {
@@ -52,6 +55,7 @@
     "require-dev": {
         "overlu/var-dumper": "^1.0",
         "phpunit/phpunit": "^9.2",
-        "doctrine/dbal": "^3.0"
+        "doctrine/dbal": "^3.0",
+        "aws/aws-sdk-php": "^3.314"
     }
 }

@@ -109,6 +109,25 @@ class Translate implements \Mini\Contracts\Translate
         $this->locate = $locate;
     }
 
+    public function getFallbackLocale(): string
+    {
+        return $this->fallback_locale;
+    }
+
+    /**
+     * @param string $locate
+     * @return void
+     */
+    public function setFallbackLocale(string $locate): void
+    {
+        $this->fallback_locale = $locate;
+    }
+
+    public function resetFallbackLocale(): void
+    {
+        $this->fallback_locale = config('app.fallback_locale', 'en');
+    }
+
     /**
      * @return void
      */

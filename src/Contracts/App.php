@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\Contracts;
 
-use Mini\Contracts\Container\Container;
+use Mini\Contracts\Foundation\Application;
 
-interface App extends Container
+interface App extends Application
 {
 }
