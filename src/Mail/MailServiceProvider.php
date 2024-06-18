@@ -8,9 +8,9 @@ declare(strict_types=1);
 namespace Mini\Mail;
 
 use Mini\Contracts\Support\DeferrableProvider;
-use Mini\Support\ServiceProvider;
+use Mini\Service\AbstractServiceProvider;
 
-class MailServiceProvider extends ServiceProvider implements DeferrableProvider
+class MailServiceProvider extends AbstractServiceProvider implements DeferrableProvider
 {
     /**
      * Register the service provider.
