@@ -48,7 +48,7 @@ class MailServiceProvider extends ServiceProvider implements DeferrableProvider
     {
         if (RUN_ENV === 'artisan') {
             $this->publishes([
-                __DIR__ . '/resources/views' => resource_path('views/vendor/mail'),
+                __DIR__ . '/resources/views' => resource_path('views/mail'),
             ], 'laravel-mail');
         }
 
