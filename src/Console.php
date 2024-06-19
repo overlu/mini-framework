@@ -17,6 +17,7 @@ use Mini\Command\MakeControllerCommandService;
 use Mini\Command\MakeCrontabCommandService;
 use Mini\Command\MakeEventCommandService;
 use Mini\Command\MakeListenerCommandService;
+use Mini\Command\MakeMailCommandService;
 use Mini\Command\MakeMiddlewareCommandService;
 use Mini\Command\MakeMigrationCommandService;
 use Mini\Command\MakeModelCommandService;
@@ -61,6 +62,7 @@ class Console
         MakeModelCommandService::class,
         MakeObserverCommandService::class,
         MakeProviderCommandService::class,
+        MakeMailCommandService::class,
         StorageLinkCommandService::class,
         RunCrontabCommandService::class,
         StatusCrontabCommandService::class,

@@ -107,22 +107,22 @@ abstract class GeneratorStubCommand extends AbstractCommandService
 
     /**
      * @param Process|null $process
-     * @return void
+     * @return bool
      * @throws EntryNotFoundException
      * @throws FileNotFoundException
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         $name = $this->getNameInput();
 
         if (empty($name)) {
             $this->error("Miss {$this->type} name");
-            return;
+            return false;
         }
 
         if ($this->isReservedName($name)) {
             $this->error('The name "' . $name . '" is reserved by PHP.');
-            return;
+            return false;
         }
 
         $name = $this->qualifyClass($name);
@@ -133,7 +133,7 @@ abstract class GeneratorStubCommand extends AbstractCommandService
         if ($this->alreadyExists($name) && (!$this->hasOption('force') ||
                 !$this->option('force'))) {
             $this->error($this->type . ' [' . $name . '] already exists! use --force overwrite the file.');
-            return;
+            return false;
         }
 
         $this->makeDirectory($path);
@@ -141,6 +141,8 @@ abstract class GeneratorStubCommand extends AbstractCommandService
         $this->filesystem->put($path, $this->sortImports($this->buildClass($name)));
 
         $this->info($this->type . ' [' . $name . '] created successfully.');
+
+        return true;
     }
 
     /**
@@ -166,6 +168,13 @@ abstract class GeneratorStubCommand extends AbstractCommandService
     protected function replaceParams(string $stub): string
     {
         return $stub;
+    }
+
+    protected function viewPath($path = ''): string
+    {
+        $views = config('view.paths')[0] ?? resource_path('views');
+
+        return rtrim($views, DIRECTORY_SEPARATOR) . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
 
     /**

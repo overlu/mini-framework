@@ -15,17 +15,19 @@ class MigrateCommandService extends AbstractCommandService
 
     /**
      * @param Process|null $process
+     * @return bool
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         if (!$this->confirmToProceed()) {
-            return;
+            return false;
         }
         $this->prepareDatabase();
         $this->migrator->run([$this->getMigrationPaths()], [
             'pretend' => $this->getOpt('pretend'),
             'step' => $this->getOpt('step'),
         ]);
+        return true;
     }
 
     protected function prepareDatabase(): void

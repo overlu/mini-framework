@@ -16,9 +16,9 @@ class ViewCacheCommandService extends AbstractCommandService
 {
     /**
      * @param Process|null $process
-     * @return void
+     * @return bool
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         $this->call('view:clear');
 
@@ -27,12 +27,14 @@ class ViewCacheCommandService extends AbstractCommandService
         });
 
         $this->info('Blade templates cached successfully!');
+
+        return true;
     }
 
     /**
      * Get the Blade files in the given path.
      *
-     * @param  array  $paths
+     * @param array $paths
      * @return Collection
      */
     protected function bladeFilesIn(array $paths): Collection
@@ -49,7 +51,7 @@ class ViewCacheCommandService extends AbstractCommandService
     /**
      * Compile the given view files.
      *
-     * @param  Collection  $views
+     * @param Collection $views
      * @return void
      */
     protected function compileViews(Collection $views): void

@@ -37,7 +37,8 @@
         "guzzlehttp/uri-template": "^1.0",
         "symfony/mailer": "^6.2",
         "league/commonmark": "^2.2",
-        "tijsverkoyen/css-to-inline-styles": "^2.2.5"
+        "tijsverkoyen/css-to-inline-styles": "^2.2.5",
+        "voku/portable-ascii": "^2.0"
     },
     "autoload": {
         "psr-4": {

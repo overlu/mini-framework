@@ -19,17 +19,17 @@ class MakeMigrationCommandService extends AbstractCommandService
     protected string $type = 'migration';
 
     /**
-     * @param Process $process
-     * @return void
+     * @param Process|null $process
+     * @return bool
      * @throws Exception
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         run(function () {
             $name = trim($this->argument('name', $this->getArg(0, '')));
             if (empty($name)) {
                 $this->error("Miss {$this->type} name");
-                return;
+                return false;
             }
             $table = $this->getOpt('table');
             $create = $this->getOpt('create', false);
@@ -46,7 +46,11 @@ class MakeMigrationCommandService extends AbstractCommandService
             }
 
             $this->writeMigration($name, $table, $create);
+
+            return true;
         });
+
+        return true;
     }
 
     /**

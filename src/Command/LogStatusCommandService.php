@@ -19,9 +19,9 @@ class LogStatusCommandService extends AbstractCommandService
 {
     /**
      * @param Process|null $process
-     * @return void
+     * @return bool
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         $status = SeasLog::analyzerCount();
         $total = 0;
@@ -31,6 +31,7 @@ class LogStatusCommandService extends AbstractCommandService
         }
         $status['TOTAL'] = (string)$total;
         Table::show([$status], ' ');
+        return true;
     }
 
     public function getCommand(): string

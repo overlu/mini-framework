@@ -15,13 +15,13 @@ class MigrateRollbackCommandService extends AbstractCommandService
 
     /**
      * @param Process|null $process
-     * @return void
+     * @return bool
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         run(function () {
             if (!$this->confirmToProceed()) {
-                return;
+                return false;
             }
             $this->migrator->setConnection($this->getOpt('database'));
             $this->migrator->rollback(
@@ -30,7 +30,10 @@ class MigrateRollbackCommandService extends AbstractCommandService
                     'step' => (int)$this->getOpt('step'),
                 ]
             );
+            return true;
         });
+
+        return true;
     }
 
     public function getCommand(): string

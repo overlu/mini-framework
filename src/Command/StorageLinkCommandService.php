@@ -13,9 +13,9 @@ class StorageLinkCommandService extends AbstractCommandService
 {
     /**
      * @param Process|null $process
-     * @return void
+     * @return bool
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         $relative = $this->app->getOpt('relative');
 
@@ -35,6 +35,8 @@ class StorageLinkCommandService extends AbstractCommandService
         }
 
         $this->info('The links have been created.');
+
+        return true;
     }
 
     protected function links()

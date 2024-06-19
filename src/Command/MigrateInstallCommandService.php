@@ -15,8 +15,9 @@ class MigrateInstallCommandService extends AbstractCommandService
 
     /**
      * @param Process|null $process
+     * @return bool
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         run(function () {
             $this->repository->setSource($this->getOpt('database'));
@@ -24,7 +25,9 @@ class MigrateInstallCommandService extends AbstractCommandService
             $this->repository->createRepository();
 
             $this->info('Migration table created successfully.');
+            return true;
         });
+        return true;
     }
 
     public function getCommand(): string

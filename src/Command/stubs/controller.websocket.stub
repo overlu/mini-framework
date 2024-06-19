@@ -5,8 +5,9 @@
  */
 declare(strict_types=1);
 
-namespace App\Controllers\Websocket;
+namespace {{ namespace }};
 
+use App\Controllers\Websocket\Controller;
 use Swoole\Http\Request;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;

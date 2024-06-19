@@ -17,22 +17,23 @@ class KeyGenerateCommandService extends AbstractCommandService
 
     /**
      * @param Process|null $process
-     * @return void
+     * @return bool
      * @throws Exception
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         $key = $this->generateRandomKey();
 
         if ($this->getOpt('show')) {
             $this->comment($key);
-            return;
+            return true;
         }
         if (!$this->setKeyInEnvironmentFile($key)) {
-            return;
+            return false;
         }
 
         $this->info('Application key set successfully.');
+        return true;
     }
 
     /**

@@ -46,9 +46,10 @@ class VendorPublishCommandService extends AbstractCommandService
 
     /**
      * @param Process|null $process
-     * @return void
+     * @return bool
+     * @throws FilesystemException
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         $this->determineWhatShouldBePublished();
         $tags = empty($this->tags) ? [null] : $this->tags;
@@ -56,6 +57,7 @@ class VendorPublishCommandService extends AbstractCommandService
             $this->publishTag($tag);
         }
         $this->info('Publishing complete.');
+        return true;
     }
 
     /**

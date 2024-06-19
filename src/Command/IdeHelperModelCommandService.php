@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\Command;
 
-use Exception;
 use Mini\Database\Mysql\Eloquent\Model;
 use Mini\Facades\DB;
 use Mini\Facades\File;
@@ -20,10 +19,10 @@ class IdeHelperModelCommandService extends AbstractCommandService
 {
     /**
      * @param Process|null $process
-     * @return void
-     * @throws Exception
+     * @return bool
+     * @throws ReflectionException
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         $model = $this->argument('model', '');
         $path = base_path('app/Models/' . $model);
@@ -31,6 +30,7 @@ class IdeHelperModelCommandService extends AbstractCommandService
         foreach ($files as $file) {
             $this->parse($file);
         }
+        return true;
     }
 
     /**

@@ -15,9 +15,9 @@ class StatusCrontabCommandService extends AbstractCommandService
 {
     /**
      * @param Process|null $process
-     * @return void
+     * @return bool
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         CrontabTaskList::initialTaskList();
         $crontabTaskList = CrontabTaskList::getCrontabTaskList();
@@ -34,6 +34,8 @@ class StatusCrontabCommandService extends AbstractCommandService
         empty($data)
             ? $this->message('no crontab.')
             : Table::show($data, 'Mini Crontab List');
+
+        return true;
     }
 
     public function getCommand(): string

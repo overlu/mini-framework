@@ -17,9 +17,9 @@ class RoutesAllCommandService extends AbstractCommandService
 
     /**
      * @param Process|null $process
-     * @return void
+     * @return bool
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         $routes = app('route')->routes();
         $this->parseWebSocketRoutes($routes['ws']);
@@ -82,6 +82,8 @@ class RoutesAllCommandService extends AbstractCommandService
         }
         $this->info('  Http Routes:');
         Table::show($httpRoutes, '');
+
+        return true;
     }
 
     /**

@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Support;
 
 use Mini\Support\Traits\Macroable;
+use Traversable;
 use voku\helper\ASCII;
 
 /**
@@ -1206,6 +1207,64 @@ class Str
      */
     public static function isAscii(string $value): bool
     {
-        return ASCII::is_ascii((string) $value);
+        return ASCII::is_ascii((string)$value);
+    }
+
+    /**
+     * Convert the given string to title case for each word.
+     *
+     * @param string $value
+     * @return string
+     */
+    public static function headline(string $value): string
+    {
+        $parts = explode(' ', $value);
+
+        $parts = count($parts) > 1
+            ? array_map([static::class, 'title'], $parts)
+            : array_map([static::class, 'title'], static::ucsplit(implode('_', $parts)));
+
+        $collapsed = static::replace(['-', '_', ' '], '_', implode('_', $parts));
+
+        return implode(' ', array_filter(explode('_', $collapsed)));
+    }
+
+    /**
+     * Split a string into pieces by uppercase characters.
+     *
+     * @param string $string
+     * @return string[]
+     */
+    public static function ucsplit(string $string): array
+    {
+        return preg_split('/(?=\p{Lu})/u', $string, -1, PREG_SPLIT_NO_EMPTY);
+    }
+
+    /**
+     * Replace the given value in the given string.
+     *
+     * @param string|iterable<string> $search
+     * @param string|iterable<string> $replace
+     * @param string|iterable<string> $subject
+     * @param bool $caseSensitive
+     * @return string|string[]
+     */
+    public static function replace(iterable|string $search, iterable|string $replace, iterable|string $subject, bool $caseSensitive = true): array|string
+    {
+        if ($search instanceof Traversable) {
+            $search = collect($search)->all();
+        }
+
+        if ($replace instanceof Traversable) {
+            $replace = collect($replace)->all();
+        }
+
+        if ($subject instanceof Traversable) {
+            $subject = collect($subject)->all();
+        }
+
+        return $caseSensitive
+            ? str_replace($search, $replace, $subject)
+            : str_ireplace($search, $replace, $subject);
     }
 }

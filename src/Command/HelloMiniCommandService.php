@@ -14,9 +14,9 @@ class HelloMiniCommandService extends AbstractCommandService
 {
     /**
      * @param Process|null $process
-     * @return void
+     * @return bool
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         $version = Application::VERSION;
         $info = <<<EOL
@@ -27,6 +27,8 @@ class HelloMiniCommandService extends AbstractCommandService
 |_| |_|_____|_____|_____\___/     |_|  |_|___|_| \_|___|  {$version}\n
 EOL;
         $this->info($info);
+
+        return true;
     }
 
     public function getCommand(): string

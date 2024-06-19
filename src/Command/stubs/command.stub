@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace App\Console;
+namespace {{ namespace }};
 
 use Mini\Command\AbstractCommandService;
 use Swoole\Process;
@@ -14,11 +14,12 @@ class {{ class }} extends AbstractCommandService
 {
     /**
      * @param Process|null $process
-     * @return void
+     * @return bool
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         // $this->info('do something.');
+        return true;
     }
 
     /**

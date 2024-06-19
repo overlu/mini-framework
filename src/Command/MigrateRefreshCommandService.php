@@ -15,12 +15,12 @@ class MigrateRefreshCommandService extends AbstractCommandService
 
     /**
      * @param Process|null $process
-     * @return void
+     * @return bool
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         if (!$this->confirmToProceed()) {
-            return;
+            return false;
         }
         $database = $this->getOpt('database');
         $path = $this->getOpt('path');
@@ -36,6 +36,8 @@ class MigrateRefreshCommandService extends AbstractCommandService
             'realpath' => $this->getOpt('realpath'),
             'force' => true,
         ]));
+
+        return true;
     }
 
     protected function runRollback($database, $path, $step): void

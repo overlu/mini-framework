@@ -15,23 +15,26 @@ class MigrateResetCommandService extends AbstractCommandService
 
     /**
      * @param Process|null $process
-     * @return void
+     * @return bool
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         run(function () {
             if (!$this->confirmToProceed()) {
-                return;
+                return false;
             }
             $this->migrator->setConnection($this->getOpt('database'));
             if (!$this->migrator->repositoryExists()) {
                 $this->message('Migration table not found.');
-                return;
+                return false;
             }
             $this->migrator->reset(
                 [$this->getMigrationPaths()], $this->getOpt('pretend')
             );
+            return true;
         });
+
+        return true;
     }
 
     public function getCommand(): string

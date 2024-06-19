@@ -5,8 +5,9 @@
  */
 declare(strict_types=1);
 
-namespace App\Controllers\Http;
+namespace {{ namespace }};
 
+use App\Controllers\Http\Controller;
 use Mini\Contracts\Request;
 
 class {{ class }} extends Controller

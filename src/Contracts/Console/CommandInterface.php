@@ -12,10 +12,10 @@ use Swoole\Process;
 interface CommandInterface
 {
     /**
-     * @param Process $process
+     * @param Process|null $process
      * @return mixed
      */
-    public function handle(?Process $process);
+    public function handle(?Process $process): mixed;
 
     /**
      * @return string

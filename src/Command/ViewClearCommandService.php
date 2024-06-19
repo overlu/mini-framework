@@ -15,9 +15,9 @@ class ViewClearCommandService extends AbstractCommandService
 {
     /**
      * @param Process|null $process
-     * @return void
+     * @return bool
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         $path = config('view.compiled');
 
@@ -28,6 +28,8 @@ class ViewClearCommandService extends AbstractCommandService
         File::delete(File::glob("{$path}/*"));
 
         $this->info('Compiled views cleared!');
+
+        return true;
     }
 
     public function getCommand(): string

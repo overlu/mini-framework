@@ -14,13 +14,15 @@ class TestCommandService extends AbstractCommandService
 {
     /**
      * @param Process|null $process
-     * @return void
+     * @return bool
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         run(function () {
             $this->info(Command::exec(BASE_PATH . '/vendor/phpunit/phpunit/phpunit ./tests'));
+            return true;
         });
+        return true;
     }
 
     public function getCommand(): string

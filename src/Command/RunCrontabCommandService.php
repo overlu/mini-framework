@@ -14,11 +14,12 @@ class RunCrontabCommandService extends AbstractCommandService
 {
     /**
      * @param Process|null $process
-     * @return void
+     * @return bool
      */
-    public function handle(?Process $process): void
+    public function handle(?Process $process): bool
     {
         Crontab::run();
+        return true;
     }
 
     public function getCommand(): string
