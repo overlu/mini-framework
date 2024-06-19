@@ -14,12 +14,11 @@ class {{ class }} extends AbstractCommandService
 {
     /**
      * @param Process|null $process
-     * @return bool
+     * @return void
      */
-    public function handle(?Process $process): bool
+    public function handle(?Process $process): void
     {
         // $this->info('do something.');
-        return true;
     }
 
     /**

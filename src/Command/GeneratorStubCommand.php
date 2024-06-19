@@ -369,6 +369,6 @@ abstract class GeneratorStubCommand extends AbstractCommandService
      */
     protected function getName(string $name): string
     {
-        return $name;
+        return ucfirst($name);
     }
 }

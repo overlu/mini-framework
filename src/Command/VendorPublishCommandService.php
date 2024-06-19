@@ -13,6 +13,7 @@ use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\MountManager;
 use Mini\Filesystem\Filesystem;
 use Mini\Service\AbstractServiceProvider;
+use Mini\Support\Str;
 use Swoole\Process;
 
 class VendorPublishCommandService extends AbstractCommandService
@@ -151,8 +152,16 @@ class VendorPublishCommandService extends AbstractCommandService
     protected function moveManagedFiles(MountManager $manager): void
     {
         foreach ($manager->listContents('from://', true) as $file) {
-            if ($file['type'] === 'file' && (!$manager->fileExists('to://' . $file['path']) || $this->getOpt('force'))) {
-                $manager->write('to://' . $file['path'], $manager->read('from://' . $file['path']));
+            $path = Str::after($file['path'], 'from://');
+
+            if (
+                $file['type'] === 'file'
+                && (
+                    (!$this->option('existing') && (!$manager->fileExists('to://' . $path) || $this->option('force')))
+                    || ($this->option('existing') && $manager->fileExists('to://' . $path))
+                )
+            ) {
+                $manager->write('to://' . $path, $manager->read($file['path']));
             }
         }
     }

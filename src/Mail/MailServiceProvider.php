@@ -49,7 +49,7 @@ class MailServiceProvider extends AbstractServiceProvider implements DeferrableP
         if (RUN_ENV === 'artisan') {
             $this->publishes([
                 __DIR__ . '/resources/views' => resource_path('views/mail'),
-            ], 'laravel-mail');
+            ], 'mail');
         }
 
         $this->app->singleton(Markdown::class, function ($app) {

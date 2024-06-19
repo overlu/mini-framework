@@ -92,15 +92,15 @@ class MakeMailCommandService extends GeneratorStubCommand
     {
         $view = $this->option('markdown');
 
-        if (!$view) {
-            $name = str_replace('\\', '/', $this->argument('name'));
+        if (!is_string($view) || !$view) {
+            $name = str_replace('\\', '/', $this->getNameInput());
 
-            $view = 'mail.' . collect(explode('/', $name))
-                    ->map(fn($part) => Str::kebab($part))
-                    ->implode('.');
+            $view = collect(explode('/', $name))
+                ->map(fn($part) => Str::kebab($part))
+                ->implode('.');
         }
 
-        return $view;
+        return 'mail.' . $view;
     }
 
     /**
@@ -141,7 +141,7 @@ class MakeMailCommandService extends GeneratorStubCommand
     public function getCommandDescription(): string
     {
         return 'Create a new email class.
-                   <blue>{--force : Create a new Markdown template for the mailable.}
+                   <blue>{--name : Create a new template for the mailable.}
                    {--markdown : Create a new Markdown template for the mailable.}</blue>';
     }
 }
