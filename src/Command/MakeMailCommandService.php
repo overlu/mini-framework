@@ -141,7 +141,6 @@ class MakeMailCommandService extends GeneratorStubCommand
     public function getCommandDescription(): string
     {
         return 'Create a new email class.
-                   <blue>{--name : Create a new template for the mailable.}
-                   {--markdown : Create a new Markdown template for the mailable.}</blue>';
+                   <blue>{--markdown : Create a new Markdown template for the mailable.}</blue>';
     }
 }
