@@ -917,9 +917,19 @@ class Collection implements ArrayAccess, Enumerable
      * @param mixed|null $initial
      * @return mixed
      */
+//    public function reduce(callable $callback, mixed $initial = null): mixed
+//    {
+//        return array_reduce($this->items, $callback, $initial);
+//    }
     public function reduce(callable $callback, mixed $initial = null): mixed
     {
-        return array_reduce($this->items, $callback, $initial);
+        $result = $initial;
+
+        foreach ($this as $key => $value) {
+            $result = $callback($result, $value, $key);
+        }
+
+        return $result;
     }
 
     /**

@@ -7,52 +7,34 @@ declare(strict_types=1);
 
 namespace Mini\View\Middleware;
 
-use Closure;
-use Mini\Contracts\Request as RequestInterface;
-use Mini\Contracts\View as ViewFactory;
-use Mini\Service\HttpServer\Request;
+use Mini\Contracts\Middleware\MiddlewareInterface;
+use Mini\Contracts\View\Factory as ViewFactory;
 use Mini\Support\ViewErrorBag;
+use Psr\Http\Message\ResponseInterface;
 
-class ShareErrorsFromSession
+class ShareErrorsFromSession implements MiddlewareInterface
 {
     /**
-     * The view factory implementation.
-     *
-     * @var ViewFactory
+     * @param string $method
+     * @param string $className
+     * @return mixed
      */
-    protected ViewFactory $view;
-
-    /**
-     * Create a new error binder instance.
-     *
-     * @param ViewFactory $view
-     * @return void
-     */
-    public function __construct(ViewFactory $view)
+    public function before(string $method, string $className)
     {
-        $this->view = $view;
+        return null;
     }
 
     /**
-     * Handle an incoming request.
-     *
-     * @param Request|RequestInterface $request
-     * @param \Closure $next
-     * @return mixed
+     * @param ResponseInterface $response
+     * @param string $className
+     * @return ResponseInterface
      */
-    public function handle($request, Closure $next)
+    public function after(ResponseInterface $response, string $className): ResponseInterface
     {
-        // If the current session has an "errors" variable bound to it, we will share
-        // its value with all view instances so the views can easily access errors
-        // without having to bind. An empty bag is set when there aren't errors.
-        $this->view->share(
-            'errors', $request->session()->get('errors') ?: new ViewErrorBag
+        view()->share(
+            'errors', request()->session()->get('errors') ?: new ViewErrorBag
         );
 
-        // Putting the errors in the view for every view allows the developer to just
-        // assume that some errors are always available, which is convenient since
-        // they don't have to continually run checks for the presence of errors.
-
-        return $next($request);
+        return $response;
     }
 }

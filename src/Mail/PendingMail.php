@@ -28,28 +28,28 @@ class PendingMail
      *
      * @var string
      */
-    protected string $locale;
+    protected string $locale = '';
 
     /**
      * The "to" recipients of the message.
      *
-     * @var array
+     * @var mixed
      */
-    protected array $to = [];
+    protected mixed $to = [];
 
     /**
      * The "cc" recipients of the message.
      *
-     * @var array
+     * @var mixed
      */
-    protected array $cc = [];
+    protected mixed $cc = [];
 
     /**
      * The "bcc" recipients of the message.
      *
-     * @var array
+     * @var mixed
      */
-    protected array $bcc = [];
+    protected mixed $bcc = [];
 
     /**
      * Create a new mailable mailer instance.

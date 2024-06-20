@@ -56,11 +56,11 @@ class Message
      * @param string|null $name
      * @return $this
      */
-    public function from(array|string $address, string $name = null): self
+    public function from(array|string $address, string $name = ''): self
     {
         is_array($address)
             ? $this->message->from(...$address)
-            : $this->message->from(new Address($address, (string)$name));
+            : $this->message->from(new Address($address, $name));
 
         return $this;
     }
@@ -72,11 +72,11 @@ class Message
      * @param string|null $name
      * @return $this
      */
-    public function sender(array|string $address, string $name = null): self
+    public function sender(array|string $address, string $name = ''): self
     {
         is_array($address)
             ? $this->message->sender(...$address)
-            : $this->message->sender(new Address($address, (string)$name));
+            : $this->message->sender(new Address($address, $name));
 
         return $this;
     }
@@ -102,12 +102,12 @@ class Message
      * @param bool $override
      * @return $this
      */
-    public function to(array|string $address, string $name = null, bool $override = false): self
+    public function to(array|string $address, string $name = '', bool $override = false): self
     {
         if ($override) {
             is_array($address)
                 ? $this->message->to(...$address)
-                : $this->message->to(new Address($address, (string)$name));
+                : $this->message->to(new Address($address, $name));
 
             return $this;
         }
@@ -139,12 +139,12 @@ class Message
      * @param bool $override
      * @return $this
      */
-    public function cc(array|string $address, string $name = null, bool $override = false): self
+    public function cc(array|string $address, string $name = '', bool $override = false): self
     {
         if ($override) {
             is_array($address)
                 ? $this->message->cc(...$address)
-                : $this->message->cc(new Address($address, (string)$name));
+                : $this->message->cc(new Address($address, $name));
 
             return $this;
         }
@@ -176,12 +176,12 @@ class Message
      * @param bool $override
      * @return $this
      */
-    public function bcc(array|string $address, string $name = null, bool $override = false): self
+    public function bcc(array|string $address, string $name = '', bool $override = false): self
     {
         if ($override) {
             is_array($address)
                 ? $this->message->bcc(...$address)
-                : $this->message->bcc(new Address($address, (string)$name));
+                : $this->message->bcc(new Address($address, $name));
 
             return $this;
         }
@@ -212,7 +212,7 @@ class Message
      * @param string|null $name
      * @return $this
      */
-    public function replyTo(array|string $address, string $name = null): self
+    public function replyTo(array|string $address, string $name = ''): self
     {
         return $this->addAddresses($address, $name, 'ReplyTo');
     }

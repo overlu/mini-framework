@@ -57,7 +57,7 @@ trait ManagesStacks
      *
      * @throws \InvalidArgumentException
      */
-    public function stopPush()
+    public function stopPush(): mixed
     {
         if (empty($this->pushStack)) {
             throw new InvalidArgumentException('Cannot end a push stack without first starting one.');
@@ -113,7 +113,7 @@ trait ManagesStacks
      *
      * @throws \InvalidArgumentException
      */
-    public function stopPrepend()
+    public function stopPrepend(): mixed
     {
         if (empty($this->pushStack)) {
             throw new InvalidArgumentException('Cannot end a prepend operation without first starting one.');

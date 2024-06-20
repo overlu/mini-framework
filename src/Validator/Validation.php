@@ -359,7 +359,7 @@ class Validation
     {
 
         $key = $attribute->getKey();
-        return $this->aliases[$key] ?? app('translate')->getOrDefault('attribute.' . $key, $key);
+        return $this->aliases[$key] ?? app('translator')->getOrDefault('attribute.' . $key, $key);
     }
 
     /**

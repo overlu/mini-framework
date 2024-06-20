@@ -16,15 +16,14 @@ class PhpEngine implements Engine
     /**
      * The filesystem instance.
      *
-     * @var Filesystem
+     * @var Filesystem|null
      */
     protected ?Filesystem $files;
 
     /**
      * Create a new file engine instance.
      *
-     * @param Filesystem $files
-     * @return void
+     * @param Filesystem|null $files
      */
     public function __construct(?Filesystem $files)
     {
@@ -52,7 +51,7 @@ class PhpEngine implements Engine
      * @return string
      * @throws Throwable
      */
-    protected function evaluatePath($path, $data): string
+    protected function evaluatePath(string $path, array $data): string
     {
         $obLevel = ob_get_level();
 

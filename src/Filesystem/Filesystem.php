@@ -110,7 +110,7 @@ class Filesystem implements \Mini\Contracts\File
             $__path = $path;
             $__data = $data;
 
-            return (static function () use ($__path, $__data) {
+            return (function () use ($__path, $__data) {
                 extract($__data, EXTR_SKIP);
 
                 return require $__path;

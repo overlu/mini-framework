@@ -70,11 +70,11 @@ trait ManagesEvents
      * Add an event for a given view.
      *
      * @param string $view
-     * @param \Closure|string $callback
+     * @param string|\Closure $callback
      * @param string $prefix
      * @return \Closure|null
      */
-    protected function addViewEvent($view, $callback, $prefix = 'composing: '): ?Closure
+    protected function addViewEvent(string $view, string|Closure $callback, string $prefix = 'composing: '): ?Closure
     {
         $view = $this->normalizeName($view);
 
@@ -84,9 +84,8 @@ trait ManagesEvents
             return $callback;
         }
 
-        if (is_string($callback)) {
-            return $this->addClassEvent($view, $callback, $prefix);
-        }
+        return $this->addClassEvent($view, $callback, $prefix);
+
     }
 
     /**
@@ -128,9 +127,7 @@ trait ManagesEvents
         // the instance out of the IoC container and call the method on it with the
         // given arguments that are passed to the Closure as the composer's data.
         return function () use ($class, $method) {
-            return call_user_func_array(
-                [$this->container->make($class), $method], func_get_args()
-            );
+            return $this->container->make($class)->{$method}(...func_get_args());
         };
     }
 
@@ -164,7 +161,7 @@ trait ManagesEvents
      * @param \Closure $callback
      * @return void
      */
-    protected function addEventListener($name, $callback): void
+    protected function addEventListener(string $name, Closure $callback): void
     {
         if (Str::contains($name, '*')) {
             $callback = static function ($name, array $data) use ($callback) {
@@ -178,7 +175,7 @@ trait ManagesEvents
     /**
      * Call the composer for a given view.
      *
-     * @param \Mini\Contracts\View\View $view
+     * @param ViewContract $view
      * @return void
      */
     public function callComposer(ViewContract $view): void
@@ -189,7 +186,7 @@ trait ManagesEvents
     /**
      * Call the creator for a given view.
      *
-     * @param \Mini\Contracts\View\View $view
+     * @param ViewContract $view
      * @return void
      */
     public function callCreator(ViewContract $view): void

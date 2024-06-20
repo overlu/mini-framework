@@ -43,7 +43,7 @@ class FileViewFinder implements ViewFinderInterface
     /**
      * Register a view extension with the finder.
      *
-     * @var array
+     * @var string[]
      */
     protected array $extensions = ['blade.php', 'php', 'css', 'html'];
 
@@ -68,20 +68,20 @@ class FileViewFinder implements ViewFinderInterface
     /**
      * Get the fully qualified location of the view.
      *
-     * @param string $name
+     * @param string $view
      * @return string
      */
-    public function find(string $name): string
+    public function find(string $view): string
     {
-        if (isset($this->views[$name])) {
-            return $this->views[$name];
+        if (isset($this->views[$view])) {
+            return $this->views[$view];
         }
 
-        if ($this->hasHintInformation($name = trim($name))) {
-            return $this->views[$name] = $this->findNamespacedView($name);
+        if ($this->hasHintInformation($name = trim($view))) {
+            return $this->views[$view] = $this->findNamespacedView($name);
         }
 
-        return $this->views[$name] = $this->findInPaths($name, $this->paths);
+        return $this->views[$view] = $this->findInPaths($view, $this->paths);
     }
 
     /**
@@ -150,9 +150,7 @@ class FileViewFinder implements ViewFinderInterface
      */
     protected function getPossibleViewFiles(string $name): array
     {
-        return array_map(static function ($extension) use ($name) {
-            return str_replace('.', '/', $name) . '.' . $extension;
-        }, $this->extensions);
+        return array_map(fn ($extension) => str_replace('.', '/', $name).'.'.$extension, $this->extensions);
     }
 
     /**

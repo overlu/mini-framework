@@ -11,8 +11,8 @@ use Mini\Contracts\Container\Container;
 use Mini\Contracts\Events\Dispatcher;
 use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\View as FactoryContract;
+use Mini\Contracts\View\Engine;
 use Mini\Support\Arr;
-use Mini\Support\Str;
 use Mini\Support\Traits\Macroable;
 use Mini\View\Engines\EngineResolver;
 use InvalidArgumentException;
@@ -22,6 +22,7 @@ class Factory implements FactoryContract
     use Macroable,
         Concerns\ManagesComponents,
         Concerns\ManagesEvents,
+        Concerns\ManagesFragments,
         Concerns\ManagesLayouts,
         Concerns\ManagesLoops,
         Concerns\ManagesStacks,
@@ -87,6 +88,13 @@ class Factory implements FactoryContract
      * @var int
      */
     protected int $renderCount = 0;
+
+    /**
+     * The "once" block IDs that have been rendered.
+     *
+     * @var array
+     */
+    protected array $renderedOnce = [];
 
     /**
      * Create a new view factory instance.
@@ -186,6 +194,20 @@ class Factory implements FactoryContract
     }
 
     /**
+     * Get the rendered content of the view based on the negation of a given condition.
+     *
+     * @param bool $condition
+     * @param string $view
+     * @param array|Arrayable $data
+     * @param array $mergeData
+     * @return string
+     */
+    public function renderUnless(bool $condition, string $view, Arrayable|array $data = [], array $mergeData = []): string
+    {
+        return $this->renderWhen(!$condition, $view, $data, $mergeData);
+    }
+
+    /**
      * Get the rendered contents of a partial from a loop.
      *
      * @param string $view
@@ -213,7 +235,7 @@ class Factory implements FactoryContract
         // view. Alternatively, the "empty view" could be a raw string that begins
         // with "raw|" for convenience and to let this know that it is a string.
         else {
-            $result = Str::startsWith($empty, 'raw|')
+            $result = str_starts_with($empty, 'raw|')
                 ? substr($empty, 4)
                 : $this->make($empty)->render();
         }
@@ -238,7 +260,7 @@ class Factory implements FactoryContract
      * @param mixed $data
      * @return array
      */
-    protected function parseData($data): array
+    protected function parseData(Arrayable|array $data): array
     {
         return $data instanceof Arrayable ? $data->toArray() : $data;
     }
@@ -248,10 +270,10 @@ class Factory implements FactoryContract
      *
      * @param string $view
      * @param string $path
-     * @param Arrayable|array $data
+     * @param array|Arrayable $data
      * @return \Mini\Contracts\View\View
      */
-    protected function viewInstance(string $view, string $path, $data): \Mini\Contracts\View\View
+    protected function viewInstance(string $view, string $path, Arrayable|array $data): View
     {
         return new View($this, $this->getEngineFromPath($path), $view, $path, $data);
     }
@@ -277,11 +299,11 @@ class Factory implements FactoryContract
      * Get the appropriate view engine for the given path.
      *
      * @param string $path
-     * @return \Mini\Contracts\View\Engine
+     * @return Engine
      *
      * @throws \InvalidArgumentException
      */
-    public function getEngineFromPath(string $path): \Mini\Contracts\View\Engine
+    public function getEngineFromPath(string $path): Engine
     {
         if (!$extension = $this->getExtension($path)) {
             throw new InvalidArgumentException("Unrecognized extension in file: {$path}.");
@@ -302,8 +324,8 @@ class Factory implements FactoryContract
     {
         $extensions = array_keys($this->extensions);
 
-        return Arr::first($extensions, static function ($value) use ($path) {
-            return Str::endsWith($path, '.' . $value);
+        return Arr::first($extensions, function ($value) use ($path) {
+            return str_ends_with($path, '.' . $value);
         });
     }
 
@@ -356,6 +378,28 @@ class Factory implements FactoryContract
     }
 
     /**
+     * Determine if the given once token has been rendered.
+     *
+     * @param string $id
+     * @return bool
+     */
+    public function hasRenderedOnce(string $id): bool
+    {
+        return isset($this->renderedOnce[$id]);
+    }
+
+    /**
+     * Mark the given once token as having been rendered.
+     *
+     * @param string $id
+     * @return void
+     */
+    public function markAsRenderedOnce(string $id): void
+    {
+        $this->renderedOnce[$id] = true;
+    }
+
+    /**
      * Add a location to the array of view locations.
      *
      * @param string $location
@@ -384,10 +428,10 @@ class Factory implements FactoryContract
      * Prepend a new namespace to the loader.
      *
      * @param string $namespace
-     * @param string|array $hints
+     * @param array|string $hints
      * @return $this
      */
-    public function prependNamespace(string $namespace, $hints): self
+    public function prependNamespace(string $namespace, array|string $hints): self
     {
         $this->finder->prependNamespace($namespace, $hints);
 
@@ -437,9 +481,12 @@ class Factory implements FactoryContract
     public function flushState(): void
     {
         $this->renderCount = 0;
+        $this->renderedOnce = [];
 
         $this->flushSections();
         $this->flushStacks();
+        $this->flushComponents();
+        $this->flushFragments();
     }
 
     /**
@@ -551,10 +598,10 @@ class Factory implements FactoryContract
      * Get an item from the shared data.
      *
      * @param string $key
-     * @param mixed $default
+     * @param mixed|null $default
      * @return mixed
      */
-    public function shared(string $key, $default = null)
+    public function shared(string $key, mixed $default = null): mixed
     {
         return Arr::get($this->shared, $key, $default);
     }

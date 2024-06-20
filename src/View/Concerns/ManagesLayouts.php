@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\View\Concerns;
 
 use Mini\Contracts\View\View;
+use Mini\Support\Str;
 use InvalidArgumentException;
 
 trait ManagesLayouts
@@ -34,13 +35,20 @@ trait ManagesLayouts
     protected static $parentPlaceholder = [];
 
     /**
+     * The parent placeholder salt for the request.
+     *
+     * @var string
+     */
+    protected static string $parentPlaceholderSalt;
+
+    /**
      * Start injecting content into a section.
      *
      * @param string $section
      * @param string|null $content
      * @return void
      */
-    public function startSection(string $section, ?string $content = null): void
+    public function startSection(string $section, mixed $content = null): void
     {
         if ($content === null) {
             if (ob_start()) {
@@ -153,7 +161,7 @@ trait ManagesLayouts
     {
         $sectionContent = $this->sections[$section] ?? ($default instanceof View ? $default : e($default));
 
-        return str_replace(array('@@parent', static::parentPlaceholder($section), '--parent--holder--'), array('--parent--holder--', '', '@parent'), $sectionContent);
+        return str_replace(['@@parent', static::parentPlaceholder($section), '--parent--holder--'], ['--parent--holder--', '', '@parent'], $sectionContent);
     }
 
     /**
@@ -165,10 +173,27 @@ trait ManagesLayouts
     public static function parentPlaceholder(string $section = ''): string
     {
         if (!isset(static::$parentPlaceholder[$section])) {
-            static::$parentPlaceholder[$section] = '##parent-placeholder-' . sha1($section) . '##';
+            $salt = static::parentPlaceholderSalt();
+
+            static::$parentPlaceholder[$section] = '##parent-placeholder-' . hash('xxh128', $salt . $section) . '##';
         }
 
         return static::$parentPlaceholder[$section];
+    }
+
+    /**
+     * Get the parent placeholder salt.
+     *
+     * @return string
+     * @throws \Exception
+     */
+    protected static function parentPlaceholderSalt(): string
+    {
+        if (!static::$parentPlaceholderSalt) {
+            return static::$parentPlaceholderSalt = Str::random(40);
+        }
+
+        return static::$parentPlaceholderSalt;
     }
 
     /**
@@ -200,7 +225,7 @@ trait ManagesLayouts
      * @param string|null $default
      * @return mixed
      */
-    public function getSection(string $name, ?string $default = null)
+    public function getSection(string $name, ?string $default = null): mixed
     {
         return $this->getSections()[$name] ?? $default;
     }

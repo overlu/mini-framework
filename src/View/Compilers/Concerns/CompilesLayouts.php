@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace Mini\View\Compilers\Concerns;
 
-use Mini\View\Factory as ViewFactory;
-
 trait CompilesLayouts
 {
     /**
@@ -36,6 +34,23 @@ trait CompilesLayouts
     }
 
     /**
+     * Compile the extends-first statements into valid PHP.
+     *
+     * @param string $expression
+     * @return string
+     */
+    protected function compileExtendsFirst(string $expression): string
+    {
+        $expression = $this->stripParentheses($expression);
+
+        $echo = "<?php echo \$__env->first({$expression}, \Mini\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>";
+
+        $this->footer[] = $echo;
+
+        return '';
+    }
+
+    /**
      * Compile the section statements into valid PHP.
      *
      * @param string $expression
@@ -55,7 +70,9 @@ trait CompilesLayouts
      */
     protected function compileParent(): string
     {
-        return ViewFactory::parentPlaceholder($this->lastSection ?: '');
+        $escapedLastSection = strtr($this->lastSection, ['\\' => '\\\\', "'" => "\\'"]);
+
+        return "<?php echo \Mini\View\Factory::parentPlaceholder('{$escapedLastSection}'); ?>";
     }
 
     /**

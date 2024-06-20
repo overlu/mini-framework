@@ -10,8 +10,10 @@ namespace Mini\View;
 use ArrayIterator;
 use Closure;
 use Mini\Contracts\Support\DeferringDisplayableValue;
+use Mini\Contracts\Support\Htmlable;
 use Mini\Support\Enumerable;
 use IteratorAggregate;
+use Traversable;
 
 class InvokableComponentVariable implements DeferringDisplayableValue, IteratorAggregate
 {
@@ -36,9 +38,9 @@ class InvokableComponentVariable implements DeferringDisplayableValue, IteratorA
     /**
      * Resolve the displayable value that the class is deferring.
      *
-     * @return \Mini\Contracts\Support\Htmlable|string
+     * @return Htmlable|string
      */
-    public function resolveDisplayableValue()
+    public function resolveDisplayableValue(): string|Htmlable
     {
         return $this->__invoke();
     }
@@ -48,7 +50,7 @@ class InvokableComponentVariable implements DeferringDisplayableValue, IteratorA
      *
      * @return \ArrayIterator
      */
-    public function getIterator(): ArrayIterator
+    public function getIterator(): Traversable
     {
         $result = $this->__invoke();
 
@@ -73,7 +75,7 @@ class InvokableComponentVariable implements DeferringDisplayableValue, IteratorA
      * @param array $parameters
      * @return mixed
      */
-    public function __call(string $method, $parameters)
+    public function __call(string $method, array $parameters)
     {
         return $this->__invoke()->{$method}(...$parameters);
     }
@@ -83,7 +85,7 @@ class InvokableComponentVariable implements DeferringDisplayableValue, IteratorA
      *
      * @return mixed
      */
-    public function __invoke()
+    public function __invoke(): mixed
     {
         return call_user_func($this->callable);
     }

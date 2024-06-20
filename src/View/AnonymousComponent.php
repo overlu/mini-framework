@@ -14,7 +14,7 @@ class AnonymousComponent extends Component
      *
      * @var string
      */
-    protected string $view;
+    protected $view;
 
     /**
      * The component data.
@@ -30,7 +30,7 @@ class AnonymousComponent extends Component
      * @param array $data
      * @return void
      */
-    public function __construct($view, $data)
+    public function __construct($view, array $data)
     {
         $this->view = $view;
         $this->data = $data;
@@ -41,7 +41,7 @@ class AnonymousComponent extends Component
      *
      * @return string
      */
-    public function render(): string
+    public function render()
     {
         return $this->view;
     }
@@ -53,8 +53,13 @@ class AnonymousComponent extends Component
      */
     public function data(): array
     {
-        $this->attributes = $this->attributes ?: new ComponentAttributeBag;
+        $this->attributes = $this->attributes ?: $this->newAttributeBag();
 
-        return $this->data + ['attributes' => $this->attributes];
+        return array_merge(
+            ($this->data['attributes'] ?? null)?->getAttributes() ?: [],
+            $this->attributes->getAttributes(),
+            $this->data,
+            ['attributes' => $this->attributes]
+        );
     }
 }

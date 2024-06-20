@@ -59,7 +59,13 @@ class ViewServiceProvider extends AbstractServiceProvider
     public function registerBladeCompiler(): void
     {
         $this->app->singleton('blade.compiler', function ($app) {
-            return tap(new BladeCompiler($app['files'], config('view.compiled')), static function ($blade) {
+            return tap(new BladeCompiler(
+                $app['files'],
+                config('view.compiled'),
+                config('view.relative_hash', false) ? $app->basePath() : '',
+                config('view.cache', true),
+                config('view.compiled_extension', 'php'),
+            ), function ($blade) {
                 $blade->component('dynamic-component', DynamicComponent::class);
             });
         });

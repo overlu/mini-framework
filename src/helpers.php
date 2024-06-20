@@ -35,6 +35,7 @@ use Mini\Support\HtmlString;
 use Mini\Support\Parallel;
 use Mini\Support\Str;
 use Mini\Support\Waiter;
+use Mini\View\Factory;
 use Psr\Http\Message\ResponseInterface;
 use Swoole\Runtime;
 
@@ -919,7 +920,7 @@ if (!function_exists('__')) {
      */
     function __(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
     {
-        return app('translate')->get($id, $parameters, $domain, $locale);
+        return app('translator')->get($id, $parameters, $domain, $locale);
     }
 }
 
@@ -934,7 +935,7 @@ if (!function_exists('trans')) {
      */
     function trans(?string $id = null, array $parameters = [], string $domain = null, string $locale = null): string
     {
-        return app('translate')->trans($id, $parameters, $domain, $locale);
+        return app('translator')->trans($id, $parameters, $domain, $locale);
     }
 }
 
@@ -1151,5 +1152,31 @@ if (!function_exists('filled')) {
     function filled(mixed $value): bool
     {
         return !blank($value);
+    }
+}
+
+if (! function_exists('str')) {
+    /**
+     * @param $string
+     * @return \Mini\Support\Stringable|mixed
+     */
+    function str($string = null): mixed
+    {
+        if (func_num_args() === 0) {
+            return new class
+            {
+                public function __call($method, $parameters)
+                {
+                    return Str::$method(...$parameters);
+                }
+
+                public function __toString()
+                {
+                    return '';
+                }
+            };
+        }
+
+        return Str::of($string);
     }
 }

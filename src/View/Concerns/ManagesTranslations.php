@@ -33,6 +33,7 @@ trait ManagesTranslations
      * Render the current translation.
      *
      * @return string
+     * @throws \Mini\Contracts\Container\BindingResolutionException
      */
     public function renderTranslation(): string
     {

@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\View\Engines;
 
 use Mini\Contracts\View\Engine;
+use Mini\Exception\FileNotFoundException;
 use Mini\Filesystem\Filesystem;
 
 class FileEngine implements Engine
@@ -36,7 +37,7 @@ class FileEngine implements Engine
      * @param string $path
      * @param array $data
      * @return string
-     * @throws \Mini\Exception\FileNotFoundException
+     * @throws FileNotFoundException
      */
     public function get(string $path, array $data = []): string
     {

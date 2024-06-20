@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\View\Compilers\Concerns;
 
+use Mini\Support\Vite;
+
 trait CompilesHelpers
 {
     /**
@@ -50,5 +52,32 @@ trait CompilesHelpers
     protected function compileMethod(string $method): string
     {
         return "<?php echo method_field{$method}; ?>";
+    }
+
+    /**
+     * Compile the "vite" statements into valid PHP.
+     *
+     * @param string|null $arguments
+     * @return string
+     */
+    protected function compileVite(?string $arguments): string
+    {
+        $arguments ??= '()';
+
+        $class = Vite::class;
+
+        return "<?php echo app('$class'){$arguments}; ?>";
+    }
+
+    /**
+     * Compile the "viteReactRefresh" statements into valid PHP.
+     *
+     * @return string
+     */
+    protected function compileViteReactRefresh(): string
+    {
+        $class = Vite::class;
+
+        return "<?php echo app('$class')->reactRefresh(); ?>";
     }
 }

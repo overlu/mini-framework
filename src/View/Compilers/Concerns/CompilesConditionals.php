@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\View\Compilers\Concerns;
 
+use Mini\Support\Str;
+
 trait CompilesConditionals
 {
     /**
@@ -283,5 +285,130 @@ trait CompilesConditionals
     protected function compileEndSwitch(): string
     {
         return '<?php endswitch; ?>';
+    }
+
+    /**
+     * Compile a once block into valid PHP.
+     *
+     * @param string|null $id
+     * @return string
+     */
+    protected function compileOnce(string $id = null): string
+    {
+        $id = $id ? $this->stripParentheses($id) : "'" . (string)Str::uuid() . "'";
+
+        return '<?php if (! $__env->hasRenderedOnce(' . $id . ')): $__env->markAsRenderedOnce(' . $id . '); ?>';
+    }
+
+    /**
+     * Compile an end-once block into valid PHP.
+     *
+     * @return string
+     */
+    public function compileEndOnce(): string
+    {
+        return '<?php endif; ?>';
+    }
+
+    /**
+     * Compile a selected block into valid PHP.
+     *
+     * @param string $condition
+     * @return string
+     */
+    protected function compileSelected(string $condition): string
+    {
+        return "<?php if{$condition}: echo 'selected'; endif; ?>";
+    }
+
+    /**
+     * Compile a checked block into valid PHP.
+     *
+     * @param string $condition
+     * @return string
+     */
+    protected function compileChecked(string $condition): string
+    {
+        return "<?php if{$condition}: echo 'checked'; endif; ?>";
+    }
+
+    /**
+     * Compile a disabled block into valid PHP.
+     *
+     * @param string $condition
+     * @return string
+     */
+    protected function compileDisabled(string $condition): string
+    {
+        return "<?php if{$condition}: echo 'disabled'; endif; ?>";
+    }
+
+    /**
+     * Compile a required block into valid PHP.
+     *
+     * @param string $condition
+     * @return string
+     */
+    protected function compileRequired(string $condition): string
+    {
+        return "<?php if{$condition}: echo 'required'; endif; ?>";
+    }
+
+    /**
+     * Compile a readonly block into valid PHP.
+     *
+     * @param string $condition
+     * @return string
+     */
+    protected function compileReadonly(string $condition): string
+    {
+        return "<?php if{$condition}: echo 'readonly'; endif; ?>";
+    }
+
+    /**
+     * Compile the push statements into valid PHP.
+     *
+     * @param string $expression
+     * @return string
+     */
+    protected function compilePushIf(string $expression): string
+    {
+        $parts = explode(',', $this->stripParentheses($expression), 2);
+
+        return "<?php if({$parts[0]}): \$__env->startPush({$parts[1]}); ?>";
+    }
+
+    /**
+     * Compile the else-if push statements into valid PHP.
+     *
+     * @param string $expression
+     * @return string
+     */
+    protected function compileElsePushIf(string $expression): string
+    {
+        $parts = explode(',', $this->stripParentheses($expression), 2);
+
+        return "<?php \$__env->stopPush(); elseif({$parts[0]}): \$__env->startPush({$parts[1]}); ?>";
+    }
+
+    /**
+     * Compile the else push statements into valid PHP.
+     *
+     * @param string $expression
+     * @return string
+     */
+    protected function compileElsePush(string $expression): string
+    {
+        return "<?php \$__env->stopPush(); else: \$__env->startPush{$expression}; ?>";
+    }
+
+    /**
+     * Compile the end-push statements into valid PHP.
+     *
+     * @return string
+     */
+    protected function compileEndPushIf(): string
+    {
+        return '<?php $__env->stopPush(); endif; ?>';
     }
 }

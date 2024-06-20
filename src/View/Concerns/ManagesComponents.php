@@ -7,12 +7,10 @@ declare(strict_types=1);
 
 namespace Mini\View\Concerns;
 
-use Closure;
 use Mini\Contracts\Support\Htmlable;
+use Mini\Contracts\View\View;
 use Mini\Support\Arr;
-use Mini\Support\HtmlString;
-use Mini\View\View;
-use InvalidArgumentException;
+use Mini\View\ComponentSlot;
 
 trait ManagesComponents
 {
@@ -31,6 +29,13 @@ trait ManagesComponents
     protected array $componentData = [];
 
     /**
+     * The component data for the component that is currently being rendered.
+     *
+     * @var array
+     */
+    protected array $currentComponentData = [];
+
+    /**
      * The slot contents for the component.
      *
      * @var array
@@ -47,11 +52,11 @@ trait ManagesComponents
     /**
      * Start a component rendering process.
      *
-     * @param \Mini\View\View|\Mini\Contracts\Support\Htmlable|\Closure|string $view
+     * @param \Mini\View\Factory|Htmlable|\Closure|string $view
      * @param array $data
      * @return void
      */
-    public function startComponent($view, array $data = []): void
+    public function startComponent(mixed $view, array $data = []): void
     {
         if (ob_start()) {
             $this->componentStack[] = $view;
@@ -84,25 +89,30 @@ trait ManagesComponents
      * @return string
      * @throws \Throwable
      */
-    public function renderComponent(): ?string
+    public function renderComponent(): string
     {
         $view = array_pop($this->componentStack);
 
-        $data = $this->componentData();
+        $this->currentComponentData = array_merge(
+            $previousComponentData = $this->currentComponentData,
+            $data = $this->componentData()
+        );
 
-        if ($view instanceof Closure) {
-            $view = $view($data);
+        try {
+            $view = value($view, $data);
+
+            if ($view instanceof View) {
+                return $view->with($data)->render();
+            }
+
+            if ($view instanceof Htmlable) {
+                return $view->toHtml();
+            }
+
+            return $this->make($view, $data)->render();
+        } finally {
+            $this->currentComponentData = $previousComponentData;
         }
-
-        if ($view instanceof View) {
-            return $view->with($data)->render();
-        }
-
-        if ($view instanceof Htmlable) {
-            return $view->toHtml();
-        }
-
-        return $this->make($view, $data)->render();
     }
 
     /**
@@ -112,7 +122,7 @@ trait ManagesComponents
      */
     protected function componentData(): array
     {
-        $defaultSlot = new HtmlString(trim(ob_get_clean()));
+        $defaultSlot = new ComponentSlot(trim(ob_get_clean()));
 
         $slots = array_merge([
             '__default' => $defaultSlot,
@@ -122,8 +132,38 @@ trait ManagesComponents
             $this->componentData[count($this->componentStack)],
             ['slot' => $defaultSlot],
             $this->slots[count($this->componentStack)],
-            ['__laravel_slots' => $slots],
+            ['__laravel_slots' => $slots]
         );
+    }
+
+    /**
+     * Get an item from the component data that exists above the current component.
+     *
+     * @param string $key
+     * @param mixed|null $default
+     * @return mixed|null
+     */
+    public function getConsumableComponentData(string $key, mixed $default = null): mixed
+    {
+        if (array_key_exists($key, $this->currentComponentData)) {
+            return $this->currentComponentData[$key];
+        }
+
+        $currentComponent = count($this->componentStack);
+
+        if ($currentComponent === 0) {
+            return value($default);
+        }
+
+        for ($i = $currentComponent - 1; $i >= 0; $i--) {
+            $data = $this->componentData[$i] ?? [];
+
+            if (array_key_exists($key, $data)) {
+                return $data[$key];
+            }
+        }
+
+        return value($default);
     }
 
     /**
@@ -131,20 +171,17 @@ trait ManagesComponents
      *
      * @param string $name
      * @param string|null $content
+     * @param array $attributes
      * @return void
      */
-    public function slot(string $name, ?string $content = null): void
+    public function slot(string $name, string $content = null, array $attributes = []): void
     {
-        if (func_num_args() > 2) {
-            throw new InvalidArgumentException('You passed too many arguments to the [' . $name . '] slot.');
-        }
-
-        if (func_num_args() === 2) {
+        if ($content !== null && func_num_args() === 2) {
             $this->slots[$this->currentComponent()][$name] = $content;
         } elseif (ob_start()) {
             $this->slots[$this->currentComponent()][$name] = '';
 
-            $this->slotStack[$this->currentComponent()][] = $name;
+            $this->slotStack[$this->currentComponent()][] = [$name, $attributes];
         }
     }
 
@@ -161,8 +198,11 @@ trait ManagesComponents
             $this->slotStack[$this->currentComponent()]
         );
 
-        $this->slots[$this->currentComponent()]
-        [$currentSlot] = new HtmlString(trim(ob_get_clean()));
+        [$currentName, $currentAttributes] = $currentSlot;
+
+        $this->slots[$this->currentComponent()][$currentName] = new ComponentSlot(
+            trim(ob_get_clean()), $currentAttributes
+        );
     }
 
     /**
@@ -173,5 +213,17 @@ trait ManagesComponents
     protected function currentComponent(): int
     {
         return count($this->componentStack) - 1;
+    }
+
+    /**
+     * Flush all of the component state.
+     *
+     * @return void
+     */
+    protected function flushComponents(): void
+    {
+        $this->componentStack = [];
+        $this->componentData = [];
+        $this->currentComponentData = [];
     }
 }

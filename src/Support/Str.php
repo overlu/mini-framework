@@ -8,6 +8,8 @@ declare(strict_types=1);
 namespace Mini\Support;
 
 use Mini\Support\Traits\Macroable;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use Traversable;
 use voku\helper\ASCII;
 
@@ -1266,5 +1268,15 @@ class Str
         return $caseSensitive
             ? str_replace($search, $replace, $subject)
             : str_ireplace($search, $replace, $subject);
+    }
+
+    /**
+     * Generate a UUID (version 4).
+     *
+     * @return UuidInterface
+     */
+    public static function uuid(): UuidInterface
+    {
+        return Uuid::uuid4();
     }
 }

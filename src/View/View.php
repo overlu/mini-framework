@@ -53,7 +53,7 @@ class View implements ArrayAccess, Htmlable, ViewContract
      *
      * @var array
      */
-    protected ?array $data;
+    protected $data;
 
     /**
      * The path to the view file.
@@ -80,6 +80,74 @@ class View implements ArrayAccess, Htmlable, ViewContract
         $this->factory = $factory;
 
         $this->data = $data instanceof Arrayable ? $data->toArray() : (array)$data;
+    }
+
+    /**
+     * Get the evaluated contents of a given fragment.
+     *
+     * @param string $fragment
+     * @return string
+     */
+    public function fragment(string $fragment)
+    {
+        return $this->render(function () use ($fragment) {
+            return $this->factory->getFragment($fragment);
+        });
+    }
+
+    /**
+     * Get the evaluated contents for a given array of fragments or return all fragments.
+     *
+     * @param array|null $fragments
+     * @return string
+     */
+    public function fragments(?array $fragments = null): string
+    {
+        return is_null($fragments)
+            ? $this->allFragments()
+            : collect($fragments)->map(fn($f) => $this->fragment($f))->implode('');
+    }
+
+    /**
+     * Get the evaluated contents of a given fragment if the given condition is true.
+     *
+     * @param bool $boolean
+     * @param string $fragment
+     * @return string
+     */
+    public function fragmentIf($boolean, string $fragment): string
+    {
+        if (value($boolean)) {
+            return $this->fragment($fragment);
+        }
+
+        return $this->render();
+    }
+
+    /**
+     * Get the evaluated contents for a given array of fragments if the given condition is true.
+     *
+     * @param bool $boolean
+     * @param array|null $fragments
+     * @return string
+     */
+    public function fragmentsIf($boolean, ?array $fragments = null): string
+    {
+        if (value($boolean)) {
+            return $this->fragments($fragments);
+        }
+
+        return $this->render();
+    }
+
+    /**
+     * Get all fragments as a single string.
+     *
+     * @return string
+     */
+    protected function allFragments(): string
+    {
+        return collect($this->render(fn() => $this->factory->getFragments()))->implode('');
     }
 
     /**
@@ -117,7 +185,7 @@ class View implements ArrayAccess, Htmlable, ViewContract
      */
     protected function renderContents(): string
     {
-        // We will keep track of the amount of views being rendered so we can flush
+        // We will keep track of the number of views being rendered so we can flush
         // the section after the complete rendering operation is done. This will
         // clear out the sections for any separate views that may be rendered.
         $this->factory->incrementRender();
@@ -127,7 +195,7 @@ class View implements ArrayAccess, Htmlable, ViewContract
         $contents = $this->getContents();
 
         // Once we've finished rendering the view, we'll decrement the render count
-        // so that each sections get flushed out next time a view is created and
+        // so that each section gets flushed out next time a view is created and
         // no old sections are staying around in the memory of an environment.
         $this->factory->decrementRender();
 
@@ -164,12 +232,9 @@ class View implements ArrayAccess, Htmlable, ViewContract
 
     /**
      * Get the sections of the rendered view.
-     *
-     * @return array
-     *
      * @throws \Throwable
      */
-    public function renderSections(): array
+    public function renderSections()
     {
         return $this->render(function () {
             return $this->factory->getSections();
@@ -342,7 +407,7 @@ class View implements ArrayAccess, Htmlable, ViewContract
     /**
      * Unset a piece of data from the view.
      *
-     * @param string $offset
+     * @param string $key
      * @return void
      */
     public function offsetUnset($offset): void
@@ -368,7 +433,7 @@ class View implements ArrayAccess, Htmlable, ViewContract
      * @param mixed $value
      * @return void
      */
-    public function __set(string $key, mixed $value): void
+    public function __set(string $key, mixed $value)
     {
         $this->with($key, $value);
     }
@@ -400,7 +465,7 @@ class View implements ArrayAccess, Htmlable, ViewContract
      *
      * @param string $method
      * @param array $parameters
-     * @return \Mini\View\View
+     * @return View
      *
      * @throws \BadMethodCallException
      */

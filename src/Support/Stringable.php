@@ -8,12 +8,13 @@ declare(strict_types=1);
 namespace Mini\Support;
 
 use Closure;
+use Mini\Support\Traits\Conditionable;
 use Mini\Support\Traits\Macroable;
 use Symfony\Component\VarDumper\VarDumper;
 
 class Stringable
 {
-    use Macroable;
+    use Conditionable, Macroable;
 
     /**
      * The underlying string value.

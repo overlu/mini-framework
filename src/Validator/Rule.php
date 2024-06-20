@@ -203,7 +203,7 @@ abstract class Rule
     public function getMessage(): string
     {
         $key = 'validation.' . strtolower($this->getKey());
-        $message = app('translate')->get($key);
+        $message = app('translator')->get($key);
         return $message !== $key ? $message : $this->message;
     }
 

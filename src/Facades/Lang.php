@@ -26,6 +26,6 @@ class Lang extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return 'translate';
+        return 'translator';
     }
 }

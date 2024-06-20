@@ -37,7 +37,7 @@ class EngineResolver
      */
     public function register(string $engine, Closure $resolver): void
     {
-        unset($this->resolved[$engine]);
+        $this->forget($engine);
 
         $this->resolvers[$engine] = $resolver;
     }
@@ -61,5 +61,16 @@ class EngineResolver
         }
 
         throw new InvalidArgumentException("Engine [{$engine}] not found.");
+    }
+
+    /**
+     * Remove a resolved engine.
+     *
+     * @param string $engine
+     * @return void
+     */
+    public function forget(string $engine): void
+    {
+        unset($this->resolved[$engine]);
     }
 }

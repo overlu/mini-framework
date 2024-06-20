@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace Mini\Mail;
 
 use Closure;
-use Mini\Config\Repository as ConfigRepository;
 use Mini\Container\Container;
 use Mini\Container\EntryNotFoundException;
 use Mini\Contracts\Container\BindingResolutionException;
@@ -43,7 +42,7 @@ class Mailable implements MailableContract, Renderable
      *
      * @var string
      */
-    public string $locale;
+    public string $locale = '';
 
     /**
      * The person the message is from.
@@ -340,9 +339,9 @@ class Mailable implements MailableContract, Renderable
             }
 
             return $this->textView ?? $this->markdownRenderer()->renderText(
-                    $this->markdown,
-                    array_merge($data, $viewData)
-                );
+                $this->markdown,
+                array_merge($data, $viewData)
+            );
         };
     }
 
@@ -355,9 +354,7 @@ class Mailable implements MailableContract, Renderable
     protected function markdownRenderer(): Markdown
     {
         return tap(Container::getInstance()->make(Markdown::class), function ($markdown) {
-            $markdown->theme($this->theme ?: Container::getInstance()->get(ConfigRepository::class)->get(
-                'mail.markdown.theme', 'default')
-            );
+            $markdown->theme($this->theme ?: config('mail.markdown.theme', 'default'));
         });
     }
 
@@ -386,7 +383,7 @@ class Mailable implements MailableContract, Renderable
     {
         foreach (['to', 'cc', 'bcc', 'replyTo'] as $type) {
             foreach ($this->{$type} as $recipient) {
-                $message->{$type}($recipient['address'], $recipient['name']);
+                $message->{$type}($recipient['address'], (string)$recipient['name']);
             }
         }
 

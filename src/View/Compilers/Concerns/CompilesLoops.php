@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\View\Compilers\Concerns;
 
+use Mini\Exception\ViewCompilationException;
+
 trait CompilesLoops
 {
     /**
@@ -21,12 +23,17 @@ trait CompilesLoops
      *
      * @param string $expression
      * @return string
+     * @throws ViewCompilationException
      */
     protected function compileForelse(string $expression): string
     {
         $empty = '$__empty_' . ++$this->forElseCounter;
 
-        preg_match('/\( *(.*) +as *(.*)\)$/is', $expression, $matches);
+        preg_match('/\( *(.+) +as +(.+)\)$/is', $expression ?? '', $matches);
+
+        if (count($matches) === 0) {
+            throw new ViewCompilationException('Malformed @forelse statement.');
+        }
 
         $iteratee = trim($matches[1]);
 
@@ -92,10 +99,15 @@ trait CompilesLoops
      *
      * @param string $expression
      * @return string
+     * @throws ViewCompilationException
      */
     protected function compileForeach(string $expression): string
     {
-        preg_match('/\( *(.*) +as *(.*)\)$/is', $expression, $matches);
+        preg_match('/\( *(.+) +as +(.*)\)$/is', $expression ?? '', $matches);
+
+        if (count($matches) === 0) {
+            throw new ViewCompilationException('Malformed @foreach statement.');
+        }
 
         $iteratee = trim($matches[1]);
 

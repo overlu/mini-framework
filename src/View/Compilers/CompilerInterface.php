@@ -31,5 +31,5 @@ interface CompilerInterface
      * @param string|null $path
      * @return void
      */
-    public function compile(?string $path): void;
+    public function compile(string $path = null): void;
 }

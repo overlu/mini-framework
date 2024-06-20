@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace Mini\View\Concerns;
 
-use Countable;
 use Mini\Support\Arr;
+use Mini\Support\LazyCollection;
 
 trait ManagesLoops
 {
@@ -27,7 +27,9 @@ trait ManagesLoops
      */
     public function addLoop($data): void
     {
-        $length = is_countable($data) ? count($data) : null;
+        $length = is_countable($data) && !$data instanceof LazyCollection
+            ? count($data)
+            : null;
 
         $parent = Arr::last($this->loopsStack);
 

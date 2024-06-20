@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\View;
 
 use Mini\Container\Container;
+use Mini\Contracts\Container\BindingResolutionException;
 use Mini\Support\Str;
 use Mini\View\Compilers\ComponentTagCompiler;
 
@@ -24,7 +25,7 @@ class DynamicComponent extends Component
      * The component tag compiler instance.
      * @var mixed
      */
-    protected static $compiler;
+    protected static mixed $compiler;
 
     /**
      * The cached component classes.
@@ -53,7 +54,7 @@ class DynamicComponent extends Component
     /**
      * Get the view / contents that represent the component.
      *
-     * @return \Mini\View\View|string
+     * @return View|string
      */
     public function render()
     {
@@ -116,8 +117,8 @@ EOF;
      */
     protected function compileBindings(array $bindings): string
     {
-        return collect($bindings)->map(static function ($key) {
-            return ':' . $key . '="$' . Str::camel($key) . '"';
+        return collect($bindings)->map(function ($key) {
+            return ':' . $key . '="$' . Str::camel(str_replace([':', '.'], ' ', $key)) . '"';
         })->implode(' ');
     }
 
@@ -129,8 +130,8 @@ EOF;
      */
     protected function compileSlots(array $slots): string
     {
-        return collect($slots)->map(static function ($slot, $name) {
-            return $name === '__default' ? null : '<x-slot name="' . $name . '">{{ $' . $name . ' }}</x-slot>';
+        return collect($slots)->map(function ($slot, $name) {
+            return $name === '__default' ? null : '<x-slot name="' . $name . '" ' . ((string)$slot->attributes) . '>{{ $' . $name . ' }}</x-slot>';
         })->filter()->implode(PHP_EOL);
     }
 
@@ -138,16 +139,12 @@ EOF;
      * Get the class for the current component.
      *
      * @return string
-     * @throws \Mini\Contracts\Container\BindingResolutionException
+     * @throws BindingResolutionException
      */
     protected function classForComponent(): string
     {
-        if (isset(static::$componentClasses[$this->component])) {
-            return static::$componentClasses[$this->component];
-        }
-
-        return static::$componentClasses[$this->component] =
-            $this->compiler()->componentClass($this->component);
+        return static::$componentClasses[$this->component] ?? (static::$componentClasses[$this->component] =
+                $this->compiler()->componentClass($this->component));
     }
 
     /**
@@ -156,30 +153,27 @@ EOF;
      * @param string $class
      * @return array
      * @throws \ReflectionException
-     * @throws \Mini\Contracts\Container\BindingResolutionException
+     * @throws BindingResolutionException
      */
     protected function bindings(string $class): array
     {
-        if (!isset(static::$bindings[$class])) {
-            [$data, $attributes] = $this->compiler()->partitionDataAndAttributes($class, $this->attributes->getAttributes());
+        [$data, $attributes] = $this->compiler()->partitionDataAndAttributes($class, $this->attributes->getAttributes());
 
-            static::$bindings[$class] = array_keys($data->all());
-        }
-
-        return static::$bindings[$class];
+        return array_keys($data->all());
     }
 
     /**
      * Get an instance of the Blade tag compiler.
      *
      * @return ComponentTagCompiler
-     * @throws \Mini\Contracts\Container\BindingResolutionException
+     * @throws BindingResolutionException
      */
     protected function compiler(): ComponentTagCompiler
     {
         if (!static::$compiler) {
             static::$compiler = new ComponentTagCompiler(
                 Container::getInstance()->make('blade.compiler')->getClassComponentAliases(),
+                Container::getInstance()->make('blade.compiler')->getClassComponentNamespaces(),
                 Container::getInstance()->make('blade.compiler')
             );
         }

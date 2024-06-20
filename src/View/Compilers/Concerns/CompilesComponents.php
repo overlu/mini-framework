@@ -68,7 +68,8 @@ trait CompilesComponents
     {
         return implode("\n", [
             '<?php if (isset($component)) { $__componentOriginal' . $hash . ' = $component; } ?>',
-            '<?php $component = $__env->getContainer()->make(' . Str::finish($component, '::class') . ', ' . ($data ?: '[]') . '); ?>',
+            '<?php if (isset($attributes)) { $__attributesOriginal' . $hash . ' = $attributes; } ?>',
+            '<?php $component = ' . $component . '::resolve(' . ($data ?: '[]') . ' + (isset($attributes) && $attributes instanceof Mini\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>',
             '<?php $component->withName(' . $alias . '); ?>',
             '<?php if ($component->shouldRender()): ?>',
             '<?php $__env->startComponent($component->resolveView(), $component->data()); ?>',
@@ -82,15 +83,7 @@ trait CompilesComponents
      */
     protected function compileEndComponent(): string
     {
-        $hash = array_pop(static::$componentHashStack);
-
-        return implode("\n", [
-            '<?php if (isset($__componentOriginal' . $hash . ')): ?>',
-            '<?php $component = $__componentOriginal' . $hash . '; ?>',
-            '<?php unset($__componentOriginal' . $hash . '); ?>',
-            '<?php endif; ?>',
-            '<?php echo $__env->renderComponent(); ?>',
-        ]);
+        return '<?php echo $__env->renderComponent(); ?>';
     }
 
     /**
@@ -100,7 +93,17 @@ trait CompilesComponents
      */
     public function compileEndComponentClass(): string
     {
-        return static::compileEndComponent() . "\n" . implode("\n", [
+        $hash = array_pop(static::$componentHashStack);
+
+        return $this->compileEndComponent() . "\n" . implode("\n", [
+                '<?php endif; ?>',
+                '<?php if (isset($__attributesOriginal' . $hash . ')): ?>',
+                '<?php $attributes = $__attributesOriginal' . $hash . '; ?>',
+                '<?php unset($__attributesOriginal' . $hash . '); ?>',
+                '<?php endif; ?>',
+                '<?php if (isset($__componentOriginal' . $hash . ')): ?>',
+                '<?php $component = $__componentOriginal' . $hash . '; ?>',
+                '<?php unset($__componentOriginal' . $hash . '); ?>',
                 '<?php endif; ?>',
             ]);
     }
@@ -155,7 +158,11 @@ trait CompilesComponents
      */
     protected function compileProps(?string $expression): string
     {
-        return "<?php \$attributes = \$attributes->exceptProps{$expression}; ?>
+        return "<?php \$attributes ??= new \\Mini\\View\\ComponentAttributeBag; ?>
+<?php foreach(\$attributes->onlyProps{$expression} as \$__key => \$__value) {
+    \$\$__key = \$\$__key ?? \$__value;
+} ?>
+<?php \$attributes = \$attributes->exceptProps{$expression}; ?>
 <?php foreach (array_filter({$expression}, 'is_string', ARRAY_FILTER_USE_KEY) as \$__key => \$__value) {
     \$\$__key = \$\$__key ?? \$__value;
 } ?>
@@ -164,6 +171,20 @@ trait CompilesComponents
     if (array_key_exists(\$__key, \$__defined_vars)) unset(\$\$__key);
 } ?>
 <?php unset(\$__defined_vars); ?>";
+    }
+
+    /**
+     * Compile the aware statement into valid PHP.
+     *
+     * @param string $expression
+     * @return string
+     */
+    protected function compileAware(string $expression): string
+    {
+        return "<?php foreach ({$expression} as \$__key => \$__value) {
+    \$__consumeVariable = is_string(\$__key) ? \$__key : \$__value;
+    \$\$__consumeVariable = is_string(\$__key) ? \$__env->getConsumableComponentData(\$__key, \$__value) : \$__env->getConsumableComponentData(\$__value);
+} ?>";
     }
 
     /**
