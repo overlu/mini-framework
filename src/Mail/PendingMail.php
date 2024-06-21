@@ -130,6 +130,39 @@ class PendingMail
     }
 
     /**
+     * Push the given mailable onto the queue.
+     *
+     * @param \Mini\Contracts\Mail\Mailable $mailable
+     * @return mixed
+     */
+    public function queue(MailableContract $mailable, \Closure|string|null $callable = null)
+    {
+        return $this->mailer->queue($this->fill($mailable), $callable);
+    }
+
+    /**
+     * Push the given mailable onto the later.
+     *
+     * @param \Mini\Contracts\Mail\Mailable $mailable
+     * @return mixed
+     */
+    public function later(MailableContract $mailable, int $delay = 10, \Closure|string|null $callable = null)
+    {
+        return $this->mailer->later($this->fill($mailable), $delay, $callable);
+    }
+
+    /**
+     * Push the given mailable on the future.
+     *
+     * @param \Mini\Contracts\Mail\Mailable $mailable
+     * @return mixed
+     */
+    public function laterOn(MailableContract $mailable, \DateTimeInterface $dateTime, \Closure|string|null $callable = null)
+    {
+        return $this->mailer->laterOn($this->fill($mailable), $dateTime, $callable);
+    }
+
+    /**
      * Populate the mailable with the addresses.
      *
      * @param MailableContract $mailable

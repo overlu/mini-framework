@@ -15,6 +15,7 @@ use Mini\Contracts\Support\Arrayable;
 use Mini\Contracts\Support\Htmlable;
 use Mini\Contracts\Support\Jsonable;
 use Mini\Contracts\Support\Sendable;
+use Mini\Mail\Mailable;
 use Mini\Service\HttpMessage\Server\Request as Psr7Request;
 use Mini\Service\HttpMessage\Server\Response as Psr7Response;
 use Mini\Service\HttpMessage\Stream\SwooleStream;
@@ -103,6 +104,11 @@ class HttpServer extends AbstractServer
             return $this->response()
                 ->withAddedHeader('content-type', 'text/html;charset=UTF-8')
                 ->withBody(new SwooleStream($response->toHtml()));
+        }
+        if ($response instanceof Mailable) {
+            return $this->response()
+                ->withAddedHeader('content-type', 'text/html;charset=UTF-8')
+                ->withBody(new SwooleStream($response->render()));
         }
         if (is_string($response)) {
             return $this->response()

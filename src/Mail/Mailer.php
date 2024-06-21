@@ -9,16 +9,19 @@ namespace Mini\Mail;
 
 use Closure;
 use Mini\Contracts\Events\Dispatcher;
+use Mini\Contracts\Mail\Mailable;
 use Mini\Contracts\Mail\Mailable as MailableContract;
 use Mini\Contracts\Mail\Mailer as MailerContract;
 use Mini\Contracts\Support\Htmlable;
 use Mini\Contracts\View\Factory;
+use Mini\Facades\Event;
 use Mini\Mail\Events\MessageSending;
 use Mini\Mail\Events\MessageSent;
 use Mini\Mail\Mailables\Address;
 use Mini\Support\HtmlString;
 use Mini\Support\Traits\Macroable;
 use InvalidArgumentException;
+use Swoole\Timer;
 use Symfony\Component\Mailer\Envelope;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Email;
@@ -547,8 +550,61 @@ class Mailer implements MailerContract
      * @param TransportInterface $transport
      * @return void
      */
-    public function setSymfonyTransport(TransportInterface $transport)
+    public function setSymfonyTransport(TransportInterface $transport): void
     {
         $this->transport = $transport;
+    }
+
+    /**
+     * Queue a new e-mail message for sending.
+     *
+     * @param array|string|MailableContract $view
+     * @param Closure|string|null $callable $callable
+     * @return void
+     */
+    public function queue(array|string|Mailable $view, Closure|string $callable = null): void
+    {
+        go(function () use ($view, $callable) {
+            $res = $this->send($view);
+            if ($callable) {
+                $callable($res);
+            }
+        });
+    }
+
+    /**
+     * Queue a new e-mail message for sending after (n) seconds.
+     * @param array|string|MailableContract $view
+     * @param int $delay
+     * @param Closure|string|null $callable $callable
+     * @return void
+     */
+    public function later(array|string|Mailable $view, int $delay = 10, Closure|string $callable = null): void
+    {
+        if ($delay <= 0) {
+            throw new \RuntimeException('Delay must be greater than 0.');
+        }
+        Timer::after($delay * 1000, function () use ($view, $callable) {
+            $res = $this->send($view);
+            if ($callable) {
+                $callable($res);
+            }
+        });
+    }
+
+    /**
+     * Queue a new e-mail message for sending at $dateTime.
+     * @param array|string|MailableContract $view
+     * @param \DateTimeInterface $dateTime
+     * @param Closure|string|null $callable $callable
+     * @return void
+     */
+    public function laterOn(array|string|Mailable $view, \DateTimeInterface $dateTime, Closure|string $callable = null): void
+    {
+        $delay = $dateTime->getTimestamp() - time();
+        if ($delay <= 0) {
+            throw new \RuntimeException('DateTime must be the future.');
+        }
+        $this->later($view, $delay, $callable);
     }
 }

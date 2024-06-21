@@ -17,6 +17,7 @@ use Mini\Contracts\Mail\Factory as MailFactory;
 use Mini\Contracts\Mail\Mailable as MailableContract;
 use Mini\Contracts\Support\Renderable;
 use Mini\Contracts\Translation\HasLocalePreference;
+use Mini\Facades\Storage;
 use Mini\Support\Collection;
 use Mini\Support\HtmlString;
 use Mini\Support\Str;
@@ -223,8 +224,6 @@ class Mailable implements MailableContract, Renderable
      * Render the mailable into a view.
      *
      * @return string
-     *
-     * @throws ReflectionException|BindingResolutionException
      */
     public function render(): string
     {
@@ -439,9 +438,7 @@ class Mailable implements MailableContract, Renderable
     protected function buildDiskAttachments(Message $message): void
     {
         foreach ($this->diskAttachments as $attachment) {
-            $storage = Container::getInstance()->make(
-                FilesystemFactory::class
-            )->disk($attachment['disk']);
+            $storage = Storage::disk($attachment['disk']);
 
             $message->attachData(
                 $storage->get($attachment['path']),
