@@ -347,7 +347,7 @@ class Validation
         return false === $attribute->isRequired() &&
             false === $rule->isImplicit() &&
             false === $rule instanceof Required &&
-            ($rule->getKey() !== 'string' ? $attribute->getValue() !== '' : true);
+            (!($rule->getKey() !== 'string') || $attribute->getValue() !== '');
     }
 
     /**
@@ -466,7 +466,7 @@ class Validation
         $validatorFactory = $this->getValidator();
 
         foreach ($rules as $i => $rule) {
-            $rule = trim($rule);
+            $rule = is_string($rule) ? trim($rule) : $rule;
             if (empty($rule)) {
                 continue;
             }
