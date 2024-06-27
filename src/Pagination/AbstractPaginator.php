@@ -239,7 +239,7 @@ abstract class AbstractPaginator implements Htmlable, \Mini\Contracts\Pagination
     protected function appendArray(array $keys): self
     {
         foreach ($keys as $key => $value) {
-            $this->addQuery($key, $value);
+            $this->addQuery((string)$key, $value);
         }
 
         return $this;

@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace Mini\Database\Mysql\Eloquent;
 
 use ArrayAccess;
-use Exception;
 use IdeHelper\Eloquent;
 use Mini\Contracts\Events\Dispatcher;
 use Mini\Contracts\Queue\QueueableCollection;
