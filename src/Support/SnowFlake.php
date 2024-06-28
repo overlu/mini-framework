@@ -41,13 +41,13 @@ class SnowFlake
 
     /**
      * 反向解析雪花算法生成的编号
-     * @param float|int $snowFlakeId
+     * @param float|int|string $snowFlakeId
      * @return \stdClass
      * @author : evalor <master@evalor.cn>
      */
-    public static function unmake(float|int $snowFlakeId): \stdClass
+    public static function unmake(float|int|string $snowFlakeId): \stdClass
     {
-        $Binary = str_pad(decbin($snowFlakeId), 64, '0', STR_PAD_LEFT);
+        $Binary = str_pad(decbin((int)$snowFlakeId), 64, '0', STR_PAD_LEFT);
         $Object = new \stdClass;
         $Object->timestamp = bindec(substr($Binary, 0, 42)) + self::$twepoch;
         $Object->dataCenterID = bindec(substr($Binary, 42, 5));
