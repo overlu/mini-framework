@@ -8,8 +8,6 @@ declare(strict_types=1);
 namespace Mini\Mail;
 
 use Closure;
-use Mini\Container\Container;
-use Mini\Contracts\Filesystem\Factory as FilesystemFactory;
 use Mini\Support\Traits\Macroable;
 use RuntimeException;
 
@@ -95,9 +93,7 @@ class Attachment
     public static function fromStorageDisk(?string $disk, string $path): static
     {
         return new static(function ($attachment, $pathStrategy, $dataStrategy) use ($disk, $path) {
-            $storage = Container::getInstance()->make(
-                FilesystemFactory::class
-            )->disk($disk);
+            $storage = app(\Mini\Contracts\Storage::class)->disk($disk);
 
             $attachment
                 ->as($attachment->as ?? basename($path))

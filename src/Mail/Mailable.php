@@ -11,7 +11,6 @@ use Closure;
 use Mini\Container\Container;
 use Mini\Container\EntryNotFoundException;
 use Mini\Contracts\Container\BindingResolutionException;
-use Mini\Contracts\Filesystem\Factory as FilesystemFactory;
 use Mini\Contracts\Mail\Attachable;
 use Mini\Contracts\Mail\Factory as MailFactory;
 use Mini\Contracts\Mail\Mailable as MailableContract;
