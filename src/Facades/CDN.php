@@ -27,8 +27,22 @@ class CDN extends Facade
         return 'cdn.' . config('cdn.default', 'cloudfront');
     }
 
-    protected static function driver(string $driver): AbstractCDN
+    /**
+     * @param string $driver
+     * @return AbstractCDN
+     */
+    public static function driver(string $driver): AbstractCDN
     {
         return app('cdn')->driver($driver);
+    }
+
+    /**
+     * @param string $driver
+     * @param mixed $closure
+     * @return void
+     */
+    public static function extend(string $driver, mixed $closure): void
+    {
+        app('cdn')->extend($driver, $closure);
     }
 }
