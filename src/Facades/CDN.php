@@ -11,8 +11,8 @@ use Mini\CDN\AbstractCDN;
 
 /**
  * Class CDN
- * @method static string url(string $url)
- * @method static string sign(string $url, \DateTime|int $expiration = null)
+ * @method static string url(string $url, mixed $policy = null)
+ * @method static string sign(string $url, \DateTime|int $expiration = null, mixed $policy = null)
  * @package Mini\Facades
  */
 class CDN extends Facade
