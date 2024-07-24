@@ -30,25 +30,26 @@ class CloudFront implements AbstractCDN
      *
      * @param string $url
      * @param DateTime|int|null $expiration
-     *
+     * @param mixed|null $policy
      * @return string
      * @throws InvalidExpiration
      */
-    public function sign(string $url, DateTime|int $expiration = null): string
+    public function sign(string $url, DateTime|int $expiration = null, mixed $policy = null): string
     {
         $expiration = $this->getExpirationTimestamp($expiration ??
             config('cdn.drivers.cloudfront.default_expiration_time_in_seconds'));
 
-        return $this->urlSigner->getSignedUrl($url, $expiration);
+        return $this->urlSigner->getSignedUrl($url, $expiration, $policy);
     }
 
     /**
      * @param string $url
+     * @param mixed|null $policy
      * @return string
      */
-    public function url(string $url): string
+    public function url(string $url, mixed $policy = null): string
     {
-        return $this->urlSigner->getSignedUrl($url);
+        return $this->urlSigner->getSignedUrl($url, null, $policy);
     }
 
     /**
