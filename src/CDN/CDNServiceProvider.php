@@ -32,7 +32,7 @@ class CDNServiceProvider extends AbstractServiceProvider
 
         $this->app->alias(CDN::class, 'cdn');
 
-        $this->app->singleton('cdn.cloudfront', function () {
+        $this->app->singleton('cdn.drivers.cloudfront', function () {
             $config = config('cdn.drivers.cloudfront', []);
 
             if (empty($config['key_pair_id'])) {
