@@ -78,9 +78,12 @@ class StopServer
     {
         $servers = config('servers', []);
         foreach ($servers as $key => $server) {
-            $this->stopServer($key);
+            $pidFile = config('servers.' . $key . '.settings.pid_file', runtime_path($key . '.server.pid'));
+            if (file_exists($pidFile)) {
+                @unlink($pidFile);
+            }
         }
-        Command::line();
+        Command::kill('bin/mini start');
         Command::infoWithTime('stop all server finished.');
     }
 
