@@ -24,7 +24,12 @@ class DeployCommandService extends AbstractCommandService
             $this->error('Missing environment');
             return false;
         }
-        $shell = 'vendor/bin/dep deploy env=' . $env;
+        if ($env === 'rollback') {
+            $shell = 'vendor/bin/dep rollback && vendor/bin/dep mini:restart && vendor/bin/dep deploy:success';
+        } else {
+            $shell = 'vendor/bin/dep deploy env=' . $env;
+        }
+
         if ($this->getOpt('root')) {
             $shell .= ' -o become=root';
         }
@@ -41,7 +46,7 @@ class DeployCommandService extends AbstractCommandService
         // 异步读取子进程的标准输出
         Process::signal(SIGCHLD, static function ($sig) {
             while ($ret = Process::wait(false)) {
-                $this->info("Process {$ret['pid']} exited with status {$ret['code']}");
+                Command::info("Process {$ret['pid']} exited with status {$ret['code']}");
             }
         });
 
@@ -67,7 +72,8 @@ class DeployCommandService extends AbstractCommandService
     public function getCommandDescription(): string
     {
         return 'deploy mini server.
-                   <blue>{[env]} : The server environment.}
+                   <blue>{dev/production/...} : The server environment.}
+                   {rollback : Rollback the mini server}
                    {--root : Use sudo deploy the mini server}</blue>';
     }
 }
