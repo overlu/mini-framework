@@ -58,6 +58,6 @@ class SocketResetCommandService extends AbstractCommandService
 
     public function getCommandDescription(): string
     {
-        return 'reset socket data . ';
+        return 'reset socket data. ';
     }
 }

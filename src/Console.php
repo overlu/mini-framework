@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini;
 
 use Mini\Command\CommandService;
+use Mini\Command\DeployCommandService;
 use Mini\Command\HelloMiniCommandService;
 use Mini\Command\IdeHelperModelCommandService;
 use Mini\Command\KeyGenerateCommandService;
@@ -44,6 +45,7 @@ class Console
     public static array $systemCommandService = [
         HelloMiniCommandService::class,
         KeyGenerateCommandService::class,
+        DeployCommandService::class,
         RoutesAllCommandService::class,
         TestCommandService::class,
         LogStatusCommandService::class,
