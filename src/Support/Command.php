@@ -35,7 +35,7 @@ class Command
      * @return bool
      * @throws Exception
      */
-    public static function checkSupervisord(): bool
+    public static function checkSupervisrd(): bool
     {
         return static::has('supervisord');
     }
@@ -71,8 +71,9 @@ class Command
      */
     public static function kill(string $process): void
     {
-        $process = trim($process);
-        static::exec("ps -ef | grep '$process' | grep -v grep | awk '{print $2}' | xargs kill -9 2>&1");
+        $pid = self::pid($process);
+        $shell = "kill -9 ".implode(' ', $pid);
+        static::exec($shell);
     }
 
     /**
