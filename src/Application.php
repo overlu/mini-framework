@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Mini;
 
-use Mini\Console\App;
+use Mini\Console\App as ConsoleApp;
 use Mini\Console\Panel;
 use Mini\Service\Server\CustomServer;
 use Mini\Service\Server\HelpServer;
@@ -74,7 +74,8 @@ EOL. '   ' . self::VERSION . PHP_EOL);
     public static function run(): void
     {
         Bootstrap::initial();
-        $args = (new App())->getArgs();
+        $consoleApp = new ConsoleApp();
+        $args = $consoleApp->getArgs();
         if (!isset($args[0]) || !in_array($args[0], ['start', 'stop', 'reload'])) {
             new HelpServer();
         }
@@ -86,7 +87,7 @@ EOL. '   ' . self::VERSION . PHP_EOL);
             self::welcome();
             $key = $args[1] ?? 'http';
             $server = static::$mapping[$key] ?? CustomServer::class;
-            new $server($key);
+            new $server($key, $consoleApp->getOpt('d'));
         }
     }
 }

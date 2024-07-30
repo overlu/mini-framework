@@ -65,15 +65,19 @@ abstract class AbstractServer
     /**
      * AbstractServer constructor.
      * @param string $key
+     * @param bool $daemonize
      * @throws Throwable
      */
-    public function __construct(string $key = '')
+    public function __construct(string $key = '', bool $daemonize = false)
     {
         try {
             $this->key = $key;
             $this->config = config('servers.' . $this->key, []);
             if (empty($this->config)) {
                 throw new RuntimeException('server key: [' . $this->key . '] not exists in config/servers.php');
+            }
+            if ($daemonize) {
+                $this->config['settings']['daemonize'] = 1;
             }
             $this->worker_num = $this->config['settings']['worker_num'] ?? swoole_cpu_num();
             $this->initialize();
