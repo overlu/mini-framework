@@ -9,10 +9,8 @@ namespace Mini\Support;
 
 use Exception;
 use Mini\Console\Cli;
-use Mini\Console\Color;
 use Mini\Console\Highlighter;
 use Mini\Console\Terminal;
-use Mini\Exception\ShellException;
 use Swoole\Coroutine\System;
 use Throwable;
 
@@ -58,9 +56,6 @@ class Command
                 return rtrim($result);
             }
         }
-        if (is_null($result)) {
-            throw new ShellException('shell: ' . $shell . ' run error');
-        }
         return '';
     }
 
@@ -76,7 +71,7 @@ class Command
             $shell = "kill -9 " . implode(' ', $pid);
             static::exec($shell);
         } else {
-            self::warning('no process [' . $process . '] found');
+            self::warning('process [' . $process . '] not found');
         }
     }
 
@@ -153,7 +148,7 @@ class Command
      */
     public static function suggest(string $message): void
     {
-        Cli::writeln('<notice>' . $string . '</notice>');
+        Cli::writeln('<notice>' . $message . '</notice>');
     }
 
     /**
@@ -304,7 +299,7 @@ class Command
      * @param string $type
      * @return mixed
      */
-    public static function ask(string $question, $default = null, string $type = 'info')
+    public static function ask(string $question, $default = null, string $type = 'info'): mixed
     {
         $question = '<' . $type . '>' . $question . '</' . $type . '>';
         $result = Cli::read($question . ($default ? ' (' . $default . ')' : ''));
@@ -317,7 +312,7 @@ class Command
      * @param string $type
      * @return mixed
      */
-    public static function askLn(string $question, $default = null, string $type = 'info')
+    public static function askLn(string $question, $default = null, string $type = 'info'): mixed
     {
         $question = '<' . $type . '>' . $question . '</' . $type . '>';
         $result = Cli::read($question . ($default ? ' (' . $default . ')' : ''), true);
