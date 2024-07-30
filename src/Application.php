@@ -87,7 +87,7 @@ EOL. '   ' . self::VERSION . PHP_EOL);
             self::welcome();
             $key = $args[1] ?? 'http';
             $server = static::$mapping[$key] ?? CustomServer::class;
-            new $server($key, $consoleApp->getOpt('d'));
+            new $server($key, $consoleApp->getBoolOpt('d'));
         }
     }
 }
