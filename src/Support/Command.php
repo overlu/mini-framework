@@ -72,8 +72,12 @@ class Command
     public static function kill(string $process): void
     {
         $pid = self::pid($process);
-        $shell = "kill -9 ".implode(' ', $pid);
-        static::exec($shell);
+        if (!empty($pid)) {
+            $shell = "kill -9 " . implode(' ', $pid);
+            static::exec($shell);
+        } else {
+            self::warning('no process [' . $process . '] found');
+        }
     }
 
     /**
