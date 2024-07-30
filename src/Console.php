@@ -9,6 +9,8 @@ namespace Mini;
 
 use Mini\Command\CommandService;
 use Mini\Command\DeployCommandService;
+use Mini\Command\DeployRollbackCommandService;
+use Mini\Command\DeployUnlockCommandService;
 use Mini\Command\HelloMiniCommandService;
 use Mini\Command\IdeHelperModelCommandService;
 use Mini\Command\KeyGenerateCommandService;
@@ -46,6 +48,8 @@ class Console
         HelloMiniCommandService::class,
         KeyGenerateCommandService::class,
         DeployCommandService::class,
+        DeployUnlockCommandService::class,
+        DeployRollbackCommandService::class,
         RoutesAllCommandService::class,
         TestCommandService::class,
         LogStatusCommandService::class,

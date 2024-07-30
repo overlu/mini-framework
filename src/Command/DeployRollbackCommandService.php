@@ -11,7 +11,7 @@ use Mini\Console\Cli;
 use Mini\Support\Command;
 use Swoole\Process;
 
-class DeployCommandService extends AbstractCommandService
+class DeployRollbackCommandService extends AbstractCommandService
 {
     /**
      * @param Process|null $process
@@ -24,7 +24,7 @@ class DeployCommandService extends AbstractCommandService
             $this->error('Missing environment');
             return false;
         }
-        $shell = 'vendor/bin/dep deploy env=' . $env;
+        $shell = 'vendor/bin/dep rollback env=' . $env;
 
         if ($this->getOpt('root')) {
             $shell .= ' -o become=root';
@@ -37,12 +37,12 @@ class DeployCommandService extends AbstractCommandService
 
     public function getCommand(): string
     {
-        return 'deploy';
+        return 'deploy:rollback';
     }
 
     public function getCommandDescription(): string
     {
-        return 'deploy mini server.
+        return 'rollback server.
                    <blue>{dev/production/...} : The server environment.}
                    {--root : Use sudo deploy the mini server}</blue>';
     }

@@ -8,7 +8,9 @@ declare(strict_types=1);
 namespace Mini\Command;
 
 use Mini\Console\App;
+use Mini\Console\Cli;
 use Mini\Contracts\Console\CommandInterface;
+use Mini\Support\Command;
 use Swoole\Process;
 
 /**
@@ -66,5 +68,40 @@ abstract class AbstractCommandService implements CommandInterface
     public function __call($name, $arguments)
     {
         return $this->app->$name(...$arguments);
+    }
+
+    public function output(string $shell, Process $process = null): void
+    {
+        if ($this->getOpt('root')) {
+            $shell .= ' -o become=root';
+        }
+
+        if (!$process) {
+            $process = new Process(function () {
+                $this->info('create new process.');
+            });
+        }
+        $process->exec('/bin/sh', ['-c', $shell]);
+
+        // 启动子进程
+        $process->start();
+
+        // 异步读取子进程的标准输出
+        Process::signal(SIGCHLD, static function ($sig) {
+            while ($ret = Process::wait(false)) {
+                Command::info("Process {$ret['pid']} exited with status {$ret['code']}");
+            }
+        });
+
+        // 实时输出子进程的标准输出
+        swoole_event_add($process->pipe, function ($pipe) use ($process) {
+            $data = $process->read();
+            if ($data === '') {
+                swoole_event_del($pipe);
+                $process->close();
+            } else {
+                Cli::write($data);
+            }
+        });
     }
 }
