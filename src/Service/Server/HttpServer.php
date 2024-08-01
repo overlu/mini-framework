@@ -20,7 +20,6 @@ use Mini\Service\HttpMessage\Server\Request as Psr7Request;
 use Mini\Service\HttpMessage\Server\Response as Psr7Response;
 use Mini\Service\HttpMessage\Stream\SwooleStream;
 use Mini\Service\Route\Route;
-use MiniExcel\Excel;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Http\Server;

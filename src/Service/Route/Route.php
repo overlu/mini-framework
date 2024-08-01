@@ -157,7 +157,6 @@ class Route
      */
     public function dispatch(Request $request): mixed
     {
-        $this->controller = null;
         $method = $request->server['request_method'] ?? 'GET';
         $uri = $request->server['request_uri'] ?? '/';
         $routeInfo = $this->httpDispatcher->dispatch($method, rtrim($uri, '/') ?: '/');
@@ -199,21 +198,22 @@ class Route
                 }
             }
             $func = $handler[1];
-            $this->controller = new $className($func, $params);
-            $resp = app('middleware')->registerBeforeRequest($func, $this->controller);
+            $controller = new $className($func, $params);
+            $this->controller = $controller;
+            $resp = app('middleware')->registerBeforeRequest($func, $controller);
             if (!is_null($resp)) {
                 return $resp;
             }
-            if (!method_exists($this->controller, $func)) {
+            if (!method_exists($controller, $func)) {
                 throw new RuntimeException("Router {$uri} Defined {$className}->{$func} Method Not Found");
             }
-            $method = (new ReflectionMethod($this->controller, $func));
+            $method = (new ReflectionMethod($controller, $func));
             $data = $this->initialParams($method, $params);
-            if (method_exists($this->controller, 'beforeDispatch') && $resp = $this->controller->beforeDispatch($func, $className, $params)) {
+            if (method_exists($controller, 'beforeDispatch') && $resp = $controller->beforeDispatch($func, $className, $params)) {
                 return $resp;
             }
-            $resp = $method->invokeArgs($this->controller, $data);
-            return method_exists($this->controller, 'afterDispatch') ? $this->controller->afterDispatch($resp, $func, $className, $params) : $resp;
+            $resp = $method->invokeArgs($controller, $data);
+            return method_exists($controller, 'afterDispatch') ? $controller->afterDispatch($resp, $func, $className, $params) : $resp;
         }
         if (is_callable($handler)) {
             $resp = app('middleware')->registerBeforeRequest();
@@ -233,7 +233,6 @@ class Route
      */
     public function dispatchWs(Request $request): array
     {
-        $this->controller = null;
         $uri = $request->server['request_uri'] ?? '/';
         $routeInfo = $this->wsDispatcher->dispatch('GET', rtrim($uri, '/') ?: '/');
         switch ($routeInfo[0]) {
