@@ -24,7 +24,7 @@ class CDN extends Facade
      */
     protected static function getFacadeAccessor(): string
     {
-        return 'cdn.' . config('cdn.default', 'cloudfront');
+        return 'cdn.drivers.' . config('cdn.default', 'cloudfront');
     }
 
     /**
