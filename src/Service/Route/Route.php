@@ -164,6 +164,9 @@ class Route
             case Dispatcher::NOT_FOUND:
                 return $this->defaultRouter();
             case Dispatcher::METHOD_NOT_ALLOWED:
+                if ($method === 'OPTIONS') {
+                    return '';
+                }
                 throw new MethodNotAllowedHttpException();
             case Dispatcher::FOUND:
 //                $request->routes = $routeInfo[2] ?? [];
