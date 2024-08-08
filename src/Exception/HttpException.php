@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Mini\Exception;
 
 use Mini\Facades\Lang;
+use Mini\Facades\Request;
 use RuntimeException;
 use Throwable;
 
@@ -31,6 +32,15 @@ class HttpException extends RuntimeException implements HttpExceptionInterface
      */
     public function __construct(mixed $message = '', $statusCode = 0, array $headers = [], ?int $code = 0, Throwable $previous = null)
     {
+        if (config('routes.cors.enable')) {
+            $headers += [
+                'Access-Control-Allow-Origin' => Request::header('origin', '*'),
+                'Access-Control-Allow-Methods' => config('routes.cors.access-control_allow_methods', '*'),
+                'Access-Control-Allow-Headers' => '*',
+                'Access-Control-Allow-Credentials' => true,
+                'Access-Control-Max-Age' => 1728000
+            ];
+        }
         $this->headers = $headers;
         $this->statusCode = Lang::has('http_status_code.' . $statusCode) ? $statusCode : 200;
         $this->responseMessage = $message ?: Lang::getOrDefault('http_status_code.' . $statusCode, 'something error');
