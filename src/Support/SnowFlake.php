@@ -23,8 +23,8 @@ class SnowFlake
      */
     public static function make(int $dataCenterID = 0, int $workerID = 0): string
     {
-        $dataCenterID = $dataCenterID > 0 ? $dataCenterID : ((int)server()->getManagerPid() % 31);
-        $workerID = $workerID > 0 ? $workerID : ((int)server()->getWorkerId() % 31);
+        $dataCenterID = ($dataCenterID > 0 ? $dataCenterID : ((int)server()->getManagerPid())) % 31;
+        $workerID = ($workerID > 0 ? $workerID : ((int)server()->getWorkerId())) % 31;
         $timestamp = self::timeGen();
         if (self::$lastTimestamp === $timestamp) {
             self::$lastSequence = (self::$lastSequence + 1) & self::$sequenceMask;
