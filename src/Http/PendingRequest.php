@@ -748,6 +748,24 @@ class PendingRequest
     }
 
     /**
+     * Dump the request before sending and end the script.
+     *
+     * @return $this
+     */
+    public function dd(): self
+    {
+        $values = func_get_args();
+
+        return $this->beforeSending(function (Request $request, array $options) use ($values) {
+            foreach (array_merge($values, [$request, $options]) as $value) {
+                dump($value);
+            }
+
+            throw new \Mini\Exception\DdException();
+        });
+    }
+
+    /**
      * Issue a GET request to the given URL.
      *
      * @param string $url

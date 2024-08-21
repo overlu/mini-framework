@@ -146,7 +146,7 @@ class Request implements ArrayAccess
      * @param string|null $filename
      * @return bool
      */
-    public function hasFile(string $name, string $value = null, string $filename = null)
+    public function hasFile(string $name, string $value = null, string $filename = null): bool
     {
         if (!$this->isMultipart()) {
             return false;
