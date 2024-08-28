@@ -27,7 +27,6 @@ class LoggingServiceProvider extends AbstractServiceProvider
         } catch (Throwable $throwable) {
             $this->app['exception']->logError($throwable);
         }
-
     }
 
     public function boot(): void

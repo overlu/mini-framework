@@ -112,13 +112,16 @@ class Crontab
         $crontabTaskList = CrontabTaskList::getCrontabTaskList();
         $enableCrontabLog = config('crontab.enable_crontab_log', false);
         foreach ($crontabTaskList as $task) {
-            if (!$task->status()) {
-                continue;
-            }
+//            if (!$task->status()) {
+//                continue;
+//            }
             $times = Parser::parse($task->rule());
             $now = time();
             foreach ($times as $time) {
                 $time = ($time > $now ? ($time - $now) : 0.001) * 1000;
+                if (!$task->status()) {
+                    continue;
+                }
                 Timer::after((int)$time, function () use ($task, $enableCrontabLog) {
                     try {
                         if (!$enableCrontabLog) {
