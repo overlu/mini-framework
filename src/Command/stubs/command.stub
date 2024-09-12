@@ -14,7 +14,7 @@ class {{ class }} extends AbstractCommandService
 {
     /**
      * @param Process|null $process
-     * @return void
+     * @return bool
      */
     public function handle(?Process $process): bool
     {
