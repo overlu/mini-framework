@@ -51,7 +51,7 @@ class Logger
 
         self::output($name, $arguments);
         if (!empty($arguments[1])) {
-            $arguments[0] .= PHP_EOL . json_encode($arguments[1], JSON_UNESCAPED_UNICODE);
+            $arguments[0] .= json_encode($arguments[1], JSON_UNESCAPED_UNICODE);
         }
         if (!empty($arguments[2]) && $arguments[2] === 'system') {
             $arguments[2] = '';
