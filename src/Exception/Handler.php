@@ -77,7 +77,7 @@ class Handler implements HandlerInterface
      */
     public function report(Throwable $throwable): void
     {
-        if (!$throwable instanceof ExitException && $this->hasNoDontReport($throwable)) {
+        if (!$throwable instanceof ExitException && !$throwable instanceof DdException && $this->hasNoDontReport($throwable)) {
             $this->logError($throwable);
             Command::line();
             Command::error($this->formatException($throwable));

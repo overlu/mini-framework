@@ -9,6 +9,7 @@ namespace Mini\Console;
 
 use InvalidArgumentException;
 use Mini\Application;
+use Mini\Exception\DdException;
 use Mini\Support\Command;
 use RuntimeException;
 use Throwable;
@@ -164,6 +165,9 @@ class App
             $status = $this->runHandler($command, $this->commands[$command]);
         } catch (Throwable $e) {
             $status = $this->handleException($e);
+            if ($e instanceof DdException) {
+                $exit = false;
+            }
         }
 
         if ($exit) {
