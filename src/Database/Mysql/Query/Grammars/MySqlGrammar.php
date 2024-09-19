@@ -158,6 +158,31 @@ class MySqlGrammar extends Grammar
         })->implode(', ');
     }
 
+    public function compileUpsert(Builder $query, array $values, array $uniqueBy, array $update): string
+    {
+        $useUpsertAlias = $query->connection->getConfig('use_upsert_alias');
+
+        $sql = $this->compileInsert($query, $values);
+
+        if ($useUpsertAlias) {
+            $sql .= ' as mini_upsert_alias';
+        }
+
+        $sql .= ' on duplicate key update ';
+
+        $columns = collect($update)->map(function ($value, $key) use ($useUpsertAlias) {
+            if (!is_numeric($key)) {
+                return $this->wrap($key) . ' = ' . $this->parameter($value);
+            }
+
+            return $useUpsertAlias
+                ? $this->wrap($value) . ' = ' . $this->wrap('mini_upsert_alias') . '.' . $this->wrap($value)
+                : $this->wrap($value) . ' = values(' . $this->wrap($value) . ')';
+        })->implode(', ');
+
+        return $sql . $columns;
+    }
+
     /**
      * Prepare a JSON column being updated using the JSON_SET function.
      *

@@ -980,6 +980,11 @@ class Grammar extends BaseGrammar
         return "update {$table} {$joins} set {$columns} {$where}";
     }
 
+    public function compileUpsert(Builder $query, array $values, array $uniqueBy, array $update)
+    {
+        throw new RuntimeException('This database engine does not support upserts.');
+    }
+
     /**
      * Prepare the bindings for an update statement.
      *

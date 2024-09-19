@@ -206,6 +206,13 @@ class Builder
     public $useWritePdo = false;
 
     /**
+     * The callbacks that should be invoked before the query is executed.
+     *
+     * @var array
+     */
+    public array $beforeQueryCallbacks = [];
+
+    /**
      * Create a new query builder instance.
      *
      * @param \Mini\Database\Mysql\ConnectionInterface $connection
@@ -2158,6 +2165,8 @@ class Builder
      */
     public function toSql()
     {
+        $this->applyBeforeQueryCallbacks();
+
         return $this->grammar->compileSelect($this);
     }
 
@@ -2493,6 +2502,8 @@ class Builder
      */
     public function exists()
     {
+        $this->applyBeforeQueryCallbacks();
+
         $results = $this->connection->select(
             $this->grammar->compileExists($this), $this->getBindings(), !$this->useWritePdo
         );
@@ -2731,6 +2742,8 @@ class Builder
             }
         }
 
+        $this->applyBeforeQueryCallbacks();
+
         // Finally, we will run this query against the database connection and return
         // the results. We will need to also flatten these bindings before running
         // the query so they are all in one huge, flattened array for execution.
@@ -2761,6 +2774,8 @@ class Builder
             }
         }
 
+        $this->applyBeforeQueryCallbacks();
+
         return $this->connection->affectingStatement(
             $this->grammar->compileInsertOrIgnore($this, $values),
             $this->cleanBindings(Arr::flatten($values, 1))
@@ -2776,6 +2791,8 @@ class Builder
      */
     public function insertGetId(array $values, $sequence = null)
     {
+        $this->applyBeforeQueryCallbacks();
+
         $sql = $this->grammar->compileInsertGetId($this, $values, $sequence);
 
         $values = $this->cleanBindings($values);
@@ -2792,6 +2809,8 @@ class Builder
      */
     public function insertUsing(array $columns, $query)
     {
+        $this->applyBeforeQueryCallbacks();
+
         [$sql, $bindings] = $this->createSub($query);
 
         return $this->connection->affectingStatement(
@@ -2808,6 +2827,8 @@ class Builder
      */
     public function update(array $values)
     {
+        $this->applyBeforeQueryCallbacks();
+
         $sql = $this->grammar->compileUpdate($this, $values);
 
         return $this->connection->update($sql, $this->cleanBindings(
@@ -2833,6 +2854,74 @@ class Builder
         }
 
         return (bool)$this->limit(1)->update($values);
+    }
+
+    /**
+     * Insert new records or update the existing ones.
+     *
+     * @param array $values
+     * @param array|string $uniqueBy
+     * @param array|null $update
+     * @return int
+     */
+    public function upsert(array $values, array|string $uniqueBy, array $update = null)
+    {
+        if (empty($values)) {
+            return 0;
+        }
+
+        if ($update === []) {
+            return (int)$this->insert($values);
+        }
+
+        if (!is_array(reset($values))) {
+            $values = [$values];
+        } else {
+            foreach ($values as $key => $value) {
+                ksort($value);
+
+                $values[$key] = $value;
+            }
+        }
+
+        if (is_null($update)) {
+            $update = array_keys(reset($values));
+        }
+
+        $this->applyBeforeQueryCallbacks();
+
+        $bindings = $this->cleanBindings(array_merge(
+            Arr::flatten($values, 1),
+            collect($update)->reject(function ($value, $key) {
+                return is_int($key);
+            })->all()
+        ));
+
+        return $this->connection->affectingStatement(
+            $this->grammar->compileUpsert($this, $values, (array)$uniqueBy, $update),
+            $bindings
+        );
+    }
+
+    public function beforeQuery(callable $callback): self
+    {
+        $this->beforeQueryCallbacks[] = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Invoke the "before query" modification callbacks.
+     *
+     * @return void
+     */
+    public function applyBeforeQueryCallbacks(): void
+    {
+        foreach ($this->beforeQueryCallbacks as $callback) {
+            $callback($this);
+        }
+
+        $this->beforeQueryCallbacks = [];
     }
 
     /**
@@ -2896,6 +2985,8 @@ class Builder
             $this->where($this->from . '.id', '=', $id);
         }
 
+        $this->applyBeforeQueryCallbacks();
+
         return $this->connection->delete(
             $this->grammar->compileDelete($this), $this->cleanBindings(
             $this->grammar->prepareBindingsForDelete($this->bindings)
@@ -2910,6 +3001,8 @@ class Builder
      */
     public function truncate()
     {
+        $this->applyBeforeQueryCallbacks();
+
         foreach ($this->grammar->compileTruncate($this) as $sql => $bindings) {
             $this->connection->statement($sql, $bindings);
         }
