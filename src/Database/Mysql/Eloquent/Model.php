@@ -44,6 +44,7 @@ abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializab
         Concerns\HasTimestamps,
         Concerns\HidesAttributes,
         Concerns\GuardsAttributes,
+        Concerns\HasUniqueIds,
         ForwardsCalls;
 
     /**

@@ -939,6 +939,109 @@ class Builder
     }
 
     /**
+     * Insert new records or update the existing ones.
+     *
+     * @param array $values
+     * @param array|string $uniqueBy
+     * @param array|null $update
+     * @return int
+     */
+    public function upsert(array $values, array|string $uniqueBy, array $update = null)
+    {
+        if (empty($values)) {
+            return 0;
+        }
+
+        if (!is_array(reset($values))) {
+            $values = [$values];
+        }
+
+        if (is_null($update)) {
+            $update = array_keys(reset($values));
+        }
+
+        return $this->toBase()->upsert(
+            $this->addTimestampsToUpsertValues($this->addUniqueIdsToUpsertValues($values)),
+            $uniqueBy,
+            $this->addUpdatedAtToUpsertColumns($update)
+        );
+    }
+
+    /**
+     * Add the "updated at" column to the updated columns.
+     *
+     * @param array $update
+     * @return array
+     */
+    protected function addUpdatedAtToUpsertColumns(array $update): array
+    {
+        if (!$this->model->usesTimestamps()) {
+            return $update;
+        }
+
+        $column = $this->model->getUpdatedAtColumn();
+
+        if (!is_null($column) &&
+            !array_key_exists($column, $update) &&
+            !in_array($column, $update, true)) {
+            $update[] = $column;
+        }
+
+        return $update;
+    }
+
+    /**
+     * Add timestamps to the inserted values.
+     *
+     * @param array $values
+     * @return array
+     */
+    protected function addTimestampsToUpsertValues(array $values): array
+    {
+        if (!$this->model->usesTimestamps()) {
+            return $values;
+        }
+
+        $timestamp = $this->model->freshTimestampString();
+
+        $columns = array_filter([
+            $this->model->getCreatedAtColumn(),
+            $this->model->getUpdatedAtColumn(),
+        ]);
+
+        foreach ($columns as $column) {
+            foreach ($values as &$row) {
+                $row = array_merge([$column => $timestamp], $row);
+            }
+        }
+
+        return $values;
+    }
+
+    /**
+     * Add unique IDs to the inserted values.
+     *
+     * @param array $values
+     * @return array
+     */
+    protected function addUniqueIdsToUpsertValues(array $values): array
+    {
+        if (!$this->model->usesUniqueIds()) {
+            return $values;
+        }
+
+        foreach ($this->model->uniqueIds() as $uniqueIdAttribute) {
+            foreach ($values as &$row) {
+                if (!array_key_exists($uniqueIdAttribute, $row)) {
+                    $row = array_merge([$uniqueIdAttribute => $this->model->newUniqueId()], $row);
+                }
+            }
+        }
+
+        return $values;
+    }
+
+    /**
      * Apply the scopes to the Eloquent builder instance and return it.
      *
      * @return static
