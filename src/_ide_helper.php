@@ -2672,6 +2672,18 @@ class Eloquent extends Model
     }
 
     /**
+     * @param array $values
+     * @param array|string $uniqueBy
+     * @param array|null $update
+     * @return int
+     */
+    public static function upsert(array $values, array|string $uniqueBy, array $update = null)
+    {
+        /** @var \Mini\Database\Mysql\Query\Builder $instance */
+        return $instance->upsert($values, $uniqueBy, $update);
+    }
+
+    /**
      * Run a truncate statement on the table.
      *
      * @return void
