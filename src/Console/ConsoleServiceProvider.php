@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Mini\Console;
 
+use Mini\Command\CommandExecute;
 use Mini\Command\CommandService;
 use Mini\Service\AbstractServiceProvider;
 use Swoole\Process;
@@ -34,15 +35,9 @@ class ConsoleServiceProvider extends AbstractServiceProvider
                 $process = null;
             }
 
-            $currentCommand = trim($app->getArgs()[0] ?? '');
             $commands = CommandService::getRegisterCommands();
             foreach ($commands as $command => $instance) {
-                $app->addCommand($command, static function () use ($instance, $app, $process) {
-                    $instance->setApp($app)->handle($process);
-                }, $instance->getCommandDescription());
-                if (RUN_ENV === 'artisan' && $command === $currentCommand && $instance->enableCoroutine) {
-                    $process->set(['enable_coroutine' => true]);
-                }
+                $app->addCommand($command, (new CommandExecute($command, $instance, $instance->enableCoroutine))->setApp($app)->setProcess($process), $instance->getCommandDescription());
             }
             $res = new \stdClass();
             $res->app = $app;

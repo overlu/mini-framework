@@ -9,6 +9,7 @@ namespace Mini\Console;
 
 use InvalidArgumentException;
 use Mini\Application;
+use Mini\Command\CommandExecute;
 use Mini\Exception\DdException;
 use Mini\Support\Command;
 use RuntimeException;
@@ -209,7 +210,6 @@ class App
                 }
             }
         }
-
         // a \Closure OR $handler->__invoke()
         if (is_object($handler) && method_exists($handler, '__invoke')) {
             return $handler($this);
