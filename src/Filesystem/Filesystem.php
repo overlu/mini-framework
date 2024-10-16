@@ -564,7 +564,7 @@ class Filesystem implements \Mini\Contracts\File
      */
     public function filesAsIterator(string $directory = '', bool $hidden = false): Finder
     {
-        return Finder::create()->files()->ignoreDotFiles(!$hidden)->in($directory)->depth(0)->sortByName();
+        return Finder::create()->files()->ignoreDotFiles(!$hidden)->in($directory)->depth(0)->sortByName(true);
     }
 
     /**
@@ -591,7 +591,7 @@ class Filesystem implements \Mini\Contracts\File
      */
     public function allFilesAsIterator(string $directory = '', bool $hidden = false): Finder
     {
-        return Finder::create()->files()->ignoreDotFiles(!$hidden)->in($directory)->sortByName();
+        return Finder::create()->files()->ignoreDotFiles(!$hidden)->in($directory)->sortByName(true);
     }
 
     /**
@@ -640,7 +640,7 @@ class Filesystem implements \Mini\Contracts\File
     public function directoriesToArray(string $directory = ''): array
     {
         $directories = [];
-        $resources = Finder::create()->in($directory)->directories()->depth(0)->sortByName();
+        $resources = Finder::create()->in($directory)->directories()->depth(0)->sortByName(true);
         foreach ($resources as $dir) {
             $directories[] = $dir->getPathname();
         }
@@ -653,7 +653,7 @@ class Filesystem implements \Mini\Contracts\File
      */
     public function directoriesAsIterator(string $directory = ''): Finder
     {
-        return Finder::create()->in($directory)->directories()->depth(0)->sortByName();
+        return Finder::create()->in($directory)->directories()->depth(0)->sortByName(true);
     }
 
     /**
@@ -678,7 +678,7 @@ class Filesystem implements \Mini\Contracts\File
      */
     public function allDirectoriesAsIterator(string $directory = ''): Finder
     {
-        return Finder::create()->in($directory)->directories()->sortByName();
+        return Finder::create()->in($directory)->directories()->sortByName(true);
     }
 
     /**
