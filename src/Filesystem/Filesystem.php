@@ -233,6 +233,8 @@ class Filesystem implements \Mini\Contracts\File
      */
     public function put(string $path, $contents, mixed $lock = false): bool
     {
+        $dir = $this->dirname($path);
+        !$this->isDirectory($dir) && $this->makeDirectory($dir, 0755, true);
         return (bool)file_put_contents($path, $contents, $lock ? LOCK_EX : 0);
     }
 
@@ -287,6 +289,8 @@ class Filesystem implements \Mini\Contracts\File
      */
     public function append(string $path, string $data, string $separator = ''): bool
     {
+        $dir = $this->dirname($path);
+        !$this->isDirectory($dir) && $this->makeDirectory($dir, 0755, true);
         return file_put_contents($path, $data . $separator, FILE_APPEND);
     }
 
