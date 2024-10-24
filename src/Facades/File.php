@@ -14,7 +14,7 @@ namespace Mini\Facades;
  * @method static int allFilesCount(string $directory, bool $hidden = false)
  * @method static \Symfony\Component\Finder\Finder filesAsIterator(string $directory, bool $hidden = false)
  * @method static \Symfony\Component\Finder\SplFileInfo[] files(string $directory, bool $hidden = false)
- * @method static array directories(string $directory)
+ * @method static \Symfony\Component\Finder\SplFileInfo[] directories(string $directory)
  * @method static \Symfony\Component\Finder\Finder directoriesAsIterator(string $directory)
  * @method static \Symfony\Component\Finder\SplFileInfo[] allDirectories(string $directory)
  * @method static \Symfony\Component\Finder\Finder allDirectoriesAsIterator(string $directory)

@@ -456,7 +456,7 @@ class Filesystem implements \Mini\Contracts\File
     }
 
     /**
-     * Get the file type of a given file.
+     * Get the file type of given file.
      *
      * @param string $path
      * @return string
@@ -583,7 +583,7 @@ class Filesystem implements \Mini\Contracts\File
     }
 
     /**
-     * Get all of the files from the given directory (recursive).
+     * Get all the files from the given directory (recursive).
      *
      * @param string $directory
      * @param bool $hidden
@@ -595,7 +595,7 @@ class Filesystem implements \Mini\Contracts\File
     }
 
     /**
-     * Get all of the files from the given directory (recursive).
+     * Get all the files from the given directory (recursive).
      *
      * @param string $directory
      * @param bool $hidden
@@ -609,6 +609,11 @@ class Filesystem implements \Mini\Contracts\File
         );
     }
 
+    /**
+     * @param string $directory
+     * @param bool $hidden
+     * @return array
+     */
     public function allFilesToArray(string $directory = '', bool $hidden = false): array
     {
         $files = [];
@@ -620,7 +625,7 @@ class Filesystem implements \Mini\Contracts\File
     }
 
     /**
-     * Get all of the files count from the given directory (recursive).
+     * Get all the files count from the given directory (recursive).
      *
      * @param string $directory
      * @param bool $hidden
@@ -632,7 +637,7 @@ class Filesystem implements \Mini\Contracts\File
     }
 
     /**
-     * Get all of the directories within a given directory.
+     * Get all the directories within a given directory.
      *
      * @param string $directory
      * @return array
@@ -657,11 +662,11 @@ class Filesystem implements \Mini\Contracts\File
     }
 
     /**
-     * Get all of the directories within a given directory.
+     * Get all the directories within a given directory.
      *
      * @param string $directory
      * @param bool $recursive
-     * @return array
+     * @return SplFileInfo[]
      */
     public function directories(string $directory = '', bool $recursive = false): array
     {
@@ -682,10 +687,10 @@ class Filesystem implements \Mini\Contracts\File
     }
 
     /**
-     * Get all of the directories within a given directory (recursive).
+     * Get all the directories within a given directory (recursive).
      *
      * @param string $directory
-     * @return array
+     * @return SplFileInfo[]
      */
     public function allDirectories(string $directory = ''): array
     {
@@ -696,7 +701,7 @@ class Filesystem implements \Mini\Contracts\File
     }
 
     /**
-     * Get all of the directories count from the given directory (recursive).
+     * Get all the directories count from the given directory (recursive).
      *
      * @param string $directory
      * @return int
@@ -707,7 +712,7 @@ class Filesystem implements \Mini\Contracts\File
     }
 
     /**
-     * Get all of the directories within a given directory (recursive).
+     * Get all the directories within a given directory (recursive).
      *
      * @param string $directory
      * @return array
@@ -840,14 +845,14 @@ class Filesystem implements \Mini\Contracts\File
 
         foreach ($items as $item) {
             // If the item is a directory, we can just recurse into the function and
-            // delete that sub-directory otherwise we'll just delete the file and
+            // delete that subdirectory otherwise we'll just delete the file and
             // keep iterating through each file until the directory is cleaned.
             if ($item->isDir() && !$item->isLink()) {
                 $this->deleteDirectory($item->getPathname());
             }
 
             // If the item is just a file, we can go ahead and delete it since we're
-            // just looping through and waxing all of the files in this directory
+            // just looping through and waxing all the files in this directory
             // and calling directories recursively, so we delete the real path.
             else {
                 $this->delete($item->getPathname());
@@ -862,7 +867,7 @@ class Filesystem implements \Mini\Contracts\File
     }
 
     /**
-     * Remove all of the directories within a given directory.
+     * Remove all the directories within a given directory.
      *
      * @param string $directory
      * @return bool
@@ -872,7 +877,7 @@ class Filesystem implements \Mini\Contracts\File
         $allDirectories = $this->directories($directory);
 
         foreach ($allDirectories as $directoryName) {
-            $this->deleteDirectory($directoryName);
+            $this->deleteDirectory($directoryName->getRealPath());
         }
 
         return true;
